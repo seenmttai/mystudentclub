@@ -1,0 +1,2389 @@
+{
+ "id": "fdd-1",
+ "domain": "fdd",
+ "number": 1,
+ "title": "Quality of earnings",
+ "minutes": 40,
+ "learn": [
+  "Which of a seller’s add-backs survive a buyer’s diligence, and why",
+  "What receivable days show that revenue growth hides",
+  "What a buyer counts in net debt beyond bank loans"
+ ],
+ "do": [
+  "Test nine EBITDA items against the data room",
+  "Sort 11 items for net debt on the buyer’s definitions",
+  "Finish the databook and draft the red flags"
+ ],
+ "case": {
+  "role": "First-year article assistant, borrowed by the deals desk",
+  "client": "Agnika Appliances Limited, which has offered to buy Savli Cookware Private Limited of Vadodara under a letter of intent (LOI) signed in January",
+  "team": "Ishaan Sethi (Manager, Deals and Valuation); at Savli, Hitesh Vasani (promoter and managing director, the seller); at Agnika, Shalini Bhargava (Head of Corporate Development)",
+  "goal": "First cut of the quality-of-earnings databook for Agnika: adjusted EBITDA for the nine months, the working-capital trend, net debt on Agnika’s definitions and the red flags.",
+  "period": "Nine months to 31 December 2026, against three years to 31 March 2026",
+  "where": "Deals desk, Prabhat Road office · Tuesday 16 February 2027"
+ },
+ "brief": {
+  "from": "ishaan",
+  "time": "9:50 am",
+  "messages": [
+   "Savli’s data room is open. Start with the April⁠–⁠December adjusted EBITDA from Hitesh, the promoter: every add-back needs a paper, and anything he left out goes in too. Then net debt, on the LOI’s definitions.",
+   "Shalini at Agnika wants the red flags on tomorrow’s 10 am call. Databook and flags to me by 6 pm."
+  ]
+ },
+ "documents": [
+  {
+   "id": "sched",
+   "type": "table",
+   "style": "plain",
+   "tab": "Schedule",
+   "kindLabel": "Management schedule",
+   "title": "Hitesh’s schedule · adjusted EBITDA and net debt",
+   "heading": "Savli Cookware · Adjusted EBITDA and net debt (management)",
+   "subtitle": "Nine months to 31 December 2026 · ₹ lakh · prepared by Hitesh Vasani for the data room",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "amt",
+     "label": "₹ lakh",
+     "format": "int",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "item": "EBITDA as per management accounts",
+     "amt": 1714
+    },
+    {
+     "_id": "s1",
+     "item": "Add: stock lost in the Halol godown flood, December 2026",
+     "amt": 126
+    },
+    {
+     "_id": "s2",
+     "item": "Add: export incentives received (operating income)",
+     "amt": 74
+    },
+    {
+     "_id": "s3",
+     "item": "Add: family salary that ends on a sale (Ramit Vasani)",
+     "amt": 90
+    },
+    {
+     "_id": "s4",
+     "item": "Add: sell-side adviser’s retainer",
+     "amt": 42
+    },
+    {
+     "_id": "s5",
+     "item": "Add: promoter’s remuneration (Agnika’s team will run Savli)",
+     "amt": 54
+    },
+    {
+     "_id": "s6",
+     "item": "Add: aluminium saving for April⁠–⁠September at the new contract rate",
+     "amt": 150
+    },
+    {
+     "item": "Adjusted EBITDA (management)",
+     "amt": 2250,
+     "_class": "total"
+    },
+    {
+     "item": "Adjusted EBITDA margin",
+     "amt": "14.8%"
+    },
+    {
+     "item": "Net debt at 31 December 2026",
+     "_class": "head"
+    },
+    {
+     "item": "Bank borrowings: term loan and cash credit",
+     "amt": 2610
+    },
+    {
+     "item": "Less: cash and bank balances",
+     "amt": -142
+    },
+    {
+     "item": "Net debt (management)",
+     "amt": 2468,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Aluminium: we bought 1,250 tonnes from April to September; the contract of 1 October 2026 saves ₹12 a kg.",
+    "My loan of ₹600 lakh to the company is family money, not borrowing, so it is not in net debt. –⁠ H.V."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DATA ROOM · 3.2",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -5
+    },
+    {
+     "kind": "hand",
+     "text": "And what is missing? – I.S.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "mis",
+   "type": "table",
+   "style": "statement",
+   "tab": "MIS",
+   "check": false,
+   "title": "Management accounts · nine months to December",
+   "company": {
+    "name": "Savli Cookware Private Limited",
+    "address": "Plot 41, GIDC Savli, Vadodara 391770, Gujarat",
+    "cin": "U25920GJ2008PTC942143"
+   },
+   "heading": "Statement of profit and loss (management accounts)",
+   "subtitle": "₹ lakh · nine months unaudited; 2025–26 audited",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "m9",
+     "label": "Apr⁠–⁠Dec 2026",
+     "format": "int"
+    },
+    {
+     "key": "fy26",
+     "label": "2025⁠–⁠26",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "rev",
+     "item": "Revenue from operations",
+     "m9": 15210,
+     "fy26": 18640
+    },
+    {
+     "_id": "cogs",
+     "item": "Cost of goods sold (materials, purchases, change in stock)",
+     "m9": 10398,
+     "fy26": 12652
+    },
+    {
+     "_id": "flood",
+     "item": "of which stock lost in the Halol godown flood",
+     "m9": 126,
+     "fy26": "–",
+     "_indent": 2
+    },
+    {
+     "_id": "emp",
+     "item": "Employee benefits expense (Schedule A)",
+     "m9": 1486,
+     "fy26": 1852
+    },
+    {
+     "_id": "oexp",
+     "item": "Other expenses (Schedule B)",
+     "m9": 1612,
+     "fy26": 1974
+    },
+    {
+     "_id": "eb",
+     "item": "EBITDA",
+     "m9": 1714,
+     "fy26": 2162,
+     "_class": "total",
+     "_sumOf": [
+      "rev",
+      "-cogs",
+      "-emp",
+      "-oexp"
+     ]
+    },
+    {
+     "_id": "oi",
+     "item": "Other income",
+     "m9": 96,
+     "fy26": 58,
+     "_sumOf": [
+      "oi1",
+      "oi2",
+      "oi3"
+     ]
+    },
+    {
+     "_id": "oi1",
+     "item": "Interest on fixed deposits held as margin money",
+     "m9": 12,
+     "fy26": 18,
+     "_indent": 2
+    },
+    {
+     "_id": "oi2",
+     "item": "Rent for godown space let out (licence ended in June 2026)",
+     "m9": 10,
+     "fy26": 40,
+     "_indent": 2
+    },
+    {
+     "_id": "oi3",
+     "item": "Export incentive arrears for 2023–24 and 2024–25",
+     "m9": 74,
+     "fy26": "–",
+     "_indent": 2
+    },
+    {
+     "_id": "da",
+     "item": "Depreciation and amortisation",
+     "m9": 306,
+     "fy26": 378
+    },
+    {
+     "_id": "fin",
+     "item": "Finance costs",
+     "m9": 262,
+     "fy26": 332
+    },
+    {
+     "item": "Profit before tax",
+     "m9": 1242,
+     "fy26": 1510,
+     "_class": "total",
+     "_sumOf": [
+      "eb",
+      "oi",
+      "-da",
+      "-fin"
+     ]
+    }
+   ],
+   "notes": [
+    "Nine months unaudited, prepared by Savli’s accounts team. 2025–26 is from the audited financial statements.",
+    "EBITDA here is revenue less cost of goods sold, employee benefits and other expenses. Other income sits below it.",
+    "Headcount: 410 at 31 December 2026, 378 at 31 March 2026."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DATA ROOM · 3.1",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "mis-emp",
+   "type": "table",
+   "style": "statement",
+   "tab": "Sch A",
+   "title": "Schedule A · Employee benefits",
+   "company": {
+    "name": "Savli Cookware Private Limited",
+    "address": "Plot 41, GIDC Savli, Vadodara 391770, Gujarat",
+    "cin": "U25920GJ2008PTC942143"
+   },
+   "heading": "Schedule A · Employee benefits expense",
+   "subtitle": "₹ lakh · nine months unaudited; 2025–26 audited",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "m9",
+     "label": "Apr⁠–⁠Dec 2026",
+     "format": "int"
+    },
+    {
+     "key": "fy26",
+     "label": "2025⁠–⁠26",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "e0",
+     "item": "Salaries and wages",
+     "m9": 1188,
+     "fy26": 1377
+    },
+    {
+     "_id": "e1",
+     "item": "Bonus and incentives",
+     "m9": "–",
+     "fy26": 96
+    },
+    {
+     "_id": "e2",
+     "item": "Contribution to provident fund and ESI",
+     "m9": 96,
+     "fy26": 118
+    },
+    {
+     "_id": "e3",
+     "item": "Gratuity",
+     "m9": 24,
+     "fy26": 28
+    },
+    {
+     "_id": "e4",
+     "item": "Staff welfare",
+     "m9": 34,
+     "fy26": 47
+    },
+    {
+     "_id": "e5",
+     "item": "Managing director’s remuneration: Hitesh Vasani",
+     "m9": 54,
+     "fy26": 66
+    },
+    {
+     "_id": "e6",
+     "item": "Salary to a relative of a director: Ramit Vasani",
+     "m9": 90,
+     "fy26": 120
+    },
+    {
+     "item": "Total",
+     "m9": 1486,
+     "fy26": 1852,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Bonus and incentives are booked in March, when the year’s figures are final, and paid in April.",
+    "Hitesh Vasani’s remuneration: ₹6 lakh a month from 1 April 2026 (₹5.5 lakh a month in 2025–26).",
+    "Ramit Vasani, son of the managing director, has been Head of Business Development since 1 April 2025 at ₹10 lakh a month."
+   ]
+  },
+  {
+   "id": "mis-oe",
+   "type": "table",
+   "style": "statement",
+   "tab": "Sch B",
+   "title": "Schedule B · Other expenses",
+   "company": {
+    "name": "Savli Cookware Private Limited",
+    "address": "Plot 41, GIDC Savli, Vadodara 391770, Gujarat",
+    "cin": "U25920GJ2008PTC942143"
+   },
+   "heading": "Schedule B · Other expenses",
+   "subtitle": "₹ lakh · nine months unaudited; 2025–26 audited",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "m9",
+     "label": "Apr⁠–⁠Dec 2026",
+     "format": "int"
+    },
+    {
+     "key": "fy26",
+     "label": "2025⁠–⁠26",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "x0",
+     "item": "Power and fuel",
+     "m9": 450,
+     "fy26": 598
+    },
+    {
+     "_id": "x1",
+     "item": "Freight outward and e-commerce delivery",
+     "m9": 360,
+     "fy26": 446
+    },
+    {
+     "_id": "x2",
+     "item": "Advertisement and sales promotion",
+     "m9": 214,
+     "fy26": 262
+    },
+    {
+     "_id": "x3",
+     "item": "Dealers’ meet",
+     "m9": "–",
+     "fy26": 46
+    },
+    {
+     "_id": "x4",
+     "item": "Warranty cost: provision for the period’s sales",
+     "m9": 122,
+     "fy26": 149
+    },
+    {
+     "_id": "x5",
+     "item": "Warranty provision written back",
+     "m9": "–",
+     "fy26": -92
+    },
+    {
+     "_id": "x6",
+     "item": "Rent: warehouse at Plot 44, GIDC Savli, paid to Hitesh Vasani",
+     "m9": 18,
+     "fy26": 24
+    },
+    {
+     "_id": "x7",
+     "item": "Repairs and maintenance",
+     "m9": 108,
+     "fy26": 141
+    },
+    {
+     "_id": "x8",
+     "item": "Legal and professional fees",
+     "m9": 64,
+     "fy26": 81
+    },
+    {
+     "_id": "x9",
+     "item": "Sell-side adviser’s retainer",
+     "m9": 42,
+     "fy26": "–"
+    },
+    {
+     "_id": "x10",
+     "item": "Insurance, rates and taxes",
+     "m9": 54,
+     "fy26": 69
+    },
+    {
+     "_id": "x11",
+     "item": "Travelling and conveyance",
+     "m9": 66,
+     "fy26": 86
+    },
+    {
+     "_id": "x12",
+     "item": "Miscellaneous expenses",
+     "m9": 114,
+     "fy26": 164
+    },
+    {
+     "item": "Total",
+     "m9": 1612,
+     "fy26": 1974,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Rent: agreement of April 2019 with Hitesh Vasani, who owns the warehouse, at ₹2 lakh a month.",
+    "Sell-side adviser: engaged in September 2026 to prepare the information memorandum and run the sale of the company.",
+    "Dealers’ meet: held each January, so the nine months carry none."
+   ]
+  },
+  {
+   "id": "qa1",
+   "type": "letter",
+   "style": "email",
+   "tab": "Answers",
+   "title": "Hitesh’s answers · the nine months",
+   "from": {
+    "name": "Hitesh Vasani",
+    "email": "hitesh.vasani@email.com"
+   },
+   "to": [
+    {
+     "name": "Ishaan Sethi",
+     "email": "ishaan.sethi@email.com"
+    }
+   ],
+   "date": "Fri, 12 Feb 2027, 7:48 pm",
+   "subject": "Re: Savli diligence: questions on the nine months",
+   "body": [
+    "Ishaan,",
+    "My answers, numbered as your questions.",
+    "1. Flood. On 18 December a water main burst in the GIDC estate and flooded our Halol godown. We wrote off ₹126 lakh of packed cookers and non-stick pans. The claim is lodged; the insurer’s surveyor came on 4 January and his report is awaited. It is our second loss there: the claim for the February 2023 fire was settled in 2024–25.",
+    "2. Export incentives. The ₹74 lakh is the incentive on our private-label export shipments of 2023–24 and 2024–25, approved and paid in October 2026. It comes from exporting, so I count it as operating income.",
+    "3. Ramit. He has headed business development since April 2025 at ₹10 lakh a month. This cost ends when the family exits.",
+    "4. My pay. The board raised it to ₹6 lakh a month from April 2026. Agnika’s team will run Savli after closing, so my pay is not a cost they will carry. I have added it back.",
+    "5. Bonus. We book bonus and incentives in March, when the year’s figures are final, and pay in April. 2025–26 was ₹96 lakh, paid in April 2026. This year’s will be about the same.",
+    "6. Aluminium. From 1 October we buy aluminium circles under a one-year contract that saves ₹12 a kg. We bought 1,250 tonnes from April to September at the old rate, so the ₹150 lakh is real money we would have saved.",
+    "7. December sales. P1 and P2, two large e-commerce sellers we make private label for, wanted stock before their January sale events. We shipped and billed them ₹640 lakh between 22 and 31 December on 120 days, this once. Their usual terms are 60 days. No returns so far.",
+    "8. Adviser. We engaged the adviser in September 2026 to prepare the information memorandum and run the sale. The ₹42 lakh retainer is booked in other expenses, on its own line. The success fee on closing is mine to pay, not Savli’s.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Hitesh Vasani",
+    "role": "Managing Director",
+    "for": "Savli Cookware Private Limited"
+   }
+  },
+  {
+   "id": "bench",
+   "type": "letter",
+   "style": "email",
+   "tab": "Shalini",
+   "title": "Shalini’s mail · benchmarks",
+   "from": {
+    "name": "Shalini Bhargava",
+    "email": "shalini.bhargava@email.com"
+   },
+   "to": [
+    {
+     "name": "Ishaan Sethi",
+     "email": "ishaan.sethi@email.com"
+    }
+   ],
+   "date": "Mon, 14 Dec 2026, 6:12 pm",
+   "subject": "Savli: the benchmarks you asked for",
+   "body": [
+    "Ishaan,",
+    "Our HR and admin teams have come back on the three points from Friday.",
+    "- Head of business development at a consumer-durables company of ₹150–250 crore revenue: about ₹36 lakh a year, all in.",
+    "- Managing director at that size: ₹60–75 lakh a year. Hitesh stays on as MD for three years after closing, on his present pay. That is agreed in principle.",
+    "- Warehouse of the same size in GIDC Savli: two quotes, ₹5.8 lakh and ₹6.2 lakh a month. Please take ₹6 lakh. After closing we rent at market or we move.",
+    "Ramit’s role carries on after closing. We would pay the market rate for it.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Shalini Bhargava",
+    "role": "Head of Corporate Development",
+    "for": "Agnika Appliances Limited"
+   }
+  },
+  {
+   "id": "qa2",
+   "type": "letter",
+   "style": "email",
+   "tab": "Answers",
+   "title": "Hitesh’s answers · the balance sheet",
+   "from": {
+    "name": "Hitesh Vasani",
+    "email": "hitesh.vasani@email.com"
+   },
+   "to": [
+    {
+     "name": "Ishaan Sethi",
+     "email": "ishaan.sethi@email.com"
+    }
+   ],
+   "date": "Fri, 12 Feb 2027, 8:05 pm",
+   "subject": "Re: Savli diligence: balance sheet at 31 December",
+   "body": [
+    "Ishaan,",
+    "The rest of your questions.",
+    "9. PF and GST interest. PF for April to June 2026 (₹34 lakh) and the GST interest demand of June 2026 (₹24 lakh, booked in finance costs) are still unpaid. Cash was tight in the summer. We will clear both before closing.",
+    "10. December dues. The TDS, GST and PF for December (₹128 lakh) were paid on time in January.",
+    "11. Lids notice. The GST department has issued a show-cause notice on how we classify tri-ply lids sold with cookware sets, proposing ₹46 lakh. Our consultant filed the reply on 2 February. We expect to win.",
+    "12. My loan. The ₹600 lakh I lent the company is family money. It is not borrowing, so I left it out of net debt.",
+    "13. Bonding press. The tri-ply bonding press came in November 2026. The ₹94 lakh is the balance due to the supplier, payable in March.",
+    "14. Fixed deposits. The ₹240 lakh of deposits are margin money for the bank guarantees we give two appliance brands.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Hitesh Vasani",
+    "role": "Managing Director",
+    "for": "Savli Cookware Private Limited"
+   }
+  },
+  {
+   "id": "loi",
+   "type": "letter",
+   "style": "letter",
+   "tab": "LOI",
+   "title": "Agnika’s letter of intent · extract",
+   "letterhead": {
+    "name": "Agnika Appliances Limited",
+    "address": "Coimbatore, Tamil Nadu",
+    "cin": "L27501TN1992PLC998970"
+   },
+   "date": "18 January 2027",
+   "to": [
+    "Mr Hitesh Vasani",
+    "Managing Director, Savli Cookware Private Limited",
+    "Plot 41, GIDC Savli, Vadodara 391770, Gujarat"
+   ],
+   "subject": "Non-binding offer for the shares of Savli Cookware Private Limited",
+   "body": [
+    "Dear Mr Vasani,",
+    "Further to our meetings, we set out the terms on which Agnika Appliances Limited would buy all the shares of Savli Cookware Private Limited.",
+    "## 1. Price",
+    "Enterprise value of ₹125 crore (₹12,500 lakh), on a cash-free, debt-free basis and with a normal level of working capital.",
+    "## 2. Equity value",
+    "The price for the shares is the enterprise value less Net Debt at completion, adjusted for the difference between working capital at completion and a normal level agreed after diligence.",
+    "## 3. Conditions",
+    "Subject to financial, tax and legal due diligence by our advisers, and to the approval of our board. Exclusivity until 31 March 2027.",
+    "## Schedule 2 · Net Debt",
+    "- **Debt:** borrowings from banks and financial institutions; loans from shareholders, directors and their relatives; interest accrued on any of these.",
+    "- **Debt-like items:** statutory dues unpaid after their due date; employee benefits earned but not funded (gratuity, leave), as per actuarial valuation; amounts owed for capital goods; dividends declared and unpaid.",
+    "- **Cash:** cash and bank balances the Company is free to use. Deposits held as margin money, under lien or for guarantees are not Cash.",
+    "- **Not part of Net Debt:** trade payables, customer advances and statutory dues not yet due, all of which are in working capital; contingent liabilities, which the indemnities will cover.",
+    "Net Debt = Debt + Debt-like items − Cash.",
+    "Yours sincerely,"
+   ],
+   "sign": {
+    "name": "Shalini Bhargava",
+    "role": "Head of Corporate Development",
+    "for": "Agnika Appliances Limited"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Our rulebook. – I.S.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "bs",
+   "type": "table",
+   "style": "statement",
+   "tab": "Balance sheet",
+   "check": false,
+   "title": "Balance sheet · 31 December 2026 extract",
+   "company": {
+    "name": "Savli Cookware Private Limited",
+    "address": "Plot 41, GIDC Savli, Vadodara 391770, Gujarat",
+    "cin": "U25920GJ2008PTC942143"
+   },
+   "heading": "Balance sheet at 31 December 2026 (extract)",
+   "subtitle": "₹ lakh · management accounts, unaudited",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "amt",
+     "label": "₹ lakh",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "item": "Borrowings",
+     "_class": "head"
+    },
+    {
+     "_id": "tl",
+     "item": "Term loan from bank (secured)",
+     "amt": 920,
+     "_indent": 1
+    },
+    {
+     "_id": "cc",
+     "item": "Cash credit from bank (secured)",
+     "amt": 1690,
+     "_indent": 1
+    },
+    {
+     "_id": "loan",
+     "item": "Loan from director: Hitesh Vasani (unsecured)",
+     "amt": 600,
+     "_indent": 1
+    },
+    {
+     "item": "Current liabilities and provisions",
+     "_class": "head"
+    },
+    {
+     "_id": "tp",
+     "item": "Trade payables",
+     "amt": 2212,
+     "_indent": 1
+    },
+    {
+     "_id": "ocl",
+     "item": "Other current liabilities",
+     "amt": 466,
+     "_indent": 1,
+     "_sumOf": [
+      "o1",
+      "o2",
+      "o3",
+      "o4",
+      "o5"
+     ]
+    },
+    {
+     "_id": "o1",
+     "item": "Statutory dues for December 2026 (TDS, GST, PF)",
+     "amt": 128,
+     "_indent": 2
+    },
+    {
+     "_id": "o2",
+     "item": "Statutory dues unpaid since mid-2026: PF for April⁠–⁠June and a GST interest demand",
+     "amt": 58,
+     "_indent": 2
+    },
+    {
+     "_id": "o3",
+     "item": "Creditors for capital goods: tri-ply bonding press",
+     "amt": 94,
+     "_indent": 2
+    },
+    {
+     "_id": "o4",
+     "item": "Advances from customers",
+     "amt": 76,
+     "_indent": 2
+    },
+    {
+     "_id": "o5",
+     "item": "Expenses payable and other liabilities",
+     "amt": 110,
+     "_indent": 2
+    },
+    {
+     "_id": "grat",
+     "item": "Provision for gratuity (not funded)",
+     "amt": 112,
+     "_indent": 1
+    },
+    {
+     "item": "Current assets",
+     "_class": "head"
+    },
+    {
+     "item": "Inventories",
+     "amt": 3406,
+     "_indent": 1
+    },
+    {
+     "item": "Trade receivables",
+     "amt": 4118,
+     "_indent": 1
+    },
+    {
+     "_id": "cash",
+     "item": "Cash on hand and balances in current accounts",
+     "amt": 142,
+     "_indent": 1
+    },
+    {
+     "_id": "fd",
+     "item": "Fixed deposits held as margin money for bank guarantees",
+     "amt": 240,
+     "_indent": 1
+    },
+    {
+     "item": "Other current assets",
+     "amt": 122,
+     "_indent": 1
+    }
+   ],
+   "notes": [
+    "Extract: the lines the deals team asked for. The full balance sheet is in the data room.",
+    "Gratuity: the obligation as per the actuarial valuation at 31 December 2026. There are no plan assets.",
+    "Contingent liability: GST show-cause notice on the classification of tri-ply lids, ₹46 lakh proposed; reply filed on 2 February 2027.",
+    "No interest is accrued at 31 December: the bank debits it monthly, and the director’s loan carries none."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DATA ROOM · 3.1",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "ageing",
+   "type": "table",
+   "style": "sheet",
+   "tab": "Ageing",
+   "freeze": true,
+   "pinFit": true,
+   "startPage": "last",
+   "title": "Debtors ageing · 31 December 2026",
+   "sheetName": "Ageing 31-12-26",
+   "formula": "=C2+D2+E2",
+   "formulaCell": "F2",
+   "columns": [
+    {
+     "key": "cust",
+     "label": "Customer"
+    },
+    {
+     "key": "terms",
+     "label": "Terms, days"
+    },
+    {
+     "key": "nyd",
+     "label": "Not yet due",
+     "format": "int"
+    },
+    {
+     "key": "o90",
+     "label": "Overdue up to 90 days",
+     "format": "int"
+    },
+    {
+     "key": "o90p",
+     "label": "Overdue over 90 days",
+     "format": "int"
+    },
+    {
+     "key": "tot",
+     "label": "Total",
+     "format": "int",
+     "check": "nyd + o90 + o90p"
+    },
+    {
+     "key": "dec",
+     "label": "Billed 22–31 Dec on 120 days",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "cust": "P1",
+     "terms": "60*",
+     "nyd": 1012,
+     "o90": 96,
+     "o90p": "–",
+     "tot": 1108,
+     "dec": 380
+    },
+    {
+     "cust": "P2",
+     "terms": "60*",
+     "nyd": 704,
+     "o90": 58,
+     "o90p": "–",
+     "tot": 762,
+     "dec": 260
+    },
+    {
+     "cust": "P3",
+     "terms": "45",
+     "nyd": 512,
+     "o90": 64,
+     "o90p": "–",
+     "tot": 576,
+     "dec": "–"
+    },
+    {
+     "cust": "P4",
+     "terms": "45",
+     "nyd": 388,
+     "o90": 40,
+     "o90p": "–",
+     "tot": 428,
+     "dec": "–"
+    },
+    {
+     "cust": "P5",
+     "terms": "60",
+     "nyd": 210,
+     "o90": 22,
+     "o90p": "–",
+     "tot": 232,
+     "dec": "–"
+    },
+    {
+     "cust": "Dealers",
+     "terms": "30",
+     "nyd": 520,
+     "o90": 260,
+     "o90p": 38,
+     "tot": 818,
+     "dec": "–"
+    },
+    {
+     "cust": "Online store",
+     "terms": "7",
+     "nyd": 194,
+     "o90": "–",
+     "o90p": "–",
+     "tot": 194,
+     "dec": "–"
+    },
+    {
+     "cust": "Total",
+     "terms": "",
+     "nyd": 3540,
+     "o90": 540,
+     "o90p": 38,
+     "tot": 4118,
+     "dec": 640,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Savli Cookware, trade receivables at 31 December 2026, ₹ lakh, exported from the accounts system.",
+    "Customer names are masked: Agnika sells to some of the same buyers, so names go to its clean team after signing. P1, P2 and P5 are e-commerce sellers and P3 and P4 appliance brands, all private label. Dealers: the 212 Savli-brand dealers with a balance at 31 December.",
+    "* 60 days, but the December billing to P1 (₹380 lakh) and P2 (₹260 lakh) between 22 and 31 December is on 120 days.",
+    "Data room folder 4.1."
+   ]
+  },
+  {
+   "id": "irl",
+   "type": "table",
+   "style": "plain",
+   "tab": "IRL",
+   "kindLabel": "Tracker",
+   "title": "Information request list · status",
+   "heading": "Savli diligence · information request list",
+   "subtitle": "Status at 15 February 2027 · kept by the deals desk",
+   "columns": [
+    {
+     "key": "req",
+     "label": "Request"
+    },
+    {
+     "key": "st",
+     "label": "Status"
+    },
+    {
+     "key": "fo",
+     "label": "Folder"
+    }
+   ],
+   "rows": [
+    {
+     "req": "Audited financial statements, 2023–24 to 2025–26",
+     "st": "Received",
+     "fo": "2.1"
+    },
+    {
+     "req": "Management accounts, April⁠–⁠December 2026",
+     "st": "Received",
+     "fo": "3.1"
+    },
+    {
+     "req": "Management’s adjusted EBITDA schedule",
+     "st": "Received",
+     "fo": "3.2"
+    },
+    {
+     "req": "Management accounts, April⁠–⁠December 2025, for a like-for-like nine months",
+     "st": "Pending",
+     "fo": "3.1"
+    },
+    {
+     "req": "Debtors ageing at 31 December 2026",
+     "st": "Received",
+     "fo": "4.1"
+    },
+    {
+     "req": "Balance confirmations from P1 and P2",
+     "st": "Pending",
+     "fo": "4.3"
+    },
+    {
+     "req": "Credit notes issued after 31 December 2026",
+     "st": "Pending",
+     "fo": "4.4"
+    },
+    {
+     "req": "Aluminium supply contract of 1 October 2026",
+     "st": "Received",
+     "fo": "5.2"
+    },
+    {
+     "req": "Insurer’s survey report on the Halol flood",
+     "st": "Pending",
+     "fo": "5.6"
+    },
+    {
+     "req": "Rent agreement, warehouse at Plot 44",
+     "st": "Received",
+     "fo": "6.1"
+    },
+    {
+     "req": "Sell-side adviser’s engagement letter",
+     "st": "Received",
+     "fo": "6.2"
+    },
+    {
+     "req": "PF challans, April⁠–⁠December 2026",
+     "st": "Partly: April⁠–⁠June missing",
+     "fo": "7.2"
+    },
+    {
+     "req": "GST show-cause notice on tri-ply lids, and the reply",
+     "st": "Received",
+     "fo": "7.4"
+    },
+    {
+     "req": "Bonus working for 2026–27",
+     "st": "Pending",
+     "fo": "8.2"
+    },
+    {
+     "req": "Actuarial valuation of gratuity at 31 December 2026",
+     "st": "Received",
+     "fo": "8.3"
+    },
+    {
+     "req": "Actuarial valuation of leave encashment at 31 December 2026",
+     "st": "Pending",
+     "fo": "8.4"
+    }
+   ],
+   "notes": [
+    "Folder numbers are those of Savli’s data room."
+   ]
+  },
+  {
+   "id": "db-qoe",
+   "type": "table",
+   "style": "sheet",
+   "tab": "QoE",
+   "check": false,
+   "freeze": true,
+   "startPage": "last",
+   "title": "Databook · QoE tab",
+   "sheetName": "QoE",
+   "otherSheets": [
+    "NWC"
+   ],
+   "formula": "=D3+D4",
+   "formulaCell": "D5",
+   "columns": [
+    {
+     "key": "line",
+     "label": "₹ lakh"
+    },
+    {
+     "key": "fy24",
+     "label": "2023–24",
+     "format": "int"
+    },
+    {
+     "key": "fy25",
+     "label": "2024–25",
+     "format": "int"
+    },
+    {
+     "key": "fy26",
+     "label": "2025–26",
+     "format": "int"
+    },
+    {
+     "key": "m9",
+     "label": "9M 2026–27",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "line": "Revenue",
+     "fy24": 14120,
+     "fy25": 16380,
+     "fy26": 18640,
+     "m9": 15210
+    },
+    {
+     "line": "Reported EBITDA",
+     "fy24": 1526,
+     "fy25": 1896,
+     "fy26": 2162,
+     "m9": 1714
+    },
+    {
+     "line": "Normalisation adjustments (net)",
+     "fy24": "−48",
+     "fy25": "−48",
+     "fy26": "−56",
+     "m9": ""
+    },
+    {
+     "line": "Adjusted EBITDA",
+     "fy24": 1478,
+     "fy25": 1848,
+     "fy26": 2106,
+     "m9": "",
+     "_hlCols": [
+      "m9"
+     ]
+    },
+    {
+     "line": "Adjusted EBITDA margin",
+     "fy24": "10.5%",
+     "fy25": "11.3%",
+     "fy26": "11.3%",
+     "m9": "",
+     "_hlCols": [
+      "m9"
+     ]
+    }
+   ],
+   "notes": [
+    "The three years are from our December clean-up: rent at market every year; in 2025–26 also Ramit at market and the warranty write-back out.",
+    "Shaded cells are left for you: the nine months’ adjusted EBITDA and margin."
+   ]
+  },
+  {
+   "id": "db-nwc",
+   "type": "table",
+   "style": "sheet",
+   "tab": "NWC",
+   "check": false,
+   "freeze": true,
+   "startPage": "last",
+   "title": "Databook · NWC tab",
+   "sheetName": "NWC",
+   "otherSheets": [
+    "QoE"
+   ],
+   "formula": "=C2/C6*C8",
+   "formulaCell": "C9",
+   "columns": [
+    {
+     "key": "line",
+     "label": "₹ lakh"
+    },
+    {
+     "key": "a",
+     "label": "31-Mar-25",
+     "format": "int"
+    },
+    {
+     "key": "b",
+     "label": "31-Mar-26",
+     "format": "int"
+    },
+    {
+     "key": "c",
+     "label": "31-Dec-26",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "line": "Trade receivables",
+     "a": 2486,
+     "b": 3212,
+     "c": 4118
+    },
+    {
+     "line": "Inventories",
+     "a": 2712,
+     "b": 2986,
+     "c": 3406
+    },
+    {
+     "line": "Less: trade payables",
+     "a": 1948,
+     "b": 2104,
+     "c": 2212
+    },
+    {
+     "line": "Trade working capital",
+     "a": 3250,
+     "b": 4094,
+     "c": 5312
+    },
+    {
+     "line": "Revenue for the period",
+     "a": 16380,
+     "b": 18640,
+     "c": 15210
+    },
+    {
+     "line": "Cost of goods sold for the period",
+     "a": 11052,
+     "b": 12652,
+     "c": 10398
+    },
+    {
+     "line": "Days in the period",
+     "a": 365,
+     "b": 365,
+     "c": 275
+    },
+    {
+     "line": "Receivable days",
+     "a": "55.4",
+     "b": "62.9",
+     "c": "",
+     "_hlCols": [
+      "c"
+     ]
+    },
+    {
+     "line": "Inventory days",
+     "a": "89.6",
+     "b": "86.1",
+     "c": "90.1"
+    },
+    {
+     "line": "Payable days",
+     "a": "64.3",
+     "b": "60.7",
+     "c": "58.5"
+    },
+    {
+     "line": "Trade working capital, % of a year’s revenue",
+     "a": "19.8%",
+     "b": "22.0%",
+     "c": "",
+     "_hlCols": [
+      "c"
+     ]
+    }
+   ],
+   "notes": [
+    "Days = balance ÷ revenue (inventory and payables: cost of goods sold) for the period × days in the period, to one decimal. April to December is 275 days.",
+    "For 31 December, a year’s revenue is the nine months × 365 ÷ 275, for the ratio only.",
+    "Days without a one-off billing: take it out of the receivables and of the revenue.",
+    "Shaded cells are left for you: receivable days and trade working capital at 31 December."
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Test the EBITDA items",
+   "prompt": "Nine items for the April⁠–⁠December EBITDA, six from Hitesh’s schedule. Make each call against reported EBITDA of ₹1,714 lakh, so where his add-back fails, the call is No adjustment. One-offs come out, related-party costs go to Agnika’s terms, nothing earned outside the nine months goes in; suspicions are red flags. Your calls go to Ishaan when you move on.",
+   "weight": 2,
+   "noun": [
+    "item",
+    "items"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your EBITDA calls to Ishaan?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Ishaan. You can read your calls but not change them."
+   },
+   "hints": [
+    "Each call starts from the management accounts’ ₹1,714 lakh. Then ask of each item: did it happen in these nine months, will it happen again, and is it on the terms Agnika will pay after closing? Shalini’s mail sets those terms.",
+    "A label on Hitesh’s schedule is not evidence, and nor are his reasons. Take the facts from his answers; the schedules show what the nine months already carry."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "src"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call on reported EBITDA",
+     "short": "Your call",
+     "gate": true,
+     "neutral": true,
+     "fold": true,
+     "options": [
+      {
+       "id": "add",
+       "label": "Add back"
+      },
+      {
+       "id": "deduct",
+       "label": "Deduct"
+      },
+      {
+       "id": "none",
+       "label": "No adjustment"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: which paper, which months, why"
+    }
+   ],
+   "docs": [
+    "sched",
+    "mis",
+    "mis-emp",
+    "mis-oe",
+    "qa1",
+    "bench",
+    "ageing",
+    "irl"
+   ],
+   "items": [
+    {
+     "id": "i1",
+     "label": "Item 1 · Flood loss at the Halol godown",
+     "short": "item 1",
+     "src": "Hitesh adds ₹126 lakh",
+     "docs": [
+      "sched",
+      "mis",
+      "qa1"
+     ],
+     "answer": {
+      "verdict": "add"
+     },
+     "note": "Item 1: a burst main, one night in December, ₹126 lakh of stock written off. Not a cost Savli carries every year. Add back. Two losses at Halol in four years is a question for Agnika’s insurance team, not for EBITDA.",
+     "docRow": {
+      "sched": "s1",
+      "mis": "flood"
+     }
+    },
+    {
+     "id": "i2",
+     "label": "Item 2 · Export incentive arrears",
+     "short": "item 2",
+     "src": "Hitesh adds ₹74 lakh",
+     "docs": [
+      "sched",
+      "mis",
+      "qa1"
+     ],
+     "answer": {
+      "verdict": "none"
+     },
+     "note": "Item 2: incentives on 2023–24 and 2024–25 exports, paid in October. Not this period’s trading, and they sit in other income, which reported EBITDA already leaves out. Hitesh’s add-back would put them in. No adjustment.",
+     "docRow": {
+      "sched": "s2",
+      "mis": "oi3"
+     }
+    },
+    {
+     "id": "i3",
+     "label": "Item 3 · Ramit Vasani’s salary",
+     "short": "item 3",
+     "src": "Hitesh adds ₹90 lakh",
+     "docs": [
+      "sched",
+      "mis-emp",
+      "qa1",
+      "bench"
+     ],
+     "answer": {
+      "verdict": "add"
+     },
+     "note": "Item 3: Hitesh says the cost ends on a sale; Shalini’s mail says the role carries on, at about ₹36 lakh a year. Only the excess comes back: ₹90 lakh paid less ₹27 lakh at market for nine months. Add back.",
+     "docRow": {
+      "sched": "s3",
+      "mis-emp": "e6"
+     }
+    },
+    {
+     "id": "i4",
+     "label": "Item 4 · Hitesh’s own pay as MD",
+     "short": "item 4",
+     "src": "Hitesh adds ₹54 lakh",
+     "docs": [
+      "sched",
+      "mis-emp",
+      "qa1",
+      "bench"
+     ],
+     "answer": {
+      "verdict": "none"
+     },
+     "note": "Item 4: Agnika has agreed that Hitesh stays as MD for three years on his present pay, and ₹72 lakh a year sits inside its ₹60–75 lakh range. The cost carries on, at market. No adjustment.",
+     "docRow": {
+      "sched": "s5",
+      "mis-emp": "e5"
+     }
+    },
+    {
+     "id": "i5",
+     "label": "Item 5 · Sell-side adviser’s retainer",
+     "short": "item 5",
+     "src": "Hitesh adds ₹42 lakh",
+     "docs": [
+      "sched",
+      "mis-oe",
+      "qa1"
+     ],
+     "answer": {
+      "verdict": "add"
+     },
+     "note": "Item 5: Savli paid the adviser who wrote the information memorandum and is running the sale. A cost of being sold, and it stops at closing. Add back. The success fee is Hitesh’s own, so nothing more runs through Savli.",
+     "docRow": {
+      "sched": "s4",
+      "mis-oe": "x9"
+     }
+    },
+    {
+     "id": "i6",
+     "label": "Item 6 · Aluminium saving before the contract",
+     "short": "item 6",
+     "src": "Hitesh adds ₹150 lakh",
+     "docs": [
+      "sched",
+      "qa1"
+     ],
+     "answer": {
+      "verdict": "none"
+     },
+     "note": "Item 6: the contract began on 1 October, and October⁠–⁠December already carry the saving. April⁠–⁠September was bought at the old rate, and that is what Savli earned. Agnika can put the saving in its own forecast. No adjustment.",
+     "docRow": {
+      "sched": "s6"
+     },
+     "weight": 2
+    },
+    {
+     "id": "i7",
+     "label": "Item 7 · Warehouse rent paid to Hitesh",
+     "short": "item 7",
+     "src": "Not on Hitesh’s schedule",
+     "docs": [
+      "mis-oe",
+      "bench",
+      "sched"
+     ],
+     "answer": {
+      "verdict": "deduct"
+     },
+     "note": "Item 7: the warehouse rent again, ₹2 lakh a month to Hitesh where Agnika will pay ₹6 lakh. He left it off his schedule. Deduct the ₹36 lakh gap for nine months, as we did for every full year.",
+     "docRow": {
+      "mis-oe": "x6"
+     }
+    },
+    {
+     "id": "i8",
+     "label": "Item 8 · Bonus not yet booked",
+     "short": "item 8",
+     "src": "Not on Hitesh’s schedule",
+     "docs": [
+      "mis-emp",
+      "qa1",
+      "sched"
+     ],
+     "answer": {
+      "verdict": "deduct"
+     },
+     "note": "Item 8: bonus is booked only in March, so nine months carry none. Last year’s was ₹96 lakh and this year’s is about the same: deduct ₹72 lakh. Interim accounts often miss year-end entries; look for them every time.",
+     "docRow": {
+      "mis-emp": "e1"
+     }
+    },
+    {
+     "id": "i9",
+     "label": "Item 9 · December billing to P1 and P2",
+     "short": "item 9",
+     "src": "Not on Hitesh’s schedule",
+     "docs": [
+      "ageing",
+      "qa1",
+      "irl"
+     ],
+     "answer": {
+      "verdict": "none"
+     },
+     "note": "Item 9: ₹640 lakh billed in December’s last ten days on double the usual terms, due only in late April. Nothing proves a problem yet. No adjustment. Red flag: ask for P1 and P2’s confirmations and the credit notes."
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Sort the lines for net debt",
+   "prompt": "Eleven lines from Savli’s balance sheet at 31 December and its notes. Sort each by Schedule 2 of Agnika’s LOI: debt, a debt-like item, cash that comes off, or leave it out of net debt. Hitesh’s figure counts only bank borrowings less cash. Your calls go to Ishaan when you move on.",
+   "weight": 1,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your net debt calls to Ishaan?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Ishaan. You can read your calls but not change them."
+   },
+   "hints": [
+    "Schedule 2 decides, not the label on the balance sheet or what Hitesh calls a line. Read it once, then take the lines one by one.",
+    "Working capital stays out of net debt, so the price does not count it twice: normal payables, customer advances and dues not yet due belong there."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount"
+    }
+   ],
+   "fields": [
+    {
+     "id": "cls",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "neutral": true,
+     "options": [
+      {
+       "id": "debt",
+       "label": "Debt"
+      },
+      {
+       "id": "debtlike",
+       "label": "Debt-like"
+      },
+      {
+       "id": "cash",
+       "label": "Cash"
+      },
+      {
+       "id": "out",
+       "label": "Leave out"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: which part of Schedule 2"
+    }
+   ],
+   "docs": [
+    "bs",
+    "loi",
+    "qa2",
+    "sched"
+   ],
+   "sampleGroups": [
+    {
+     "call": "debt",
+     "label": "Debt"
+    },
+    {
+     "call": "debtlike",
+     "label": "Debt-like items"
+    },
+    {
+     "call": "cash",
+     "label": "Cash"
+    },
+    {
+     "call": "out",
+     "label": "Left out of net debt"
+    }
+   ],
+   "items": [
+    {
+     "id": "n1",
+     "label": "Line 1 · Term loan from bank",
+     "short": "line 1",
+     "amount": "₹920 lakh",
+     "docs": [
+      "bs",
+      "loi"
+     ],
+     "answer": {
+      "cls": "debt"
+     },
+     "note": "Line 1: borrowing from a bank, the first thing Schedule 2 names. Debt.",
+     "docRow": {
+      "bs": "tl"
+     }
+    },
+    {
+     "id": "n2",
+     "label": "Line 2 · Cash credit from bank",
+     "short": "line 2",
+     "amount": "₹1,690 lakh",
+     "docs": [
+      "bs",
+      "loi"
+     ],
+     "answer": {
+      "cls": "debt"
+     },
+     "note": "Line 2: a working-capital limit, but drawn money is borrowed money. Debt.",
+     "docRow": {
+      "bs": "cc"
+     }
+    },
+    {
+     "id": "n3",
+     "label": "Line 3 · Hitesh’s loan to Savli",
+     "short": "line 3",
+     "amount": "₹600 lakh",
+     "docs": [
+      "bs",
+      "qa2",
+      "loi",
+      "sched"
+     ],
+     "answer": {
+      "cls": "debt"
+     },
+     "note": "Line 3: Hitesh calls it family money. Schedule 2 names loans from directors as Debt, and Savli owes it back. Debt. If he turns it into shares before completion, it stops counting.",
+     "docRow": {
+      "bs": "loan"
+     },
+     "weight": 2
+    },
+    {
+     "id": "n4",
+     "label": "Line 4 · Cash and bank balances",
+     "short": "line 4",
+     "amount": "₹142 lakh",
+     "docs": [
+      "bs",
+      "loi"
+     ],
+     "answer": {
+      "cls": "cash"
+     },
+     "note": "Line 4: money in current accounts that Savli can use freely. Cash: it comes off net debt.",
+     "docRow": {
+      "bs": "cash"
+     }
+    },
+    {
+     "id": "n5",
+     "label": "Line 5 · Fixed deposits as margin money",
+     "short": "line 5",
+     "amount": "₹240 lakh",
+     "docs": [
+      "bs",
+      "qa2",
+      "loi"
+     ],
+     "answer": {
+      "cls": "out"
+     },
+     "note": "Line 5: these deposits back guarantees to two appliance brands, so Savli cannot use them while the guarantees run. Schedule 2 says they are not Cash. Nor are they owed to anyone. Leave out.",
+     "docRow": {
+      "bs": "fd"
+     }
+    },
+    {
+     "id": "n6",
+     "label": "Line 6 · PF and GST interest unpaid",
+     "short": "line 6",
+     "amount": "₹58 lakh",
+     "docs": [
+      "bs",
+      "qa2",
+      "loi"
+     ],
+     "answer": {
+      "cls": "debtlike"
+     },
+     "note": "Line 6: PF for April⁠–⁠June and a June GST interest demand, months past due. Hitesh says he will pay before closing; either way the cash leaves the business Agnika buys. Debt-like.",
+     "docRow": {
+      "bs": "o2"
+     }
+    },
+    {
+     "id": "n7",
+     "label": "Line 7 · December statutory dues",
+     "short": "line 7",
+     "amount": "₹128 lakh",
+     "docs": [
+      "bs",
+      "qa2",
+      "loi"
+     ],
+     "answer": {
+      "cls": "out"
+     },
+     "note": "Line 7: December’s dues, paid on time in January. At 31 December they were not overdue, so they sit in working capital. Leave out. Line 6 is the contrast.",
+     "docRow": {
+      "bs": "o1"
+     }
+    },
+    {
+     "id": "n8",
+     "label": "Line 8 · Creditors for the bonding press",
+     "short": "line 8",
+     "amount": "₹94 lakh",
+     "docs": [
+      "bs",
+      "qa2",
+      "loi"
+     ],
+     "answer": {
+      "cls": "debtlike"
+     },
+     "note": "Line 8: owed for a machine, not for trading stock. Schedule 2 lists amounts owed for capital goods. Debt-like. Left in working capital, they would make Savli’s normal working capital look smaller than it is.",
+     "docRow": {
+      "bs": "o3"
+     }
+    },
+    {
+     "id": "n9",
+     "label": "Line 9 · Gratuity, not funded",
+     "short": "line 9",
+     "amount": "₹112 lakh",
+     "docs": [
+      "bs",
+      "loi"
+     ],
+     "answer": {
+      "cls": "debtlike"
+     },
+     "note": "Line 9: earned by the staff already, measured by the actuary, with no fund behind it. Agnika pays it as people leave. Debt-like.",
+     "docRow": {
+      "bs": "grat"
+     }
+    },
+    {
+     "id": "n10",
+     "label": "Line 10 · Trade payables",
+     "short": "line 10",
+     "amount": "₹2,212 lakh",
+     "docs": [
+      "bs",
+      "loi"
+     ],
+     "answer": {
+      "cls": "out"
+     },
+     "note": "Line 10: what Savli owes its suppliers in the normal course of trade. Working capital, not debt. Leave out.",
+     "docRow": {
+      "bs": "tp"
+     }
+    },
+    {
+     "id": "n11",
+     "label": "Line 11 · GST notice on tri-ply lids",
+     "short": "line 11",
+     "amount": "₹46 lakh",
+     "docs": [
+      "bs",
+      "qa2",
+      "loi"
+     ],
+     "answer": {
+      "cls": "out"
+     },
+     "note": "Line 11: a notice, not a demand. Savli has replied and may win. Contingent, so it stays out of net debt and goes to the indemnities, as Schedule 2 says. It still belongs in the red flags."
+    }
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Finish the databook",
+   "prompt": "Ishaan has checked your calls. On his list the flood and the adviser’s retainer are added back, Ramit and the rent go to market, and nine months’ bonus comes off. Work the Ramit, rent and bonus amounts, adjusted EBITDA and margin, receivable days and trade working capital, net debt on Schedule 2 and the equity value. Money in ₹ lakh.",
+   "weight": 1.5,
+   "noun": [
+    "figure",
+    "figures"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your databook to Ishaan?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Ishaan. You can read your figures but not change them."
+   },
+   "hints": [
+    "Ramit at market and the bonus start from a year’s figure: take 9 ÷ 12 of it. The rent gap is ₹4 lakh a month.",
+    "Trade working capital is already on the NWC tab, ₹5,312 lakh at 31 December: put it over a year’s revenue, not nine months’. Net debt starts from Hitesh’s ₹2,468 lakh and adds only what Schedule 2 adds."
+   ],
+   "layout": "table",
+   "sampleBreak": "r9",
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "val",
+     "label": "₹ lakh, % or days",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "line": "Reported EBITDA, nine months",
+      "val": 1714
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "line": "Add back: Halol flood loss",
+      "val": 126
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "line": "Add back: adviser’s retainer",
+      "val": 42
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "line": "Add back: Ramit above market",
+      "val": {
+       "input": true,
+       "answer": [
+        63,
+        -63
+       ],
+       "tolerance": 0,
+       "working": "90 paid − 27 at market (36 × 9 ÷ 12) = 63",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "line": "Less: rent up to market",
+      "val": {
+       "input": true,
+       "answer": [
+        36,
+        -36
+       ],
+       "tolerance": 0,
+       "working": "54 at market (6 × 9) − 18 paid = 36",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r6",
+     "cells": {
+      "line": "Less: nine months’ bonus",
+      "val": {
+       "input": true,
+       "answer": [
+        72,
+        -72
+       ],
+       "tolerance": 0,
+       "working": "96 × 9 ÷ 12 = 72",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r7",
+     "_class": "total",
+     "cells": {
+      "line": "Adjusted EBITDA, nine months",
+      "val": {
+       "input": true,
+       "answer": 1837,
+       "tolerance": 0,
+       "working": "1,714 + 126 + 42 + 63 − 36 − 72 = 1,837",
+       "sign": false,
+       "follow": "1714 + 126 + 42 + {r4.val} − {r5.val} − {r6.val}"
+      }
+     }
+    },
+    {
+     "id": "r8",
+     "cells": {
+      "line": "Adjusted EBITDA margin",
+      "val": {
+       "input": true,
+       "answer": 12.08,
+       "tolerance": 0.05,
+       "working": "1,837 ÷ 15,210 = 12.08%",
+       "sign": false,
+       "format": "pct",
+       "follow": "{r7.val} ÷ 15210 × 100"
+      }
+     }
+    },
+    {
+     "id": "r9",
+     "cells": {
+      "line": "Receivable days, 31 December",
+      "val": {
+       "input": true,
+       "answer": 74.5,
+       "tolerance": 0.45,
+       "working": "4,118 ÷ 15,210 × 275 = 74.5 (74.1 on a 4 ÷ 3 gross-up)",
+       "sign": false,
+       "format": "num1",
+       "unit": "days"
+      }
+     }
+    },
+    {
+     "id": "r10",
+     "cells": {
+      "line": "Receivable days, ₹640 lakh out of receivables and revenue",
+      "val": {
+       "input": true,
+       "answer": 65.6,
+       "tolerance": 0.35,
+       "working": "(4,118 − 640) ÷ (15,210 − 640) × 275 = 65.6 (65.3 on a 4 ÷ 3 gross-up)",
+       "sign": false,
+       "format": "num1",
+       "unit": "days"
+      }
+     }
+    },
+    {
+     "id": "r10w",
+     "cells": {
+      "line": "Trade working capital, % of a year’s revenue, 31 December",
+      "val": {
+       "input": true,
+       "answer": 26.3,
+       "tolerance": 0.15,
+       "working": "5,312 ÷ (15,210 × 365 ÷ 275) = 26.3% (26.2% on a 4 ÷ 3 gross-up)",
+       "sign": false,
+       "format": "pct"
+      }
+     }
+    },
+    {
+     "id": "r11",
+     "cells": {
+      "line": "Hitesh’s net debt",
+      "val": 2468
+     }
+    },
+    {
+     "id": "r12",
+     "cells": {
+      "line": "Add: Hitesh’s loan",
+      "val": 600
+     }
+    },
+    {
+     "id": "r13",
+     "cells": {
+      "line": "Add: Lines 6, 8 and 9 (PF and GST interest, press, gratuity)",
+      "val": {
+       "input": true,
+       "answer": 264,
+       "tolerance": 0,
+       "working": "58 + 94 + 112 = 264",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r14",
+     "_class": "total",
+     "cells": {
+      "line": "Adjusted net debt",
+      "val": {
+       "input": true,
+       "answer": 3332,
+       "tolerance": 0,
+       "working": "2,468 + 600 + 264 = 3,332",
+       "sign": false,
+       "follow": "2468 + 600 + {r13.val}"
+      }
+     }
+    },
+    {
+     "id": "r15",
+     "cells": {
+      "line": "Equity value at ₹12,500 lakh EV",
+      "val": {
+       "input": true,
+       "answer": 9168,
+       "tolerance": 0,
+       "working": "12,500 − 3,332 = 9,168",
+       "sign": false,
+       "follow": "12500 − {r14.val}"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r4.val": "If you put 90, you took Hitesh’s add-back whole. Agnika keeps the role after closing, so ₹27 lakh of it is a real nine-month cost.",
+    "r5.val": "If you put 54, you took nine months of market rent; only the ₹36 lakh gap over what Savli pays comes off.",
+    "r6.val": "If you put 96, you charged a whole year’s bonus to nine months.",
+    "r7.val": "₹1,837 lakh against Hitesh’s ₹2,250 lakh: ₹413 lakh of his schedule does not survive the papers.",
+    "r8.val": "12.1% against 11.3% for 2025–26. Part is the festive quarter, part may be December’s billing, and January’s dealers’ meet falls outside the nine months. Do not gross nine months up to a year and call it a run-rate.",
+    "r9.val": "55 days at March 2025, 63 at March 2026, 74 now. Since March, inventory days are up four and payable days down two; receivable days are up nearly twelve.",
+    "r10.val": "If you took the ₹640 lakh out of receivables only (62.9), you left its revenue in the base. Out of both, about 66 days against March’s 63: P1 and P2’s December billing is about three-quarters of the rise.",
+    "r10w.val": "If you put 34.9, you used nine months’ revenue, not a year’s. 19.8% at March 2025, 22.0% at March 2026, 26.3% now, with December’s billing inside it: the LOI’s normal level will be argued from these.",
+    "r13.val": "If you put 334, you took December’s ₹128 lakh of dues, which were not overdue, in place of Line 6’s ₹58 lakh.",
+    "r14.val": "₹864 lakh more than Hitesh’s figure: his own loan, the PF and GST interest overdue, the press creditors and the gratuity.",
+    "r15.val": "₹9,168 lakh, not the ₹10,032 lakh Hitesh’s figure gives. That is before the working-capital adjustment, which waits until the normal level is agreed."
+   },
+   "docs": [
+    "db-qoe",
+    "db-nwc",
+    "mis",
+    "ageing",
+    "bs",
+    "loi",
+    "sched"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Draft the red flags for Shalini’s call",
+   "prompt": "Ishaan wants one short note with the red flags he will raise on tomorrow’s call: one on earnings, one on working capital, one on net debt. Pick the right line for each. Add a line of your own if you like.",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "previewLabel": "Your note to Ishaan",
+   "hints": [
+    "A red flag says what is wrong and how we know, or what we will test to find out. It neither waves a problem through nor convicts anyone on a suspicion."
+   ],
+   "template": "Ishaan,\n\nThe red flags from the Savli data room for tomorrow’s call with Shalini:\n\n1. {ebitda}\n\n2. {recv}\n\n3. {debt}\n\n{_free}\n\nThe databook is on the deals drive, with a paper behind every figure.\n\nRegards,\nArticle assistant, deals desk",
+   "freeText": {
+    "label": "Your own line for Ishaan"
+   },
+   "slots": [
+    {
+     "id": "ebitda",
+     "label": "Earnings",
+     "options": [
+      {
+       "id": "a",
+       "text": "Earnings: nine-month EBITDA is ₹2,250 lakh, a 14.8% margin, once Hitesh’s add-backs go in. The aluminium saving runs on, the export incentives came in this year and his pay stops at closing, so his schedule stands.",
+       "why": "That is Hitesh’s number. The saving was not earned before October, the incentives belong to earlier years and sit outside EBITDA, and his pay carries on. Agnika would pay for ₹413 lakh that is not there."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "Earnings: nine-month EBITDA is ₹1,837 lakh on our adjustments, not Hitesh’s ₹2,250 lakh. The aluminium saving and export arrears are not this period’s trading, his own pay carries on, and the accounts hold no bonus.",
+       "why": "The main parts of the gap are named, each with its paper: the contract date, the October receipt, Shalini’s mail and the March bonus entry."
+      },
+      {
+       "id": "c",
+       "text": "Earnings: nine-month EBITDA is ₹1,669 lakh once the flood loss and the adviser’s retainer stay in as well. A buyer should never accept a one-off that a seller claims, whatever paper the seller brings with it.",
+       "why": "Too far. A burst main and a sale adviser are one-offs with papers behind them, and diligence accepts what the papers prove. Refusing every add-back is as wrong as accepting every one."
+      }
+     ]
+    },
+    {
+     "id": "recv",
+     "label": "Working capital",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Receivables: up from ₹3,212 lakh to ₹4,118 lakh in nine months, 63 to 74 days. ₹640 lakh of it is December billing to P1 and P2 on 120 days, due in late April; without it, about 66 days. Next: confirmations and credit notes.",
+       "why": "It says what moved and what we will test, and it accuses no one before the confirmations come in."
+      },
+      {
+       "id": "b",
+       "text": "Receivables: up from ₹3,212 lakh to ₹4,118 lakh in nine months, on festive quarter sales and steady growth. Inventory and payable days moved with the season too, so working capital looks normal for the time of year.",
+       "why": "The festive quarter does not explain 120-day terms given once, to two buyers, in December’s last ten days. Without that billing the days rise by under three, so most of the rise is those invoices."
+      },
+      {
+       "id": "c",
+       "text": "Receivables: up from ₹3,212 lakh to ₹4,118 lakh in nine months, because ₹640 lakh of December sales to P1 and P2 are not real. We take them out of revenue and EBITDA, and tell Shalini on the call that the sales were made up.",
+       "why": "Nothing proves that yet: the confirmations are pending and there are no returns so far. A red flag says what to test. Calling a sale fake on a call with the buyer is not ours to do."
+      }
+     ]
+    },
+    {
+     "id": "debt",
+     "label": "Net debt",
+     "options": [
+      {
+       "id": "a",
+       "text": "Net debt: ₹2,468 lakh, as Hitesh’s schedule shows, bank borrowings less cash. His loan is family money, and the PF dues, press creditors and gratuity are routine items, so they need not come up tomorrow.",
+       "why": "Schedule 2 counts Hitesh’s loan as debt and the other three as debt-like. Left out, they would cost Agnika ₹864 lakh on top of the price."
+      },
+      {
+       "id": "b",
+       "text": "Net debt: ₹3,618 lakh on Schedule 2, with the ₹240 lakh margin money and the ₹46 lakh lids notice as debt. Savli may lose the deposits if a guarantee is called and may have to pay on the notice, so Agnika carries neither.",
+       "why": "The margin money is Savli’s own deposit, held for the guarantees; nobody is owed it. The lids notice is contingent and goes to the indemnities, not into the price."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "Net debt: ₹3,332 lakh on Schedule 2, not Hitesh’s ₹2,468 lakh: his ₹600 lakh loan, PF and GST interest overdue since mid-2026, the press creditors and gratuity. The lids notice needs an indemnity.",
+       "why": "Each of the four has its line in Schedule 2, and the unpaid PF tells Agnika how cash was run last summer."
+      }
+     ]
+    }
+   ],
+   "docs": [
+    "ageing",
+    "db-nwc",
+    "sched",
+    "loi",
+    "bs",
+    "irl",
+    "qa1",
+    "qa2"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "ishaan",
+  "text": "Hitesh says ₹2,250 lakh for nine months; the papers carry ₹1,837 lakh. Net debt is ₹864 lakh above his sheet, so his shares fetch that much less. Your three flags go into my notes for Shalini as written. P1 and P2 will be her first question."
+ },
+ "wrapPartial": {
+  "from": "ishaan",
+  "text": "Hitesh will argue every lakh of the nine-month EBITDA and the net debt, so first put right any miss that moves either. We’ll go over it together before the call."
+ },
+ "wrapRetry": {
+  "from": "ishaan",
+  "text": "Every item needs a paper that proves it, for these nine months, and related-party costs go to Agnika’s terms. Read Schedule 2 of the LOI before you sort a single line; the databook and the flags rest on those two."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.66,
+   "note": "Item 6 counts double: you need six of the nine EBITDA calls right with it, or seven without it."
+  },
+  {
+   "task": "t2",
+   "min": 0.6,
+   "note": "Line 3 counts double: you need seven of the eleven net debt calls right with it, or eight without it."
+  },
+  {
+   "task": "t3",
+   "min": 0.5,
+   "note": "Your databook needs at least six of its eleven figures right, or following your figures, to pass."
+  }
+ ],
+ "model": {
+  "intro": "Savli earned ₹1,837 lakh of EBITDA in April⁠–⁠December (12.1% of revenue), not the ₹2,250 lakh on Hitesh’s schedule: three of his six add-backs fail, one is cut, and he left out the rent and the bonus. Receivable days rose from 63 to 74, most of it December’s billing to P1 and P2. Net debt on Schedule 2 is ₹3,332 lakh against his ₹2,468 lakh.",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Hitesh’s schedule against ours, April⁠–⁠December 2026, ₹ lakh:"
+   },
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "line",
+      "label": "EBITDA, ₹ lakh"
+     },
+     {
+      "key": "hit",
+      "label": "Hitesh",
+      "format": "int"
+     },
+     {
+      "key": "us",
+      "label": "Ours",
+      "format": "int"
+     }
+    ],
+    "rows": [
+     {
+      "line": "Reported EBITDA",
+      "hit": 1714,
+      "us": 1714
+     },
+     {
+      "line": "Flood loss at Halol",
+      "hit": "+126",
+      "us": "+126"
+     },
+     {
+      "line": "Export incentive arrears",
+      "hit": "+74",
+      "us": "–"
+     },
+     {
+      "line": "Ramit’s salary",
+      "hit": "+90",
+      "us": "+63"
+     },
+     {
+      "line": "Sell-side adviser’s retainer",
+      "hit": "+42",
+      "us": "+42"
+     },
+     {
+      "line": "Hitesh’s own pay",
+      "hit": "+54",
+      "us": "–"
+     },
+     {
+      "line": "Aluminium saving before October",
+      "hit": "+150",
+      "us": "–"
+     },
+     {
+      "line": "Warehouse rent to market",
+      "hit": "–",
+      "us": "−36"
+     },
+     {
+      "line": "Bonus for the nine months",
+      "hit": "–",
+      "us": "−72"
+     },
+     {
+      "line": "Adjusted EBITDA",
+      "hit": 2250,
+      "us": 1837,
+      "_class": "total"
+     },
+     {
+      "line": "Margin on revenue",
+      "hit": "14.8%",
+      "us": "12.1%"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "Working capital: receivable days 55.4 at March 2025, 62.9 at March 2026 and 74.5 at December 2026, while inventory days ran 89.6, 86.1, 90.1 and payable days 64.3, 60.7, 58.5; trade working capital went from 19.8% to 22.0% to 26.3% of a year’s revenue. Receivables moved most. P1 and P2 owe ₹1,870 lakh of the ₹4,118 lakh, and ₹640 lakh of that is December billing on 120 days. Without it, days are 65.6."
+   },
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "line",
+      "label": "Net debt, ₹ lakh"
+     },
+     {
+      "key": "hit",
+      "label": "Hitesh",
+      "format": "int"
+     },
+     {
+      "key": "us",
+      "label": "Schedule 2",
+      "format": "int"
+     }
+    ],
+    "rows": [
+     {
+      "line": "Bank borrowings",
+      "hit": "2,610",
+      "us": "2,610"
+     },
+     {
+      "line": "Hitesh’s loan",
+      "hit": "–",
+      "us": "600"
+     },
+     {
+      "line": "PF and GST interest overdue",
+      "hit": "–",
+      "us": "58"
+     },
+     {
+      "line": "Creditors for the bonding press",
+      "hit": "–",
+      "us": "94"
+     },
+     {
+      "line": "Gratuity, not funded",
+      "hit": "–",
+      "us": "112"
+     },
+     {
+      "line": "Less: cash",
+      "hit": "(142)",
+      "us": "(142)"
+     },
+     {
+      "line": "Net debt",
+      "hit": 2468,
+      "us": 3332,
+      "_class": "total"
+     },
+     {
+      "line": "Equity value, before the working-capital adjustment",
+      "hit": 10032,
+      "us": 9168
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "Left for the next round: the April⁠–⁠December 2025 accounts for a like-for-like nine months, the P1 and P2 confirmations and credit notes since December, collections when the December invoices fall due in late April, the missing April⁠–⁠June PF challans and the interest on that late PF, the actuary’s leave valuation and the insurer’s report on the flood. The normal level of working capital is agreed after those."
+   },
+   {
+    "type": "note",
+    "from": "ishaan",
+    "text": "Hitesh will fight hardest for the aluminium saving, because it is the biggest. The answer is the contract date: October onwards is already in the numbers. If Agnika wants to pay for the saving, it does so in its own forecast, knowingly."
+   }
+  ]
+ },
+ "principles": [
+  "Adjusted EBITDA is what the business earned in the period: one-offs out, related-party costs at the buyer’s terms. Every change needs a paper.",
+  "What you suspect but cannot prove is a red flag to test, not an adjustment.",
+  "On a cash-free, debt-free price every rupee of net debt comes off the seller’s cheque."
+ ],
+ "earned": {
+  "clause": "tested {n} EBITDA items from a target’s data room[[ and adjusted {adj}]][[; computed receivable days{d1|}{d2|}]]; classified {cl} items for net debt[[ ({dl} debt-like)]][[; drafted {rf} red {rf|flag|flags}]]",
+  "counts": {
+   "n": {
+    "kind": "items",
+    "task": "t1",
+    "answered": "gate"
+   },
+   "adj": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "verdict",
+    "equals": [
+     "add",
+     "deduct"
+    ]
+   },
+   "d1": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r9",
+    "col": "val"
+   },
+   "d2": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r10",
+    "col": "val"
+   },
+   "cl": {
+    "kind": "items",
+    "task": "t2",
+    "answered": "gate"
+   },
+   "dl": {
+    "kind": "itemsWhere",
+    "task": "t2",
+    "field": "cls",
+    "equals": "debtlike"
+   },
+   "rf": {
+    "kind": "correctSlots",
+    "task": "t4"
+   }
+  },
+  "fallback": "tested {n} EBITDA items from a target’s data room; classified {cl} items for net debt"
+ },
+ "interview": [
+  {
+   "q": "How is quality-of-earnings work different from a statutory audit?",
+   "checking": "Whether you know what diligence is for, beyond checking the books.",
+   "outline": [
+    "An audit gives an opinion that past statements are true and fair; it does not price anything.",
+    "Quality of earnings asks what the business will keep earning: one-offs come out, related-party costs go to market.",
+    "In the simulation I tested {n} items; the seller’s ₹22.5 crore nine-month EBITDA came to ₹18.4 crore."
+   ]
+  },
+  {
+   "q": "What are debt-like items? Give three.",
+   "checking": "Whether you see net debt beyond bank loans, and know why it moves the price.",
+   "outline": [
+    "Amounts the buyer will pay out though they are not loans: overdue statutory dues, unfunded gratuity, capital creditors.",
+    "On a cash-free, debt-free price each one comes off what the seller gets, rupee for rupee.",
+    "In the simulation, the promoter’s loan and three such items took net debt from ₹24.7 to ₹33.3 crore."
+   ]
+  }
+ ]
+}

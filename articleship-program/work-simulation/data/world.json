@@ -1,0 +1,460 @@
+{
+  "v": 1,
+  "firm": {
+    "name": "Bapat Venkatesh & Co.",
+    "short": "BVC",
+    "city": "Pune",
+    "kind": "Chartered Accountants",
+    "address": "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004"
+  },
+  "people": [
+    {
+      "id": "aarti",
+      "name": "Aarti Rane",
+      "role": "Audit Senior (CA, qualified 2024); your day-to-day senior",
+      "roleShort": "Audit senior",
+      "initials": "AR",
+      "color": "#0F6B6B",
+      "org": "firm"
+    },
+    {
+      "id": "rehan",
+      "name": "Rehan Siddiqui",
+      "role": "Audit Manager",
+      "roleShort": "Audit manager",
+      "initials": "RS",
+      "color": "#3C4FA6",
+      "org": "firm"
+    },
+    {
+      "id": "sudha",
+      "name": "Sudha Venkatesh",
+      "role": "Audit Partner (signs the audit and tax-audit reports)",
+      "roleShort": "Audit partner",
+      "initials": "SV",
+      "color": "#7A3E8E",
+      "org": "firm"
+    },
+    {
+      "id": "kunal",
+      "name": "Kunal Mehrotra",
+      "role": "Direct Tax Senior",
+      "roleShort": "Tax senior",
+      "initials": "KM",
+      "color": "#8F4520",
+      "org": "firm"
+    },
+    {
+      "id": "neethu",
+      "name": "Neethu Thomas",
+      "role": "GST Senior",
+      "roleShort": "GST senior",
+      "initials": "NT",
+      "color": "#1D6B41",
+      "org": "firm"
+    },
+    {
+      "id": "sameer",
+      "name": "Sameer Kulkarni",
+      "role": "Internal Audit Senior",
+      "roleShort": "IA senior",
+      "initials": "SK",
+      "color": "#2B5C88",
+      "org": "firm"
+    },
+    {
+      "id": "subhajit",
+      "name": "Subhajit Das",
+      "role": "Bank Audit Lead (manager)",
+      "roleShort": "Bank audit lead",
+      "initials": "SD",
+      "color": "#5A4A8C",
+      "org": "firm"
+    },
+    {
+      "id": "ishaan",
+      "name": "Ishaan Sethi",
+      "role": "Manager, Deals and Valuation (valuation, FDD, research desk)",
+      "roleShort": "Deals manager",
+      "initials": "IS",
+      "color": "#7C5200",
+      "org": "firm"
+    },
+    {
+      "id": "gayathri",
+      "name": "Gayathri Sundaram",
+      "role": "Transfer Pricing Lead (manager)",
+      "roleShort": "TP lead",
+      "initials": "GS",
+      "color": "#006478",
+      "org": "firm"
+    },
+    {
+      "id": "kaizad",
+      "name": "Kaizad Engineer",
+      "role": "Director, M&A Tax",
+      "roleShort": "M&A tax director",
+      "initials": "KE",
+      "color": "#6A4C2C",
+      "org": "firm"
+    },
+    {
+      "id": "manav",
+      "name": "Manav Bhatia",
+      "role": "Forensic Lead (manager)",
+      "roleShort": "Forensic lead",
+      "initials": "MB",
+      "color": "#7A2D45",
+      "org": "firm"
+    },
+    {
+      "id": "ananya",
+      "name": "Ananya Mukherjee",
+      "role": "Consulting Lead (manager)",
+      "roleShort": "Consulting lead",
+      "initials": "AM",
+      "color": "#2E6A5D",
+      "org": "firm"
+    },
+    {
+      "id": "snehal",
+      "name": "Snehal Patil",
+      "role": "Accounting and Company Law Senior",
+      "roleShort": "Accounting senior",
+      "initials": "SP",
+      "color": "#963A68",
+      "org": "firm"
+    },
+    {
+      "id": "varun",
+      "name": "Varun Shetty",
+      "role": "Second-year article assistant (your buddy)",
+      "roleShort": "Second-year article",
+      "initials": "VS",
+      "color": "#4A5868",
+      "org": "firm"
+    },
+    {
+      "id": "dilip",
+      "name": "Dilip Joglekar",
+      "role": "Chairman and founder (non-executive director)",
+      "roleShort": "Chairman",
+      "initials": "DJ",
+      "color": "#5E5A2E",
+      "org": "client-a"
+    },
+    {
+      "id": "amol",
+      "name": "Amol Joglekar",
+      "role": "Managing Director",
+      "roleShort": "MD",
+      "initials": "AJ",
+      "color": "#2F4F6F",
+      "org": "client-a"
+    },
+    {
+      "id": "sejal",
+      "name": "Sejal Joglekar",
+      "role": "Director (non-executive); architect",
+      "roleShort": "Director",
+      "initials": "SJ",
+      "color": "#6B4F7A",
+      "org": "client-a"
+    },
+    {
+      "id": "nandini",
+      "name": "Nandini Krishnamurthy",
+      "role": "Nominee director of the private-equity investor",
+      "roleShort": "Nominee director",
+      "initials": "NK",
+      "color": "#2F6268",
+      "org": "client-a"
+    },
+    {
+      "id": "mahesh",
+      "name": "Mahesh Kadam",
+      "role": "GM, Finance and Accounts",
+      "roleShort": "Accounts head",
+      "initials": "MK",
+      "color": "#3E5C3A",
+      "org": "client-a"
+    },
+    {
+      "id": "pallavi",
+      "name": "Pallavi Shinde",
+      "role": "Accounts Executive",
+      "roleShort": "Accounts exec",
+      "initials": "PS",
+      "color": "#7A4B5B",
+      "org": "client-a"
+    },
+    {
+      "id": "datta",
+      "name": "Dattatray More",
+      "role": "Stores In-charge",
+      "roleShort": "Stores in-charge",
+      "initials": "DM",
+      "color": "#5C4A32",
+      "org": "client-a"
+    },
+    {
+      "id": "shabana",
+      "name": "Shabana Shaikh",
+      "role": "HR and Payroll Executive",
+      "roleShort": "HR & payroll",
+      "initials": "SS",
+      "color": "#7C3F2F",
+      "org": "client-a"
+    },
+    {
+      "id": "rohit",
+      "name": "Rohit Agrawal",
+      "role": "Purchase Manager",
+      "roleShort": "Purchase manager",
+      "initials": "RA",
+      "color": "#3F4F78",
+      "org": "client-a"
+    },
+    {
+      "id": "venkat",
+      "name": "Venkat Reddy",
+      "role": "Plant Head",
+      "roleShort": "Plant head",
+      "initials": "VR",
+      "color": "#4C5D2A",
+      "org": "client-a"
+    },
+    {
+      "id": "harshad",
+      "name": "Harshad Patel",
+      "role": "Head, Sales (OEM)",
+      "roleShort": "Sales head",
+      "initials": "HP",
+      "color": "#6A3D2B",
+      "org": "client-a"
+    },
+    {
+      "id": "mrunal",
+      "name": "Mrunal Deo",
+      "role": "Company Secretary (whole-time)",
+      "roleShort": "Company secretary",
+      "initials": "MD",
+      "color": "#4E3E6E",
+      "org": "client-a"
+    },
+    {
+      "id": "prakash",
+      "name": "Prakash Waghmare",
+      "role": "Branch Manager, Vindhya Commercial Bank, Chakan",
+      "roleShort": "Branch manager",
+      "initials": "PW",
+      "color": "#3B4A5E",
+      "org": "bank"
+    },
+    {
+      "id": "lata",
+      "name": "Lata Ghule",
+      "role": "Credit Officer, Vindhya Commercial Bank, Chakan",
+      "roleShort": "Credit officer",
+      "initials": "LG",
+      "color": "#5D3F55",
+      "org": "bank"
+    },
+    {
+      "id": "dinesh",
+      "name": "Dinesh Bhalekar",
+      "role": "Branch Manager, Ambar Commercial Bank, Chakan",
+      "roleShort": "Branch manager",
+      "initials": "DB",
+      "color": "#2E4A63",
+      "org": "bank"
+    },
+    {
+      "id": "swati",
+      "name": "Swati Kalokhe",
+      "role": "Credit Officer, Ambar Commercial Bank, Chakan",
+      "roleShort": "Credit officer",
+      "initials": "SK",
+      "color": "#5A3E5E",
+      "org": "bank"
+    },
+    {
+      "id": "ashwin",
+      "name": "Ashwin Pradhan",
+      "role": "CFO, Khamang Foods",
+      "roleShort": "CFO",
+      "initials": "AP",
+      "color": "#2E5A4C",
+      "org": "client-b"
+    },
+    {
+      "id": "kavita",
+      "name": "Kavita Lokhande",
+      "role": "Head, Supply Chain, Khamang Foods",
+      "roleShort": "Supply chain head",
+      "initials": "KL",
+      "color": "#6A4A2A",
+      "org": "client-b"
+    },
+    {
+      "id": "nitin",
+      "name": "Nitin Bhosale",
+      "role": "Purchase Manager, Khamang Foods",
+      "roleShort": "Purchase manager",
+      "initials": "NB",
+      "color": "#3A4C70",
+      "org": "client-b"
+    },
+    {
+      "id": "yogesh",
+      "name": "Yogesh Narwade",
+      "role": "Purchase Executive, Khamang Foods",
+      "roleShort": "Purchase exec",
+      "initials": "YN",
+      "color": "#5B5B2E",
+      "org": "client-b"
+    },
+    {
+      "id": "jyoti",
+      "name": "Jyoti Pingle",
+      "role": "Accounts Payable Lead, Khamang Foods",
+      "roleShort": "AP lead",
+      "initials": "JP",
+      "color": "#6B3A4E",
+      "org": "client-b"
+    },
+    {
+      "id": "priyanka",
+      "name": "Priyanka Salunkhe",
+      "role": "HR Manager, Khamang Foods",
+      "roleShort": "HR manager",
+      "initials": "PS",
+      "color": "#4F3F6B",
+      "org": "client-b"
+    },
+    {
+      "id": "deepak",
+      "name": "Deepak Iyer",
+      "role": "National Sales Manager, Khamang Foods",
+      "roleShort": "Sales head",
+      "initials": "DI",
+      "color": "#2F5B6B",
+      "org": "client-b"
+    },
+    {
+      "id": "arjun",
+      "name": "Arjun Hegde",
+      "role": "Co-founder and Director, Kaapi Kala Roasters",
+      "roleShort": "Founder",
+      "initials": "AH",
+      "color": "#5A3A22",
+      "org": "client-c"
+    },
+    {
+      "id": "meghna",
+      "name": "Meghna Rao",
+      "role": "Co-founder and Director, Kaapi Kala Roasters",
+      "roleShort": "Founder",
+      "initials": "MR",
+      "color": "#3A5A3A",
+      "org": "client-c"
+    },
+    {
+      "id": "shalini",
+      "name": "Shalini Bhargava",
+      "role": "Head of Corporate Development, Agnika Appliances",
+      "roleShort": "Corp dev head",
+      "initials": "SB",
+      "color": "#3E3E6E",
+      "org": "listed"
+    },
+    {
+      "id": "hitesh",
+      "name": "Hitesh Vasani",
+      "role": "Promoter and Managing Director, Savli Cookware",
+      "roleShort": "Promoter MD",
+      "initials": "HV",
+      "color": "#6E4E2E",
+      "org": "target"
+    },
+    {
+      "id": "smita",
+      "name": "Smita Kale",
+      "role": "Finance Controller, Brandhof Engineering Services India",
+      "roleShort": "Finance controller",
+      "initials": "SK",
+      "color": "#2E4E6E",
+      "org": "tp"
+    },
+    {
+      "id": "madhav",
+      "name": "Madhav Paralikar",
+      "role": "Chairman, Paralikar Holdings",
+      "roleShort": "Chairman",
+      "initials": "MP",
+      "color": "#4E2E3E",
+      "org": "ma"
+    }
+  ],
+  "clients": [
+    {
+      "id": "client-a",
+      "name": "Tamhini Drivetech Private Limited",
+      "short": "Tamhini Drivetech",
+      "line": "Makes gears, shafts and hubs for vehicle makers at Chakan, Pune, and trades in aftermarket spares."
+    },
+    {
+      "id": "client-b",
+      "name": "Khamang Foods Private Limited",
+      "short": "Khamang Foods",
+      "line": "Makes packaged snacks at Ranjangaon, Pune; the firm is its internal auditor."
+    },
+    {
+      "id": "client-c",
+      "name": "Kaapi Kala Roasters Private Limited",
+      "short": "Kaapi Kala Roasters",
+      "line": "A coffee roastery with two cafés in Pune; the firm keeps its books."
+    },
+    {
+      "id": "listed",
+      "name": "Agnika Appliances Limited",
+      "short": "Agnika Appliances",
+      "line": "A listed kitchen-appliance maker from Coimbatore."
+    },
+    {
+      "id": "target",
+      "name": "Savli Cookware Private Limited",
+      "short": "Savli Cookware",
+      "line": "A cookware maker in Vadodara that Agnika may buy."
+    },
+    {
+      "id": "tp",
+      "name": "Brandhof Engineering Services India Private Limited",
+      "short": "Brandhof India",
+      "line": "Engineering services in Pune for its Dutch parent."
+    },
+    {
+      "id": "ma",
+      "name": "Paralikar Holdings and Paralikar Speciality Chemicals",
+      "short": "Paralikar group",
+      "line": "A family group whose company has surplus cash to return."
+    }
+  ],
+  "client": {
+    "id": "client-a",
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Village Mahalunge, Taluka Khed, Pune 410501, Maharashtra",
+    "gstin": "27ZHDCT5940H1Z4",
+    "cin": "U29301MH2004PTC942620",
+    "pan": "ZHDCT5940H"
+  },
+  "bank": {
+    "name": "Ambar Commercial Bank Ltd",
+    "branch": "Chakan branch",
+    "line": "The bank branch the firm audits each April. Tamhini does not bank here."
+  },
+  "listedCompany": {
+    "name": "Agnika Appliances Limited",
+    "short": "Agnika Appliances"
+  }
+}

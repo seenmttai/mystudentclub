@@ -22,7 +22,7 @@
  * Wiring (data only, no code change): `unbuilt` = the course rows whose file is not uploaded yet; every jump to one of
  * them is hidden (never a dead link, never "coming soon"). Remove a row from it once its file is in the course.
  * `links.workSimulation` = the Work Simulation page once it is on the site (each level then opens itself:
- * ?domain=<slug>&level=<id>); while it is null one link opens Day 1, where its row sits. `links.firms` = the Firms by
+ * #/l/<its level id>); while it is null one link opens Day 1, where its row sits. `links.firms` = the Firms by
  * domain Sheet's view link once it exists; while null, Day 5's row. `booklet.page` = the page where the card's questions
  * start in its Day 4 booklet (`booklet.find` names that heading; the intro link has the same two fields).
  *
@@ -200,12 +200,31 @@
         return PATHS.explorer + (query ? '?' + query : '');
     }
 
-    /** A level's own link on the Work Simulation page (`base` = links.workSimulation, default its folder). */
-    function levelHref(slug, levelId, base) {
-        const params = new URLSearchParams({ domain: slug });
+    // The Work Simulation page names its levels by a short domain code (its data/catalogue.json: sa-1, acc-1, iber-1);
+    // roadmaps.json names them by the card ("statutory-audit-1", "company-law-1").
+    const WS_LEVEL_CODES = Object.freeze({
+        'statutory-audit': 'sa', 'internal-audit': 'ia', 'direct-tax': 'dt', 'gst': 'gst', 'bank-audit': 'ba',
+        'transfer-pricing': 'tp', 'ma-tax': 'mat', 'valuation': 'val', 'fdd': 'fdd', 'forensic': 'for',
+        'consulting': 'con', 'ib-er': 'iber', 'accounting': 'acc', 'company-law': 'cl', 'excel': 'xl'
+    });
+
+    /** A roadmaps level id → the Work Simulation's own level id ("statutory-audit-1" → "sa-1"); '' when unknown. */
+    function wsLevelId(levelId) {
         const id = slugify(levelId);
-        if (id) params.set('level', id);
-        return (safeHref(base) || PATHS.workSimulation) + '?' + params.toString();
+        const match = /^(.+)-(\d+)$/.exec(id);
+        if (match && WS_LEVEL_CODES[match[1]]) return WS_LEVEL_CODES[match[1]] + '-' + match[2];
+        return Object.values(WS_LEVEL_CODES).includes(match && match[1]) ? id : '';
+    }
+
+    /**
+     * A level's own screen on the Work Simulation page (`base` = links.workSimulation, default its folder), by the
+     * page's own routes (its INTEGRATION.md §4a): #/l/<level id>, or the domain's levels (#/d/<domain>) for an id the
+     * page does not know.
+     */
+    function levelHref(slug, levelId, base) {
+        const page = (safeHref(base) || PATHS.workSimulation).split('#')[0];
+        const id = wsLevelId(levelId);
+        return page + (id ? '#/l/' + id : '#/d/' + encodeURIComponent(slug));
     }
 
     /** A technical-round mock on this domain in Practise your interview (`base` = links.practise). */
@@ -1222,7 +1241,7 @@
     }
 
     return Object.freeze({
-        PATHS, DEFAULT_BOOKLETS, DEFAULT_LINKEDIN, DEFAULT_ICONS, WORK_SIMULATION_LIVE, PICK_KINDS,
+        PATHS, WS_LEVEL_CODES, wsLevelId, DEFAULT_BOOKLETS, DEFAULT_LINKEDIN, DEFAULT_ICONS, WORK_SIMULATION_LIVE, PICK_KINDS,
         normalise, validate, safeHref, isExternal, explorerHref, levelHref, linkedinHref, practiseHref, resourceHref,
         slugFromLocation, enjoyLine, mount, start, boot
     });

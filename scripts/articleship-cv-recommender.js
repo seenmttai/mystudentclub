@@ -13,7 +13,7 @@
  * here as WORK_SIMULATION_LIVE). While false (release 1), nothing here offers, links or promises the Work Simulation:
  * no "Work Simulation level" tap, no Work Simulation link or line; thin proof points at The Nothing CV's four
  * certificates and its "one more true line" page instead. Release 2 flips the shared flag; also set situations.json
- * `links.workSimulation` to its page (each link then opens the student's domain: ?domain=<slug>).
+ * `links.workSimulation` to its page (each link then opens the student's domain: #/d/<slug>).
  *
  * Browser: window.MSCCvRecommender. Node (tests): require('./scripts/articleship-cv-recommender.js');
  * `.withConfig({ workSimulationLive })` gives an instance with the flag set.
@@ -503,8 +503,9 @@
         }
 
         /**
-         * The Work Simulation, opened on the student's own domain (?domain=<slug>) once its page is on the site; until
-         * then its own row in Day 1. Null while the Work Simulation is not released (WORK_SIMULATION_LIVE).
+         * The Work Simulation, opened on the student's own domain once its page is on the site (the page's own route,
+         * #/d/<domain id>: its INTEGRATION.md §4a); until then its own row in Day 1. Null while the Work Simulation is
+         * not released (WORK_SIMULATION_LIVE).
          */
         function workSimulationLink(data, domain) {
             if (!wsLive) return null;
@@ -512,7 +513,7 @@
             const title = resourceTitle(data, 'workSimulation', 'Work Simulation');
             if (!direct) return { label: 'Work Simulation', href: link((data && data.day) || 1, title) };
             const known = domain && domainList().some(d => d.slug === domain);
-            const href = known ? direct + (direct.includes('?') ? '&' : '?') + 'domain=' + encodeURIComponent(domain) : direct;
+            const href = known ? direct.split('#')[0] + '#/d/' + encodeURIComponent(domain) : direct;
             return { label: 'Work Simulation', href };
         }
 
