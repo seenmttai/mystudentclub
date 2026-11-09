@@ -21,7 +21,7 @@ export const ARTICLESHIP_PROGRAM = Object.freeze({
 });
 
 const PROGRAM_BENEFITS = [
-    '6-day placement masterclass',
+    '6 Day Articleship Masterclass',
     'Personal CV review and mock interviews',
     'Tons of resources: 1,000+ HR mail IDs and the LMS library',
     'Mentorship to land the right articleship'
