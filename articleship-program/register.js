@@ -107,7 +107,7 @@
     var name = nameEl.value.trim();
     var email = emailEl.value.trim();
     var phone = cleanPhone(phoneEl.value);
-    var coupon = couponField.hidden ? '' : couponEl.value.trim();
+    var coupon = couponEl.value.trim();
 
     if (name.replace(/[^A-Za-z]/g, '').length < 2) return markInvalid(nameEl, 'Please enter your full name.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return markInvalid(emailEl, 'Please enter a valid email.');

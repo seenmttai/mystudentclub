@@ -4237,6 +4237,10 @@ section[id] {
   cursor: pointer;
 }
 
+.register-coupon-field[hidden] {
+  display: none;
+}
+
 .register-coupon-field input {
   text-transform: uppercase;
 }
