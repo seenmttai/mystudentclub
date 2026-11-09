@@ -37,10 +37,13 @@ function passedState() {
 test('page: the site scripts load before the page\'s own, every one is on this branch, nothing from another host', () => {
     const html = read('articleship-program/work-simulation/index.html');
     const srcs = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map(m => m[1]);
-    assert.deepEqual(srcs, ['/scripts/supabase.js', '/scripts/supabase-init.js', '/scripts/articleship-progress.js',
+    // Enrolled students only: the shared gate runs before the page's own scripts.
+    assert.deepEqual(srcs, ['/scripts/supabase.js', '/scripts/supabase-init.js', '/scripts/articleship-gate.js', '/scripts/articleship-progress.js',
         '/scripts/articleship-work-simulation-bridge.js', 'js/ws-engine.js', 'js/ws-docs.js', 'js/ws-store.js', 'js/ws-ui.js']);
     srcs.forEach(src => assert.ok(fs.existsSync(src.startsWith('/') ? path.join(ROOT, src) : path.join(APP, src)), src));
     assert.ok(!/(src|href)="(https?:)?\/\//.test(html), 'no other host');
+    assert.match(html, /<html[^>]* class="ap-gated"/, 'hidden until the gate allows');
+    assert.match(html, /MSCArticleshipGate\.protect\(\)/, 'the gate is called');
     assert.equal(html.match(/data-cv-builder="([^"]+)"/)[1], '/cv-builder/?stage=articleship', 'Open CV Builder opens the articleship stage');
 });
 
@@ -221,43 +224,5 @@ async function openBuilder(storage) {
 
 const certInputs = win => [...win.document.querySelectorAll('input[id^="cert-name-"]')].map(input => input.value);
 
-test('CV Builder: a line added before there was any CV opens on the blank starter, under "Certifications and job simulations"', async () => {
-    const line = 'GST Work Simulation, MSC Articleship Program | Nov 2026: Prepared GSTR-1 for 18 invoices';
-    const up = WS.upsertCertification(null, 'GST Work Simulation', line);
-    assert.equal(up.status, 'created');
-    const { win, cv, errors } = await openBuilder({ cv_maker_data: up.value });
-    assert.equal(cv().articleshipStarter, 'blank', 'its normal blank starter');
-    assert.equal(cv().templateFile, 'articleship-layout-classic');
-    assert.equal(win.document.getElementById('inp-title-certifications').value, B.CERT_TITLE, 'under "Certifications and job simulations"');
-    assert.deepEqual(certInputs(win).filter(value => /Work Simulation/.test(value)), [line], 'the line, once, and no [Domain] gap beside it');
-    assert.equal(B.countCertificates(cv().certifications).outside, 0, 'an MSC line is not an outside certificate');
-    assert.deepEqual(errors, []);
-});
-
-test('CV Builder: a line added to a CV the student has written lands in it, and a newer line for the domain replaces it', async () => {
-    const own = B.createBlank({}, { structure: 'A', workSimulationLive: true });
-    own.personal.name = 'Kirti Joshi';
-    own.templateFile = 'articleship-layout-classic';
-    own.certifications = [{ name: 'PwC US Audit Job Simulation (Forage) | Mar 2026: built a risk-control matrix.', issuer: '' },
-        { name: 'Excel Skills for Business (Coursera) | Feb 2026', issuer: '' }, { name: 'Tally Prime course | Jan 2026', issuer: '' },
-        { name: 'Power BI course | Apr 2026', issuer: '' }];
-    const first = 'GST Work Simulation, MSC Articleship Program | Nov 2026: Prepared GSTR-1 for 18 invoices';
-    const up = WS.upsertCertification(JSON.stringify(own), 'GST Work Simulation', first);
-    assert.equal(up.status, 'added');
-    const opened = await openBuilder({ cv_maker_data: up.value });
-    assert.equal(opened.cv().personal.name, 'Kirti Joshi', 'the student\'s own CV');
-    assert.ok(certInputs(opened.win).includes(first));
-    const counts = B.countCertificates(opened.cv().certifications);
-    assert.equal(counts.outside, 4);
-    assert.equal(counts.over, false, 'four outside certificates and an MSC line: not over the four');
-    assert.match(opened.win.document.getElementById('articleship-stage').textContent, /4 of 4 outside certificates/);
-    // The page's queue on this device: a newer GST line takes the old one's place, then the queue is cleared.
-    const newer = 'GST Work Simulation, MSC Articleship Program | Nov 2026: Prepared GSTR-1 for 18 invoices; matched 40 bills with GSTR-2B';
-    const later = await openBuilder({
-        cv_maker_data: up.value,
-        'msc-articleship:cv-import': JSON.stringify([{ source: 'work-simulation', domain: 'gst', line: newer, at: 2 }])
-    });
-    assert.deepEqual(certInputs(later.win).filter(value => /Work Simulation/.test(value)), [newer], 'one line per domain');
-    assert.equal(later.win.localStorage.getItem('msc-articleship:cv-import'), null, 'the queue is cleared');
-    assert.equal(B.countCertificates(later.cv().certifications).outside, 4);
-});
+// The CV Builder side of "Add to my CV" (the Articleship CV takes the queued line, the normal CV never does) is
+// tested on the real page in tests/cv-builder-mode-boot.test.cjs ("Work Simulation ...").

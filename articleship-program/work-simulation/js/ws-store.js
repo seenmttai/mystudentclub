@@ -266,10 +266,10 @@
     function addCvLine(args) {
       var entry = { source: 'work-simulation', domain: args.domain, cvName: args.cvName, line: args.line, at: now() };
       var queued = { source: entry.source, domain: entry.domain, line: entry.line, at: entry.at };
-      var up = upsertCertification(get(KEYS.cv), args.cvName, args.line);
-      var cv = up.status;
-      if (up.value !== null && !set(KEYS.cv, up.value)) cv = 'failed';
+      // MSC site: the line goes to the Articleship CV only (the CV Builder's Articleship mode reads the account queue and
+      // this device's queue when it opens). It is never written into cv_maker_data, the student's normal CV.
       var q = queueImport(queued);
+      var cv = q ? 'added' : 'failed';
       var calls = [];
       var p = hook('addCvLine');
       if (p) calls.push(attempt(function () { return p.addCvLine(clone(entry)); }, timeout).then(function () { return true; }, function () { return false; }));

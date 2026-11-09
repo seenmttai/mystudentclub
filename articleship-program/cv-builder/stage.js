@@ -715,7 +715,7 @@
         }
         if (WS_LIVE) {
             try {
-                progress.open('work-simulation', { defaults: {} }).subscribe(() => { state.earned = readEarned(); scheduleRender(); });
+                progress.open('work-simulation', { defaults: {} }).subscribe(() => { state.earned = readEarned(); importQueued(); scheduleRender(); });
             } catch (_) { /* no Work Simulation data on this device */ }
         }
     }
