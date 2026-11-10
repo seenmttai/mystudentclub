@@ -640,7 +640,6 @@ function renderJobCard(job) {
             ${industryType ? `<span class="job-tag job-tag-industry"><i class="fas fa-chart-line"></i> ${industryType}</span>` : ""}
             ${secondaryDomain ? `<span class="job-tag tag-secondary">${secondaryDomain}</span>` : ""}
         </div>
-        ${buildReviewFactsHtml(ratingInfo)}
         ${infoRowHtml}
         ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? "…" : ""}</p>` : ""}
         <div class="job-card-actions">
@@ -1577,11 +1576,6 @@ function updateVisibleJobRatings() {
                 <span style="color: #64748b; font-weight: 500; font-size: 0.68rem;">(${ratingInfo.count} review${ratingInfo.count > 1 ? 's' : ''})</span>
             `;
             compEl.appendChild(ratingSpan);
-        }
-        const tagsEl = card.querySelector('.job-card-tags');
-        if (tagsEl && !card.querySelector('.job-card-review-facts')) {
-            const factsHtml = buildReviewFactsHtml(ratingInfo);
-            if (factsHtml) tagsEl.insertAdjacentHTML('afterend', factsHtml);
         }
     });
 }
