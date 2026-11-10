@@ -42,14 +42,14 @@
    {
     "label": "Handwritten notes",
     "path": "files/IBS-Strategy-Handwritten-Notes.pdf",
-    "size_kb": 4541
+    "size_kb": 3099
    }
   ],
   "analysis": [
    {
     "label": "Topic analysis (PDF)",
     "path": "files/IBS-Past-Paper-Analysis.pdf",
-    "size_kb": 444
+    "size_kb": 450
    },
    {
     "label": "Every question (Excel)",
@@ -61,7 +61,7 @@
    {
     "label": "All solutions (PDF)",
     "path": "files/IBS-Past-Papers-Solved-May-2024-to-May-2026.pdf",
-    "size_kb": 4866
+    "size_kb": 4870
    }
   ]
  },
