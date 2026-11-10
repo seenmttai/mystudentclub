@@ -1,5 +1,6 @@
 // /links deep links, so emails and posts can open the right tab:
 //   /links/?tab=articleship   /links/?tab=fresher   /links/?tab=semi   /links/?tab=industrial
+//   /links/?tab=experienced
 //   /links/#articleship       (the same names work as a #hash; ?tab= wins when both are given)
 // Tab ids and a few aliases work too, and so does any tab the admin adds to the `links` table
 // (it exists only after loadLiveLinks runs, so the request is retried on "msc:links-hydrated").
@@ -21,7 +22,11 @@
     semi: 'semi-qualified',
     'semi-qualified': 'semi-qualified',
     'semi-qualified-ca': 'semi-qualified',
-    sq: 'semi-qualified'
+    sq: 'semi-qualified',
+    // The links table names this tab "experienced-CA" (its label comes from the key), so every spelling maps to it.
+    experienced: 'experienced-CA',
+    'experienced-ca': 'experienced-CA',
+    'experienced-cas': 'experienced-CA'
   };
 
   function clean(value) {

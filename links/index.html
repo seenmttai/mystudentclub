@@ -54,6 +54,7 @@
         <button class="tab-btn" id="tab-ca" onclick="switchTab(this, 'ca')">CA Fresher</button>
         <button class="tab-btn" id="tab-articleship" onclick="switchTab(this, 'articleship')">Articleship</button>
         <button class="tab-btn" id="tab-semi-qualified" onclick="switchTab(this, 'semi-qualified')">Semi Qualified CA</button>
+        <button class="tab-btn" id="tab-experienced-CA" onclick="switchTab(this, 'experienced-CA')">Experienced CA</button>
       </div>
     </div>
 
@@ -96,9 +97,13 @@
           <i class="fas fa-graduation-cap"></i>
           <span>Program Details</span>
         </a>
-        <a href="https://whatsapp.com/channel/0029Vb8XM5GDzgT6YyWk4x0F" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-ca-whatsapp">
+        <a href="https://chat.whatsapp.com/DsFD7rCA7Wn6s7kyemDCr2" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-ca-whatsapp">
           <i class="fab fa-whatsapp"></i>
           <span>Whatsapp Community</span>
+        </a>
+        <a href="https://whatsapp.com/channel/0029Vb9LBiB7tkj30VLeNm1X" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-ca-whatsapp-channel">
+          <i class="fab fa-whatsapp"></i>
+          <span>Vacancy Alerts Channel</span>
         </a>
         <a href="https://www.mystudentclub.com/ca-fresher-training-resources" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-ca-resources">
           <i class="fas fa-book-open"></i>
@@ -124,9 +129,13 @@
           <i class="fas fa-graduation-cap"></i>
           <span>Program Details</span>
         </a>
-        <a href="https://whatsapp.com/channel/0029Vb8XM5GDzgT6YyWk4x0F" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-articleship-whatsapp">
+        <a href="https://chat.whatsapp.com/FMQvEUsMZw2EN2t2h2LnRZ" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-articleship-whatsapp">
           <i class="fab fa-whatsapp"></i>
           <span>Whatsapp Community</span>
+        </a>
+        <a href="https://whatsapp.com/channel/0029VbEUohh7tkjDhIDgCn0d" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-articleship-whatsapp-channel">
+          <i class="fab fa-whatsapp"></i>
+          <span>Vacancy Alerts Channel</span>
         </a>
         <a href="https://www.mystudentclub.com/ca-articleship-opportunities" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-articleship-resources">
           <i class="fas fa-book-open"></i>
@@ -148,9 +157,13 @@
 
       <!-- Semi Qualified Section -->
       <div id="semi-qualified" class="tab-content">
-        <a href="https://whatsapp.com/channel/0029Vb8XM5GDzgT6YyWk4x0F" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-semiqualified-whatsapp">
+        <a href="https://chat.whatsapp.com/FQSSe5uCeIlITf5brb2J6M" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-semiqualified-whatsapp">
           <i class="fab fa-whatsapp"></i>
           <span>Whatsapp Community</span>
+        </a>
+        <a href="https://whatsapp.com/channel/0029Vb9IK44FcowClqwgz92j" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-semiqualified-whatsapp-channel">
+          <i class="fab fa-whatsapp"></i>
+          <span>Vacancy Alerts Channel</span>
         </a>
         <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-semiqualified-linkedin-personal">
           <i class="fab fa-linkedin"></i>
@@ -163,6 +176,26 @@
         <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="link-card youtube" id="link-semiqualified-youtube">
           <i class="fab fa-youtube"></i>
           <span>Free Guidance Session</span>
+        </a>
+      </div>
+
+      <!-- Experienced CA Section (the links table calls this tab "experienced-CA") -->
+      <div id="experienced-CA" class="tab-content">
+        <a href="https://whatsapp.com/channel/0029Vb9MCbMKrWQxhiM1wz0W" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-experienced-whatsapp-channel">
+          <i class="fab fa-whatsapp"></i>
+          <span>Vacancy Alerts Channel</span>
+        </a>
+        <a href="https://www.mystudentclub.com/experienced-ca-jobs" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-experienced-jobs">
+          <i class="fas fa-briefcase"></i>
+          <span>Experienced CA Jobs</span>
+        </a>
+        <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-experienced-linkedin-personal">
+          <i class="fab fa-linkedin"></i>
+          <span>Personal LinkedIn</span>
+        </a>
+        <a href="https://www.linkedin.com/company/mystudentclub/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-experienced-linkedin-company">
+          <i class="fab fa-linkedin"></i>
+          <span>MSC LinkedIn Page</span>
         </a>
       </div>
     </main>
@@ -235,7 +268,8 @@
           'industrial': document.getElementById('industrial'),
           'ca': document.getElementById('ca'),
           'articleship': document.getElementById('articleship'),
-          'semi-qualified': document.getElementById('semi-qualified')
+          'semi-qualified': document.getElementById('semi-qualified'),
+          'experienced-CA': document.getElementById('experienced-CA')
         };
 
         // Render category links for each tab

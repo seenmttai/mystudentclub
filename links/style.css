@@ -96,6 +96,11 @@ body {
   width: 100%;
 }
 
+/* An odd number of tabs: the last one spans the row instead of leaving a hole beside it. */
+.tabs-container .tab-btn:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
 .tab-btn {
   display: flex;
   align-items: center;
