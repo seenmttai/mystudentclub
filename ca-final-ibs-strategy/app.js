@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  var V = '20261111.1';
+  var V = '20261111.2';
   var DL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>';
 
   function $(s, el) { return (el || document).querySelector(s); }
@@ -126,6 +126,8 @@
     track('ibs_download', { file: a.dataset.file });
   }
   document.addEventListener('click', function (e) {
+    var wa = e.target.closest('a[href*="chat.whatsapp.com"]');
+    if (wa) track('ibs_community_click', { where: wa.dataset.wa || 'practice' });
     var a = e.target.closest('a[download][data-file]');
     if (!a) return;
     if (leadInMemory) { track('ibs_download', { file: a.dataset.file }); return; }
