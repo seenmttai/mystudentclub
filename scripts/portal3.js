@@ -3,6 +3,7 @@ import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResume
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, renderLockScreen, showExclusiveAppliedPopup, fetchMyProgramRegistrations, applyExclusiveDemo, ensureExclusiveStyles } from './exclusive-vacancy.js';
+import { FEATURED_SELECT, isFeatured, isFeaturedColumnError, mergePinnedJobs, applyFeaturedDemo } from './featured-vacancy.js';
 import { portalFor, extraSelectColumns, companyTypeFilter, applyJobFilters, describeJobFilters, withoutFilterValue, renderJobFilters, syncJobFilters, formatPayRange, formatDeadline, FIRM_TIERS } from './job-filters.js';
 
 function isSalaryDisclosed(val) {
@@ -145,16 +146,25 @@ function getPublicJobSelectColumns(tableName) {
     } else if (tableName === 'Articleship Jobs') {
         columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
     }
+    if (featuredColumnAvailable) columns += FEATURED_SELECT;
     return columns;
 }
 
-// Runs a public job select. If is_exclusive isn't in the database yet (before its migration runs),
+// Runs a public job select. If is_exclusive or featured_until can't be read yet (before their SQL runs),
 // retries without it, so shared links and lists keep working.
 async function runPublicJobSelect(build) {
-    const cols = getPublicJobSelectColumns(currentTable);
+    let cols = getPublicJobSelectColumns(currentTable);
     let result = await build(cols);
-    if (result && result.error && /is_exclusive/.test(result.error.message || '') && cols.includes(', is_exclusive')) {
-        result = await build(cols.replace(', is_exclusive', ''));
+    for (let retry = 0; retry < 2 && result && result.error; retry++) {
+        if (cols.includes(FEATURED_SELECT) && isFeaturedColumnError(result.error)) {
+            featuredColumnAvailable = false;
+            cols = cols.replace(FEATURED_SELECT, '');
+        } else if (/is_exclusive/.test(result.error.message || '') && cols.includes(', is_exclusive')) {
+            cols = cols.replace(', is_exclusive', '');
+        } else {
+            break;
+        }
+        result = await build(cols);
     }
     return result;
 }
@@ -189,8 +199,11 @@ let profileHydrationPromise = null;
 let appliedJobIds = new Set();
 let debounceTimeout = null;
 let firmReviewsMap = new Map();
-// Articleship exclusives shown pinned on top of page 1; later pages skip them so they don't show twice.
-let pinnedExclusiveIds = new Set();
+// Jobs pinned on top of page 1 (Featured on every portal; Articleship exclusives and MSC's recruit@ posts);
+// later pages skip them so they don't show twice.
+let pinnedJobIds = new Set();
+// False once the database says featured_until can't be read (Vacancy Boost SQL not run yet): stop asking for it.
+let featuredColumnAvailable = true;
 let allLocations = [];
 let allCategories = {};
 let currentFcmToken = null;
@@ -534,13 +547,16 @@ function renderJobCard(job) {
     jobCard.dataset.jobId = job.id;
 
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
-    const isExpired = isJobExpired(job.Created_At);
+    // A paid Featured period (Vacancy Boost) keeps the job open past the usual 15 days.
+    const isExpired = isJobExpired(job.Created_At) && !isFeatured(job);
     const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'N/A');
     const isApplied = appliedJobIds.has(job.id);
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';
     const applyLink = getApplicationLink(job['Application ID']);
     const isExclusive = Boolean(job.is_exclusive);
+    // Featured (Vacancy Boost): a tag only. It never locks the job. Shown while it is pinned (not expired).
+    const isFeaturedJob = isFeatured(job) && !isExpired;
 
     // Data values
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
@@ -625,6 +641,7 @@ function renderJobCard(job) {
         </div>
         <div class="job-card-tags">
             ${isExpired ? `<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>` : ""}
+            ${isFeaturedJob ? `<span class="job-tag tag-featured"><i class="fas fa-bolt"></i> Featured</span>` : ""}
             ${(isExclusive || exclusiveKind) ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> Exclusive</span>` : ""}
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ""}
             ${deadlineText && !isExpired ? `<span class="job-tag tag-deadline"><i class="far fa-calendar-alt"></i> ${deadlineText}</span>` : ""}
@@ -992,7 +1009,8 @@ function showModal(job) {
 
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
-    const isExpired = isJobExpired(job.Created_At);
+    // A paid Featured period (Vacancy Boost) keeps the job open past the usual 15 days.
+    const isExpired = isJobExpired(job.Created_At) && !isFeatured(job);
     const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'N/A');
     const applyCount = job.application_count || 0;
     const cachedUnlocked = currentSession ? getCachedUnlockedJob(job.id, currentTable, currentSession) : null;
@@ -1215,6 +1233,7 @@ function showModal(job) {
         </div>
         <div class="modal-meta-tags" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
             ${isExpired ? '<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>' : ''}
+            ${isFeatured(job) && !isExpired ? '<span class="job-tag tag-featured"><i class="fas fa-bolt"></i> Featured</span>' : ''}
             ${isSalaryDisclosed(compDisplay) ? `<span class="job-tag">${compLabel}: ${compDisplay}</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
             <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">Category: ${primaryDomain}</span>
@@ -1674,6 +1693,9 @@ async function fetchJobs() {
         } else if (currentTable === "Articleship Jobs") {
             selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
         }
+        if (featuredColumnAvailable) {
+            selectColumns += FEATURED_SELECT;
+        }
         if (jobFilterColumnsAvailable) {
             selectColumns += extraSelectColumns(currentTable);
         }
@@ -1830,9 +1852,9 @@ async function fetchJobs() {
         let query = buildQuery(selectColumns);
         let { data, error } = await query;
 
-        // Failsafes for columns the database does not have yet. Either can come first, so retry
-        // until neither applies.
-        for (let retry = 0; retry < 2 && error; retry++) {
+        // Failsafes for columns the database does not have yet (filter columns, is_exclusive, featured_until).
+        // Any can come first, so retry until none applies.
+        for (let retry = 0; retry < 3 && error; retry++) {
             if (jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
                 // The filter columns are not in the database yet (migration 202611060003): use the older filters.
                 console.warn('Structured filter columns are not available yet; using the basic filters.', error.message);
@@ -1841,6 +1863,11 @@ async function fetchJobs() {
             } else if (error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
                 console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
                 selectColumns = selectColumns.replace(', is_exclusive', '');
+            } else if (selectColumns.includes(FEATURED_SELECT) && isFeaturedColumnError(error)) {
+                // Vacancy Boost SQL not run yet (or the column not granted to visitors): no Featured pin or tag.
+                console.warn('featured_until cannot be read yet. Falling back to the query without it.', error.message);
+                featuredColumnAvailable = false;
+                selectColumns = selectColumns.replace(FEATURED_SELECT, '');
             } else {
                 break;
             }
@@ -1857,17 +1884,24 @@ async function fetchJobs() {
             data.sort((a, b) => (b.application_count || 0) - (a.application_count || 0));
         }
 
-        // Articleship: exclusive vacancies sit on top of page 1; later pages skip them.
+        // Pinned on top of page 1: Featured vacancies (Vacancy Boost) on every portal, then on Articleship the
+        // exclusives and MSC's own recruit@ posts. Each group keeps the student's sort; later pages skip them.
         if (!error && data) {
-            if (page === 0) pinnedExclusiveIds = new Set();
-            if (page === 0 && currentTable === 'Articleship Jobs' && selectColumns.includes('is_exclusive')) {
-                const pinned = await fetchPinnedExclusives(buildQuery, selectColumns);
-                if (pinned.length > 0) {
-                    pinned.forEach(job => pinnedExclusiveIds.add(job.id));
-                    data = [...pinned, ...data.filter(job => !pinnedExclusiveIds.has(job.id))];
+            if (page === 0) {
+                pinnedJobIds = new Set();
+                const wantFeatured = selectColumns.includes(FEATURED_SELECT);
+                const wantExclusives = currentTable === 'Articleship Jobs' && selectColumns.includes('is_exclusive');
+                if (wantFeatured || wantExclusives) {
+                    const [featured, exclusives] = await Promise.all([
+                        wantFeatured ? fetchPinnedFeatured(buildQuery, selectColumns) : [],
+                        wantExclusives ? fetchPinnedExclusives(buildQuery, selectColumns) : [],
+                    ]);
+                    const merged = mergePinnedJobs(data, [featured, exclusives], state.sortBy);
+                    data = merged.jobs;
+                    pinnedJobIds = merged.pinnedIds;
                 }
-            } else if (page > 0 && pinnedExclusiveIds.size > 0) {
-                data = data.filter(job => !pinnedExclusiveIds.has(job.id));
+            } else if (pinnedJobIds.size > 0) {
+                data = data.filter(job => !pinnedJobIds.has(job.id));
             }
         }
 
@@ -1911,7 +1945,10 @@ async function fetchJobs() {
 
         if (error) throw error;
 
-        if (page === 0) applyExclusiveDemo(data, currentTable);
+        if (page === 0) {
+            applyExclusiveDemo(data, currentTable);
+            applyFeaturedDemo(data);
+        }
 
         if (data && data.length > 0) {
             // Batch DOM operations using DocumentFragment for better performance
@@ -2016,6 +2053,19 @@ function disableStructuredFilters() {
     state.extra = {};
     if (currentTable === 'Industrial Training Job Portal') state.companyType = '';
     adjustFiltersForPortal();
+}
+
+// Featured vacancies (₹999 Vacancy Boost on hire.msc, featured_until in the future) that match the current
+// filters, however long ago they were posted.
+async function fetchPinnedFeatured(buildQuery, selectColumns) {
+    try {
+        // The paid Featured period is the window (not the usual 15 days from posting).
+        const { data, error } = await buildQuery(selectColumns)
+            .gt('featured_until', new Date().toISOString());
+        return (error || !Array.isArray(data)) ? [] : data;
+    } catch (e) {
+        return [];
+    }
 }
 
 // Exclusive articleship vacancies that match the current filters and are under 15 days old.
