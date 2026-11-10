@@ -25,9 +25,10 @@ test('job detail page asks to enrol only for jobs ticked exclusive', () => {
   assert.match(read('exclusive-vacancy.js'), /if \(tableName !== ARTICLESHIP_TABLE\) return job\.is_exclusive \? 'full' : null;/);
 });
 
-test('jobs by email reads is_exclusive for Industrial Training only', () => {
+test('jobs by email reads is_exclusive for Industrial Training and Articleship only', () => {
   const source = read('portal-email.js');
   assert.match(source, /else if \(table === "Industrial Training Job Portal"\) selectColumns \+= ', is_exclusive';/);
-  // The other three job tables have no is_exclusive column (checked live 26 Oct 2026).
+  assert.match(source, /else if \(table === ARTICLESHIP_TABLE\) selectColumns \+= ', is_exclusive';/);
+  // Fresher and Semi Qualified have no is_exclusive column (Articleship got it on 9 Nov 2026).
   assert.doesNotMatch(source, /selectColumns(Base|Fresher|Semi) = '[^']*is_exclusive/);
 });

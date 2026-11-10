@@ -1,8 +1,9 @@
-import { getDaysAgo, isJobExpired } from './date-utils.js';
+import { getDaysAgo, isJobExpired, JOB_EXPIRATION_DAYS } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, renderLockScreen, showExclusiveAppliedPopup, fetchMyProgramRegistrations, applyExclusiveDemo, ensureExclusiveStyles } from './exclusive-vacancy.js';
+import { portalFor, extraSelectColumns, companyTypeFilter, applyJobFilters, describeJobFilters, withoutFilterValue, renderJobFilters, syncJobFilters, formatPayRange, formatDeadline, FIRM_TIERS } from './job-filters.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -109,6 +110,27 @@ const TABLE_SLUG_MAP = {
     'Articleship Jobs': 'articleship'
 };
 
+// Locations are stored with one name per city (migration 202611060004: Bangalore = Bengaluru, Gurgaon = Gurugram...).
+// A student typing the other name still finds them, and older rows that kept the other name still match.
+const CITY_ALIASES = [
+    ['bengaluru', 'bangalore'], ['gurugram', 'gurgaon'], ['mumbai', 'bombay'], ['kolkata', 'calcutta'],
+    ['chennai', 'madras'], ['vadodara', 'baroda'], ['kochi', 'cochin'], ['mysuru', 'mysore'],
+    ['mangaluru', 'mangalore'], ['thiruvananthapuram', 'trivandrum'], ['delhi', 'new delhi'],
+];
+
+function expandLocationTerms(locations) {
+    const terms = [];
+    const add = (t) => { if (t && !terms.some(x => x.toLowerCase() === t.toLowerCase())) terms.push(t); };
+    for (const loc of locations) {
+        add(loc);
+        const low = String(loc).trim().toLowerCase();
+        for (const group of CITY_ALIASES) {
+            if (group.includes(low)) group.forEach(add);
+        }
+    }
+    return terms;
+}
+
 function getPublicJobSelectColumns(tableName) {
     // Keep recruiter metadata available for shared /job.html links.  The
     // Application ID remains protected, but without these fields a shared
@@ -126,13 +148,13 @@ function getPublicJobSelectColumns(tableName) {
     return columns;
 }
 
-// Public job select that still works before a table has its is_exclusive column (Articleship gets it
-// in migration 202611090010): on that error it retries without the column.
-async function selectPublicJobs(build) {
+// Runs a public job select. If is_exclusive isn't in the database yet (before its migration runs),
+// retries without it, so shared links and lists keep working.
+async function runPublicJobSelect(build) {
     const cols = getPublicJobSelectColumns(currentTable);
-    const result = await build(cols);
+    let result = await build(cols);
     if (result && result.error && /is_exclusive/.test(result.error.message || '') && cols.includes(', is_exclusive')) {
-        return build(cols.replace(', is_exclusive', ''));
+        result = await build(cols.replace(', is_exclusive', ''));
     }
     return result;
 }
@@ -167,6 +189,8 @@ let profileHydrationPromise = null;
 let appliedJobIds = new Set();
 let debounceTimeout = null;
 let firmReviewsMap = new Map();
+// Articleship exclusives shown pinned on top of page 1; later pages skip them so they don't show twice.
+let pinnedExclusiveIds = new Set();
 let allLocations = [];
 let allCategories = {};
 let currentFcmToken = null;
@@ -217,8 +241,65 @@ const state = {
     applicationStatus: 'all',
     companyType: '',
     industryType: '',
-    firmType: ''
+    firmType: '',
+    // Structured filters from scripts/job-filters.js, keyed by filter key.
+    extra: {}
 };
+
+// False once the database answers that the filter columns are missing (migration
+// 202611060003 not run yet): the portal then falls back to its older filters.
+let jobFilterColumnsAvailable = true;
+
+function currentPortal() {
+    return portalFor(currentTable, isExperiencedFresherPortal());
+}
+
+function isAnnualPayTable() {
+    return currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs';
+}
+
+// The structured filter block, once in the desktop sidebar and once in the phone filter sheet.
+function ensureJobFilterContainers() {
+    const hosts = [
+        { root: document.querySelector('.filter-sidebar'), id: 'jobFiltersDesktop', mobile: false },
+        { root: document.querySelector('.filter-modal-content'), id: 'jobFiltersMobile', mobile: true }
+    ];
+    return hosts.map(h => {
+        if (!h.root) return null;
+        let el = document.getElementById(h.id);
+        if (!el) {
+            el = document.createElement('div');
+            el.id = h.id;
+            el.className = 'jf-container';
+            const before = h.root.querySelector('.application-status-filter-group');
+            if (before && before.parentElement) before.parentElement.insertBefore(el, before);
+            else h.root.appendChild(el);
+        }
+        return { el, mobile: h.mobile };
+    }).filter(Boolean);
+}
+
+function renderStructuredFilters() {
+    const portal = currentPortal();
+    ensureJobFilterContainers().forEach(({ el, mobile }) => {
+        if (!jobFilterColumnsAvailable || !portal) {
+            el.innerHTML = '';
+            el.style.display = 'none';
+            return;
+        }
+        el.style.display = '';
+        renderJobFilters(el, portal, {
+            idPrefix: mobile ? 'jfm' : 'jfd',
+            payKind: isAnnualPayTable() ? 'annual' : 'monthly',
+            getValues: () => state.extra,
+            onChange: (next) => {
+                state.extra = next;
+                // Desktop applies at once; the phone sheet applies on "Show Jobs".
+                if (mobile) syncFiltersUI(); else syncAndFetch();
+            }
+        });
+    });
+}
 
 const dom = {};
 
@@ -277,7 +358,7 @@ function setActivePortalTab() {
         activeSelector = 'a[href="/"]';
     }
 
-    if (currentTable === 'Industrial Training Job Portal') {
+    if (currentTable === 'Industrial Training Job Portal' && !jobFilterColumnsAvailable) {
         state.companyType = '';
     }
 
@@ -312,8 +393,13 @@ function adjustFiltersForPortal() {
     const hide = (el) => { if (el) el.style.display = 'none'; };
 
     if (currentTable === 'Industrial Training Job Portal') {
-        hide(companyTypeGroupDesktop);
-        hide(companyTypeGroupMobile);
+        if (jobFilterColumnsAvailable) {
+            show(companyTypeGroupDesktop);
+            show(companyTypeGroupMobile);
+        } else {
+            hide(companyTypeGroupDesktop);
+            hide(companyTypeGroupMobile);
+        }
         show(industryTypeGroupDesktop);
         show(industryTypeGroupMobile);
         hide(firmTypeGroupDesktop);
@@ -374,6 +460,7 @@ function adjustFiltersForPortal() {
     }
 
     populateSalaryFilter();
+    renderStructuredFilters();
 }
 
 const SAVED_JOBS_KEY = 'msc_saved_jobs';
@@ -417,7 +504,7 @@ function renderJobCard(job) {
 
     if (currentTable === 'Articleship Jobs') {
         ratingInfo = firmReviewsMap.get(companyKey);
-        if (ratingInfo && ratingInfo.count > 5) {
+        if (hasReviewRating(ratingInfo)) {
             // Show gold star rating badge beside company name
             ratingHtml = `
                 <span class="job-card-rating-inline" style="
@@ -459,8 +546,9 @@ function renderJobCard(job) {
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
     const secondaryDomain = (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') ? job['Secondary Domain'] : null;
     const companyType = job['Company Type'];
-    const firmType = job['Firm Type'];
+    const firmType = job['Firm Type'] || (job.firm_size && job.firm_size !== 'Other' ? job.firm_size : '');
     const industryType = job['Industry Type'];
+    const deadlineText = formatDeadline(job);
     const compLabel = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs') ? 'Salary' : 'Stipend';
     const roleLabel = job.Role || (currentTable === 'Industrial Training Job Portal' ? 'Industrial Trainee' : currentTable === 'Articleship Jobs' ? 'Articleship' : 'Professional');
 
@@ -471,6 +559,9 @@ function renderJobCard(job) {
         compText = job['Stipend Range'] || (job.Salary ? `₹${job.Salary}` : '');
     } else {
         compText = job.Salary ? `₹${job.Salary}` : '';
+    }
+    if (!isSalaryDisclosed(compText)) {
+        compText = formatPayRange(job, isAnnualPayTable());
     }
 
     const isRecent = job.Created_At && (Date.now() - new Date(job.Created_At).getTime()) < 3 * 24 * 60 * 60 * 1000;
@@ -536,6 +627,7 @@ function renderJobCard(job) {
             ${isExpired ? `<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>` : ""}
             ${(isExclusive || exclusiveKind) ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> Exclusive</span>` : ""}
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ""}
+            ${deadlineText && !isExpired ? `<span class="job-tag tag-deadline"><i class="far fa-calendar-alt"></i> ${deadlineText}</span>` : ""}
             <span class="job-tag job-tag-location">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 ${job.Location || "N/A"}
@@ -544,9 +636,11 @@ function renderJobCard(job) {
             <span class="job-tag tag-primary"><i class="fas fa-briefcase"></i> ${primaryDomain}</span>
             ${companyType ? `<span class="job-tag"><i class="fas fa-building"></i> ${companyType}</span>` : ""}
             ${firmType ? `<span class="job-tag"><i class="fas fa-file-alt"></i> ${firmType}</span>` : ""}
+            ${job.transfer_accepted === true ? `<span class="job-tag"><i class="fas fa-exchange-alt"></i> Transfer cases welcome</span>` : ""}
             ${industryType ? `<span class="job-tag job-tag-industry"><i class="fas fa-chart-line"></i> ${industryType}</span>` : ""}
             ${secondaryDomain ? `<span class="job-tag tag-secondary">${secondaryDomain}</span>` : ""}
         </div>
+        ${buildReviewFactsHtml(ratingInfo)}
         ${infoRowHtml}
         ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? "…" : ""}</p>` : ""}
         <div class="job-card-actions">
@@ -933,8 +1027,8 @@ function showModal(job) {
     if (currentTable === 'Articleship Jobs') {
         const compKey = companyName.toLowerCase();
         const ratingInfo = firmReviewsMap.get(compKey);
-        if (ratingInfo) {
-            if (ratingInfo.count > 5) {
+        if (ratingInfo && ratingInfo.count > 0) {
+            if (hasReviewRating(ratingInfo)) {
                 modalRatingHtml = `
                     <div class="job-card-rating-inline" style="display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.25rem;">
                         <span class="rating-value" style="font-weight: 700; color: #1e293b; font-size: 0.8rem; background: #fef08a; padding: 1px 6px; border-radius: 6px; display: inline-flex; align-items: center; gap: 2px;">
@@ -945,8 +1039,9 @@ function showModal(job) {
                     </div>
                 `;
             }
+            modalRatingHtml += buildReviewFactsHtml(ratingInfo);
             modalReviewButtonHtml = `
-                <a href="/articleship-firm-review.html?firm=${encodeURIComponent(companyName)}" target="_blank" class="btn btn-secondary btn-modal-secondary" style="border-color: #2563eb; color: #2563eb; display: inline-flex; align-items: center; gap: 0.3rem;">
+                <a href="/articleship-firm-review.html?firm=${encodeURIComponent(ratingInfo.firmName || companyName)}" target="_blank" class="btn btn-secondary btn-modal-secondary" style="border-color: #2563eb; color: #2563eb; display: inline-flex; align-items: center; gap: 0.3rem;">
                     <i class="fas fa-comments"></i>
                     Read Reviews
                 </a>
@@ -1034,7 +1129,7 @@ function showModal(job) {
     // Compensation display range parsing for modal
     const compRange = currentTable === 'Fresher Jobs' ? job['CTC Range'] : (currentTable === 'Articleship Jobs' || currentTable === 'Industrial Training Job Portal') ? job['Stipend Range'] : null;
     const compLabel = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs') ? 'Salary' : 'Stipend';
-    const compDisplay = compRange || (job.Salary ? `₹${job.Salary}` : null);
+    const compDisplay = compRange || (job.Salary ? `₹${job.Salary}` : null) || formatPayRange(job, isAnnualPayTable()) || null;
 
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
 
@@ -1057,8 +1152,8 @@ function showModal(job) {
         tagsSectionsHtml += renderPillSection("Functional Competencies", job["Functional Tags"], "#eff6ff", "#1e40af", "#bfdbfe");
         tagsSectionsHtml += renderPillSection("Tech Stack & Tools", job["Technology Tags"], "#f5f3ff", "#5b21b6", "#ddd6fe");
     } else if (currentTable === "Articleship Jobs") {
-        tagsSectionsHtml += renderPillSection("Areas of Exposure", job["Exposure Tags"], "#ecfdf5", "#065f46", "#a7f3d0");
-        tagsSectionsHtml += renderPillSection("Client Sector Exposure", job["Client Exposure Tags"], "#fff7ed", "#9a3412", "#ffedd5");
+        tagsSectionsHtml += renderPillSection("Areas of Exposure", (job["Exposure Tags"] && job["Exposure Tags"].length) ? job["Exposure Tags"] : job.exposure_areas, "#ecfdf5", "#065f46", "#a7f3d0");
+        tagsSectionsHtml += renderPillSection("Client Sector Exposure", (job["Client Exposure Tags"] && job["Client Exposure Tags"].length) ? job["Client Exposure Tags"] : job.client_types, "#fff7ed", "#9a3412", "#ffedd5");
     }
 
     const rawDesc = effectiveDescription
@@ -1126,7 +1221,9 @@ function showModal(job) {
             <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">Category: ${primaryDomain}</span>
             ${job['Secondary Domain'] ? `<span class="job-tag" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Secondary: ${job['Secondary Domain']}</span>` : ''}
             ${job['Company Type'] ? `<span class="job-tag"><i class="fas fa-building" style="margin-right: 4px;"></i>${job['Company Type']}</span>` : ''}
-            ${job['Firm Type'] ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job['Firm Type']}</span>` : ''}
+            ${(job['Firm Type'] || (job.firm_size && job.firm_size !== 'Other' ? job.firm_size : '')) ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job['Firm Type'] || job.firm_size}</span>` : ''}
+            ${job.transfer_accepted === true ? `<span class="job-tag"><i class="fas fa-exchange-alt" style="margin-right: 4px;"></i>Transfer cases welcome</span>` : ''}
+            ${formatDeadline(job) ? `<span class="job-tag tag-deadline"><i class="far fa-calendar-alt" style="margin-right: 4px;"></i>${formatDeadline(job)}</span>` : ''}
             ${job['Industry Type'] ? `<span class="job-tag"><i class="fas fa-industry" style="margin-right: 4px;"></i>${job['Industry Type']}</span>` : ''}
         </div>
         <div id="modalPrimaryActionsContainer">
@@ -1353,50 +1450,93 @@ function updateFilterCache() {
 
 }
 
+function hasReviewRating(info) {
+    return Boolean(info && info.count > 0 && typeof info.avgOverall === 'number' && !Number.isNaN(info.avgOverall));
+}
+
+// One short line of what students reported about a firm, built from review counts (no review text).
+// A fact shows only when at least 60% of the answers agree.
+function buildReviewFactsHtml(info) {
+    if (!info || !(info.count > 0)) return '';
+    const facts = [];
+    if (info.stipendMedian) facts.push(`Stipend ~₹${Number(info.stipendMedian).toLocaleString('en-IN')}`);
+    if (info.stipendAnswers > 0) {
+        if (info.stipendOnTime / info.stipendAnswers >= 0.6) facts.push('Stipend paid on time');
+        else if (info.stipendDelayed / info.stipendAnswers >= 0.6) facts.push('Stipend delays reported');
+    }
+    if (info.leaveAnswers > 0) {
+        if (info.leaveEasy / info.leaveAnswers >= 0.6) facts.push('Leave easy to get');
+        else if (info.leaveDifficult / info.leaveAnswers >= 0.6) facts.push('Leave hard to get');
+    }
+    if (facts.length === 0) return '';
+    const who = `${info.count} student review${info.count > 1 ? 's' : ''}`;
+    const safe = (t) => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    return `<p class="job-card-review-facts"><i class="fas fa-comments" aria-hidden="true"></i> <span>From ${safe(who)}: ${facts.map(safe).join(' · ')}</span></p>`;
+}
+
+function toReviewInfo(name, row) {
+    if (!row) return { firmName: name, avgOverall: null, count: 0 };
+    const num = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
+    return {
+        firmName: row.firm_name || name,
+        avgOverall: num(row.avg_overall),
+        count: Number(row.review_count) || 0,
+        stipendMedian: num(row.stipend_median),
+        stipendAnswers: Number(row.stipend_answers) || 0,
+        stipendOnTime: Number(row.stipend_on_time) || 0,
+        stipendDelayed: Number(row.stipend_delayed) || 0,
+        leaveAnswers: Number(row.leave_answers) || 0,
+        leaveEasy: Number(row.leave_easy) || 0,
+        leaveDifficult: Number(row.leave_difficult) || 0
+    };
+}
+
+// False after get_firm_review_summaries fails once (e.g. before its migration): use exact names after that.
+let reviewSummaryRpcAvailable = true;
+
 async function fetchFirmRatingsForVisibleJobs(jobs) {
     if (currentTable !== 'Articleship Jobs' || !Array.isArray(jobs) || jobs.length === 0) return;
 
-    const uncached = [];
-    jobs.forEach(j => {
-        const name = (j.Company || '').trim();
-        if (name && !firmReviewsMap.has(name.toLowerCase())) {
-            uncached.push(name);
-        }
-    });
-
-    if (uncached.length === 0) return;
-    const uniqueNames = Array.from(new Set(uncached));
+    const uniqueNames = Array.from(new Set(jobs
+        .map(j => (j.Company || '').trim())
+        .filter(name => name && !firmReviewsMap.has(name.toLowerCase()))));
+    if (uniqueNames.length === 0) return;
 
     try {
-        const { data, error } = await supabaseClient
-            .from('articleship_firm_reviews_public')
-            .select('firm_name, overall_rating')
-            .in('firm_name', uniqueNames);
-        if (error) throw error;
+        // Matches spellings of the same firm ("K K & Co." = "K K and Company"; S R Batliboi = EY).
+        const rpc = reviewSummaryRpcAvailable
+            ? await supabaseClient.rpc('get_firm_review_summaries', { p_names: uniqueNames })
+            : { error: true };
+        if (rpc.error) reviewSummaryRpcAvailable = false;
+        if (!rpc.error && Array.isArray(rpc.data)) {
+            const byName = new Map(rpc.data.map(r => [String(r.name || '').trim().toLowerCase(), r]));
+            uniqueNames.forEach(name => {
+                firmReviewsMap.set(name.toLowerCase(), toReviewInfo(name, byName.get(name.toLowerCase())));
+            });
+        } else {
+            // Before the review-summary function exists: exact firm names only, as before.
+            const { data, error } = await supabaseClient
+                .from('articleship_firm_reviews_public')
+                .select('firm_name, overall_rating')
+                .in('firm_name', uniqueNames);
+            if (error) throw error;
 
-        const groups = {};
-        (data || []).forEach(r => {
-            if (!r.firm_name) return;
-            const key = r.firm_name.trim().toLowerCase();
-            if (!groups[key]) {
-                groups[key] = { firmName: r.firm_name.trim(), ratings: [], count: 0 };
-            }
-            if (typeof r.overall_rating === 'number') {
-                groups[key].ratings.push(r.overall_rating);
-            }
-            groups[key].count++;
-        });
-
-        uniqueNames.forEach(name => {
-            const key = name.toLowerCase();
-            const g = groups[key];
-            if (g && g.ratings.length > 0) {
-                const avg = g.ratings.reduce((a, b) => a + b, 0) / g.ratings.length;
-                firmReviewsMap.set(key, { firmName: g.firmName, avgOverall: avg, count: g.count });
-            } else {
-                firmReviewsMap.set(key, { firmName: name, avgOverall: null, count: 0 });
-            }
-        });
+            const groups = {};
+            (data || []).forEach(r => {
+                if (!r.firm_name) return;
+                const key = r.firm_name.trim().toLowerCase();
+                if (!groups[key]) groups[key] = { firmName: r.firm_name.trim(), ratings: [], count: 0 };
+                if (typeof r.overall_rating === 'number') groups[key].ratings.push(r.overall_rating);
+                groups[key].count++;
+            });
+            uniqueNames.forEach(name => {
+                const g = groups[name.toLowerCase()];
+                const avg = g && g.ratings.length ? g.ratings.reduce((a, b) => a + b, 0) / g.ratings.length : null;
+                firmReviewsMap.set(name.toLowerCase(), g
+                    ? { firmName: g.firmName, avgOverall: avg, count: g.count }
+                    : { firmName: name, avgOverall: null, count: 0 });
+            });
+        }
 
         // Update rating badges on visible cards
         updateVisibleJobRatings();
@@ -1410,11 +1550,12 @@ function updateVisibleJobRatings() {
     const cards = document.querySelectorAll('.job-card');
     cards.forEach(card => {
         const compEl = card.querySelector('.job-card-company');
-        if (!compEl || card.querySelector('.job-card-rating-inline')) return;
+        if (!compEl) return;
         const nameSpan = compEl.querySelector('span');
         const companyName = nameSpan ? nameSpan.textContent.trim().toLowerCase() : '';
         const ratingInfo = firmReviewsMap.get(companyName);
-        if (ratingInfo && ratingInfo.count > 5 && ratingInfo.avgOverall != null) {
+        if (!ratingInfo) return;
+        if (hasReviewRating(ratingInfo) && !card.querySelector('.job-card-rating-inline')) {
             const ratingSpan = document.createElement('span');
             ratingSpan.className = 'job-card-rating-inline';
             ratingSpan.style.cssText = `
@@ -1436,6 +1577,11 @@ function updateVisibleJobRatings() {
                 <span style="color: #64748b; font-weight: 500; font-size: 0.68rem;">(${ratingInfo.count} review${ratingInfo.count > 1 ? 's' : ''})</span>
             `;
             compEl.appendChild(ratingSpan);
+        }
+        const tagsEl = card.querySelector('.job-card-tags');
+        if (tagsEl && !card.querySelector('.job-card-review-facts')) {
+            const factsHtml = buildReviewFactsHtml(ratingInfo);
+            if (factsHtml) tagsEl.insertAdjacentHTML('afterend', factsHtml);
         }
     });
 }
@@ -1477,7 +1623,9 @@ function getFilterFingerprint() {
         applicationStatus: state.applicationStatus,
         companyType: state.companyType,
         industryType: state.industryType,
-        firmType: state.firmType
+        firmType: state.firmType,
+        extra: state.extra,
+        jobFilterColumnsAvailable
     });
 }
 
@@ -1532,8 +1680,11 @@ async function fetchJobs() {
         } else if (currentTable === "Articleship Jobs") {
             selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
         }
+        if (jobFilterColumnsAvailable) {
+            selectColumns += extraSelectColumns(currentTable);
+        }
 
-        const buildQuery = (cols) => {
+        const buildQuery = (cols, useFilterColumns = jobFilterColumnsAvailable) => {
             let q = supabaseClient.from(currentTable).select(cols);
 
             // Optimize keyword query building - pre-process terms once
@@ -1573,8 +1724,8 @@ async function fetchJobs() {
 
             if (state.locations.length > 0) {
                 const locationOr = [];
-                for (let i = 0; i < state.locations.length; i++) {
-                    locationOr.push(`Location.ilike."%${state.locations[i]}%"`);
+                for (const term of expandLocationTerms(state.locations)) {
+                    locationOr.push(`Location.ilike."%${term}%"`);
                 }
                 q = q.or(locationOr.join(','));
             }
@@ -1594,25 +1745,29 @@ async function fetchJobs() {
                 q = q.or(categoryOr.join(','));
             }
 
+            // pay_min / pay_max hold the stipend (per month) or salary (per year) read from the
+            // vacancy, so a range matches every job whose pay range overlaps it.
+            const payLow = useFilterColumns ? 'pay_max' : 'Salary';
+            const payHigh = useFilterColumns ? 'pay_min' : 'Salary';
             if (state.salaryMin != null && state.salaryMin !== '') {
                 const min = Number(state.salaryMin);
                 if (!isNaN(min) && min > 0) {
-                    q = q.gte('Salary', min);
+                    q = q.gte(payLow, min);
                 }
             }
             if (state.salaryMax != null && state.salaryMax !== '') {
                 const max = Number(state.salaryMax);
                 if (!isNaN(max) && max > 0) {
-                    q = q.lte('Salary', max);
+                    q = q.lte(payHigh, max);
                 }
             }
             if ((state.salaryMin == null || state.salaryMin === '') && (state.salaryMax == null || state.salaryMax === '') && state.salary) {
                 if (state.salary.endsWith('+')) {
                     const minValue = parseInt(state.salary);
-                    if (!isNaN(minValue)) q = q.gte('Salary', minValue);
+                    if (!isNaN(minValue)) q = q.gte(payLow, minValue);
                 } else if (state.salary.includes('-')) {
                     const [min, max] = state.salary.split('-').map(Number);
-                    if (!isNaN(min) && !isNaN(max)) q = q.gte('Salary', min).lte('Salary', max);
+                    if (!isNaN(min) && !isNaN(max)) q = q.gte(payLow, min).lte(payHigh, max);
                 }
             }
 
@@ -1628,15 +1783,23 @@ async function fetchJobs() {
                 q = q.eq('Experience', state.experience);
             }
 
-            // Apply new Company Type, Industry Type and Firm Type filters
-            if (state.companyType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
+            // Apply new Company Type, Industry Type and Firm Type filters.
+            // employer_type is "Company Type" in the filter's own labels, filled in where it was empty.
+            if (state.companyType && useFilterColumns && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" || currentTable === "Industrial Training Job Portal")) {
+                q = q.or(companyTypeFilter(state.companyType));
+            } else if (state.companyType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
                 q = q.eq('Company Type', state.companyType);
             }
             if (state.industryType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" || currentTable === "Industrial Training Job Portal")) {
                 q = q.eq('Industry Type', state.industryType);
             }
             if (state.firmType && currentTable === "Articleship Jobs") {
-                q = q.eq('Firm Type', state.firmType);
+                const tierCol = useFilterColumns ? 'firm_size' : 'Firm Type';
+                q = FIRM_TIERS[state.firmType] ? q.in(tierCol, FIRM_TIERS[state.firmType]) : q.eq(tierCol, state.firmType);
+            }
+
+            if (useFilterColumns) {
+                q = applyJobFilters(q, currentPortal(), state.extra);
             }
 
             if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
@@ -1647,8 +1810,8 @@ async function fetchJobs() {
 
             let sortCol = 'Created_At';
             let isAsc = false;
-            if (state.sortBy === 'salary_asc') { sortCol = 'Salary'; isAsc = true; }
-            else if (state.sortBy === 'salary_desc') { sortCol = 'Salary'; isAsc = false; }
+            if (state.sortBy === 'salary_asc') { sortCol = useFilterColumns ? 'pay_min' : 'Salary'; isAsc = true; }
+            else if (state.sortBy === 'salary_desc') { sortCol = useFilterColumns ? 'pay_max' : 'Salary'; isAsc = false; }
 
             q = q.order(sortCol, {
                 ascending: isAsc,
@@ -1673,18 +1836,45 @@ async function fetchJobs() {
         let query = buildQuery(selectColumns);
         let { data, error } = await query;
 
-        // Failsafe Fallback: If is_exclusive does not exist yet on the table, strip it and retry.
-        if (error && error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
-            console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
-            selectColumns = selectColumns.replace(', is_exclusive', '');
+        // Failsafes for columns the database does not have yet. Either can come first, so retry
+        // until neither applies.
+        for (let retry = 0; retry < 2 && error; retry++) {
+            if (jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
+                // The filter columns are not in the database yet (migration 202611060003): use the older filters.
+                console.warn('Structured filter columns are not available yet; using the basic filters.', error.message);
+                disableStructuredFilters();
+                selectColumns = selectColumns.replace(extraSelectColumns(currentTable), '');
+            } else if (error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
+                console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
+                selectColumns = selectColumns.replace(', is_exclusive', '');
+            } else {
+                break;
+            }
             query = buildQuery(selectColumns);
             const fallbackResult = await query;
             data = fallbackResult.data;
             error = fallbackResult.error;
         }
 
+        // Rows the database returned for this page, before pinning or keyword filtering: decides paging.
+        const dbPageLength = (!error && Array.isArray(data)) ? data.length : 0;
+
         if (!error && data && state.sortBy === 'popular') {
             data.sort((a, b) => (b.application_count || 0) - (a.application_count || 0));
+        }
+
+        // Articleship: exclusive vacancies sit on top of page 1; later pages skip them.
+        if (!error && data) {
+            if (page === 0) pinnedExclusiveIds = new Set();
+            if (page === 0 && currentTable === 'Articleship Jobs' && selectColumns.includes('is_exclusive')) {
+                const pinned = await fetchPinnedExclusives(buildQuery, selectColumns);
+                if (pinned.length > 0) {
+                    pinned.forEach(job => pinnedExclusiveIds.add(job.id));
+                    data = [...pinned, ...data.filter(job => !pinnedExclusiveIds.has(job.id))];
+                }
+            } else if (page > 0 && pinnedExclusiveIds.size > 0) {
+                data = data.filter(job => !pinnedExclusiveIds.has(job.id));
+            }
         }
 
         if (!error && data && state.keywords.length > 0) {
@@ -1758,7 +1948,7 @@ async function fetchJobs() {
             }
 
             page++;
-            hasMoreData = data.length === limit;
+            hasMoreData = dbPageLength === limit;
 
             if (currentTable === 'Articleship Jobs') {
                 fetchFirmRatingsForVisibleJobs(data);
@@ -1809,6 +1999,40 @@ async function fetchJobs() {
             // Fallback for very old browsers
             setTimeout(updateUI, 0);
         }
+    }
+}
+
+// PostgREST answers a missing column with 42703 / PGRST204 and "column <table>.<name> does not exist".
+const FILTER_COLUMN_NAMES = ['pay_min', 'pay_max', 'apply_methods', 'deadline', 'company_key', 'is_pan_india', 'work_mode',
+    'immediate_joining', 'joining_month', 'notice_days', 'attempt_from', 'attempt_to', 'duration_min_months', 'duration_max_months',
+    'exam_criteria', 'employer_type', 'inter_requirement', 'itt_oc_required', 'transfer_accepted', 'firm_size', 'exposure_areas',
+    'client_types', 'outstation_audits', 'work_types', 'shift', 'pqe_required', 'tools', 'working_days', 'yoe'];
+
+function isMissingFilterColumnError(error) {
+    if (!error) return false;
+    const message = String(error.message || '');
+    const missing = error.code === '42703' || error.code === 'PGRST204' || /does not exist|could not find .* column/i.test(message);
+    if (!missing) return false;
+    const named = message.match(/'([a-z_]+)' column/i) || message.match(/column\s+(?:[^\n]*\.)?"?([a-z_]+)"?\s+does not exist/i);
+    return Boolean(named && FILTER_COLUMN_NAMES.includes(named[1]));
+}
+
+function disableStructuredFilters() {
+    jobFilterColumnsAvailable = false;
+    state.extra = {};
+    if (currentTable === 'Industrial Training Job Portal') state.companyType = '';
+    adjustFiltersForPortal();
+}
+
+// Exclusive articleship vacancies that match the current filters and are under 15 days old.
+async function fetchPinnedExclusives(buildQuery, selectColumns) {
+    try {
+        const cutoff = new Date(Date.now() - JOB_EXPIRATION_DAYS * 24 * 60 * 60 * 1000).toISOString();
+        const { data, error } = await buildQuery(selectColumns).eq('is_exclusive', true).gte('Created_At', cutoff);
+        // buildQuery already orders them by the sort the student picked.
+        return (error || !Array.isArray(data)) ? [] : data;
+    } catch (e) {
+        return [];
     }
 }
 
@@ -1864,16 +2088,17 @@ function getSalaryConfig() {
         };
     } else if (currentTable === "Semi Qualified Jobs") {
         return {
+            // Per year: Semi Qualified salaries are stored as annual CTC (median about ₹6 LPA).
             label: 'Salary',
             minBound: 0,
-            maxBound: 100000,
-            step: 2500,
+            maxBound: 2000000,
+            step: 50000,
             presets: [
                 { value: '', label: 'Any Salary', min: null, max: null },
-                { value: '0-25000', label: 'Below ₹25k', min: null, max: 25000 },
-                { value: '25000-35000', label: '₹25k - ₹35k', min: 25000, max: 35000 },
-                { value: '35000-50000', label: '₹35k - ₹50k', min: 35000, max: 50000 },
-                { value: '50000+', label: 'Above ₹50k', min: 50000, max: null }
+                { value: '0-400000', label: 'Below ₹4 LPA', min: null, max: 400000 },
+                { value: '400000-600000', label: '₹4-6 LPA', min: 400000, max: 600000 },
+                { value: '600000-1000000', label: '₹6-10 LPA', min: 600000, max: 1000000 },
+                { value: '1000000+', label: '₹10+ LPA', min: 1000000, max: null }
             ]
         };
     } else if (currentTable === "Fresher Jobs") {
@@ -2129,6 +2354,12 @@ function renderActiveFilterPills() {
     state.keywords.forEach(item => createPill(item, 'keywords'));
     state.locations.forEach(item => createPill(item, 'locations'));
     state.categories.forEach(item => createPill(item, 'categories'));
+    if (jobFilterColumnsAvailable) {
+        describeJobFilters(currentPortal(), state.extra).forEach(p => createPill(p.label, `extra:${p.key}`, () => {
+            state.extra = withoutFilterValue(state.extra, p.key, p.value);
+            syncAndFetch();
+        }));
+    }
 
     // Salary / Stipend Active Pill
     const isSalary = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs');
@@ -2233,6 +2464,9 @@ function syncFiltersUI() {
     document.querySelectorAll('.application-status-filter-group .pill-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.value === state.applicationStatus);
     });
+
+    syncJobFilters(document.getElementById('jobFiltersDesktop'), state.extra);
+    syncJobFilters(document.getElementById('jobFiltersMobile'), state.extra);
 
     renderActiveFilterPills();
 }
@@ -2971,7 +3205,7 @@ async function loadBanners() {
     const bannerSection = document.querySelector('.banner-section');
     if (!carousel || !bannerSection) return;
     try {
-        const { data, error } = await supabaseClient.from('Banners').select('Image, Hyperlink, Type, visible_to_unenrolled');
+        const { data, error } = await supabaseClient.from('Banners').select('Image, Hyperlink, Type, visible_to_unenrolled').order('id', { ascending: true });
         if (error) throw error;
         const banners = data;
         carousel.innerHTML = '';
@@ -3375,9 +3609,22 @@ function setupEventListeners() {
     dom.menuButton.addEventListener('click', () => dom.expandedMenu.classList.add('active'));
     dom.menuCloseBtn.addEventListener('click', () => dom.expandedMenu.classList.remove('active'));
 
-    dom.openFilterModalBtn.addEventListener('click', () => dom.filterModalOverlay.classList.add('show'));
-    dom.closeFilterModalBtn.addEventListener('click', () => dom.filterModalOverlay.classList.remove('show'));
-    dom.filterModalOverlay.addEventListener('click', (e) => { if (e.target === dom.filterModalOverlay) dom.filterModalOverlay.classList.remove('show'); });
+    // The structured filters in the phone sheet apply on "Show Jobs"; closing the sheet any other way
+    // throws those changes away.
+    let extraBeforeSheet = null;
+    const discardSheetChanges = () => {
+        if (extraBeforeSheet) {
+            state.extra = extraBeforeSheet;
+            extraBeforeSheet = null;
+            syncFiltersUI();
+        }
+    };
+    dom.openFilterModalBtn.addEventListener('click', () => {
+        extraBeforeSheet = { ...state.extra };
+        dom.filterModalOverlay.classList.add('show');
+    });
+    dom.closeFilterModalBtn.addEventListener('click', () => { discardSheetChanges(); dom.filterModalOverlay.classList.remove('show'); });
+    dom.filterModalOverlay.addEventListener('click', (e) => { if (e.target === dom.filterModalOverlay) { discardSheetChanges(); dom.filterModalOverlay.classList.remove('show'); } });
 
     dom.applyFiltersBtn.addEventListener('click', () => {
         const mobMinInput = document.querySelector('#salaryFilterMobileWrapper .stipend-min-input');
@@ -3396,6 +3643,12 @@ function setupEventListeners() {
         if (dom.companyTypeFilterMobile) state.companyType = dom.companyTypeFilterMobile.value;
         if (dom.industryTypeFilterMobile) state.industryType = dom.industryTypeFilterMobile.value;
         if (dom.firmTypeFilterMobile) state.firmType = dom.firmTypeFilterMobile.value;
+        document.querySelectorAll('#jobFiltersMobile .jf-text').forEach(input => {
+            const text = input.value.trim();
+            if (text) state.extra = { ...state.extra, [input.dataset.key]: text };
+            else state.extra = withoutFilterValue(state.extra, input.dataset.key);
+        });
+        extraBeforeSheet = null;
         syncAndFetch();
         dom.filterModalOverlay.classList.remove('show');
     });
@@ -3415,6 +3668,7 @@ function setupEventListeners() {
             state.companyType = '';
             state.industryType = '';
             state.firmType = '';
+            state.extra = {};
             if (dom.searchInputMobile) dom.searchInputMobile.value = '';
             if (currentTable === 'Fresher Jobs') {
                 state.experience = isExperiencedFresherPortal() ? 'Experienced' : 'Freshers';
@@ -3886,7 +4140,7 @@ function checkAndOpenSharedJob() {
 // Fetch a specific shared job and open modal
 async function fetchSharedJob(jobId) {
     try {
-        const { data, error } = await selectPublicJobs(cols => supabaseClient
+        const { data, error } = await runPublicJobSelect(cols => supabaseClient
             .from(currentTable)
             .select(cols)
             .eq('id', jobId)
@@ -4927,7 +5181,7 @@ async function dv2PopulateTrending() {
     const list = document.getElementById('dv2TrendingList');
     if (!card || !list) return;
     try {
-        const { data, error } = await selectPublicJobs(cols => supabaseClient
+        const { data, error } = await runPublicJobSelect(cols => supabaseClient
             .from(currentTable)
             .select(cols)
             .order('Created_At', { ascending: false, nullsFirst: false })

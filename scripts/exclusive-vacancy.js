@@ -199,8 +199,12 @@ export function isExclusiveDemo() {
 
 export function applyExclusiveDemo(jobs, tableName) {
     if (tableName !== ARTICLESHIP_TABLE || !Array.isArray(jobs) || !isExclusiveDemo()) return jobs;
-    if (jobs[0]) Object.assign(jobs[0], { is_exclusive: true, posted_by: null, hirer_email: null, __exclusiveDemo: true });
-    if (jobs[1]) Object.assign(jobs[1], { is_exclusive: false, posted_by: 'preview-demo', hirer_email: 'hr@example-firm.in', __exclusiveDemo: true });
+    // Real MSC exclusives (pinned on top) already show the lock; only fake one when there are none.
+    if (jobs[0] && !jobs.some((j) => j.is_exclusive)) {
+        Object.assign(jobs[0], { is_exclusive: true, posted_by: null, hirer_email: null, __exclusiveDemo: true });
+    }
+    const ordinary = jobs.find((j) => !j.is_exclusive && !j.posted_by && !j.hirer_email);
+    if (ordinary) Object.assign(ordinary, { posted_by: 'preview-demo', hirer_email: 'hr@example-firm.in', __exclusiveDemo: true });
     return jobs;
 }
 
