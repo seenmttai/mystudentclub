@@ -1,11 +1,11 @@
-// CA Final IBS toolkit page (/ca-final-ibs): every link the page renders must point at a real file,
+// CA Final IBS strategy page (/ca-final-ibs-strategy): every link the page renders must point at a real file,
 // and every solved paper must have the shape app.js reads.
 const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const DIR = path.join(__dirname, '..', 'ca-final-ibs');
+const DIR = path.join(__dirname, '..', 'ca-final-ibs-strategy');
 const read = (p) => JSON.parse(fs.readFileSync(path.join(DIR, p), 'utf8'));
 const MAX = 25 * 1024 * 1024; // Cloudflare Pages per-file limit
 
