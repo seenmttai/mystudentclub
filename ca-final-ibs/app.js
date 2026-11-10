@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  var V = '20261110.1';
+  var V = '20261110.2';
   var DL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>';
 
   function $(s, el) { return (el || document).querySelector(s); }
@@ -56,7 +56,7 @@
         .sort(function (a, b) { return (b.best ? 1 : 0) - (a.best ? 1 : 0); });
       var zip = d.zips && d.zips[s.id];
       var head = '<div class="idx-head"><p>' + files.length + ' file' + (files.length > 1 ? 's' : '') + (s.hint ? ' · ' + esc(s.hint) : '') + '</p>' +
-        (zip ? '<a class="btn btn-line" href="' + esc(zip.path) + '" download data-zip="' + esc(s.id) + '">' + DL_ICON + ' Download all (' + size(zip.size_kb) + ')</a>' : '') + '</div>';
+        (zip && ZIP_OK ? '<button type="button" class="btn btn-line" data-zipall="' + esc(s.id) + '">' + DL_ICON + ' Download all (' + size(zip.size_kb) + ')</button>' : '') + '</div>';
       panel.innerHTML = head + files.map(function (f) {
         var meta = [f.for_book, f.pages ? f.pages + ' pages' : '', size(f.size_kb)].filter(Boolean).join(' · ');
         return '<div class="idx' + (f.best ? ' best' : '') + '"><div><h4>' + esc(f.title) +
@@ -68,8 +68,57 @@
     }, 'ibs_index_tab');
     panel.addEventListener('click', function (e) {
       var a = e.target.closest('a[download]');
-      if (a) track('ibs_download', { file: a.dataset.file || ('zip:' + a.dataset.zip) });
+      if (a) track('ibs_download', { file: a.dataset.file });
+      var z = e.target.closest('[data-zipall]');
+      if (z) zipAll(z, d, z.dataset.zipall);
     });
+  }
+
+  // "Download all" builds the zip in the browser from the files already on the page, so the site
+  // doesn't store every index twice. Phones and the app's WebView get one-by-one downloads instead.
+  var ZIP_OK = typeof Blob !== 'undefined' && !!window.fetch && !/; wv\)|MSCApp/i.test(navigator.userAgent);
+  function loadJSZip() {
+    if (window.JSZip) return Promise.resolve(window.JSZip);
+    return new Promise(function (ok, fail) {
+      var sc = document.createElement('script');
+      sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+      sc.onload = function () { ok(window.JSZip); };
+      sc.onerror = fail;
+      document.head.appendChild(sc);
+    });
+  }
+  function zipAll(btn, d, sid) {
+    if (btn.disabled) return;
+    var files = d.files.filter(function (f) { return f.subject === sid; });
+    var label = btn.innerHTML;
+    btn.disabled = true;
+    var done = 0;
+    var say = function (t) { btn.textContent = t; };
+    say('Preparing…');
+    track('ibs_download', { file: 'zip:' + sid });
+    loadJSZip().then(function (JSZip) {
+      var z = new JSZip();
+      return Promise.all(files.map(function (f) {
+        return fetch(f.path).then(function (r) {
+          if (!r.ok) throw new Error(f.path);
+          return r.blob();
+        }).then(function (b) {
+          z.file(f.path.split('/').pop(), b);
+          done += 1;
+          say('Adding ' + done + ' of ' + files.length + '…');
+        });
+      })).then(function () { return z.generateAsync({ type: 'blob' }); });
+    }).then(function (blob) {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'IBS-' + sid + '-indexes.zip';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+      btn.innerHTML = label;
+    }).catch(function () {
+      say('Could not zip. Download one by one below.');
+    }).then(function () { btn.disabled = false; });
   }
 
   /* ---------- 3. analysis ---------- */
@@ -88,7 +137,8 @@
           return '<td' + (v >= 25 ? ' class="hot"' : '') + '>' + (v || '–') + '</td>';
         }).join('') + '<td><b>' + r.avg.toFixed(1) + '</b></td></tr>';
       }).join('') + '</tbody><tfoot><tr><td>Total</td>' + colTot.map(function (t) { return '<td>' + t + '</td>'; }).join('') + '<td></td></tr></tfoot></table>' +
-      (a.note ? '<p class="an-note">' + esc(a.note) + '</p>' : '');
+      (a.note ? '<p class="an-note">' + esc(a.note) + '</p>' : '') +
+      (a.insights && a.insights.length ? '<ul class="an-ins">' + a.insights.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : '');
     $('#an-marks').innerHTML = html;
 
     var subs = a.subjects.filter(function (s) { return a.topics[s] && a.topics[s].length; })

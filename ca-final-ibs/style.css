@@ -67,6 +67,9 @@ p { margin: 0; }
 .btn-green:hover { background: #0e743e; }
 .btn-line { background: #fff; color: var(--blue); border-color: var(--blue); min-height: 40px; padding: 8px 16px; font-size: 15px; }
 .btn-line:hover { background: var(--pale); }
+.btn svg { width: 18px; height: 18px; flex: none; }
+.idx-head .btn { white-space: nowrap; }
+.btn[disabled] { opacity: .75; cursor: progress; }
 
 /* chips */
 .chips { display: flex; gap: 8px; overflow-x: auto; padding-top: 18px; padding-bottom: 6px; scrollbar-width: none; }
@@ -142,6 +145,7 @@ ol.plain li::before { content: counter(c); width: 24px; height: 24px; border-rad
 .an-table td.hot { background: var(--pale); font-weight: 700; color: var(--blue); }
 .an-table tfoot td { font-weight: 700; border-bottom: 0; }
 .an-note { font-size: 14px; color: var(--grey); margin-top: 10px; }
+.an-ins { margin: 14px 0 0; padding-left: 18px; font-size: 15px; display: grid; gap: 6px; }
 .an-topics { display: grid; gap: 10px; }
 .topic { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start; background: #fff; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; }
 .topic .cnt { font-family: var(--head); font-weight: 800; font-size: 20px; color: var(--blue); text-align: center; line-height: 1.2; }
