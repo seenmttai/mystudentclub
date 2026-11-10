@@ -19,12 +19,16 @@ test('portal cards and modals lock only jobs ticked exclusive', () => {
 });
 
 test('job detail page asks to enrol only for jobs ticked exclusive', () => {
-  assert.match(read('job-details.js'), /const requiresEnrollment = Boolean\(job\.is_exclusive\) && !isEnrolledSync\(tableName\);/);
+  // 9 Nov 2026: the rule moved to exclusive-vacancy.js. Outside the Articleship portal it is still
+  // "ticked Exclusive locks"; tests/articleship-exclusive.test.cjs covers both portals.
+  assert.match(read('job-details.js'), /const requiresEnrollment = isExclusiveLocked\(job, tableName, isEnrolledSync\(tableName\)\);/);
+  assert.match(read('exclusive-vacancy.js'), /if \(tableName !== ARTICLESHIP_TABLE\) return job\.is_exclusive \? 'full' : null;/);
 });
 
-test('jobs by email reads is_exclusive for Industrial Training only', () => {
+test('jobs by email reads is_exclusive for Industrial Training and Articleship only', () => {
   const source = read('portal-email.js');
   assert.match(source, /else if \(table === "Industrial Training Job Portal"\) selectColumns \+= ', is_exclusive';/);
-  // The other three job tables have no is_exclusive column (checked live 26 Oct 2026).
+  assert.match(source, /else if \(table === ARTICLESHIP_TABLE\) selectColumns \+= ', is_exclusive';/);
+  // Fresher and Semi Qualified have no is_exclusive column (Articleship got it on 9 Nov 2026).
   assert.doesNotMatch(source, /selectColumns(Base|Fresher|Semi) = '[^']*is_exclusive/);
 });

@@ -1,6 +1,7 @@
 
 import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
+import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, showExclusiveLockPopup, showExclusiveAppliedPopup, fetchMyProgramRegistrations, ensureExclusiveStyles } from './exclusive-vacancy.js';
 import { assessmentGate } from './apply-assessment.js';
 
 function isSalaryDisclosed(val) {
@@ -79,7 +80,11 @@ async function recordRecruiterApplication(job, buttonElement, tableName) {
         buttonElement.classList.add('applied');
         buttonElement.innerHTML = '<i class="fas fa-check"></i> Applied';
         buttonElement.disabled = false;
-        showToast('Application submitted to the hirer dashboard.', 'success');
+        if (getExclusiveKind(job, tableName) === 'partial' && !isEnrolledSync(tableName)) {
+            showExclusiveAppliedPopup(job);
+        } else {
+            showToast('Application submitted to the hirer dashboard.', 'success');
+        }
     } catch (error) {
         console.error('Application exception:', error);
         buttonElement.disabled = false;
@@ -92,14 +97,15 @@ async function recordRecruiterApplication(job, buttonElement, tableName) {
 
 async function init() {
     currentSession = await getCurrentSession();
-    if (currentSession && currentSession.user) {
-        await hydrateProfileForCompletion();
-        prefetchEnrollmentStatus(currentSession.user.id);
-    }
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
 
     let tableParam = params.get('type') || params.get('table');
+    const pageTable = TABLE_MAP[tableParam] || (Object.values(TABLE_MAP).includes(tableParam) ? tableParam : null);
+    if (currentSession && currentSession.user) {
+        await hydrateProfileForCompletion();
+        prefetchEnrollmentStatus(currentSession.user.id, pageTable);
+    }
 
     setBackLink(tableParam);
 
@@ -230,7 +236,16 @@ function renderJob(job, tableName) {
 
     const recruiterPosted = isRecruiterPostedJob(job);
     const applyInfo = recruiterPosted ? { isEmail: false, link: '#' } : getApplicationLink(job['Application ID']);
-    const requiresEnrollment = Boolean(job.is_exclusive) && !isEnrolledSync(tableName);
+    // Articleship: only MSC-posted exclusives lock; outside recruiters' vacancies stay open (exclusive-vacancy.js).
+    const requiresEnrollment = isExclusiveLocked(job, tableName, isEnrolledSync(tableName));
+    const exclusiveKind = getExclusiveKind(job, tableName);
+    const exclusiveBoxHtml = requiresEnrollment ? '' : renderModalNote(job, tableName, isEnrolledSync(tableName));
+    const exclusiveLineHtml = renderCardNote(job, tableName, isEnrolledSync(tableName));
+    if (exclusiveBoxHtml || exclusiveLineHtml) ensureExclusiveStyles();
+    // A locked vacancy keeps its apply link and full description for enrolled students.
+    const shownDescription = requiresEnrollment
+        ? '<div class="msc-excl-locked-details"><i class="fas fa-lock"></i> The full description and the apply link are for enrolled MSC program students.</div>'
+        : renderMarkdown(description);
 
     let connectLink = checkConnectLink(job);
     if (!connectLink) {
@@ -270,11 +285,13 @@ function renderJob(job, tableName) {
                     <i class="fas fa-tag"></i>
                     <span>${category}</span>
                 </div>
+                ${exclusiveKind ? `<div class="job-meta-item" style="color: #b45309; font-weight: 700;"><i class="fas fa-star"></i><span>Exclusive</span></div>` : ''}
             </div>
             
             <!-- Mobile Apply Buttons (visible only on mobile) -->
             <div class="mobile-apply-btn">
                 ${applyButtonsHtml}
+                ${exclusiveLineHtml}
             </div>
           </div>
         </div>
@@ -284,7 +301,7 @@ function renderJob(job, tableName) {
         <div class="main-column">
             <div class="description-section">
                 <h2><i class="fas fa-file-lines"></i> Job Description</h2>
-                <div class="description-content">${renderMarkdown(description)}</div>
+                <div class="description-content">${shownDescription}</div>
             </div>
         </div>
 
@@ -292,7 +309,7 @@ function renderJob(job, tableName) {
             <div class="action-card">
                 <h3>Apply here</h3>
                 
-                ${recruiterPosted ? '<p><i class="fas fa-circle-info"></i> Easy Apply is enabled. Your profile and CV will be sent to the hirer dashboard.</p>' : `<div class="info-grid">
+                ${requiresEnrollment ? '' : recruiterPosted ? '<p><i class="fas fa-circle-info"></i> Easy Apply is enabled. Your profile and CV will be sent to the hirer dashboard.</p>' : `<div class="info-grid">
                     <div class="info-card">
                         <div>
                             <span class="info-label">${applyInfo.isEmail ? 'Email' : 'Apply Link'}</span>
@@ -313,6 +330,7 @@ function renderJob(job, tableName) {
                 <p>Apply now or connect with peers at this company.</p>
                 
                 ${applyButtonsHtml}
+                ${exclusiveBoxHtml || (requiresEnrollment ? exclusiveLineHtml : '')}
 
                 <a href="${connectLink}" id="connectPeersBtn" target="_blank" class="btn-large btn-linkedin" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                     <i class="fab fa-linkedin"></i> Connect to Peers
@@ -337,12 +355,14 @@ function renderJob(job, tableName) {
     loadingState.style.display = 'none';
     container.style.display = 'block';
 
+    // The apply button is drawn twice (phone header and sidebar), so wire every copy.
     if (requiresEnrollment) {
-        const applyButton = container.querySelector('#simpleApplyBtn');
-        if (applyButton) applyButton.addEventListener('click', () => showEnrollmentRequiredPopup());
+        container.querySelectorAll('#simpleApplyBtn').forEach(applyButton => applyButton.addEventListener('click', () => {
+            if (tableName === ARTICLESHIP_TABLE) showExclusiveLockPopup({ signedIn: Boolean(currentSession) });
+            else showEnrollmentRequiredPopup();
+        }));
     } else if (recruiterPosted) {
-        const applyButton = container.querySelector('#simpleApplyBtn');
-        if (applyButton) applyButton.addEventListener('click', () => recordRecruiterApplication(job, applyButton, tableName));
+        container.querySelectorAll('#simpleApplyBtn').forEach(applyButton => applyButton.addEventListener('click', () => recordRecruiterApplication(job, applyButton, tableName)));
     }
 
     if (!recruiterPosted && applyInfo.isEmail) {
@@ -540,7 +560,7 @@ function showError(msg) {
 let userEnrollmentsCache = null;
 let enrollmentStatusCache = null;
 
-async function prefetchEnrollmentStatus(userId) {
+async function prefetchEnrollmentStatus(userId, tableName = null) {
     try {
         const { count: anyCount, error: e1 } = await supabaseClient
             .from('enrollment')
@@ -557,6 +577,11 @@ async function prefetchEnrollmentStatus(userId) {
             enrollmentStatusCache.industrialTraining = (r1.count || 0) > 0;
             enrollmentStatusCache.freshers = (r2.count || 0) > 0;
         }
+        if (tableName === ARTICLESHIP_TABLE) {
+            // Articleship registrations are paid through PayU with no LMS enrolment row: match them by login email.
+            const programs = await fetchMyProgramRegistrations(supabaseClient);
+            enrollmentStatusCache.articleship = programs.includes('msc-articleship-program');
+        }
     } catch (e) {
         console.error('Failed to prefetch enrollment:', e);
         enrollmentStatusCache = { any: false, industrialTraining: false, freshers: false };
@@ -567,6 +592,7 @@ function isEnrolledSync(tableName) {
     if (!enrollmentStatusCache) return false;
     if (tableName === 'Industrial Training Job Portal') return enrollmentStatusCache.industrialTraining;
     if (tableName === 'Fresher Jobs') return enrollmentStatusCache.freshers;
+    if (tableName === ARTICLESHIP_TABLE) return enrollmentStatusCache.any || Boolean(enrollmentStatusCache.articleship);
     return enrollmentStatusCache.any;
 }
 

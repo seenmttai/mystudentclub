@@ -2150,8 +2150,9 @@
                 style="width: 18px; height: 18px; accent-color: #d97706; cursor: pointer; flex-shrink: 0;">
               <label for="is_exclusive_checkbox" style="cursor: pointer; margin: 0; font-size: 0.9rem;">
                 <strong style="color: #92400e;">⭐ Exclusive Vacancy</strong>
-                <span style="display: block; font-size: 0.78rem; color: #78350f; font-weight: 400;">Only MSC Industrial
-                  Training Program students can view full details. Others will see a lock screen.</span>
+                <span style="display: block; font-size: 0.78rem; color: #78350f; font-weight: 400;">Industrial Training and
+                  Articleship only. Only students in that MSC program can view full details and apply. Others see a lock
+                  screen.</span>
               </label>
             </div>
             <div class="form-group">
@@ -3914,7 +3915,7 @@
       loadMoreBtn.disabled = true;
       try {
         let selectColumns = 'id, Company, Location, Salary, Description, "Application ID", Created_At, connect_link';
-        if (currentTable === "Industrial Training Job Portal") {
+        if (currentTable === "Industrial Training Job Portal" || currentTable === "Articleship Jobs") {
           selectColumns += ', is_exclusive';
         }
         if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
@@ -4290,8 +4291,8 @@
               delete dataToSave.Experience;
             }
 
-            // Handle is_exclusive checkbox for Industrial Training
-            if (table === "Industrial Training Job Portal") {
+            // Handle is_exclusive checkbox for Industrial Training and Articleship
+            if (table === "Industrial Training Job Portal" || table === "Articleship Jobs") {
               dataToSave.is_exclusive = dataToSave.is_exclusive === 'true' || dataToSave.is_exclusive === true;
             } else {
               delete dataToSave.is_exclusive;
