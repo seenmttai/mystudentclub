@@ -1415,6 +1415,10 @@ function showJobDetail(job) {
     cachedUnlocked?.description || job.Description || "";
   const needsApplicationLoad = Boolean(currentSession) && !isApplicationUnlocked;
   const applicationJobKey = applicationDetailsKey(job);
+  // True while the sheet still shows this job (not closed, not switched to another job).
+  const isShowingThisJob = () =>
+    dom.jobDetailOverlay?.classList.contains("show") &&
+    dom.jobDetailContent?.querySelector(".jd-body")?.dataset.jobKey === applicationJobKey;
 
   const applyLink = isApplicationUnlocked
     ? getApplicationLink(effectiveApplicationId, job.Company)
@@ -1500,7 +1504,7 @@ function showJobDetail(job) {
       </div>`;
   } else {
     applicationDetailsHtml = `
-      <div class="jd-unlock-prompt" id="jdUnlockPrompt" data-job-key="${applicationJobKey.replace(/"/g, "&quot;")}">
+      <div class="jd-unlock-prompt" id="jdUnlockPrompt">
           <p style="margin: 0; color: #64748b;">
               <i class="fas fa-spinner fa-spin" style="margin-right: 6px;"></i>Loading application link...
           </p>
@@ -1519,7 +1523,7 @@ function showJobDetail(job) {
                 </button>
             </div>
         </div>
-        <div class="jd-body">
+        <div class="jd-body" data-job-key="${applicationJobKey.replace(/"/g, "&quot;")}">
             <div class="jd-hero-card">
                 <div class="jd-hero-top">
                     <div class="jd-hero-avatar" style="background:${colors.bg};color:${colors.fg}">${initials}</div>
@@ -1605,24 +1609,20 @@ function showJobDetail(job) {
     .getElementById("jdShareInline")
     ?.addEventListener("click", (e) => shareJob(job, e.currentTarget));
 
+  const withApplicationDetails = (details) => ({
+    ...job,
+    "Application ID": details.applicationId,
+    Description: details.description || job.Description,
+    __browserGuardUnlocked: true,
+  });
+
   // Re-render this job with its application link, keeping the reader's scroll position.
   const showJobDetailWithApplicationDetails = (details) => {
-    const unlockedJob = {
-      ...job,
-      "Application ID": details.applicationId,
-      Description: details.description || job.Description,
-      __browserGuardUnlocked: true,
-    };
     const scrollers = () => [dom.jobDetailOverlay, dom.jobDetailContent, dom.jobDetailContent?.querySelector(".jd-body")];
     const scrollTops = scrollers().map((el) => el?.scrollTop || 0);
-    showJobDetail(unlockedJob);
+    showJobDetail(withApplicationDetails(details));
     scrollers().forEach((el, i) => { if (el) el.scrollTop = scrollTops[i]; });
-    return unlockedJob;
   };
-
-  const isStillShowingThisJob = () =>
-    dom.jobDetailOverlay?.classList.contains("show") &&
-    document.getElementById("jdUnlockPrompt")?.dataset.jobKey === applicationJobKey;
 
   // Apply Now pressed while the link is still loading: wait for it, record, then open it.
   const handleUnlockAndApply = async (btnElement) => {
@@ -1640,9 +1640,9 @@ function showJobDetail(job) {
     try {
       const details = await loadApplicationDetails(job);
       const targetApplyLink = getApplicationLink(details.applicationId, job.Company);
-      const unlockedJob = { ...job, "Application ID": details.applicationId, Description: details.description || job.Description };
-      await recordApplication(unlockedJob, btnElement);
-      showJobDetailWithApplicationDetails(details);
+      await recordApplication(withApplicationDetails(details), btnElement);
+      // Re-render only if the student is still on this job (they may have closed it or opened another).
+      if (isShowingThisJob()) showJobDetailWithApplicationDetails(details);
 
       if (targetApplyLink && targetApplyLink !== "#") {
         if (targetApplyLink.startsWith("mailto:")) {
@@ -1653,6 +1653,10 @@ function showJobDetail(job) {
       }
     } catch (error) {
       console.error("Application link load failed:", error);
+      if (error?.status === 401) {
+        window.location.href = "/login.html";
+        return;
+      }
       showToast(friendlyApplicationLoadError(error), "error");
       if (btnElement) {
         btnElement.disabled = false;
@@ -1694,7 +1698,7 @@ function showJobDetail(job) {
         ?.addEventListener("click", async (e) => {
           e.preventDefault();
           await recordApplication(unlockedJob, e.currentTarget);
-          window.open(applyLink, "_blank");
+          if (applyLink && applyLink !== "#") window.open(applyLink, "_blank");
         });
     }
   }
@@ -1725,12 +1729,19 @@ function showJobDetail(job) {
   if (needsApplicationLoad) {
     loadApplicationDetails(job)
       .then((details) => {
-        if (isStillShowingThisJob()) showJobDetailWithApplicationDetails(details);
+        if (isShowingThisJob() && document.getElementById("jdUnlockPrompt")) showJobDetailWithApplicationDetails(details);
       })
       .catch((error) => {
         console.error("Application link load failed:", error);
-        if (!isStillShowingThisJob()) return;
         const box = document.getElementById("jdUnlockPrompt");
+        if (!isShowingThisJob() || !box) return;
+        if (error?.status === 401) {
+          // Expired session: retrying can't work, signing in again does.
+          box.innerHTML = `
+            <p style="margin: 0 0 0.75rem; color: #b91c1c;">Your session has expired. Please sign in again to see the application link.</p>
+            <a href="/login.html" class="jd-btn-primary">Sign in again</a>`;
+          return;
+        }
         box.innerHTML = `
           <p style="margin: 0 0 0.75rem; color: #b91c1c;"></p>
           <button type="button" class="jd-btn-secondary" id="jdRetryAppLink">
