@@ -137,11 +137,14 @@ test('content: 3 banners (program web-only, firm review on both portals) and 7 E
   });
 });
 
-test('portal: articleship exclusives are free to apply, pinned on top of page 1, and skipped on later pages', () => {
+// 10 Nov 2026 (Padam, PR #201): MSC-posted Articleship exclusives lock for students not in the MSC Articleship
+// Program; outside recruiters' vacancies stay open. The rule lives in exclusive-vacancy.js
+// (tests/articleship-exclusive.test.cjs); here we check the portal uses it and keeps the pinning.
+test('portal: articleship exclusives use the shared lock rule, pinned on top of page 1, and skipped on later pages', () => {
   const src = read('scripts/portal3.js');
-  assert.match(src, /function isExclusiveLocked\(job\) \{\n\s+return Boolean\(job && job\.is_exclusive\) && currentTable !== 'Articleship Jobs' && !isEnrolledSync\(currentTable\);/);
-  assert.match(src, /const isLocked = isExclusiveLocked\(job\);/);
-  assert.match(src, /if \(isExclusiveLocked\(job\)\) \{\n\s+showExclusiveLockedModal\(job\);/);
+  assert.match(src, /import \{[^}]*isExclusiveLocked[^}]*\} from '\.\/exclusive-vacancy\.js';/);
+  assert.match(src, /const isLocked = isExclusiveLocked\(job, currentTable, isEnrolledSync\(currentTable\)\);/);
+  assert.match(src, /if \(isExclusiveLocked\(job, currentTable, isEnrolledSync\(currentTable\)\)\) \{\n\s+showExclusiveLockedModal\(job\);/);
   assert.doesNotMatch(src, /isExclusive && !isEnrolledSync/);
   assert.match(src, /"Stipend Range", is_exclusive';/);
   assert.match(src, /buildQuery\(selectColumns\)\.eq\('is_exclusive', true\)\.gte\('Created_At', cutoff\)/);

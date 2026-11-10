@@ -1,6 +1,7 @@
 import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
+import { ARTICLESHIP_TABLE, isExclusiveLocked, showExclusiveLockPopup } from './exclusive-vacancy.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -185,6 +186,7 @@ function renderJobCard(job) {
     let compText = '';
     let compLabel = 'Stipend';
     const table = job.source_table || state.portalType || '';
+    const isLocked = isExclusiveLocked(job, table, isEnrolledSync(table));
     if (table === 'Fresher Jobs') {
         compText = job['CTC Range'] || (job.Salary ? `₹${job.Salary}` : '');
         compLabel = 'Salary';
@@ -237,7 +239,7 @@ function renderJobCard(job) {
         </div>
         ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? '…' : ''}</p>` : ''}
         <div class="job-card-actions">
-            <a href="${isExclusive && !isEnrolledSync(table) ? '#' : applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}">
+            <a href="${isLocked ? '#' : applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}">
                 <svg fill="currentColor" viewBox="0 0 24 24" width="13" height="13"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg>
                 Apply Now
             </a>
@@ -249,9 +251,9 @@ function renderJobCard(job) {
     if (applyBtn) {
         applyBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (isExclusive && !isEnrolledSync(table)) {
+            if (isLocked) {
                 e.preventDefault();
-                showEnrollmentRequiredPopup();
+                showLockedForTable(table);
                 return;
             }
             if (recruiterPosted) {
@@ -484,8 +486,8 @@ function showModal(job) {
     const recruiterPosted = isRecruiterPostedJob(job);
     const table = job.source_table || state.portalType;
     const isExclusive = Boolean(job.is_exclusive);
-    if (isExclusive && !isEnrolledSync(table)) {
-        showEnrollmentRequiredPopup();
+    if (isExclusiveLocked(job, table, isEnrolledSync(table))) {
+        showLockedForTable(table);
         return;
     }
     const applyLink = getApplicationLink(job['Application ID'], job.Company);
@@ -779,6 +781,7 @@ async function fetchJobs() {
                 if (table === "Fresher Jobs") selectColumns = selectColumnsFresher;
                 else if (table === "Semi Qualified Jobs") selectColumns = selectColumnsSemi;
                 else if (table === "Industrial Training Job Portal") selectColumns += ', is_exclusive';
+                else if (table === ARTICLESHIP_TABLE) selectColumns += ', is_exclusive';
 
                 let query = supabaseClient.from(table).select(selectColumns);
 
@@ -1321,6 +1324,12 @@ function isEnrolledSync(tableName) {
     if (tableName === 'Industrial Training Job Portal') return enrollmentStatusCache.industrialTraining;
     if (tableName === 'Fresher Jobs') return enrollmentStatusCache.freshers;
     return enrollmentStatusCache.any;
+}
+
+// Articleship: only MSC-posted exclusives lock, with the Articleship lock screen (exclusive-vacancy.js).
+function showLockedForTable(table) {
+    if (table === ARTICLESHIP_TABLE) showExclusiveLockPopup({ signedIn: Boolean(currentSession) });
+    else showEnrollmentRequiredPopup();
 }
 
 function showEnrollmentRequiredPopup() {
