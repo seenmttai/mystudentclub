@@ -4841,6 +4841,23 @@ img[src*="/assets/logo"] { border-radius: 0 !important; }
   outline-offset: 2px;
 }
 
+/* The same link inside the logged-out sign-up wall, which covers the buttons above. */
+.login-prompt-recruiter {
+  margin: 1rem 0 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.login-prompt-recruiter a {
+  color: var(--primary-brand);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-prompt-recruiter a:hover {
+  text-decoration: underline;
+}
+
 /* Below 1024px the row wrapper has no box of its own (the desktop search bar inside it is hidden). */
 .dv2-search-row {
   display: contents;
