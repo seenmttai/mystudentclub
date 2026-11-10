@@ -30,6 +30,70 @@ const BROWSER_GUARD_WORKER_URL =
   (typeof window !== "undefined" && window.BROWSER_GUARD_WORKER_URL) ||
   "https://browser.mystudentclub.com";
 
+// 10 Nov 2026: signed-in students see the application link as soon as a job opens, with no
+// "View Application Details" tap. The old tap went through the BrowserGuard Worker; when a
+// network, blocker or preview link could not reach it, students got a bare "Failed to fetch"
+// and could not apply at all. The link is now read straight from Supabase (signed-in users
+// can already read "Application ID"); BrowserGuard is only the backup.
+const applicationDetailsCache = new Map();
+const applicationDetailsInFlight = new Map();
+
+function applicationDetailsKey(job, tableName = currentTable) {
+  return `${currentSession?.user?.id || ""}:${tableName}:${job?.id}`;
+}
+
+function getCachedApplicationDetails(job) {
+  if (!currentSession || !job) return null;
+  return (
+    applicationDetailsCache.get(applicationDetailsKey(job)) ||
+    getCachedUnlockedJob(job.id, currentTable, currentSession)
+  );
+}
+
+async function loadApplicationDetails(job) {
+  const tableName = currentTable;
+  const session = currentSession;
+  const key = applicationDetailsKey(job, tableName);
+  if (applicationDetailsCache.has(key)) return applicationDetailsCache.get(key);
+  if (applicationDetailsInFlight.has(key)) return applicationDetailsInFlight.get(key);
+
+  const pending = (async () => {
+    let details = null;
+    try {
+      const { data, error } = await supabaseClient
+        .from(tableName)
+        .select('"Application ID", Description')
+        .eq("id", job.id)
+        .maybeSingle();
+      if (error) console.warn("Direct application link read failed, trying BrowserGuard:", error.message);
+      else if (data) details = { applicationId: data["Application ID"] || null, description: data.Description || null };
+    } catch (err) {
+      console.warn("Direct application link read failed, trying BrowserGuard:", err);
+    }
+    if (!details) {
+      const unlocked = await unlockJobDetails(job, tableName, session, { endpoint: BROWSER_GUARD_WORKER_URL });
+      details = { applicationId: unlocked.applicationId || null, description: unlocked.description || null };
+    }
+    applicationDetailsCache.set(key, details);
+    return details;
+  })();
+
+  applicationDetailsInFlight.set(key, pending);
+  try {
+    return await pending;
+  } finally {
+    applicationDetailsInFlight.delete(key);
+  }
+}
+
+function friendlyApplicationLoadError(error) {
+  const message = String(error?.message || "");
+  if (!message || error instanceof TypeError || /failed to fetch|load failed|networkerror|network request failed/i.test(message)) {
+    return "Couldn't load the application link. Check your internet and try again.";
+  }
+  return message;
+}
+
 
 
 const FIREBASE_CONFIG = {
@@ -1340,9 +1404,7 @@ function showJobDetail(job) {
   const isApplied = appliedJobIds.has(job.id);
 
   // Check BrowserGuard unlock status
-  const cachedUnlocked = currentSession
-    ? getCachedUnlockedJob(job.id, currentTable, currentSession)
-    : null;
+  const cachedUnlocked = currentSession ? getCachedApplicationDetails(job) : null;
   const isApplicationUnlocked =
     job.__browserGuardUnlocked === true ||
     Boolean(cachedUnlocked) ||
@@ -1351,6 +1413,8 @@ function showJobDetail(job) {
     cachedUnlocked?.applicationId || job["Application ID"] || "";
   const effectiveDescription =
     cachedUnlocked?.description || job.Description || "";
+  const needsApplicationLoad = Boolean(currentSession) && !isApplicationUnlocked;
+  const applicationJobKey = applicationDetailsKey(job);
 
   const applyLink = isApplicationUnlocked
     ? getApplicationLink(effectiveApplicationId, job.Company)
@@ -1436,11 +1500,10 @@ function showJobDetail(job) {
       </div>`;
   } else {
     applicationDetailsHtml = `
-      <div class="jd-unlock-prompt" id="jdUnlockPrompt">
-          <button type="button" class="jd-btn-primary jd-btn-reveal" id="jdBtnRevealAppId">
-              <i class="fas fa-unlock-alt" style="margin-right: 6px;"></i>
-              <span>View Application Details & Link to Apply</span>
-          </button>
+      <div class="jd-unlock-prompt" id="jdUnlockPrompt" data-job-key="${applicationJobKey.replace(/"/g, "&quot;")}">
+          <p style="margin: 0; color: #64748b;">
+              <i class="fas fa-spinner fa-spin" style="margin-right: 6px;"></i>Loading application link...
+          </p>
       </div>`;
   }
 
@@ -1522,7 +1585,7 @@ function showJobDetail(job) {
                 ${!isApplicationUnlocked ? `
                   <div class="jd-desc-locked-notice">
                       <i class="fas fa-shield-halved"></i>
-                      <span>${!currentSession ? 'Login to view complete job description and recruiter contact details.' : 'Click "Apply Now" or "View Application Details" above to reveal full details.'}</span>
+                      <span>${!currentSession ? 'Login to view complete job description and recruiter contact details.' : 'Recruiter contact details show once the application link loads.'}</span>
                   </div>
                 ` : ''}
             </div>
@@ -1542,8 +1605,27 @@ function showJobDetail(job) {
     .getElementById("jdShareInline")
     ?.addEventListener("click", (e) => shareJob(job, e.currentTarget));
 
-  // Handler to unlock via BrowserGuard worker and optionally redirect
-  const handleUnlockAndApply = async (btnElement, autoRedirect = true) => {
+  // Re-render this job with its application link, keeping the reader's scroll position.
+  const showJobDetailWithApplicationDetails = (details) => {
+    const unlockedJob = {
+      ...job,
+      "Application ID": details.applicationId,
+      Description: details.description || job.Description,
+      __browserGuardUnlocked: true,
+    };
+    const scrollers = () => [dom.jobDetailOverlay, dom.jobDetailContent, dom.jobDetailContent?.querySelector(".jd-body")];
+    const scrollTops = scrollers().map((el) => el?.scrollTop || 0);
+    showJobDetail(unlockedJob);
+    scrollers().forEach((el, i) => { if (el) el.scrollTop = scrollTops[i]; });
+    return unlockedJob;
+  };
+
+  const isStillShowingThisJob = () =>
+    dom.jobDetailOverlay?.classList.contains("show") &&
+    document.getElementById("jdUnlockPrompt")?.dataset.jobKey === applicationJobKey;
+
+  // Apply Now pressed while the link is still loading: wait for it, record, then open it.
+  const handleUnlockAndApply = async (btnElement) => {
     if (!currentSession) {
       window.location.href = "/login.html";
       return;
@@ -1556,27 +1638,13 @@ function showJobDetail(job) {
     }
 
     try {
-      const unlocked = await unlockJobDetails(job, currentTable, currentSession, {
-        endpoint: BROWSER_GUARD_WORKER_URL,
-      });
+      const details = await loadApplicationDetails(job);
+      const targetApplyLink = getApplicationLink(details.applicationId, job.Company);
+      const unlockedJob = { ...job, "Application ID": details.applicationId, Description: details.description || job.Description };
+      await recordApplication(unlockedJob, btnElement);
+      showJobDetailWithApplicationDetails(details);
 
-      const unlockedJob = {
-        ...job,
-        "Application ID": unlocked.applicationId,
-        Description: unlocked.description || job.Description,
-        __browserGuardUnlocked: true,
-      };
-
-      const targetApplyLink = getApplicationLink(unlocked.applicationId, job.Company);
-
-      if (autoRedirect) {
-        await recordApplication(unlockedJob, btnElement);
-      }
-
-      // Re-render bottom sheet in unlocked state
-      showJobDetail(unlockedJob);
-
-      if (autoRedirect && targetApplyLink && targetApplyLink !== "#") {
+      if (targetApplyLink && targetApplyLink !== "#") {
         if (targetApplyLink.startsWith("mailto:")) {
           openMailtoLink(targetApplyLink);
         } else {
@@ -1584,8 +1652,8 @@ function showJobDetail(job) {
         }
       }
     } catch (error) {
-      console.error("BrowserGuard unlock failed:", error);
-      showToast(error.message || "Unable to verify this browser. Please try again.", "error");
+      console.error("Application link load failed:", error);
+      showToast(friendlyApplicationLoadError(error), "error");
       if (btnElement) {
         btnElement.disabled = false;
         btnElement.innerHTML = originalHtml;
@@ -1593,18 +1661,10 @@ function showJobDetail(job) {
     }
   };
 
-  // Wire locked unlock triggers
   const jdApplyNowLockedBtn = document.getElementById("jdApplyNowLockedBtn");
   if (jdApplyNowLockedBtn) {
     jdApplyNowLockedBtn.addEventListener("click", () => {
-      handleUnlockAndApply(jdApplyNowLockedBtn, true);
-    });
-  }
-
-  const jdBtnRevealAppId = document.getElementById("jdBtnRevealAppId");
-  if (jdBtnRevealAppId) {
-    jdBtnRevealAppId.addEventListener("click", () => {
-      handleUnlockAndApply(jdBtnRevealAppId, false);
+      handleUnlockAndApply(jdApplyNowLockedBtn);
     });
   }
 
@@ -1660,6 +1720,26 @@ function showJobDetail(job) {
 
   dom.jobDetailOverlay.classList.add("show");
   document.body.style.overflow = "hidden";
+
+  // Signed in: load the application link straight away (no "View Application Details" tap).
+  if (needsApplicationLoad) {
+    loadApplicationDetails(job)
+      .then((details) => {
+        if (isStillShowingThisJob()) showJobDetailWithApplicationDetails(details);
+      })
+      .catch((error) => {
+        console.error("Application link load failed:", error);
+        if (!isStillShowingThisJob()) return;
+        const box = document.getElementById("jdUnlockPrompt");
+        box.innerHTML = `
+          <p style="margin: 0 0 0.75rem; color: #b91c1c;"></p>
+          <button type="button" class="jd-btn-secondary" id="jdRetryAppLink">
+              <i class="fas fa-redo" style="margin-right: 6px;"></i>Try again
+          </button>`;
+        box.querySelector("p").textContent = friendlyApplicationLoadError(error);
+        document.getElementById("jdRetryAppLink")?.addEventListener("click", () => showJobDetail(job));
+      });
+  }
 }
 
 function hideJobDetail() {
