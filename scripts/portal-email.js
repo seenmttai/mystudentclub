@@ -264,6 +264,27 @@ function generateApplicationLinks(applicationId) {
 }
 
 // Share job using Web Share API or fallback to copy link
+// Locations are stored with one name per city (migration 202611060004: Bangalore = Bengaluru, Gurgaon = Gurugram...).
+// A student typing the other name still finds them, and older rows that kept the other name still match.
+const CITY_ALIASES = [
+    ['bengaluru', 'bangalore'], ['gurugram', 'gurgaon'], ['mumbai', 'bombay'], ['kolkata', 'calcutta'],
+    ['chennai', 'madras'], ['vadodara', 'baroda'], ['kochi', 'cochin'], ['mysuru', 'mysore'],
+    ['mangaluru', 'mangalore'], ['thiruvananthapuram', 'trivandrum'], ['delhi', 'new delhi'],
+];
+
+function expandLocationTerms(locations) {
+    const terms = [];
+    const add = (t) => { if (t && !terms.some(x => x.toLowerCase() === t.toLowerCase())) terms.push(t); };
+    for (const loc of locations) {
+        add(loc);
+        const low = String(loc).trim().toLowerCase();
+        for (const group of CITY_ALIASES) {
+            if (group.includes(low)) group.forEach(add);
+        }
+    }
+    return terms;
+}
+
 function shareJob(job, btnElement) {
     const table = job.source_table || state.portalType;
     const jobType = table === 'Industrial Training Job Portal' ? 'industrial' :
@@ -639,7 +660,7 @@ async function fetchJobs() {
                 }
 
                 if (state.locations && state.locations.length > 0) {
-                    const locationOr = state.locations.map(loc => `Location.ilike."%${loc}%"`);
+                    const locationOr = expandLocationTerms(state.locations).map(loc => `Location.ilike."%${loc}%"`);
                     query = query.or(locationOr.join(','));
                 }
 
