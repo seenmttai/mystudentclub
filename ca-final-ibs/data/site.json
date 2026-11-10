@@ -1,0 +1,896 @@
+{
+ "papers": [
+  {
+   "id": "may26",
+   "label": "May 2026",
+   "qp": null,
+   "sa": "https://resource.cdn.icai.org/92770bos-sa-final-may2026-p6.pdf"
+  },
+  {
+   "id": "jan26",
+   "label": "Jan 2026",
+   "qp": null,
+   "sa": "https://resource.cdn.icai.org/91146bos-aps4314-sa-jan2026-p6.pdf"
+  },
+  {
+   "id": "sep25",
+   "label": "Sep 2025",
+   "qp": "https://resource.cdn.icai.org/88274bos-aps2265-final-p6.pdf",
+   "sa": "https://resource.cdn.icai.org/89281bos-aps3012-final-p6.pdf"
+  },
+  {
+   "id": "may25",
+   "label": "May 2025",
+   "qp": "https://resource.cdn.icai.org/85948bos-aps471-final-p6.pdf",
+   "sa": "https://resource.cdn.icai.org/86862bos-sa-final-may2025-g2-p6.pdf"
+  },
+  {
+   "id": "nov24",
+   "label": "Nov 2024",
+   "qp": "https://resource.cdn.icai.org/82885bos66971p6.pdf",
+   "sa": "https://resource.cdn.icai.org/84428bos68027-p6.pdf"
+  },
+  {
+   "id": "may24",
+   "label": "May 2024",
+   "qp": "https://resource.cdn.icai.org/80532bos64714-p6.pdf",
+   "sa": "https://resource.cdn.icai.org/81685bos65858-p6.pdf"
+  }
+ ],
+ "downloads": {
+  "notes": [
+   {
+    "label": "Handwritten notes",
+    "path": "files/IBS-Strategy-Handwritten-Notes.pdf",
+    "size_kb": 4230
+   }
+  ],
+  "analysis": [
+   {
+    "label": "Topic analysis (PDF)",
+    "path": "files/IBS-Past-Paper-Analysis.pdf",
+    "size_kb": 444
+   },
+   {
+    "label": "Every question (Excel)",
+    "path": "files/IBS-All-Past-Questions-May-2024-May-2026.xlsx",
+    "size_kb": 57
+   }
+  ],
+  "solutions": [
+   {
+    "label": "All solutions (PDF)",
+    "path": "files/IBS-Past-Papers-Solved-May-2024-to-May-2026.pdf",
+    "size_kb": 4866
+   }
+  ]
+ },
+ "analysis": {
+  "papers": [
+   {
+    "id": "may24",
+    "label": "May 24"
+   },
+   {
+    "id": "nov24",
+    "label": "Nov 24"
+   },
+   {
+    "id": "may25",
+    "label": "May 25"
+   },
+   {
+    "id": "sep25",
+    "label": "Sep 25"
+   },
+   {
+    "id": "jan26",
+    "label": "Jan 26"
+   },
+   {
+    "id": "may26",
+    "label": "May 26"
+   }
+  ],
+  "subjects": [
+   "FR",
+   "AFM",
+   "Audit",
+   "DT",
+   "IDT",
+   "Law",
+   "Costing"
+  ],
+  "marks": {
+   "IDT": {
+    "may24": 19,
+    "nov24": 30,
+    "may25": 23,
+    "sep25": 18,
+    "jan26": 20,
+    "may26": 16
+   },
+   "AFM": {
+    "may24": 21,
+    "nov24": 16,
+    "may25": 19,
+    "sep25": 18,
+    "jan26": 22,
+    "may26": 17
+   },
+   "DT": {
+    "may24": 27,
+    "nov24": 17,
+    "may25": 17,
+    "sep25": 19,
+    "jan26": 15,
+    "may26": 24
+   },
+   "FR": {
+    "may24": 18,
+    "nov24": 24,
+    "may25": 17,
+    "sep25": 18,
+    "jan26": 17,
+    "may26": 16
+   },
+   "Audit": {
+    "may24": 16,
+    "nov24": 12,
+    "may25": 14,
+    "sep25": 15,
+    "jan26": 13,
+    "may26": 13
+   },
+   "Costing": {
+    "may24": 9,
+    "nov24": 10,
+    "may25": 19,
+    "sep25": 22,
+    "jan26": 21,
+    "may26": 27
+   },
+   "Law": {
+    "may24": 15,
+    "nov24": 16,
+    "may25": 16,
+    "sep25": 15,
+    "jan26": 16,
+    "may26": 12
+   }
+  },
+  "topics": {
+   "FR": [
+    {
+     "chapter": "Ind AS 116",
+     "count": 3,
+     "topics": "Initial measurement of right-of-use asset (lessee); Lessee accounting for a USD lease - initial measurement, initial direct cost, restatement, depreciation, presentation",
+     "refs": [
+      "May 24 Q2.4",
+      "Sep 25 Q3.8",
+      "May 26 Q5.7"
+     ]
+    },
+    {
+     "chapter": "Ind AS 1",
+     "count": 3,
+     "topics": "Operating cycle longer than 12 months; loan in default - para 74 Indian carve-out",
+     "refs": [
+      "Nov 24 Q2.6",
+      "May 25 Q5.4",
+      "Jan 26 Q5.6"
+     ]
+    },
+    {
+     "chapter": "Ind AS 16",
+     "count": 3,
+     "topics": "Gain on disposal of PPE goes to profit or loss; Elements of cost",
+     "refs": [
+      "May 25 Q5.5",
+      "Jan 26 Q4.4",
+      "Jan 26 Q5.5"
+     ]
+    },
+    {
+     "chapter": "Ind AS 38",
+     "count": 2,
+     "topics": "Cost of separately acquired software with deferred payment and directly attributable costs; General disclosures for each class of intangible assets",
+     "refs": [
+      "Nov 24 Q4.1",
+      "Nov 24 Q4.8"
+     ]
+    },
+    {
+     "chapter": "Ind AS 8",
+     "count": 2,
+     "topics": "Change in cost formula (FIFO / weighted average) is a change in accounting policy; Correcting prior period errors",
+     "refs": [
+      "May 24 Q1.5",
+      "Nov 24 Q3.6"
+     ]
+    },
+    {
+     "chapter": "Ind AS 2",
+     "count": 2,
+     "topics": "NRV using a post-year-end price that confirms year-end conditions; Joint products, by-product at NRV, scrap, finished-goods storage cost excluded, raw material not written down",
+     "refs": [
+      "May 24 Q3.1",
+      "May 26 Q4.6"
+     ]
+    },
+    {
+     "chapter": "Ind AS 115",
+     "count": 2,
+     "topics": "Variable consideration (most likely amount, constraint) and cumulative catch-up on reassessment; cost-to-cost input method",
+     "refs": [
+      "May 24 Q3.6",
+      "Sep 25 Q5.5"
+     ]
+    },
+    {
+     "chapter": "Ind AS 103",
+     "count": 2,
+     "topics": "Controlling stake in a cricket franchise - acquisition method, intangibles, lease, NCI, goodwill; Date control is obtained",
+     "refs": [
+      "Sep 25 Q2.8",
+      "Sep 25 Q4.4"
+     ]
+    }
+   ],
+   "AFM": [
+    {
+     "chapter": "Forex Exposure & Risk Management",
+     "count": 11,
+     "topics": "Hedging policy steps and choice of instrument (forwards, futures, options, swaps, zero-cost collar); Expected loss avoided by a forward cover on an import payable",
+     "refs": [
+      "May 24 Q2.7",
+      "Nov 24 Q5.2",
+      "Nov 24 Q5.7",
+      "May 25 Q2.7",
+      "Sep 25 Q3.7",
+      "Sep 25 Q4.7",
+      "Jan 26 Q2.3",
+      "Jan 26 Q3.8",
+      "Jan 26 Q5.3",
+      "Jan 26 Q5.7",
+      "May 26 Q1.7"
+     ]
+    },
+    {
+     "chapter": "Advanced Capital Budgeting",
+     "count": 4,
+     "topics": "NPV at risk-adjusted discount rate (risk-free + risk premium); Choosing between machines of unequal lives - Equivalent Annual Cost",
+     "refs": [
+      "May 24 Q1.2",
+      "May 24 Q4.7",
+      "Sep 25 Q2.7",
+      "May 26 Q3.7"
+     ]
+    },
+    {
+     "chapter": "Mergers, Acquisitions & Restructuring",
+     "count": 4,
+     "topics": "Swap ratio - shares issued, post-merger EPS, equivalent EPS, post-merger price and value; Post-merger EPS x PE x shares = market capitalisation",
+     "refs": [
+      "May 24 Q2.6",
+      "May 25 Q5.2",
+      "May 25 Q5.8",
+      "Sep 25 Q5.2"
+     ]
+    },
+    {
+     "chapter": "Security Valuation (Bonds & Equity)",
+     "count": 3,
+     "topics": "g = b x r; P = D1 / (Ke - g)",
+     "refs": [
+      "May 25 Q4.2",
+      "Jan 26 Q1.8",
+      "May 26 Q5.2"
+     ]
+    },
+    {
+     "chapter": "Portfolio Management",
+     "count": 3,
+     "topics": "Management fee + incentive fee above the high-water mark; Arbitrage strategy in distressed securities",
+     "refs": [
+      "Nov 24 Q2.4",
+      "Nov 24 Q4.3",
+      "Nov 24 Q4.6"
+     ]
+    },
+    {
+     "chapter": "Interest Rate Risk Management",
+     "count": 2,
+     "topics": "Interest rate risk vs maturity and YTM; pull to par of premium and discount bonds",
+     "refs": [
+      "Jan 26 Q3.2",
+      "May 26 Q4.1"
+     ]
+    },
+    {
+     "chapter": "Security Analysis",
+     "count": 1,
+     "topics": "Exponential Moving Average: EMA today = EMA yesterday + k x (index - EMA yesterday)",
+     "refs": [
+      "May 24 Q5.6"
+     ]
+    },
+    {
+     "chapter": "Business Valuation",
+     "count": 1,
+     "topics": "EVA = NOPAT - WACC x invested capital, with provision add-back",
+     "refs": [
+      "May 25 Q1.7"
+     ]
+    }
+   ],
+   "Audit": [
+    {
+     "chapter": "Professional Ethics",
+     "count": 8,
+     "topics": "Website must work on 'pull' basis; no client names unless a regulator requires disclosure",
+     "refs": [
+      "May 24 Q3.2",
+      "May 24 Q4.1",
+      "May 24 Q4.2",
+      "Nov 24 Q5.8",
+      "Sep 25 Q1.1",
+      "Sep 25 Q5.1",
+      "Jan 26 Q4.8",
+      "May 26 Q3.3"
+     ]
+    },
+    {
+     "chapter": "Audit Reports (SA 700-706)",
+     "count": 7,
+     "topics": "EOM cannot replace audit evidence; written representations alone are not sufficient",
+     "refs": [
+      "May 24 Q1.7",
+      "Nov 24 Q4.5",
+      "May 25 Q4.7",
+      "Sep 25 Q1.6",
+      "May 26 Q1.2",
+      "May 26 Q4.3",
+      "May 26 Q4.5"
+     ]
+    },
+    {
+     "chapter": "Internal Control & Internal Audit (SA 265, 315, 610)",
+     "count": 3,
+     "topics": "Statutory auditor's response to internal auditor's findings on receivable controls left unremedied; Controls to test before relying on a new IT system",
+     "refs": [
+      "May 24 Q3.7",
+      "May 25 Q3.3",
+      "May 25 Q3.8"
+     ]
+    },
+    {
+     "chapter": "Related Services & Assurance (SAE, SRS)",
+     "count": 2,
+     "topics": "Limited review of interim financial information: required procedures; Additional procedures when inventory may be misstated",
+     "refs": [
+      "Jan 26 Q2.5",
+      "Jan 26 Q2.8"
+     ]
+    },
+    {
+     "chapter": "Digital Auditing & ESG",
+     "count": 2,
+     "topics": "Ransomware; control to identify such attacks",
+     "refs": [
+      "May 25 Q4.5",
+      "Sep 25 Q2.4"
+     ]
+    },
+    {
+     "chapter": "Planning, Materiality & Risk (SA 300, 320)",
+     "count": 1,
+     "topics": "Acceptance, planning and performance of a specific-element audit by the statutory auditor",
+     "refs": [
+      "May 26 Q4.7"
+     ]
+    },
+    {
+     "chapter": "CARO 2020",
+     "count": 1,
+     "topics": "Adverse opinion (material and pervasive misstatement) vs disclaimer (scope limitation); CARO 3(ii)(a)",
+     "refs": [
+      "Nov 24 Q1.6"
+     ]
+    },
+    {
+     "chapter": "Audit Evidence (SA 500-580)",
+     "count": 1,
+     "topics": "Facts known after FS are issued - amended FS and new auditor's report",
+     "refs": [
+      "May 25 Q1.2"
+     ]
+    }
+   ],
+   "DT": [
+    {
+     "chapter": "PGBP (Business Income)",
+     "count": 10,
+     "topics": "Normal depreciation, half-rate for use under 180 days, additional depreciation s.32(1)(iia); asset not used for business gets nothing",
+     "refs": [
+      "May 24 Q1.3",
+      "May 24 Q4.4",
+      "May 24 Q4.6",
+      "Nov 24 Q2.1",
+      "Nov 24 Q3.3",
+      "May 25 Q3.1",
+      "May 25 Q5.3",
+      "Jan 26 Q4.2",
+      "Jan 26 Q5.8",
+      "May 26 Q1.8"
+     ]
+    },
+    {
+     "chapter": "Non-Resident Taxation & DTAA",
+     "count": 7,
+     "topics": "Residence of a person of Indian origin on a visit; FTS @20% u/s 115A",
+     "refs": [
+      "May 24 Q5.7(ii)",
+      "Nov 24 Q1.5",
+      "Nov 24 Q1.7",
+      "Nov 24 Q3.2",
+      "Sep 25 Q4.6",
+      "May 26 Q2.7",
+      "May 26 Q5.8"
+     ]
+    },
+    {
+     "chapter": "Transfer Pricing & Anti-avoidance",
+     "count": 4,
+     "topics": "Thin capitalisation: interest to a non-resident associated enterprise above 30% of EBITDA; Secondary adjustment: repatriate in 90 days, else deemed advance with interest, or pay 18% additional tax",
+     "refs": [
+      "Nov 24 Q4.2",
+      "May 25 Q2.8",
+      "Sep 25 Q2.2",
+      "Sep 25 Q2.6"
+     ]
+    },
+    {
+     "chapter": "Appeals, Revision & Settlement",
+     "count": 3,
+     "topics": "6-month limit applies to filing the application; an application filed in time can be decided later (Sree Ayyanar Spinning & Weaving Mills, SC)",
+     "refs": [
+      "May 24 Q3.8",
+      "May 26 Q2.2",
+      "May 26 Q3.8"
+     ]
+    },
+    {
+     "chapter": "Charitable Trusts",
+     "count": 3,
+     "topics": "General public utility institution with trade receipts above 20% of total receipts - exemption lost for the year (s.13(8)); Renewal of 12AB registration",
+     "refs": [
+      "May 24 Q4.8",
+      "Jan 26 Q3.5",
+      "Jan 26 Q3.7"
+     ]
+    },
+    {
+     "chapter": "Capital Gains",
+     "count": 3,
+     "topics": "Transfer in a demerger is not a transfer for the demerged company; LTCG without indexation after 23.07.2024",
+     "refs": [
+      "May 25 Q4.3",
+      "May 25 Q4.8",
+      "May 26 Q1.3"
+     ]
+    },
+    {
+     "chapter": "TDS / TCS",
+     "count": 2,
+     "topics": "Loan by closely held company to a shareholder-director with 10%+ voting power; Deferred TDS on ESOP perquisite of an eligible start-up",
+     "refs": [
+      "May 24 Q5.2",
+      "May 25 Q1.4"
+     ]
+    },
+    {
+     "chapter": "Penalties & Prosecution",
+     "count": 2,
+     "topics": "Penalty: 50% for under-reporting, 200% for misreporting; estimated additions excluded",
+     "refs": [
+      "Nov 24 Q5.5",
+      "May 26 Q5.3"
+     ]
+    }
+   ],
+   "IDT": [
+    {
+     "chapter": "Input Tax Credit",
+     "count": 16,
+     "topics": "Motor vehicles with seating above 13 not blocked; goods given as gift blocked",
+     "refs": [
+      "May 24 Q1.4",
+      "May 24 Q3.3",
+      "May 24 Q5.4",
+      "Nov 24 Q1.8(a)",
+      "Nov 24 Q4.4",
+      "Nov 24 Q4.7",
+      "Nov 24 Q5.3",
+      "May 25 Q2.5",
+      "May 25 Q4.6",
+      "Sep 25 Q1.8",
+      "Sep 25 Q2.5",
+      "Sep 25 Q4.5",
+      "Jan 26 Q4.5",
+      "May 26 Q1.4",
+      "May 26 Q2.8",
+      "May 26 Q5.4"
+     ]
+    },
+    {
+     "chapter": "Customs",
+     "count": 9,
+     "topics": "Air freight cap, renegotiated price, exchange rate on BoE date, duty rate on later of BoE/arrival; Unjust enrichment on refund of excess duty on imported machinery used in manufacture",
+     "refs": [
+      "Nov 24 Q3.4",
+      "Nov 24 Q5.1",
+      "May 25 Q3.7",
+      "Sep 25 Q1.3",
+      "Sep 25 Q3.5",
+      "Sep 25 Q5.7",
+      "Jan 26 Q5.1",
+      "May 26 Q1.1",
+      "May 26 Q3.4"
+     ]
+    },
+    {
+     "chapter": "Demands, Recovery, Assessment & Audit",
+     "count": 4,
+     "topics": "Additional pre-deposit for appeal to the Appellate Tribunal on an IGST demand; Penalty in a non-fraud short-payment case when tax is not paid within 30 days of SCN",
+     "refs": [
+      "May 24 Q3.4",
+      "Nov 24 Q3.5",
+      "May 25 Q1.3",
+      "Jan 26 Q1.6"
+     ]
+    },
+    {
+     "chapter": "Value of Supply",
+     "count": 3,
+     "topics": "Packing charged by supplier included; discount shown in invoice excluded",
+     "refs": [
+      "May 24 Q2.3",
+      "May 25 Q2.4",
+      "Jan 26 Q4.7"
+     ]
+    },
+    {
+     "chapter": "Tax Invoice, Credit & Debit Notes, E-way Bill",
+     "count": 3,
+     "topics": "Goods sent on sale-or-return basis - date of invoice; Goods sent abroad for exhibition - deemed supply after 6 months, invoice, refund",
+     "refs": [
+      "Nov 24 Q1.3",
+      "Nov 24 Q1.8(b)",
+      "May 25 Q5.7"
+     ]
+    },
+    {
+     "chapter": "Charge of GST, RCM & Exemptions",
+     "count": 3,
+     "topics": "Sponsorship services to a body corporate - tax paid by recipient under RCM; Yoga camps by a 12AB trust",
+     "refs": [
+      "May 24 Q2.2",
+      "Jan 26 Q3.4",
+      "May 26 Q2.3"
+     ]
+    },
+    {
+     "chapter": "Place of Supply",
+     "count": 2,
+     "topics": "Import of technical services from the UK - levy, RCM, time of supply; Change in rate of tax",
+     "refs": [
+      "Nov 24 Q2.7",
+      "Jan 26 Q1.5"
+     ]
+    },
+    {
+     "chapter": "Registration",
+     "count": 1,
+     "topics": "NRTP: compulsory registration, passport-based application, advance tax deposit, 90-day validity",
+     "refs": [
+      "May 24 Q5.7(i)"
+     ]
+    }
+   ],
+   "Law": [
+    {
+     "chapter": "FEMA",
+     "count": 7,
+     "topics": "ECB end-use negative list, hedging and conversion for an INR-denominated ECB; NRI/OCI may sell inherited agricultural land to a resident citizen, cannot buy agricultural land, can buy a flat, may remit up to USD 1 million",
+     "refs": [
+      "Nov 24 Q2.2",
+      "May 25 Q3.5",
+      "May 25 Q4.4",
+      "May 25 Q5.6(i)",
+      "Sep 25 Q1.7",
+      "Sep 25 Q3.4",
+      "Jan 26 Q3.3"
+     ]
+    },
+    {
+     "chapter": "Companies Act: Managerial Remuneration (s.196-197)",
+     "count": 5,
+     "topics": "MD commission above 5%, professional fees to a director, sitting fee increase; Additional director by circulation",
+     "refs": [
+      "Nov 24 Q5.6",
+      "May 25 Q2.3",
+      "Jan 26 Q4.1",
+      "May 26 Q3.2",
+      "May 26 Q5.5"
+     ]
+    },
+    {
+     "chapter": "Companies Act: Directors (appointment, disqualification)",
+     "count": 4,
+     "topics": "Disqualification u/s 164(2)(a) for 3 years' non-filing; vacation u/s 167(1)(a)",
+     "refs": [
+      "May 25 Q1.6",
+      "Sep 25 Q4.1",
+      "Jan 26 Q1.1",
+      "May 26 Q3.1"
+     ]
+    },
+    {
+     "chapter": "Companies Act: Mergers & Compromises (s.230-240)",
+     "count": 4,
+     "topics": "Auditor's certificate on accounting treatment: provisos to s.230(7) and s.232(3); Offer price for unlisted shares, sharing of a higher negotiated price, deposit and 60-day payment",
+     "refs": [
+      "Jan 26 Q1.7",
+      "May 26 Q1.5",
+      "May 26 Q4.2",
+      "May 26 Q4.4"
+     ]
+    },
+    {
+     "chapter": "FCRA",
+     "count": 4,
+     "topics": "Gift for personal use excluded from 'foreign contribution' if market value is not more than Rs 1 lakh; Section 13 - consequences of suspension of FCRA certificate",
+     "refs": [
+      "May 24 Q2.1",
+      "Nov 24 Q1.4",
+      "May 25 Q3.4",
+      "Jan 26 Q3.1"
+     ]
+    },
+    {
+     "chapter": "SEBI (LODR, ICDR, SAST, Insider Trading)",
+     "count": 3,
+     "topics": "Profitability-route tests: NTA and monetary assets, operating profit, net worth, name change; Limits on directorships: s.165 (20 total / 10 public) and Reg 17A (7 listed entities)",
+     "refs": [
+      "Sep 25 Q5.4",
+      "Jan 26 Q2.4",
+      "Jan 26 Q5.2"
+     ]
+    },
+    {
+     "chapter": "Companies Act: Related Party Transactions (s.188)",
+     "count": 2,
+     "topics": "When a public company is a related party: director + relatives holding more than 2%; Holding-WOS sale below market price - Board approval needed, members' approval exempt",
+     "refs": [
+      "Nov 24 Q5.4",
+      "Sep 25 Q2.1"
+     ]
+    },
+    {
+     "chapter": "Companies Act: Accounts, Audit & CSR",
+     "count": 1,
+     "topics": "Thresholds for compulsory internal audit and who can be internal auditor",
+     "refs": [
+      "May 24 Q2.8"
+     ]
+    }
+   ],
+   "Costing": [
+    {
+     "chapter": "Lean System & Innovation (Kaizen, JIT, TPM, Six Sigma)",
+     "count": 7,
+     "topics": "Kaizen costing vs standard costing features; Overall Equipment Effectiveness = Availability × Performance × Quality vs world-class 85%",
+     "refs": [
+      "May 24 Q5.3",
+      "Nov 24 Q3.7",
+      "May 25 Q2.1",
+      "Jan 26 Q2.1",
+      "Jan 26 Q2.6",
+      "May 26 Q2.5",
+      "May 26 Q2.6"
+     ]
+    },
+    {
+     "chapter": "Business models, Porter, automation (Ch 1, 5)",
+     "count": 6,
+     "topics": "Freemium model; Meaning of business model and its components",
+     "refs": [
+      "May 25 Q1.1",
+      "May 25 Q5.6(ii)",
+      "Sep 25 Q2.3",
+      "Sep 25 Q4.8",
+      "Jan 26 Q4.6",
+      "May 26 Q1.6"
+     ]
+    },
+    {
+     "chapter": "Performance Measurement (BSC, KPIs, Benchmarking)",
+     "count": 4,
+     "topics": "Economic, environmental and social areas for a TBL report; Four perspectives of the Balanced Scorecard",
+     "refs": [
+      "Sep 25 Q3.6",
+      "Sep 25 Q5.3",
+      "Jan 26 Q3.6",
+      "Jan 26 Q4.3"
+     ]
+    },
+    {
+     "chapter": "Standard Costing & Variances",
+     "count": 3,
+     "topics": "Causes of material usage variance vs price variance; Labour efficiency and rate variances: traditional vs planning and operational",
+     "refs": [
+      "May 24 Q4.5",
+      "Nov 24 Q2.8",
+      "Sep 25 Q5.6"
+     ]
+    },
+    {
+     "chapter": "Pricing & Decision Making (relevant costing)",
+     "count": 3,
+     "topics": "Make vs buy with extra volume, price cut and marketing cost; indifference purchase price",
+     "refs": [
+      "May 25 Q3.6",
+      "Sep 25 Q4.3",
+      "May 26 Q4.8"
+     ]
+    },
+    {
+     "chapter": "Quality, Customer & Supply Chain (Kano, value chain, CRM)",
+     "count": 2,
+     "topics": "Upstream (inbound) and downstream (outbound) supply chain strategies; Basic, performance, delighter and indifferent attributes",
+     "refs": [
+      "May 25 Q2.6",
+      "May 26 Q5.1"
+     ]
+    },
+    {
+     "chapter": "Throughput Accounting & Theory of Constraints",
+     "count": 2,
+     "topics": "Return per bottleneck minute and Throughput Accounting (TA) ratio; Rank by throughput per bottleneck minute",
+     "refs": [
+      "May 24 Q1.8",
+      "May 25 Q5.1"
+     ]
+    },
+    {
+     "chapter": "Performance Mgmt: McKinsey 7S, structure (Ch 8)",
+     "count": 1,
+     "topics": "Aligning hard S (strategy, structure, systems) and soft S (shared values, style, staff, skills) after a crisis",
+     "refs": [
+      "May 26 Q5.6"
+     ]
+    }
+   ],
+   "SM": [],
+   "Other": []
+  },
+  "law_card": {
+   "title": "Law card (SPOM Set A)",
+   "rows": [
+    {
+     "chapter": "Directors",
+     "words": "appoint director, woman / independent director, DIN, disqualified, directorships, board size"
+    },
+    {
+     "chapter": "Managerial remuneration",
+     "words": "MD, WTD, manager, commission %, company in loss / inadequate profit, sitting fee"
+    },
+    {
+     "chapter": "Board meetings & powers",
+     "words": "board meeting, borrow, donation, loan to director (s.185), loans & investments (s.186)"
+    },
+    {
+     "chapter": "Related party transactions",
+     "words": "relative, related party, arm's length, s.188 approval"
+    },
+    {
+     "chapter": "Inspection & investigation",
+     "words": "Registrar inspected, SFIO, inspector, inquiry"
+    },
+    {
+     "chapter": "Mergers & compromises",
+     "words": "scheme, merger, NCLT meeting, 90% holders, dissenting shareholders, fast-track"
+    },
+    {
+     "chapter": "Oppression & mismanagement",
+     "words": "oppression, minority petition, 10% / 100 members, withdrew consent"
+    },
+    {
+     "chapter": "Winding up",
+     "words": "winding up, liquidator, workmen's dues"
+    },
+    {
+     "chapter": "SEBI",
+     "words": "listed, IPO, lock-in, open offer, UPSI, LODR"
+    },
+    {
+     "chapter": "FEMA",
+     "words": "NRI, remit abroad, ECB, foreign subsidiary, ODI / FDI, export proceeds"
+    },
+    {
+     "chapter": "FCRA",
+     "words": "NGO, trust, foreign donation or gift, relative abroad"
+    },
+    {
+     "chapter": "IBC",
+     "words": "default, insolvency, financial / operational creditor, CoC, moratorium, resolution plan"
+    }
+   ]
+  },
+  "costing_card": {
+   "title": "Costing card (SPOM Set B, SCMPE)",
+   "rows": [
+    {
+     "chapter": "Ch 1 Strategic cost mgmt",
+     "words": "value chain, business model, business model canvas, Porter's five forces"
+    },
+    {
+     "chapter": "Ch 2 Modern business env.",
+     "words": "cost of quality, rework, warranty, inspection, TQM, supply chain"
+    },
+    {
+     "chapter": "Ch 3 Lean & innovation",
+     "words": "waste, JIT, kanban, 5S, TPM, OEE, breakdowns, Kaizen, Six Sigma"
+    },
+    {
+     "chapter": "Ch 4 Specialist techniques",
+     "words": "target cost, life cycle, value engineering, ABC, bottleneck, throughput"
+    },
+    {
+     "chapter": "Ch 5 New business models",
+     "words": "freemium, subscription, platform, automation, AI, start-up"
+    },
+    {
+     "chapter": "Ch 6 Strategic revenue mgmt",
+     "words": "pricing strategy, skimming, penetration, make or buy, special order, Kano"
+    },
+    {
+     "chapter": "Ch 7 Strategic profit mgmt",
+     "words": "operating income change: growth, price-recovery, productivity; NVA, MCE, 80/20"
+    },
+    {
+     "chapter": "Ch 8 Performance mgmt",
+     "words": "McKinsey 7S, structure, alliances, Altman Z-score"
+    },
+    {
+     "chapter": "Ch 9 Private sector",
+     "words": "KPI, ROI, RI, EVA, balanced scorecard, triple bottom line, pyramid"
+    },
+    {
+     "chapter": "Ch 10 Not-for-profit",
+     "words": "NGO, hospital, government body, value for money (3 Es)"
+    },
+    {
+     "chapter": "Ch 11 Reports",
+     "words": "responsibility accounting, ESG, integrated reporting"
+    },
+    {
+     "chapter": "Ch 12 Transfer pricing",
+     "words": "divisions, transfer price, goal congruence"
+    },
+    {
+     "chapter": "Ch 13 Standard costing",
+     "words": "variance, planning & operational, revised standard, reconcile profit, learning curve"
+    }
+   ]
+  },
+  "note": "Marks across all 5 cases (125). You attempt 4, so you face about 100 of these.",
+  "insights": [
+   "Every paper tested all seven subjects. No subject averaged more than 21 of the 125 marks on offer, so you cannot skip a subject by choosing cases.",
+   "Law + Costing together carried 24 to 39 marks in every paper (out of 125).",
+   "Most repeated: IDT Input Tax Credit (16 questions), DT PGBP (Business Income) (10), AFM Forex Exposure & Risk Management (11), Law FEMA (7).",
+   "FR is spread over 22 different Ind AS in 36 questions: no Ind AS came more than 3 times, so for FR the index matters more than any important-topics list."
+  ]
+ }
+}
