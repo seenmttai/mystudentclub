@@ -31,7 +31,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/scripts/portal-style.css?v=2.2">
+  <link rel="stylesheet" href="/scripts/portal-style.css?v=2.3">
   <link rel="canonical" href="https://www.mystudentclub.com/" />
   <meta name="robots" content="index, follow">
   <script src="/scripts/supabase.js"></script>
@@ -519,6 +519,13 @@
       </a>
     </nav>
 
+    <!-- Post a job, for recruiters, on the home screen itself (phones and tablets; laptops get the
+         button beside the search bar). Goes to the recruiter site's Post a job form. -->
+    <a class="post-job-strip" href="https://hire.mystudentclub.com/jobs/new" data-post-job="home_phone">
+      <span class="post-job-strip-text">Are you hiring?</span>
+      <span class="post-job-strip-btn"><i class="fas fa-plus" aria-hidden="true"></i> Post a job</span>
+    </a>
+
     <div class="job-portal-layout dv2-has-rail">
       <aside class="filter-sidebar">
         <div class="filter-sidebar-header">
@@ -614,10 +621,16 @@
       </aside>
 
       <div class="job-listings-container">
-        <div class="dv2-top-search">
-          <i class="fas fa-search" aria-hidden="true"></i>
-          <input type="text" id="dv2TopSearchInput" placeholder="Search jobs, companies or keywords...">
-          <button type="button" id="dv2TopSearchBtn" class="dv2-top-search-btn">Search</button>
+        <div class="dv2-search-row">
+          <div class="dv2-top-search">
+            <i class="fas fa-search" aria-hidden="true"></i>
+            <input type="text" id="dv2TopSearchInput" placeholder="Search jobs, companies or keywords...">
+            <button type="button" id="dv2TopSearchBtn" class="dv2-top-search-btn">Search</button>
+          </div>
+          <a class="dv2-post-job-btn" href="https://hire.mystudentclub.com/jobs/new" data-post-job="home_laptop"
+            title="For recruiters: post a vacancy on My Student Club">
+            <i class="fas fa-plus" aria-hidden="true"></i> Post a job
+          </a>
         </div>
 
         <section class="banner-section">
@@ -1037,6 +1050,11 @@
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-1450NCVE65');
+    // Count taps on the home screen's Post a job buttons (which one: phone row or laptop button).
+    document.addEventListener('click', function (event) {
+      var link = event.target && event.target.closest ? event.target.closest('[data-post-job]') : null;
+      if (link) gtag('event', 'post_job_click', { placement: link.getAttribute('data-post-job') });
+    });
   </script>
 </body>
 

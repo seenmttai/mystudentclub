@@ -4786,3 +4786,113 @@ img[src*="/assets/logo"] { border-radius: 0 !important; }
   color: #b91c1c;
   border-color: #fecaca;
 }
+
+/* ---- Post a job on the home screen (index.html), for recruiters ----
+   Below 1024px: one slim row under the portal tabs. From 1024px: a button beside the
+   search bar (the header has no room for it next to seven links and Complete Profile).
+   Both open the recruiter site's Post a job form. */
+.post-job-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: -0.5rem 0 1rem;
+  padding: 0.4rem 0.4rem 0.4rem 0.9rem;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.post-job-strip-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.post-job-strip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: none;
+  min-height: 36px;
+  padding: 0 0.95rem;
+  background: var(--primary-brand);
+  color: #ffffff;
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  transition: background-color var(--transition-fast);
+}
+
+.post-job-strip:hover .post-job-strip-btn,
+.post-job-strip:active .post-job-strip-btn {
+  background: var(--primary-hover);
+}
+
+.post-job-strip:focus-visible,
+.dv2-post-job-btn:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.45);
+  outline-offset: 2px;
+}
+
+/* Below 1024px the row wrapper has no box of its own (the desktop search bar inside it is hidden). */
+.dv2-search-row {
+  display: contents;
+}
+
+.dv2-post-job-btn {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .post-job-strip {
+    display: none;
+  }
+
+  /* The row now does what the search bar did on its own: stay pinned while the list scrolls. */
+  .dv2-search-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  .dv2-search-row .dv2-top-search {
+    flex: 1;
+    min-width: 0;
+    margin-bottom: 0;
+    position: static;
+  }
+
+  .dv2-post-job-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex: none;
+    padding: 0 1.25rem;
+    background: var(--surface-bg);
+    color: var(--primary-brand);
+    border: 1px solid var(--primary-brand);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-xs);
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .dv2-post-job-btn:hover {
+    background: var(--primary-brand);
+    color: #ffffff;
+  }
+}
