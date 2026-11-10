@@ -2022,8 +2022,12 @@ function disableStructuredFilters() {
 async function fetchPinnedExclusives(buildQuery, selectColumns) {
     try {
         const cutoff = new Date(Date.now() - JOB_EXPIRATION_DAYS * 24 * 60 * 60 * 1000).toISOString();
-        const { data, error } = await buildQuery(selectColumns).eq('is_exclusive', true).gte('Created_At', cutoff);
-        // buildQuery already orders them by the sort the student picked.
+        // MSC's exclusives plus MSC's own Easy Apply posts (recruit@ on hire.msc), e.g. the open Grant Thornton
+        // India vacancy (Padam, 10 Nov 2026: "make the gt one above").
+        const { data, error } = await buildQuery(selectColumns)
+            .or('is_exclusive.eq.true,hirer_email.eq."recruit@mystudentclub.com"')
+            .gte('Created_At', cutoff);
+        // buildQuery already orders them by the sort the student picked (newest first by default).
         return (error || !Array.isArray(data)) ? [] : data;
     } catch (e) {
         return [];

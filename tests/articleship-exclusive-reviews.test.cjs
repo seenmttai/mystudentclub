@@ -147,7 +147,7 @@ test('portal: articleship exclusives use the shared lock rule, pinned on top of 
   assert.match(src, /if \(isExclusiveLocked\(job, currentTable, isEnrolledSync\(currentTable\)\)\) \{\n\s+showExclusiveLockedModal\(job\);/);
   assert.doesNotMatch(src, /isExclusive && !isEnrolledSync/);
   assert.match(src, /"Stipend Range", is_exclusive';/);
-  assert.match(src, /buildQuery\(selectColumns\)\.eq\('is_exclusive', true\)\.gte\('Created_At', cutoff\)/);
+  assert.match(src, /buildQuery\(selectColumns\)\n\s+\.or\('is_exclusive\.eq\.true,hirer_email\.eq\."recruit@mystudentclub\.com"'\)\n\s+\.gte\('Created_At', cutoff\)/);
   assert.match(src, /hasMoreData = dbPageLength === limit;/);
   assert.match(read('jobs-builder/src/pages/jobs/[category]/[slug].astro'), /hirer_email\.is\.null,hirer_email\.neq\.recruit@mystudentclub\.com/);
   assert.match(src, /reviewSummaryRpcAvailable = false/);
