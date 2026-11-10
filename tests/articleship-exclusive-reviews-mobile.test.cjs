@@ -29,6 +29,10 @@ test('banners: web_only ones never show in the apps, and they keep their order',
 test('review summaries: matched firm names, rating from the first review, agreed facts only', () => {
   assert.match(src, /supabaseClient\.rpc\("get_firm_review_summaries", \{ p_names: names \}\)/);
   assert.doesNotMatch(src, /ratingInfo\.count > 5/);
+  // Padam, 10 Nov: the review line sits in the job view, not on cards (same as www).
+  const card = src.slice(src.indexOf('function renderJobCard(job)'), src.indexOf('async function fetchJobs()'));
+  assert.doesNotMatch(card, /buildReviewFactsHtml/);
+  assert.match(src, /\$\{currentTable === "Articleship Jobs" \? buildReviewFactsHtml\(ratingInfo\) : ""\}\n\s+<div class="jd-meta-pills">/);
   // A chip drawn from the exact-name ratings is updated to the matched summary, not left stale.
   assert.match(src, /let a = card\.querySelector\("\.jc-chip-rating"\);\n\s+if \(!a\) \{/);
   const start = src.indexOf('function hasReviewRating(info)');
