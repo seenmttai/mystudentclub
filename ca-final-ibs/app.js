@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  var V = '20261110.3';
+  var V = '20261110.4';
   var DL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>';
 
   function $(s, el) { return (el || document).querySelector(s); }
@@ -46,83 +46,118 @@
   }
 
   /* ---------- 1. indexes ---------- */
+  // Files come pre-ordered in data/indexes.json (Padam's faculty order per subject).
   function renderIndexes(d) {
     var panel = $('#idx-panel');
     var subjects = d.subjects.filter(function (s) {
       return d.files.some(function (f) { return f.subject === s.id; });
     });
     makeTabs($('#idx-tabs'), subjects, function (s) {
-      var files = d.files.filter(function (f) { return f.subject === s.id; })
-        .sort(function (a, b) { return (b.best ? 1 : 0) - (a.best ? 1 : 0); });
-      var zip = d.zips && d.zips[s.id];
-      var head = '<div class="idx-head"><p>' + files.length + ' file' + (files.length > 1 ? 's' : '') + (s.hint ? ' · ' + esc(s.hint) : '') + '</p>' +
-        (zip && ZIP_OK ? '<button type="button" class="btn btn-line" data-zipall="' + esc(s.id) + '">' + DL_ICON + ' Download all (' + size(zip.size_kb) + ')</button>' : '') + '</div>';
+      var files = d.files.filter(function (f) { return f.subject === s.id; });
+      var head = '<div class="idx-head"><p>' + files.length + ' file' + (files.length > 1 ? 's' : '') + (s.hint ? ' · ' + esc(s.hint) : '') + '</p></div>';
       panel.innerHTML = head + files.map(function (f) {
         var meta = [f.for_book, f.pages ? f.pages + ' pages' : '', size(f.size_kb)].filter(Boolean).join(' · ');
         return '<div class="idx' + (f.best ? ' best' : '') + '"><div><h4>' + esc(f.title) +
-          (f.best ? '<span class="badge best">My pick</span>' : '') + '</h4>' +
-          '<p class="meta">' + esc(f.faculty) + (meta ? ' · ' + esc(meta) : '') + '</p>' +
+          (f.best ? '<span class="badge best">My pick</span>' : '') + (f.sm ? '<span class="badge sm">SM index</span>' : '') + '</h4>' +
+          '<p class="meta"><b>' + esc(f.faculty) + '</b>' + (meta ? ' · ' + esc(meta) : '') + '</p>' +
           (f.note ? '<p class="note">' + esc(f.note) + '</p>' : '') + '</div>' +
           '<a class="dl" href="' + esc(f.path) + '" download data-file="' + esc(f.title) + '">' + DL_ICON + ' Download</a></div>';
       }).join('');
     }, 'ibs_index_tab');
-    panel.addEventListener('click', function (e) {
-      var a = e.target.closest('a[download]');
-      if (a) track('ibs_download', { file: a.dataset.file });
-      var z = e.target.closest('[data-zipall]');
-      if (z) zipAll(z, d, z.dataset.zipall);
-    });
   }
 
-  // "Download all" builds the zip in the browser from the files already on the page, so the site
-  // doesn't store every index twice. Phones and the app's WebView get one-by-one downloads instead.
-  // mobile.mystudentclub.com is what the app's WebView loads (Android and iOS), so no zip there.
-  var ZIP_OK = typeof Blob !== 'undefined' && !!window.fetch && !/; wv\)/i.test(navigator.userAgent) &&
-    !/^mobile\./.test(location.hostname) && !/mobilemsc\.pages\.dev$/.test(location.hostname);
-  function loadJSZip() {
-    if (window.JSZip) return Promise.resolve(window.JSZip);
-    return new Promise(function (ok, fail) {
-      var sc = document.createElement('script');
-      sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-      sc.onload = function () { ok(window.JSZip); };
-      sc.onerror = fail;
-      document.head.appendChild(sc);
+  /* ---------- one short form before the first download ---------- */
+  // Saved to resource_access_logs, the same table and fields the other resource pages use
+  // (scripts/resource-form-collector.js), filed under the CA Fresher stage.
+  var SB_URL = 'https://auth.mystudentclub.com/rest/v1/resource_access_logs';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+  var LEAD_KEY = 'msc_ibs_lead';
+  function getLead() {
+    try { return JSON.parse(localStorage.getItem(LEAD_KEY) || 'null'); } catch (e) { return null; }
+  }
+  function setLead(v) {
+    try { localStorage.setItem(LEAD_KEY, JSON.stringify(v)); } catch (e) { /* private mode: ask again next time */ }
+    leadInMemory = v;
+  }
+  var leadInMemory = getLead();
+  function showName() {
+    var l = leadInMemory;
+    var el = $('#ca-name');
+    if (el && l && l.name) el.textContent = l.name.split(/\s+/)[0];
+  }
+  function saveLead(row) {
+    var post = function (body) {
+      return fetch(SB_URL, {
+        method: 'POST',
+        headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify(body)
+      });
+    };
+    return post(row).then(function (r) {
+      if (r.ok) return;
+      // older table without the stage column: save without it, like the shared collector does
+      var copy = Object.assign({}, row); delete copy.stage;
+      return post(copy);
+    }).catch(function () { /* never block a download on the lead write */ });
+  }
+  var pendingLink = null;
+  function openLead(a) {
+    pendingLink = a;
+    var m = $('#lead');
+    m.hidden = false;
+    document.body.classList.add('modal-open');
+    setTimeout(function () { m.querySelector('input').focus(); }, 50);
+    track('ibs_form_open', { file: a.dataset.file });
+  }
+  function closeLead() {
+    $('#lead').hidden = true;
+    document.body.classList.remove('modal-open');
+  }
+  function startDownload(a) {
+    var b = document.createElement('a');
+    b.href = a.href;
+    b.setAttribute('download', '');
+    document.body.appendChild(b);
+    b.click();
+    b.remove();
+    track('ibs_download', { file: a.dataset.file });
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[download][data-file]');
+    if (!a) return;
+    if (leadInMemory) { track('ibs_download', { file: a.dataset.file }); return; }
+    e.preventDefault();
+    openLead(a);
+  });
+  (function wireForm() {
+    var m = $('#lead'), f = $('#lead-form'), err = $('#lead-err');
+    if (!m || !f) return;
+    m.addEventListener('click', function (e) { if (e.target === m || e.target.closest('[data-close]')) closeLead(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !m.hidden) closeLead(); });
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = f.name.value.trim(), phone = f.phone.value.replace(/[^\d+]/g, ''), email = f.email.value.trim();
+      var digits = phone.replace(/\D/g, '').slice(-10);
+      if (name.length < 2) { err.textContent = 'Please write your name.'; return; }
+      if (!/^[6-9]\d{9}$/.test(digits)) { err.textContent = 'Please enter a 10-digit mobile number.'; return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter a valid email.'; return; }
+      err.textContent = '';
+      var a = pendingLink;
+      var row = {
+        name: name, email: email, phone: digits,
+        program_type: 'ca-fresher', program_display: 'CA Final IBS Toolkit (Nov 2026)',
+        resource_title: a ? a.dataset.file : 'IBS toolkit', resource_url: a ? a.href : location.href,
+        accessed_at: new Date().toISOString(), stage: 'ca-fresher'
+      };
+      setLead({ name: name, at: Date.now() });
+      saveLead(row);
+      track('ibs_form_submit', {});
+      closeLead();
+      showName();
+      if (a) startDownload(a);
     });
-  }
-  function zipAll(btn, d, sid) {
-    if (btn.disabled) return;
-    var files = d.files.filter(function (f) { return f.subject === sid; });
-    var label = btn.innerHTML;
-    btn.disabled = true;
-    var done = 0;
-    var say = function (t) { btn.textContent = t; };
-    say('Preparing…');
-    track('ibs_download', { file: 'zip:' + sid });
-    loadJSZip().then(function (JSZip) {
-      var z = new JSZip();
-      return Promise.all(files.map(function (f) {
-        return fetch(f.path).then(function (r) {
-          if (!r.ok) throw new Error(f.path);
-          return r.blob();
-        }).then(function (b) {
-          z.file(f.path.split('/').pop(), b);
-          done += 1;
-          say('Adding ' + done + ' of ' + files.length + '…');
-        });
-      })).then(function () { return z.generateAsync({ type: 'blob' }); });
-    }).then(function (blob) {
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'IBS-' + sid + '-indexes.zip';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
-      btn.innerHTML = label;
-    }).catch(function () {
-      say('Could not zip. Download one by one below.');
-      setTimeout(function () { btn.innerHTML = label; }, 4000);
-    }).then(function () { btn.disabled = false; });
-  }
+  })();
+  showName();
 
   /* ---------- 3. analysis ---------- */
   function renderAnalysis(a) {
@@ -249,10 +284,6 @@
       return '<a class="btn btn-blue" href="' + esc(x.path) + '" download data-file="' + esc(x.label) + '">' + DL_ICON + ' ' + esc(x.label) +
         (x.size_kb ? ' (' + size(x.size_kb) + ')' : '') + '</a>';
     }).join('');
-    host.addEventListener('click', function (e) {
-      var a = e.target.closest('a[download]');
-      if (a) track('ibs_download', { file: a.dataset.file });
-    });
   }
 
   getJSON('data/indexes.json').then(renderIndexes).catch(function () {
@@ -261,9 +292,7 @@
   getJSON('data/site.json').then(function (s) {
     renderAnalysis(s.analysis);
     renderSolved(s.papers);
-    renderDownloads(s.downloads.notes, 'notes-dl');
-    renderDownloads(s.downloads.analysis, 'an-dl');
-    renderDownloads(s.downloads.solutions, 'sol-dl');
+    renderDownloads([].concat(s.downloads.notes, s.downloads.solutions, s.downloads.analysis), 'all-dl');
   }).catch(function () {
     $('#an-marks').innerHTML = '<p class="muted">Could not load. Refresh the page.</p>';
     $('#sol-panel').innerHTML = '';
