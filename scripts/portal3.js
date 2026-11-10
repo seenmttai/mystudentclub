@@ -4,6 +4,7 @@ import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, renderLockScreen, showExclusiveAppliedPopup, fetchMyProgramRegistrations, applyExclusiveDemo, ensureExclusiveStyles } from './exclusive-vacancy.js';
 import { portalFor, extraSelectColumns, companyTypeFilter, applyJobFilters, describeJobFilters, withoutFilterValue, renderJobFilters, syncJobFilters, formatPayRange, formatDeadline, FIRM_TIERS } from './job-filters.js';
+import { assessmentGate } from './apply-assessment.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -835,6 +836,16 @@ async function recordApplication(job, btnElement) {
         if ('disabled' in btnElement) btnElement.disabled = true;
     }
     btnElement.innerHTML = '<div class="loader-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
+
+    // The recruiter's mandatory assessment, when the vacancy has one: taken before the application is saved.
+    if (recruiterPosted && !(await assessmentGate({ table: currentTable, job, supabaseClient, session: currentSession }))) {
+        pendingRecruiterApplications.delete(applicationKey);
+        btnElement.style.pointerEvents = '';
+        if ('disabled' in btnElement) btnElement.disabled = false;
+        btnElement.innerHTML = originalText;
+        showToast('Your application is not sent yet. Complete the assessment to apply.', 'info');
+        return false;
+    }
 
     try {
         let dbJobId = job.id;

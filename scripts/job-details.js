@@ -2,6 +2,7 @@
 import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, showExclusiveLockPopup, showExclusiveAppliedPopup, fetchMyProgramRegistrations, ensureExclusiveStyles } from './exclusive-vacancy.js';
+import { assessmentGate } from './apply-assessment.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -62,6 +63,14 @@ async function recordRecruiterApplication(job, buttonElement, tableName) {
     const originalText = buttonElement.innerHTML;
     buttonElement.disabled = true;
     buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
+    // The recruiter's mandatory assessment, when the vacancy has one: taken before the application is saved.
+    if (!(await assessmentGate({ table: tableName, job, supabaseClient, session: currentSession }))) {
+        pendingApplications.delete(applicationKey);
+        buttonElement.disabled = false;
+        buttonElement.innerHTML = originalText;
+        showToast('Your application is not sent yet. Complete the assessment to apply.', 'info');
+        return false;
+    }
     try {
         const { error } = await supabaseClient.from('job_applications').insert({
             user_id: currentSession.user.id, job_id: job.id, job_table: tableName, applied_at: new Date().toISOString()
