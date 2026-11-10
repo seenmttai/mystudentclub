@@ -6,6 +6,7 @@ import {
   showToast,
 } from "./ai-helper.js";
 import { unlockJobDetails, getCachedUnlockedJob } from "./browser-guard.js";
+import { assessmentGate } from "./apply-assessment.js";
 
 // config
 const supabaseUrl = "https://auth.mystudentclub.com";
@@ -1287,14 +1288,13 @@ function showJobDetail(job) {
 
       const targetApplyLink = getApplicationLink(unlocked.applicationId, job.Company);
 
-      if (autoRedirect) {
-        await recordApplication(unlockedJob, btnElement);
-      }
+      // false: the vacancy's mandatory assessment was not finished, so nothing opens.
+      const proceed = autoRedirect ? await recordApplication(unlockedJob, btnElement) : true;
 
       // Re-render bottom sheet in unlocked state
       showJobDetail(unlockedJob);
 
-      if (autoRedirect && targetApplyLink && targetApplyLink !== "#") {
+      if (proceed && autoRedirect && targetApplyLink && targetApplyLink !== "#") {
         if (targetApplyLink.startsWith("mailto:")) {
           openMailtoLink(targetApplyLink);
         } else {
@@ -1338,8 +1338,7 @@ function showJobDetail(job) {
       document
         .getElementById("jdSimpleApplyBtn")
         ?.addEventListener("click", async (e) => {
-          await recordApplication(unlockedJob, e.currentTarget);
-          openMailtoLink(applyLink);
+          if (await recordApplication(unlockedJob, e.currentTarget)) openMailtoLink(applyLink);
         });
       document
         .getElementById("jdAiApplyBtn")
@@ -1351,8 +1350,7 @@ function showJobDetail(job) {
         .getElementById("jdExternalApplyBtn")
         ?.addEventListener("click", async (e) => {
           e.preventDefault();
-          await recordApplication(unlockedJob, e.currentTarget);
-          window.open(applyLink, "_blank");
+          if (await recordApplication(unlockedJob, e.currentTarget)) window.open(applyLink, "_blank");
         });
     }
   }
@@ -1531,8 +1529,14 @@ function shareJob(job, btnElement) {
   }
 }
 
+// -> false when the vacancy's mandatory assessment (hire.mystudentclub.com) was not finished: nothing is recorded and
+// the caller opens nothing. Hire answers at once for the many vacancies without one.
 async function recordApplication(job, btnElement) {
   if (!currentSession) return true;
+  if (!(await assessmentGate({ table: currentTable, job, supabaseClient, session: currentSession }))) {
+    showToast("Your application is not sent yet. Complete the assessment to apply.", "info");
+    return false;
+  }
   const origHtml = btnElement.innerHTML;
   btnElement.innerHTML =
     '<div class="loader-spinner" style="width:18px;height:18px;border-width:2px;display:inline-block"></div>';
@@ -1604,12 +1608,10 @@ async function handleAiApplyClick(
       simpleMailtoLink.split("subject=")[1]?.split("&")[0] ||
       `Application for ${job.Category} (Ref: My Student Club)`;
     const aiMailto = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(emailBody)}`;
-    await recordApplication(job, btnElement);
-    openMailtoLink(aiMailto);
+    if (await recordApplication(job, btnElement)) openMailtoLink(aiMailto);
   } catch (_) {
     showToast("Server busy, reverting to simple apply", "error");
-    await recordApplication(job, btnElement);
-    setTimeout(() => openMailtoLink(simpleMailtoLink), 3000);
+    if (await recordApplication(job, btnElement)) setTimeout(() => openMailtoLink(simpleMailtoLink), 3000);
   } finally {
     if (btnText) btnText.textContent = origText;
     if (spinner) spinner.style.display = "none";

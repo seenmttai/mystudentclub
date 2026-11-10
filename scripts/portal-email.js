@@ -1,4 +1,5 @@
 import { getDaysAgo } from './date-utils.js';
+import { assessmentGate } from './apply-assessment.js';
 import { ensureCvAvailable, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
@@ -34,8 +35,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
 
         const aiMailto = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(emailBody)}`;
 
-        await recordApplication(job, btnElement);
-        window.open(aiMailto, '_blank');
+        if (await recordApplication(job, btnElement)) window.open(aiMailto, '_blank');
 
     } catch (error) {
         console.error("AI Apply Failed:", error);
@@ -48,10 +48,11 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
 
         const simpleMailto = `mailto:${email}?subject=${subject}`;
 
-        await recordApplication(job, btnElement);
-        setTimeout(() => {
-            window.open(simpleMailto, '_blank');
-        }, 3000);
+        if (await recordApplication(job, btnElement)) {
+            setTimeout(() => {
+                window.open(simpleMailto, '_blank');
+            }, 3000);
+        }
     } finally {
         // Reset button state
         btnElement.classList.remove('loading');
@@ -334,8 +335,14 @@ function checkConnectLink(job) {
     return null;
 }
 
+// -> false when the vacancy's mandatory assessment (hire.mystudentclub.com) was not finished: nothing is recorded and
+// the caller opens nothing.
 async function recordApplication(job, btnElement) {
     if (!currentSession) return true; // Allow default navigation if not logged in
+    if (!(await assessmentGate({ table: job.source_table || state.portalType, job, supabaseClient, session: currentSession }))) {
+        showToast('Your application is not sent yet. Complete the assessment to apply.', 'info');
+        return false;
+    }
 
     const originalText = btnElement.innerHTML;
     btnElement.innerHTML = '<div class="loader-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
