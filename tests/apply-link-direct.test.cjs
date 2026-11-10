@@ -105,3 +105,22 @@ test('server messages from BrowserGuard are kept; browser network errors are rew
   assert.match(h.friendly(new Error('NetworkError when attempting to fetch resource.')), /Check your internet/);
   assert.match(h.friendly(null), /Check your internet/);
 });
+
+test('a late description fetch never puts the masked text back on a loaded job', () => {
+  // www fetches the description separately; if it lands after the link loaded, it must not re-mask.
+  const at = source.search(/select\(['"]Description['"]\)/);
+  if (at < 0) return; // mobile has no separate description fetch
+  const callback = source.slice(at, at + 1500);
+  assert.match(callback, /getCachedApplicationDetails\(job\)/);
+  assert.match(callback, /isShowingThisJob\(\)/);
+});
+
+test('Apply Now never opens a blank "#" tab when a job has no link', () => {
+  assert.match(source, /applyLink && applyLink !== ['"]#['"]\) window\.open\(applyLink/);
+  assert.match(source, /targetApplyLink && targetApplyLink !== ['"]#['"]/);
+});
+
+test('an expired session sends the student to sign in instead of retrying forever', () => {
+  assert.match(source, /error\?\.status === 401/);
+  assert.match(source, /Sign in again/);
+});

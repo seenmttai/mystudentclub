@@ -1061,6 +1061,9 @@ function showModal(job) {
     const isApplicationUnlocked = recruiterPosted || job.__browserGuardUnlocked === true || Boolean(cachedUnlocked) || Boolean(job['Application ID']);
     const needsApplicationLoad = Boolean(currentSession) && !isApplicationUnlocked;
     const applicationJobKey = applicationDetailsKey(job);
+    // True while the popup still shows this job (not closed, not switched to another job).
+    const isShowingThisJob = () => dom.modalOverlay.style.display === 'flex'
+        && document.getElementById('modalAppLinksContainer')?.dataset.jobKey === applicationJobKey;
     const effectiveApplicationId = recruiterPosted ? null : (cachedUnlocked?.applicationId || job['Application ID']);
     const effectiveDescription = cachedUnlocked?.description || job.Description || '';
     const applyLink = getApplicationLink(effectiveApplicationId, job.Company);
@@ -1237,9 +1240,11 @@ function showModal(job) {
                 if (!error && data && data.Description) {
                     job.Description = data.Description;
                     const descEl = document.getElementById('modalDescriptionContent');
-                    if (descEl) {
-                        const updatedEffective = (currentSession ? getCachedUnlockedJob(job.id, currentTable, currentSession)?.description : null) || job.Description;
-                        const finalRaw = isApplicationUnlocked ? updatedEffective : getMaskedDescription(updatedEffective);
+                    if (descEl && isShowingThisJob()) {
+                        // The application link may have loaded (and the popup re-rendered) while this ran.
+                        const loaded = currentSession ? getCachedApplicationDetails(job) : null;
+                        const updatedEffective = loaded?.description || job.Description;
+                        const finalRaw = (isApplicationUnlocked || loaded) ? updatedEffective : getMaskedDescription(updatedEffective);
                         descEl.innerHTML = renderMarkdown(finalRaw);
                     }
                 }
@@ -1261,7 +1266,7 @@ function showModal(job) {
                     <a href="/login.html" class="btn btn-primary">Login / Sign Up Free</a>
                 </div>`
             : `
-                <div class="apply-prompt-box" id="applyPromptBox" data-job-key="${applicationJobKey.replace(/"/g, '&quot;')}">
+                <div class="apply-prompt-box" id="applyPromptBox">
                     <p class="modal-description" style="margin: 0; color: #64748b;">
                         <i class="fas fa-spinner fa-spin" style="margin-right: 6px;"></i>Loading application link...
                     </p>
@@ -1296,7 +1301,7 @@ function showModal(job) {
         ${tagsSectionsHtml}
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>Apply here!</h3>
-            <div id="modalAppLinksContainer">
+            <div id="modalAppLinksContainer" data-job-key="${applicationJobKey.replace(/"/g, '&quot;')}">
                 ${applicationContentHtml}
             </div>
         </div>
@@ -1314,23 +1319,20 @@ function showModal(job) {
     dom.modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
+    const withApplicationDetails = (details) => ({
+        ...job,
+        'Application ID': details.applicationId,
+        Description: details.description || job.Description,
+        __browserGuardUnlocked: true
+    });
+
     // Re-render this job with its application link, keeping the reader's scroll position.
     const showModalWithApplicationDetails = (details) => {
-        const unlockedJob = {
-            ...job,
-            'Application ID': details.applicationId,
-            Description: details.description || job.Description,
-            __browserGuardUnlocked: true
-        };
         const scrollers = [dom.modalBody, dom.modalBody?.parentElement].filter(Boolean);
         const scrollTops = scrollers.map((el) => el.scrollTop);
-        showModal(unlockedJob);
+        showModal(withApplicationDetails(details));
         scrollers.forEach((el, i) => { el.scrollTop = scrollTops[i]; });
-        return unlockedJob;
     };
-
-    const isStillShowingThisJob = () => dom.modalOverlay.style.display === 'flex'
-        && document.getElementById('applyPromptBox')?.dataset.jobKey === applicationJobKey;
 
     // Apply Now pressed while the link is still loading: wait for it, record, then open it.
     const handleUnlockAndApply = async (btnElement) => {
@@ -1347,9 +1349,9 @@ function showModal(job) {
         try {
             const details = await loadApplicationDetails(job);
             const targetApplyLink = getApplicationLink(details.applicationId, job.Company);
-            const unlockedJob = { ...job, 'Application ID': details.applicationId, Description: details.description || job.Description };
-            await recordApplication(unlockedJob, btnElement);
-            showModalWithApplicationDetails(details);
+            await recordApplication(withApplicationDetails(details), btnElement);
+            // Re-render only if the student is still on this job (they may have closed it or opened another).
+            if (isShowingThisJob()) showModalWithApplicationDetails(details);
 
             if (targetApplyLink && targetApplyLink !== '#') {
                 if (targetApplyLink.startsWith('mailto:')) {
@@ -1360,6 +1362,10 @@ function showModal(job) {
             }
         } catch (error) {
             console.error('Application link load failed:', error);
+            if (error?.status === 401) {
+                window.location.href = '/login.html';
+                return;
+            }
             showToast(friendlyApplicationLoadError(error), 'error');
             btnElement.disabled = false;
             btnElement.innerHTML = originalHtml;
@@ -1377,12 +1383,19 @@ function showModal(job) {
     if (needsApplicationLoad) {
         loadApplicationDetails(job)
             .then((details) => {
-                if (isStillShowingThisJob()) showModalWithApplicationDetails(details);
+                if (isShowingThisJob() && document.getElementById('applyPromptBox')) showModalWithApplicationDetails(details);
             })
             .catch((error) => {
                 console.error('Application link load failed:', error);
-                if (!isStillShowingThisJob()) return;
                 const box = document.getElementById('applyPromptBox');
+                if (!isShowingThisJob() || !box) return;
+                if (error?.status === 401) {
+                    // Expired session: retrying can't work, signing in again does.
+                    box.innerHTML = `
+                        <p class="modal-description" style="margin: 0 0 0.75rem; color: #b91c1c;">Your session has expired. Please sign in again to see the application link.</p>
+                        <a href="/login.html" class="btn btn-primary">Sign in again</a>`;
+                    return;
+                }
                 box.innerHTML = `
                     <p class="modal-description" style="margin: 0 0 0.75rem; color: #b91c1c;"></p>
                     <button type="button" class="btn btn-secondary" id="btnRetryAppLink">
@@ -1457,7 +1470,7 @@ function showModal(job) {
                     await recordApplication(job, e.currentTarget);
                 } else {
                     if (currentSession) await recordApplication(job, e.currentTarget);
-                    window.open(applyLink, '_blank');
+                    if (applyLink && applyLink !== '#') window.open(applyLink, '_blank');
                 }
             });
         }
