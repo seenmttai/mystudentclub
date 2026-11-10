@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  var V = '20261110.2';
+  var V = '20261110.3';
   var DL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>';
 
   function $(s, el) { return (el || document).querySelector(s); }
@@ -29,7 +29,7 @@
     return esc(s)
       .replace(/-&gt;/g, '→')
       .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
-      .replace(/^([A-Z][A-Za-z0-9 ()&,/'-]{2,48}):?$/gm, '<b>$1</b>');
+      .replace(/^((?:Provisions?|Analysis|Conclusion|Working(?: notes?)?|Facts|Treatment|Journal entr(?:y|ies)|Answer|Note|Step \d+)[^\n]{0,40}?):?$/gm, '<b>$1</b>');
   }
   function makeTabs(host, items, onPick, key) {
     host.innerHTML = items.map(function (it, i) {
@@ -76,7 +76,9 @@
 
   // "Download all" builds the zip in the browser from the files already on the page, so the site
   // doesn't store every index twice. Phones and the app's WebView get one-by-one downloads instead.
-  var ZIP_OK = typeof Blob !== 'undefined' && !!window.fetch && !/; wv\)|MSCApp/i.test(navigator.userAgent);
+  // mobile.mystudentclub.com is what the app's WebView loads (Android and iOS), so no zip there.
+  var ZIP_OK = typeof Blob !== 'undefined' && !!window.fetch && !/; wv\)/i.test(navigator.userAgent) &&
+    !/^mobile\./.test(location.hostname) && !/mobilemsc\.pages\.dev$/.test(location.hostname);
   function loadJSZip() {
     if (window.JSZip) return Promise.resolve(window.JSZip);
     return new Promise(function (ok, fail) {
@@ -118,6 +120,7 @@
       btn.innerHTML = label;
     }).catch(function () {
       say('Could not zip. Download one by one below.');
+      setTimeout(function () { btn.innerHTML = label; }, 4000);
     }).then(function () { btn.disabled = false; });
   }
 
@@ -167,7 +170,9 @@
       '<span class="tag grey">' + esc(q.type) + ' · ' + q.marks + ' marks</span>';
     var opts = '';
     if (q.options && typeof q.options === 'object') {
-      var key = String(q.icai || '').toLowerCase().replace(/[^a-d]/g, '').charAt(0);
+      // ICAI's key is the first '(a)'..'(d)' in q.icai; none (e.g. "no correct option") means nothing is marked
+      var km = String(q.icai || '').match(/\(([a-dA-D])\)/);
+      var key = km ? km[1].toLowerCase() : '';
       opts = '<ul class="opts">' + Object.keys(q.options).map(function (k) {
         return '<li data-k="' + esc(k.toLowerCase()) + '"' + (k.toLowerCase() === key ? ' data-ok="1"' : '') + '><b>(' + esc(k) + ')</b>' + esc(q.options[k]) + '</li>';
       }).join('') + '</ul>';
@@ -211,14 +216,16 @@
   }
   function renderSolved(papers) {
     var panel = $('#sol-panel');
+    var current = null;
     makeTabs($('#sol-tabs'), papers, function (p) {
+      current = p.id;
       if (solCache[p.id]) return renderPaper(p, solCache[p.id]);
       panel.innerHTML = '<p class="muted">Loading ' + esc(p.label) + '…</p>';
       getJSON('data/solutions/' + p.id + '.json').then(function (d) {
         solCache[p.id] = d;
-        renderPaper(p, d);
+        if (current === p.id) renderPaper(p, d);
       }).catch(function () {
-        panel.innerHTML = '<p class="muted">Could not load this paper. Check your connection and tap the tab again.</p>';
+        if (current === p.id) panel.innerHTML = '<p class="muted">Could not load this paper. Check your connection and tap the tab again.</p>';
       });
     }, 'ibs_paper_tab');
     panel.addEventListener('click', function (e) {
