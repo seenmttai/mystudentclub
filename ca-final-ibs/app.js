@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  var V = '20261110.4';
+  var V = '20261110.5';
   var DL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>';
 
   function $(s, el) { return (el || document).querySelector(s); }
@@ -84,6 +84,9 @@
     var l = leadInMemory;
     var el = $('#ca-name');
     if (el && l && l.name) el.textContent = l.name.split(/\s+/)[0];
+    var when = $('#ca-when');
+    var m = l && /^(May|Nov) (\d{4})$/.exec(l.attempt || '');
+    if (when && m) when.textContent = m[1] + "'" + m[2].slice(2);
   }
   function saveLead(row) {
     var post = function (body) {
@@ -137,19 +140,24 @@
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       var name = f.name.value.trim(), phone = f.phone.value.replace(/[^\d+]/g, ''), email = f.email.value.trim();
+      var attempt = f.attempt.value;
       var digits = phone.replace(/\D/g, '').slice(-10);
       if (name.length < 2) { err.textContent = 'Please write your name.'; return; }
       if (!/^[6-9]\d{9}$/.test(digits)) { err.textContent = 'Please enter a 10-digit mobile number.'; return; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter a valid email.'; return; }
+      if (!attempt) { err.textContent = 'Please select your CA Final attempt.'; return; }
       err.textContent = '';
       var a = pendingLink;
       var row = {
         name: name, email: email, phone: digits,
-        program_type: 'ca-fresher', program_display: 'CA Final IBS Toolkit (Nov 2026)',
+        // the table has no attempt column, so the attempt rides in the program label
+        program_type: 'ca-fresher', program_display: 'CA Final IBS Toolkit (Nov 2026) · CA Final attempt: ' + attempt,
         resource_title: a ? a.dataset.file : 'IBS toolkit', resource_url: a ? a.href : location.href,
-        accessed_at: new Date().toISOString(), stage: 'ca-fresher'
+        accessed_at: new Date().toISOString(),
+        // Nov 2026 candidates are the pre-result CA Fresher batch; later attempts are semi-qualified
+        stage: attempt === 'Nov 2026' ? 'ca-fresher' : 'semi-qualified'
       };
-      setLead({ name: name, at: Date.now() });
+      setLead({ name: name, attempt: attempt, at: Date.now() });
       saveLead(row);
       track('ibs_form_submit', {});
       closeLead();

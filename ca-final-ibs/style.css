@@ -278,6 +278,12 @@ ol.exam-list li::before { content: counter(e); position: absolute; left: 14px; t
 .ca-name { color: #8fb3ff; }
 .hoja.light { color: #fff; margin: 18px 0 14px; }
 .badge.sm { background: var(--pale); color: var(--blue); }
+.note-card .see-you { font-family: 'Caveat', cursive; font-size: 24px; color: var(--navy); margin-top: 6px; }
+.note-card .sign span { display: block; font-size: 18px; color: var(--grey); }
+.fresher .see-you { font-family: 'Caveat', cursive; font-size: 26px; margin: 0 0 16px; }
+.flow .n-good rect { fill: var(--green-bg); stroke: var(--green); }
+.modal-card select { font: inherit; font-size: 16px; padding: 11px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); }
+.modal-card select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px #d6e4ff; }
 .idx .meta b { color: var(--navy); font-weight: 600; }
 body.modal-open { overflow: hidden; }
 .modal { position: fixed; inset: 0; z-index: 50; background: rgba(6,21,47,.55); display: grid; place-items: center; padding: 16px; }
