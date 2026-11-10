@@ -25,7 +25,8 @@ function loadTaker(origin) {
       const script = document.createElement('script');
       script.src = `${origin}/assessment-take.js`;
       script.async = true;
-      const timer = setTimeout(() => resolve(window.MscAssessment || null), LOAD_TIMEOUT_MS);
+      // Too slow this time: apply without it, and let the next apply try again (the script may still arrive).
+      const timer = setTimeout(() => { loading = null; resolve(window.MscAssessment || null); }, LOAD_TIMEOUT_MS);
       script.onload = () => { clearTimeout(timer); resolve(window.MscAssessment || null); };
       script.onerror = () => { clearTimeout(timer); loading = null; resolve(null); };
       document.head.appendChild(script);
