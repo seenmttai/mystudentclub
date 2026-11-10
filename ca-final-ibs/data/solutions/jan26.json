@@ -1,0 +1,1592 @@
+{
+ "paper": "January 2026",
+ "id": "jan26",
+ "takeaways": [
+  "Case 4 (QBL) was the gift case: a 6-mark GST valuation that is one division (₹8,85,000 ÷ 1.18), plus 9 marks of pure theory. Spend the first 15 minutes finding such questions before you choose your four cases.",
+  "Most descriptive marks were ready-made lists in the SM: Ind AS 1 para 117B, AFM currency-risk parameters, s.230(7) proviso, Clause (1) Part I Second Schedule, the VFM Es. Know which chapter holds which list and you write straight from the book.",
+  "Small words decided answers: 'non-cumulative', 'Pvt. Ltd.' vs 'partnership firm', '₹5,000 a day', 'put to use 15 Oct', 'more than one WTD', 'dormant'. Underline them on the first read.",
+  "Seven keys in this paper are debatable or defective (1.1, 1.4, 1.5, 2.7, 3.2, 3.4, 5.2). When no option fits cleanly, pick the closest and write one line of reasoning. The examiner reads your answer book, so the reasoning can earn the marks.",
+  "Corporate law came as much from SEBI LODR as from the Companies Act (Reg 17A seven listed boards, Reg 24 10%/20% tests, Reg 23 subsidiary RPTs). Keep these thresholds on one page."
+ ],
+ "cases": [
+  {
+   "no": 1,
+   "title": "Renewable Energy Systems Limited (RESL)",
+   "industry": "Renewable energy components: manufacture, export and solar maintenance",
+   "story": "A listed Noida company that makes and exports renewable-energy components. It wants two more directors, plans to fund the takeover of supplier TCL with OCPS, and has two GST problems: a rate change and a show cause notice after a short payment.",
+   "marks_by_subject": {
+    "IDT": 8,
+    "AFM": 7,
+    "Law": 6,
+    "Audit": 2,
+    "FR": 2
+   },
+   "difficulty": "Moderate",
+   "first15": "Pick it if GST is your strength: 8 marks are IDT (rate change, bill-to-ship-to, s.74A), and 1.7 (4 marks for one proviso) plus 1.8 (Gordon/Walter) are quick. Beware: 3 of its 5 MCQs (1.1, 1.4, 1.5) have debatable keys.",
+   "questions": [
+    {
+     "q": "1.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Corporate Laws (SPOM Set A): Appointment and Qualifications of Directors",
+     "topic": "More than 15 directors: s.149(1) proviso; altering articles u/s 14",
+     "ask": "The board has 14 directors, the Articles allow 15, and two more are to be added (16 in all). Which listed compliance steps are NOT correct?",
+     "options": {
+      "a": "(i), (ii) and (iii)",
+      "b": "(ii) and (iii)",
+      "c": "(i), (ii) and (iv)",
+      "d": "(i), (iii) and (iv)"
+     },
+     "clue": "\"BoD of RESL comprises 14 Directors... Articles... permit a maximum strength of 15\"",
+     "chapter_clear": true,
+     "think": [
+      "14 + Mr P + Mr Q = 16, which is above both the Articles' cap and the Act's cap of 15. So the question is about the s.149(1) ceiling.",
+      "Chapter clear -> Corporate Laws -> Appointment of directors -> s.149(1) proviso: more than 15 only after a special resolution.",
+      "The Articles also fix 15, so they must be altered. Under s.14 that needs a special resolution, never an ordinary one. The 2013 Act has no ROC or Central Government approval for this.",
+      "(i) and (iv) are surely wrong, so only (C) or (D) can be right. ICAI treats (iii) 'pass a special resolution' as the one correct step."
+     ],
+     "look_up": {
+      "where": "ICAI SM Corporate & Economic Laws: Appointment and Qualifications of Directors",
+      "index_keywords": [
+       "maximum number of directors",
+       "section 149(1) proviso",
+       "special resolution",
+       "alteration of articles section 14"
+      ]
+     },
+     "solve": "S.149(1): a public company may have up to 15 directors, and more than 15 only after passing a special resolution. RESL's Articles also cap the board at 15, so the Articles must be altered, and s.14 requires a special resolution for that.\n(i) Alter Articles by ordinary resolution: wrong.\n(iv) Ordinary resolution + ROC approval: wrong. There is no Government/ROC approval under the 2013 Act; that was the 1956 Act route.\n(iii) Pass a special resolution: right.\n(ii) Alter Articles and pass a special resolution: this also describes the legally complete route, but ICAI marks it 'not correct' because one special resolution in general meeting can alter the Articles and approve the higher number together.",
+     "answer": "(C) (i), (ii) and (iv)",
+     "icai": "(C)",
+     "flag": "Debatable: (ii) is also a valid step (alter the Articles' cap of 15 by special resolution, plus a special resolution u/s 149(1)). Strictly only (i) and (iv) are wrong, and no option gives that set. ICAI picked (C).",
+     "trap": "Choosing an ordinary resolution or ROC/Central Government approval. That was the 1956 Act route.",
+     "minutes": 3
+    },
+    {
+     "q": "1.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "Quality Control (SQC 1 and SA 220)",
+     "topic": "Engagement quality control reviewer: objectivity; consultation by the engagement partner",
+     "ask": "Which actions can the EQCR, CA. S, take without compromising his objectivity?",
+     "options": {
+      "a": "(i), (ii) and (iii)",
+      "b": "(ii), (iii) and (iv)",
+      "c": "(i), (ii) and (iv)",
+      "d": "(i) and (iv)"
+     },
+     "clue": "\"CA. H decided to consult the Engagement Quality Control Reviewer, CA. S\"",
+     "chapter_clear": true,
+     "think": [
+      "EQCR + 'objectivity' -> SQC 1 / SA 220. The EQCR reviews the work but never takes part in it or decides for the team.",
+      "Chapter clear -> Audit SM -> Quality Control -> 'objectivity of the engagement quality control reviewer' and 'EQC review for listed entities'.",
+      "Allowed: reviewing significant judgements (materiality), being consulted by the partner, reviewing the consultations. Not allowed: making decisions for the team. Strike (iii) -> (C)."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit: Quality Control (SQC 1 / SA 220)",
+      "index_keywords": [
+       "engagement quality control review",
+       "objectivity of reviewer",
+       "consultation",
+       "listed entity"
+      ]
+     },
+     "solve": "For a listed entity, the EQC review covers the team's significant judgements (especially materiality and significant risks), whether proper consultation took place on contentious matters and what was concluded, and the proposed report. The engagement partner may consult the reviewer during the audit, and that alone does not impair objectivity. To stay objective, the reviewer must not otherwise take part in the engagement or make decisions for the team.\n(i) Allowed (reviewing materiality judgements). (ii) Allowed (being consulted on conclusions). (iv) Allowed (reviewing consultations). (iii) Not allowed.",
+     "answer": "(C) (i), (ii) and (iv)",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Treating any consultation with the engagement partner as a breach. Consultation is allowed; making decisions for the team is not.",
+     "minutes": 3
+    },
+    {
+     "q": "1.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "Financial Policy and Corporate Strategy",
+     "topic": "Strategic financial management: capital as the limiting factor in resource allocation",
+     "ask": "Under the strategic financial management approach, which items are NOT limiting factors when allocating resources?",
+     "options": {
+      "a": "(i), (iii) and (iv)",
+      "b": "(i), (ii) and (iii)",
+      "c": "(i) and (ii)",
+      "d": "(i) and (iv)"
+     },
+     "clue": "\"strategically allocating scarce capital resources among competing opportunities\"",
+     "chapter_clear": false,
+     "think": [
+      "'Approach suggested by management' = Strategic Financial Management. It is not obvious which chapter covers that, so use the A-Z index -> 'strategic financial management' -> AFM Chapter 1.",
+      "AFM -> Financial Policy and Corporate Strategy -> 'strategic financial decision making framework'.",
+      "The SM says capital is the limiting factor, so management must spread limited funds across alternative uses. Only capital availability is a constraint.",
+      "Mode of financing, the best opportunities and future earnings are things you choose between, not constraints -> (A)."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM: Ch 1 Financial Policy and Corporate Strategy",
+      "index_keywords": [
+       "strategic financial decision making framework",
+       "capital is the limiting factor",
+       "allocation of limited funds"
+      ]
+     },
+     "solve": "The AFM SM says capital is the limiting factor. The strategic problem is to allocate limited funds among alternative uses so that investor returns are kept up or increased. So (ii) capital availability is the limiting factor. (i) mode of financing, (iii) best investment opportunities and (iv) future earnings potential are decision variables, not limits.",
+     "answer": "(A) (i), (iii) and (iv)",
+     "icai": "(A)",
+     "flag": null,
+     "trap": "Treating 'mode of financing' as a constraint because RESL is raising OCPS. It is a choice, not the limit.",
+     "minutes": 3
+    },
+    {
+     "q": "1.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 32 Financial Instruments: Presentation",
+     "topic": "Compound financial instrument: splitting an OCPS into liability and equity",
+     "ask": "What is the equity component per OCPS on initial recognition? Terms: face value ₹100, 5% non-cumulative dividend, convertible into 5 shares, redeemable after 8 years, market rate 8%.",
+     "options": {
+      "a": "₹28.73 per OCPS",
+      "b": "₹17.24 per OCPS",
+      "c": "₹54.03 per OCPS",
+      "d": "₹82.76 per OCPS"
+     },
+     "clue": "\"Optionally Convertible Preference Shares... convertible into 5 equity shares, redeemable after 8 years\"",
+     "chapter_clear": true,
+     "think": [
+      "Convertible + redeemable + 'equity component' = a compound instrument -> Ind AS 32 split.",
+      "Chapter clear -> FR -> Ind AS 32 -> the 'compound financial instruments' illustration. Copy its method and change the figures.",
+      "Value the liability first: PV of contractual cash flows at 8% (the rate for a non-convertible instrument). Equity is the residual.",
+      "The options assume the dividend is contractual: PV of dividends 28.73 + PV of redemption 54.03 = 82.76 -> equity 17.24."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR: Ind AS 32 Financial Instruments: Presentation",
+      "index_keywords": [
+       "compound financial instrument",
+       "liability component residual equity",
+       "preference shares discretionary dividend",
+       "AG37"
+      ]
+     },
+     "solve": "Residual method (Ind AS 32 para 31-32): measure the liability at the PV of contractual cash flows at 8%; equity = proceeds − liability.\nPV of dividends: ₹5 × 5.7466 = ₹28.73\nPV of redemption: ₹100 × 0.5403 = ₹54.03\nLiability = ₹82.76\nEquity = ₹100 − ₹82.76 = ₹17.24 (ICAI key)\nStrict view: a non-cumulative dividend paid at RESL's discretion is not a contractual obligation. Under Ind AS 32 AG37 the liability is only the PV of redemption (₹54.03) and equity is ₹45.97, which is not among the options. The conversion option being out of the money does not change the split; the residual still goes to equity.",
+     "answer": "(B) ₹17.24 per OCPS. It is the only option produced by the residual method. A strict Ind AS 32 reading gives ₹45.97, which is not offered.",
+     "icai": "(B)",
+     "flag": "ICAI treats the 5% non-cumulative (discretionary) dividend as a liability. Under Ind AS 32 AG37 it is equity, so equity = ₹100 − ₹54.03 = ₹45.97, which is not an option.",
+     "trap": "Picking ₹82.76 (that is the liability) or ₹54.03 (the PV of principal). The question asks for the equity component.",
+     "minutes": 3
+    },
+    {
+     "q": "1.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "Time of Supply (s.14 CGST); Place of Supply (s.10 IGST)",
+     "topic": "Change in rate of tax; goods ordered by an unregistered buyer and delivered to a third person",
+     "ask": "Is 18% the right GST rate on the ABC service? What is the place of supply for goods ordered by FG (Rohtak) but delivered to VC (Jalandhar)?",
+     "options": {
+      "a": "Correct GST rate: 18%. Place of Supply is Rohtak",
+      "b": "Correct GST rate: 12%. Place of Supply is Jalandhar",
+      "c": "Correct GST rate: 12%. Place of Supply is Rohtak",
+      "d": "Correct GST rate: 18%. Place of Supply is Jalandhar"
+     },
+     "clue": "\"changed from 12% to 18% with effect from 21/07/2025\"; \"recorded delivery address of Jalandhar\"",
+     "chapter_clear": true,
+     "think": [
+      "Two parts. The rate changed mid-transaction -> s.14 'change in rate of tax'. Ordered by one person, shipped to another -> place of supply, s.10(1) IGST.",
+      "Chapter clear -> IDT -> Time of Supply -> s.14 table. Service done before the change, payment before, invoice after -> date of payment -> old rate 12%.",
+      "Place of supply: FG is unregistered. ICAI applies s.10(1)(ca) (unregistered buyer -> address recorded in the invoice) and takes Jalandhar.",
+      "Only (B) has 12% + Jalandhar."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT: Time of Supply; Place of Supply",
+      "index_keywords": [
+       "change in rate of tax section 14",
+       "bill to ship to",
+       "supply to unregistered person address recorded in invoice",
+       "section 10(1)(ca)"
+      ]
+     },
+     "solve": "Rate:\n• Service completed 20/07, before the change.\n• Payment received 15/07, before the change.\n• Invoice issued 22/07, after the change.\nS.14(a)(iii): if supply is before the change, the invoice after and the payment before, time of supply = date of payment (15/07). So the old rate of 12% applies, and charging 18% is wrong.\nPlace of supply: FG Industries is unregistered, and the invoice records the delivery address in Jalandhar. ICAI applies s.10(1)(ca): for goods supplied to an unregistered person, place of supply = location as per the address recorded in the invoice. That gives Jalandhar (Punjab), so IGST applies, not Haryana tax.\nAlternative view: under the bill-to-ship-to rule in s.10(1)(b), FG (which directed the delivery) is deemed the recipient. Place of supply is then its principal place of business, Rohtak.",
+     "answer": "(B) Correct GST rate 12%; place of supply Jalandhar",
+     "icai": "(B)",
+     "flag": "Debatable: on bill-to-ship-to facts, s.10(1)(b) deems FG (which directed the delivery) the recipient, giving Rohtak (option C). ICAI instead applies the unregistered-buyer rule u/s 10(1)(ca) and reads the invoice's delivery address.",
+     "trap": "Taking 18% because the invoice was raised after the change. When payment came first, the payment date fixes the rate.",
+     "minutes": 3
+    },
+    {
+     "q": "1.6",
+     "type": "Descriptive",
+     "marks": 6,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "Demands and Recovery (s.74A / s.74 CGST)",
+     "topic": "Fraud/suppression demand: payment before SCN with 15% penalty, shortfall, 25%/50% options",
+     "ask": "Can the department issue an SCN after RESL paid tax, interest and penalty? Did RESL pay the right penalty? What remedy does RESL have? (2 + 4 marks)",
+     "options": null,
+     "clue": "\"misrepresentation of facts and proper officer before serving show cause notice\"",
+     "chapter_clear": true,
+     "think": [
+      "'Misrepresentation' + 'before SCN' + penalty paid -> a fraud/suppression demand: s.74A (FY 2024-25 onwards); old s.74 for earlier years.",
+      "Chapter clear -> IDT -> Demands and Recovery -> s.74A ladder: 15% before SCN, 25% within 60 days of SCN, 50% within 60 days of order.",
+      "Compare: tax ascertained ₹10 lakh vs paid ₹8 lakh; penalty due 15% × ₹8 lakh = ₹1.20 lakh vs paid ₹0.80 lakh.",
+      "Conclude: no SCN for the amount fully paid; SCN is valid for the shortfall. Remedy: pay with a 25% or 50% penalty and close the case, or contest it."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT: Demands and Recovery",
+      "index_keywords": [
+       "section 74A",
+       "fraud wilful misstatement suppression of facts",
+       "penalty 15% before notice",
+       "25% within sixty days of notice",
+       "50% within sixty days of order"
+      ]
+     },
+     "solve": "Provision (fraud, wilful misstatement or suppression; s.74A for FY 2024-25 onwards): before an SCN, the person may pay the tax, s.50 interest and a penalty of 15% of that tax, on his own ascertainment or the officer's, and inform the officer. No SCN is then served for the tax so paid. If the officer finds the payment short, he issues an SCN for the shortfall.\nFacts: tax communicated ₹10,00,000; paid ₹8,00,000.\nPenalty required = 15% × ₹8,00,000 = ₹1,20,000. Paid ₹80,000 (10%), so ₹40,000 short. If the ₹80,000 covered interest as well, the shortfall is larger.\nSo there can be no SCN for the ₹8 lakh, but an SCN can be issued for the balance tax of ₹2,00,000 with interest and penalty, plus the penalty shortfall. Management's view is wrong.",
+     "answer": "Part 1 (2 marks)\n• Provision: in fraud/suppression cases (s.74A), if tax + interest + a 15% penalty are paid before the SCN, no SCN is issued for the tax so paid. If the payment is short, an SCN is issued for the shortfall.\n• Analysis: tax ascertained ₹10 lakh, paid ₹8 lakh. Penalty due = 15% of ₹8 lakh = ₹1,20,000; paid ₹80,000 (10%), so ₹40,000 short.\n• Conclusion: no SCN can be issued for the ₹8 lakh already covered. An SCN can be issued for the unpaid tax of ₹2 lakh with interest and penalty, and for the ₹40,000 penalty shortfall. RESL has NOT deposited the required penalty.\n\nPart 2 (4 marks): Remedies available to RESL\n1. Within 60 days of the SCN: pay tax + interest + a penalty of 25% of the tax. All proceedings on that notice are then deemed concluded.\n2. Within 60 days of communication of the order: pay tax + interest + a penalty of 50% of the tax. All proceedings are then deemed concluded.\n3. If it disputes the demand: reply to the SCN. Against the order, appeal u/s 107 within 3 months after a pre-deposit of 10% of the disputed tax.\n(For periods up to FY 2023-24, the same 15%/25%/50% scheme applies under s.74, with 30-day windows.)",
+     "icai": "Same conclusion as ICAI: SCN for ₹2 lakh + interest + penalty, penalty short by ₹40,000, and the 25%/50% options within 60 days. The appeal route is an extra point.",
+     "flag": null,
+     "trap": "Saying no SCN can be issued at all because 'tax was paid'. The protection covers only the amount paid with the full 15% penalty.",
+     "minutes": 18
+    },
+    {
+     "q": "1.7",
+     "type": "Descriptive",
+     "marks": 4,
+     "subject": "Law",
+     "also": "Audit",
+     "chapter": "Compromises, Arrangements and Amalgamations (Companies Act, 2013)",
+     "topic": "Auditor's certificate on accounting treatment: provisos to s.230(7) and s.232(3)",
+     "ask": "If the TCL acquisition goes through an NCLT scheme of arrangement, what certificate is needed from RESL's statutory auditor?",
+     "options": null,
+     "clue": "\"structured as a Scheme of Arrangement involving the NCLT... certification... from the Statutory Auditor\"",
+     "chapter_clear": true,
+     "think": [
+      "'Scheme of arrangement' + 'NCLT' + 'auditor certificate' -> s.230/232 of the Companies Act.",
+      "Chapter clear -> Law -> Compromises, Arrangements and Amalgamations -> s.230(7) proviso (and the s.232(3) proviso for mergers).",
+      "You know this one: write it without the book. The certificate says the scheme's accounting treatment conforms to the accounting standards u/s 133. For 4 marks, add who gives it, its content, the listed-company angle and a conclusion."
+     ],
+     "look_up": {
+      "where": "ICAI SM Corporate & Economic Laws: Compromises, Arrangements and Amalgamations",
+      "index_keywords": [
+       "section 230(7)",
+       "auditor certificate accounting treatment",
+       "section 232(3)",
+       "accounting standards section 133"
+      ]
+     },
+     "solve": "Proviso to s.230(7): NCLT shall not sanction a compromise or arrangement unless the company's auditor has filed a certificate that the accounting treatment, if any, proposed in the scheme conforms to the accounting standards prescribed u/s 133. The proviso to s.232(3) says the same for merger/amalgamation schemes. The scheme is RESL's, so its statutory auditors give the certificate. Being listed, RESL also files this auditor's certificate with the stock exchange along with the draft scheme (SEBI scheme framework).",
+     "answer": "• Provision: proviso to s.230(7) [s.232(3) for a merger/amalgamation]. NCLT will not sanction a scheme unless the company's auditor certifies that the accounting treatment proposed in it conforms to the accounting standards notified u/s 133 (Ind AS for RESL).\n• Who: RESL's statutory auditors, M/s HK & Associates, file the certificate with the Tribunal.\n• Content: the accounting proposed in the scheme for the TCL acquisition (e.g., Ind AS 103 business combination) complies with Ind AS. Any deviation must be removed before sanction.\n• Listed company: the same auditor's certificate also goes to the stock exchange with the draft scheme under SEBI's framework for schemes.\n• Conclusion: NCLT must obtain the auditor's certificate that the scheme's accounting treatment conforms to the accounting standards before it sanctions the scheme.",
+     "icai": "Same conclusion as ICAI. The s.232(3) and SEBI points are extra.",
+     "flag": null,
+     "trap": "Writing about a valuation report or fairness opinion. Those come from a registered valuer or merchant banker, not from the auditor.",
+     "minutes": 12
+    },
+    {
+     "q": "1.8",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "Security Valuation (Dividend Discount Model); Dividend Decisions (Walter's model)",
+     "topic": "Share price from book value and ROE: Gordon growth model and Walter's model",
+     "ask": "With Ke of 15%, value TCL's share using (a) the Dividend Growth Model and (b) Walter's model.",
+     "options": null,
+     "clue": "\"TCL's current book value is ₹400 per share, Return on equity is 12%\"",
+     "chapter_clear": true,
+     "think": [
+      "The question names both models, so this is a pure numerical. TCL follows the 'same policy' as RESL, so retention is 70% and payout 30%.",
+      "Build the inputs: EPS = BV × ROE; DPS = 30% of EPS; g = b × r.",
+      "Chapter clear -> AFM Security Valuation (Gordon) / Inter FM Dividend Decisions (Walter). You know the formulae; solve without the book.",
+      "Add the D0-vs-D1 alternative in one line. ICAI accepts both."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM: Security Valuation; Inter FM: Dividend Decisions",
+      "index_keywords": [
+       "Gordon growth model",
+       "Walter model",
+       "growth rate retention ratio",
+       "dividend discount model"
+      ]
+     },
+     "solve": "EPS = 400 × 12% = ₹48 (ROE on today's book value gives next year's earnings)\nPayout = 1 − 0.70 = 30% -> DPS = 48 × 30% = ₹14.40\ng = b × r = 0.70 × 12% = 8.4%\n(a) Gordon: P = D1 ÷ (Ke − g) = 14.40 ÷ (0.15 − 0.084) = 14.40 ÷ 0.066 = ₹218.18\nIf ₹14.40 is taken as D0: D1 = 14.40 × 1.084 = ₹15.61 -> 15.61 ÷ 0.066 = ₹236.52\n(b) Walter: P = [D + (r/Ke)(E − D)] ÷ Ke = [14.40 + (0.12/0.15)(48 − 14.40)] ÷ 0.15 = (14.40 + 26.88) ÷ 0.15 = 41.28 ÷ 0.15 = ₹275.20\nWith growth-adjusted E ₹52.03 and D ₹15.61: (15.61 + 0.8 × 36.42) ÷ 0.15 = ₹298.33",
+     "answer": "Working notes: EPS = ₹400 × 12% = ₹48; payout 30% -> DPS ₹14.40; retention 70% -> g = 0.70 × 12% = 8.4%; Ke = 15%.\n\n(a) Dividend Growth (Gordon) Model\nP0 = D1 ÷ (Ke − g) = 14.40 ÷ (0.15 − 0.084) = 14.40 ÷ 0.066 = ₹218.18\n(Alternative, treating ₹14.40 as D0: D1 = ₹15.61 -> P0 = ₹236.52)\n\n(b) Walter's Model\nP = [D + (r/Ke)(E − D)] ÷ Ke\n= [14.40 + (0.12/0.15)(48.00 − 14.40)] ÷ 0.15\n= (14.40 + 26.88) ÷ 0.15 = ₹275.20\n(Alternative with growth-adjusted E ₹52.03 and D ₹15.61: ₹298.33)\n\nComment: r (12%) is below Ke (15%), so retaining 70% lowers value. On Walter's logic, a 100% payout would give 48 ÷ 0.15 = ₹320.",
+     "icai": "Same as ICAI: ₹218.18 (alt ₹236.52) and ₹275.20 (alt ₹298.33). The payout comment is extra.",
+     "flag": null,
+     "trap": "Using ROE (12%) as the growth rate, or swapping retention and payout. g = retention ratio × ROE = 8.4%.",
+     "minutes": 15
+    }
+   ]
+  },
+  {
+   "no": 2,
+   "title": "XYZ Metal Industries Limited (XYZ)",
+   "industry": "Stainless steel pipes and fittings manufacturing",
+   "story": "A listed steel-pipe maker with a listed subsidiary (JBS) and a 45% stake in PQR. Sales and profit are falling because of quality failures and old machines. It is importing CNC machines with £ debt, swapping ESOPs with JBS, and facing a limit-on-directorships question.",
+   "marks_by_subject": {
+    "Costing": 8,
+    "FR": 6,
+    "Audit": 6,
+    "AFM": 2,
+    "Law": 2
+   },
+   "difficulty": "Hard",
+   "first15": "Skip candidate: 2.2 (Ind AS 110 potential voting rights) and 2.7 (group ESOP cancellation, with no figure for year 2) are tough. The 6-mark cost-of-quality report is the only easy block, and the marks printed in the SA add up to only 24.",
+   "questions": [
+    {
+     "q": "2.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCPM: Lean System and Innovation",
+     "topic": "Lean tools: standardised work, JIT, visual management, value stream mapping",
+     "ask": "Which rows of Mr Rajiv's issue -> corrective-measure matrix are correctly matched?",
+     "options": {
+      "a": "(a), (b) and (c)",
+      "b": "(a), (c) and (d)",
+      "c": "(a) and (c)",
+      "d": "(b) and (d)"
+     },
+     "clue": "\"recommended the adoption of lean manufacturing practices\"",
+     "chapter_clear": true,
+     "think": [
+      "Standardised work, JIT, visual management and value stream are all lean tools -> SCPM Lean chapter.",
+      "Chapter clear -> SCPM -> Lean System and Innovation -> read the one-line purpose of each tool.",
+      "(a) uniform procedures = standardised work ✓. (c) search-free, count-free = visual management ✓. (d) see every step, remove non-value-added work = value stream ✓.",
+      "(b): JIT removes WASTE (over-production) by producing only what is needed. 'Eliminating all defects at source' is jidoka/zero defects, so the match is wrong -> (B)."
+     ],
+     "look_up": {
+      "where": "ICAI SM SCPM: Lean System and Innovation",
+      "index_keywords": [
+       "lean tools",
+       "standardized work",
+       "visual management",
+       "value stream mapping",
+       "just-in-time"
+      ]
+     },
+     "solve": "(a) Standardised work: one documented best method that cuts variability and eases training. Match.\n(b) JIT: produce only what is needed, when it is needed, to cut waste (over-production, inventory). 'Eliminating all defects / quality at source' describes jidoka or zero-defect tools, not JIT. Mismatch.\n(c) Visual management: items placed and labelled so they can be found and counted at a glance. Match.\n(d) Value stream (mapping): shows every step of the flow and exposes non-value-added activities. Match.",
+     "answer": "(B) (a), (c) and (d)",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Accepting (b) because 'producing only as needed' is JIT's definition. The catch is that 'waste' has been swapped for 'defects'.",
+     "minutes": 3
+    },
+    {
+     "q": "2.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 110 Consolidated Financial Statements",
+     "topic": "Control through a forward contract: potential voting rights giving present access to returns; NCI split; Ind AS 109 scope",
+     "ask": "XYZ holds 45% of PQR. On 01.07.2025 it enters a forward to buy 12% more. Which statements on control, the NCI split and the forward's accounting are right?",
+     "options": {
+      "a": "(i), (ii)",
+      "b": "(ii), (iii)",
+      "c": "(i), (ii), (iii)",
+      "d": "(i), (ii), (iv)"
+     },
+     "clue": "\"entitled to receive any dividends... exercise its voting rights... instructions of XYZ\"",
+     "chapter_clear": true,
+     "think": [
+      "45% + a contract giving XYZ the votes and dividends on another 12% -> is that control? -> Ind AS 110 (power, returns, link).",
+      "Chapter clear -> FR -> Ind AS 110 -> Appendix B 'potential voting rights' and 'present ownership interest' (B89-B91).",
+      "Votes: 45% + 12% directed by XYZ = 57% -> power. Dividends on the 12% -> present access to returns -> allocate 57% / 43%.",
+      "B91: such instruments fall outside Ind AS 109 -> (iv) true, (iii) false -> (D)."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR: Ind AS 110 Consolidated Financial Statements",
+      "index_keywords": [
+       "potential voting rights",
+       "present access to returns",
+       "non-controlling interest proportion",
+       "B90",
+       "B91"
+      ]
+     },
+     "solve": "Power: XYZ holds 45%, and from 01.07.2025 B Ltd must vote its 12% as XYZ instructs. XYZ therefore directs 57% of the votes; the other 43% sits with A (19%) and C (18%). XYZ controls PQR from 01.07.2025, so (i) is true.\nReturns: XYZ receives the dividends on the 12% now, so in substance it already has an ownership interest. Under B90, profit/OCI is allocated 57% to the parent and 43% to NCI, so (ii) is true.\nB91: when potential voting rights already give access to the returns of a consolidated subsidiary, the instrument is not accounted for under Ind AS 109. So (iii) is false and (iv) is true.",
+     "answer": "(D) (i), (ii) and (iv)",
+     "icai": "(D)",
+     "flag": null,
+     "trap": "Treating the forward as a derivative at FVTPL under Ind AS 109. It is absorbed into consolidation.",
+     "minutes": 3
+    },
+    {
+     "q": "2.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "Interest Rate Risk Management (swaps); Foreign Exchange Exposure and Risk Management",
+     "topic": "Comparative advantage in borrowing; forwards vs currency futures",
+     "ask": "Which statements on the £ borrowing choice and on XYZ's forward / JBS's futures are correct?",
+     "options": {
+      "a": "(i) and (ii)",
+      "b": "(i) and (iii)",
+      "c": "(i), (ii) and (iv)",
+      "d": "(i), (iii) and (iv)"
+     },
+     "clue": "\"fixed rate of 5.5% or... 60 basis points above SONIA\"",
+     "chapter_clear": true,
+     "think": [
+      "Two firms with fixed and floating quotes -> comparative advantage / interest rate swap logic.",
+      "Chapter clear -> AFM -> Interest Rate Risk Management (swaps) + Forex chapter (forward vs futures).",
+      "Fixed gap 6.5 − 5.5 = 1.00%; floating gap 1.15 − 0.60 = 0.55%. XYZ's edge is bigger in fixed, so XYZ borrows fixed, JBS borrows floating, and they swap.",
+      "Forward = OTC, priced through the bid-ask spread, no MTM. Futures = exchange-traded, brokerage, daily MTM -> (i) and (iii)."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM: Interest Rate Risk Management; Foreign Exchange Exposure and Risk Management",
+      "index_keywords": [
+       "interest rate swap comparative advantage",
+       "forward contract vs futures",
+       "marking to market",
+       "bid-ask spread"
+      ]
+     },
+     "solve": "Quotes: XYZ fixed 5.5% or SONIA + 0.60; JBS fixed 6.5% or SONIA + 1.15.\nXYZ's advantage is 1.00% in fixed and 0.55% in floating, so it is larger in fixed. XYZ borrows fixed, JBS borrows floating, and they swap; the 0.45% total gain is shared. XYZ ends up paying floating, which it wants because it expects rates to fall. (i) true.\n(ii) False: currency futures trade on an exchange; only the forward is OTC.\n(iii) True: a forward's cost is built into the bank's bid-ask spread; futures carry brokerage.\n(iv) False: forwards are not marked to market; futures are. Ignore the stray line that JBS's contract is not settled daily; the options are built on the standard features.",
+     "answer": "(B) (i) and (iii)",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Putting XYZ on floating because XYZ wants floating. First borrow where you have the comparative edge, then swap.",
+     "minutes": 3
+    },
+    {
+     "q": "2.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Appointment and Qualifications of Directors (s.165); SEBI (LODR) Regulations, 2015",
+     "topic": "Limits on directorships: s.165 (20 total / 10 public) and Reg 17A (7 listed entities)",
+     "ask": "Is Mr Suresh eligible to join XYZ as a Whole-Time Director, given his existing directorships?",
+     "options": {
+      "a": "Eligible: counting private subsidiaries of public companies and excluding inactive companies, his countable directorships are well within the limit.",
+      "b": "Eligible: his listed-company directorships are within the limit and he has not crossed the overall cap across private and public companies.",
+      "c": "Ineligible: private subsidiaries are included and inactive companies excluded, and the overall cap is not crossed, but his directorships in listed companies exceed the SEBI limit.",
+      "d": "Ineligible: he has already exceeded the maximum directorships in publicly traded companies and also the limit for total directorships in listed companies."
+     },
+     "clue": "\"one dormant company, eight Public Limited companies, of which seven are listed\"",
+     "chapter_clear": true,
+     "think": [
+      "Counting directorships -> s.165 (20 total, 10 public). XYZ is listed, so SEBI LODR Reg 17A (7 listed) applies too.",
+      "Chapter clear -> Law -> Appointment of directors -> s.165 explanations (dormant excluded; a private subsidiary of a public company counts as public). SEBI LODR -> Reg 17A.",
+      "Count after joining XYZ: total 19 + 1 = 20 ✓; public 8 + 1 (JBS's private subsidiary) + 1 = 10 ✓; listed 7 + 1 = 8 ✗ (max 7).",
+      "He fails only the SEBI listed-entity cap -> (C)."
+     ],
+     "look_up": {
+      "where": "ICAI SM Corporate & Economic Laws: Appointment and Qualifications of Directors; SEBI (LODR)",
+      "index_keywords": [
+       "number of directorships section 165",
+       "dormant company excluded",
+       "private company subsidiary of public company",
+       "Regulation 17A seven listed entities"
+      ]
+     },
+     "solve": "S.165: a maximum of 20 companies (dormant companies excluded), of which at most 10 public. A private company that is a holding or subsidiary of a public company counts as public.\nExisting: 1 dormant (ignore); 8 public; 11 private, of which 1 is a subsidiary of JBS (a listed public company) and so counts as public.\nTotal countable = 8 + 11 = 19; with XYZ = 20, within 20.\nPublic = 8 + 1 = 9; with XYZ = 10, within 10.\nReg 17A(1) LODR: no person may be a director in more than 7 listed entities. He already sits on 7 listed boards; XYZ is listed and would be the 8th, which exceeds the cap. He is ineligible.",
+     "answer": "(C) Ineligible. The Companies Act limits (20 total, 10 public) are met, but XYZ would be his 8th listed directorship against SEBI's cap of 7.",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Rejecting him under s.165 because he 'holds 20'. The dormant company drops out, so the Companies Act limit is still met.",
+     "minutes": 3
+    },
+    {
+     "q": "2.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "Review of Financial Information (SRE 2410)",
+     "topic": "Limited review of interim financial information: required procedures",
+     "ask": "Which procedures must the audit firm perform when reviewing the quarterly interim financial information?",
+     "options": {
+      "a": "(i) and (ii)",
+      "b": "(i) and (iii)",
+      "c": "(i), (ii) and (iii)",
+      "d": "(ii), (iii) and (iv)"
+     },
+     "clue": "\"interim financial information for the quarter ended 31st December 2025\"",
+     "chapter_clear": true,
+     "think": [
+      "Quarterly results reviewed by the statutory auditor under listing rules -> SRE 2410 (limited review).",
+      "Chapter clear -> Audit SM -> SRE 2410 -> 'procedures for a review' and 'management representations'.",
+      "A review = inquiry + analytics + understanding of the entity (including internal control) + written representations. It needs no corroboration and no testing of controls -> (i) and (iii)."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit: Review of Interim Financial Information (SRE 2410)",
+      "index_keywords": [
+       "SRE 2410",
+       "review procedures inquiry analytical",
+       "understanding of the entity and internal control",
+       "written representations"
+      ]
+     },
+     "solve": "SRE 2410 requires the auditor to understand the entity and its environment, including internal control, so (i) ✓. He performs inquiries and analytical procedures and obtains written representations from management on completeness, estimates and so on, so (iii) ✓. A review does not ordinarily require corroborating the information obtained, so (ii) ✗, or assessing whether controls operate effectively, so (iv) ✗. Those are audit procedures.",
+     "answer": "(B) (i) and (iii)",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Ticking corroboration (ii). That is exactly what separates an audit from a review.",
+     "minutes": 3
+    },
+    {
+     "q": "2.6",
+     "type": "Descriptive",
+     "marks": 6,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCPM: Modern Business Environment (TQM, Cost of Quality); Lean System and Innovation (TPM)",
+     "topic": "Cost of quality report: conformance vs non-conformance; TPM and TQM recommendations",
+     "ask": "Draft a report analysing XYZ's quality costs and recommending measures to reduce quality problems.",
+     "options": null,
+     "clue": "\"₹117 lakhs on rework and production downtime\"; \"₹135 lakhs on warranty claims\"",
+     "chapter_clear": true,
+     "think": [
+      "Five quality spends + 'report' -> sort them into prevention, appraisal, internal failure and external failure (cost of quality).",
+      "Chapter clear -> SCPM -> TQM -> the 'cost of quality' statement format; TPM is in the Lean chapter.",
+      "Build the table with % of total, then tie the case's causes (breakdowns, old machines, obsolete designs, returns) into the analysis.",
+      "Recommend TPM (downtime, rework) and TQM (right first time, supplier and design quality). Use report format with headings."
+     ],
+     "look_up": {
+      "where": "ICAI SM SCPM: Modern Business Environment (Total Quality Management); Lean System and Innovation",
+      "index_keywords": [
+       "cost of quality",
+       "prevention appraisal internal failure external failure",
+       "total productive maintenance",
+       "cost of conformance non-conformance"
+      ]
+     },
+     "solve": "Classification (₹ lakh):\nPrevention = training and audits 10 + preventive maintenance 20 = 30 (10%)\nAppraisal = incoming inspection and equipment testing 18 (6%)\nConformance = 48 (16%)\nInternal failure = rework and downtime 117 (39%)\nExternal failure = warranty and complaints 135 (45%)\nNon-conformance = 252 (84%)\nTotal = 300\nFor every ₹1 spent on prevention and appraisal, ₹5.25 is lost on failures (252 ÷ 48).",
+     "answer": "REPORT\nTo: Board of Directors, XYZ Metal Industries Ltd\nFrom: Management Accounting Department\nSubject: Analysis of quality costs and measures to reduce quality failures\n\n1. Statement of Cost of Quality (₹ lakh; % of total)\nPrevention: quality training and audits 10 (3.33%); preventive maintenance 20 (6.67%). Total 30 (10%)\nAppraisal: inspection of incoming materials and equipment testing 18 (6%)\nCost of conformance: 48 (16%)\nInternal failure: rework and production downtime 117 (39%)\nExternal failure: warranty claims and customer complaints 135 (45%)\nCost of non-conformance: 252 (84%)\nTotal cost of quality: 300 (100%)\n\n2. Analysis\n• 84% of quality spend goes on failures and only 16% on preventing or detecting them. XYZ fixes defects after they happen.\n• External failure (45%) is the largest block: warranty claims, returns and complaints. It also costs orders: turnover fell from ₹850 crore to ₹800 crore and PAT from ₹35 crore to ₹30 crore, while new entrants offer better quality at lower prices.\n• Internal failure (39%): rework and downtime come from frequent breakdowns, outdated machines and staff turnover, and they delay customer orders.\n• Fittings built to old standards and the stock of discontinued stainless items point to weak design control and poor production-marketing planning.\n• Preventive maintenance (₹20 lakh) is small compared with downtime and rework (₹117 lakh).\n\n3. Recommendations\n(a) Total Productive Maintenance: planned and autonomous maintenance, machine-wise schedules over each asset's life, and tracking of equipment effectiveness. This targets breakdowns, downtime and rework (internal failure).\n(b) Total Quality Management: right first time, employee involvement and training, statistical process control, designs updated to current industry standards, and supplier quality assurance (e.g., third-party inspection at the supplier's site). This targets defects reaching customers (external failure).\n(c) Shift spend towards prevention and appraisal: in-process inspection, design reviews and mistake-proofing. Back the planned CNC machines with operator training.\n(d) Lean housekeeping: JIT purchasing and 5S to stop the build-up of raw material and obsolete stock.\n\n4. Conclusion\nSpending more on conformance will cut the much larger failure cost. The aim is the balance at which the total cost of quality is lowest and customers stop sending goods back.\n\nManagement Accountant",
+     "icai": "Same conclusion as ICAI: 16% conformance vs 84% non-conformance; TPM and TQM recommended.",
+     "flag": null,
+     "trap": "Putting items in the wrong bucket. Training and audits = prevention; incoming inspection and testing = appraisal (as ICAI classified them).",
+     "minutes": 18
+    },
+    {
+     "q": "2.7",
+     "type": "Descriptive",
+     "marks": 4,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 102 Share-based Payment",
+     "topic": "Employees surrender the parent's ESOP for the subsidiary's options: cancellation (para 28/28A) and group share-based payment (para 43A-43B)",
+     "ask": "XYZ's employees give up XYZ's ESOP in exchange for options granted by subsidiary JBS on 01.04.2025. Give the accounting treatment and journal entries in XYZ's books on 01.04.2025 and 31.03.2026.",
+     "options": null,
+     "clue": "\"employees of XYZ... would surrender their rights under XYZ's existing Employee Stock Option Plan\"",
+     "chapter_clear": true,
+     "think": [
+      "Options given up during the vesting period -> Ind AS 102 'cancellation'. New options from a group company -> 'group share-based payment arrangement'.",
+      "Chapter clear -> FR -> Ind AS 102 -> para 28/28A (cancellation by the entity or the employee) and para 43A-43B, B52-B59 (group arrangements).",
+      "Year 1: 75,000 options × ₹120 ÷ 3 = ₹30 lakh already booked. The cancellation brings forward the remaining ₹60 lakh.",
+      "Year 2: XYZ gets the services but JBS settles in its own shares, so XYZ books the expense as equity-settled. The amount needs the JBS option fair value, which is not given."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR: Ind AS 102 Share-based Payment",
+      "index_keywords": [
+       "cancellation acceleration of vesting",
+       "paragraph 28",
+       "non-vesting condition counterparty",
+       "group share-based payment arrangements",
+       "subsidiary grants to parent employees"
+      ]
+     },
+     "solve": "Original grant: 250 × 300 = 75,000 options × ₹120 = ₹90,00,000 over 3 years, i.e., ₹30,00,000 a year. FY 2024-25 already has Dr Employee benefits expense / Cr ESOP Outstanding ₹30,00,000.\n01.04.2025: employees give up the options to get JBS options. This is an employee-driven cancellation (para 28A). Para 28(a) treats a cancellation as accelerated vesting, so the ₹60,00,000 that would have been recognised over the remaining 2 years is expensed now. XYZ pays nothing, so there is no repurchase entry. JBS's options are not XYZ's own equity instruments, so in XYZ's separate books they are not a replacement or modification under para 28(c).\nNo XYZ shares will now be issued, so the ₹90,00,000 balance may be moved within equity to retained earnings (para 23).\n31.03.2026: XYZ receives the services; JBS settles in its own equity and XYZ has no obligation. XYZ treats it as equity-settled (para 43B). Expense = grant-date fair value of the JBS options given to XYZ employees × options expected to vest × 1/vesting period, with the credit to equity (a distribution from the subsidiary). The fair value at 01.04.2025 is not given, so the amount stays open.",
+     "answer": "1. Expense already recognised (FY 2024-25)\n75,000 options (250 × 300) × ₹120 = ₹90,00,000 ÷ 3 years = ₹30,00,000 (Dr Employee benefits expense, Cr ESOP Outstanding).\n\n2. 1 April 2025: surrender of XYZ options\nTreatment: employees giving up options during the vesting period is a cancellation (Ind AS 102 para 28A). A cancellation is accounted for as accelerated vesting (para 28(a)), so the part not yet recognised is expensed at once. XYZ pays nothing, so there is no repurchase entry. The JBS options are not XYZ's equity, so there is no modification or replacement in XYZ's books.\nJE (a) Employee benefits expense A/c Dr ₹60,00,000\n        To ESOP Outstanding A/c ₹60,00,000\n(Being the remaining vesting expense accelerated on cancellation)\nJE (b) ESOP Outstanding A/c Dr ₹90,00,000\n        To Retained Earnings A/c ₹90,00,000\n(Being a transfer within equity under para 23; no shares will be issued)\n\n3. 31 March 2026: services rewarded by JBS options\nXYZ receives the employees' services; JBS settles in its own shares and XYZ has no obligation, so XYZ treats it as equity-settled (para 43B).\nJE Employee benefits expense A/c Dr [FV of JBS option at 01.04.2025 × options to XYZ staff expected to vest × 1/vesting period]\n        To Equity (Retained earnings, as a distribution from the subsidiary) / Dividend income from subsidiary A/c [same]\nAmount: cannot be determined, because the grant-date fair value of the JBS options given to XYZ employees is not provided. If you use a figure, state your assumption.",
+     "icai": "Differs on 01.04.2025: ICAI only moves the ₹30 lakh ESOP balance to retained earnings and does not accelerate the remaining ₹60 lakh. The 31.03.2026 entry matches ICAI (amount left blank).",
+     "flag": "ICAI ignores Ind AS 102 para 28(a)/28A: a cancellation, including one by the employee, brings the unrecognised ₹60 lakh into profit or loss at once, before any transfer within equity.",
+     "trap": "Treating the JBS grant as a modification of XYZ's plan in XYZ's own books. The new options are not XYZ's equity.",
+     "minutes": 12
+    },
+    {
+     "q": "2.8",
+     "type": "Descriptive",
+     "marks": 4,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "Review of Financial Information (SRE 2410)",
+     "topic": "Additional procedures when inventory may be misstated; modified review conclusion",
+     "ask": "In the quarterly limited review, can CA. S do more work on obsolete and non-moving stock? Which procedures should he perform, and how should he report if inventory is misstated or evidence is insufficient?",
+     "options": null,
+     "clue": "\"evaluated the company's assessment and treatment of obsolete and non-moving inventory items\"",
+     "chapter_clear": true,
+     "think": [
+      "'Limited review' of quarterly results by the statutory auditor -> SRE 2410. ICAI's answer uses SRE 2400 wording; the outcome is the same.",
+      "Chapter clear -> Audit SM -> SRE 2410 -> 'matter that causes the auditor to believe a material adjustment may be needed' and 'modified conclusion'.",
+      "Yes, he can do more. List inventory-specific procedures built on the case facts (fittings to old standards, discontinued stainless line).",
+      "Reporting: misstatement -> qualified or adverse; scope limitation -> qualified or disclaimer."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit: Review of Financial Information (SRE 2410 / SRE 2400)",
+      "index_keywords": [
+       "additional procedures",
+       "material adjustment",
+       "qualified conclusion",
+       "adverse conclusion",
+       "disclaimer of conclusion",
+       "limitation on scope"
+      ]
+     },
+     "solve": "Yes. When a matter makes the auditor believe the interim information may be materially misstated, he makes additional inquiries or performs other procedures (substantive ones if needed) until he can reach a conclusion.\nInventory procedures: ask how management identifies obsolete and slow-moving items and estimates NRV; get the ageing and non-moving lists and compare them with the last year-end; check the write-down working against current selling prices, scrap rates and sales after the quarter; discuss the fittings built to old standards and the discontinued stainless line with the Production and Marketing heads; run analytics on inventory days and gross margin; read board minutes on the discontinuation; obtain a written representation on inventory valuation; inspect physically or confirm if needed.\nReporting: material misstatement -> qualified conclusion ('except for') if not pervasive, adverse if pervasive. Evidence not obtained -> qualified if the possible effect is material but not pervasive, disclaimer if pervasive. Communicate to management and the audit committee.",
+     "answer": "• Can he do more? Yes. Under SRE 2410, if a matter suggests the interim financial information may be materially misstated, the auditor makes additional inquiries or performs other procedures so that he can express a conclusion.\n• Additional procedures for obsolete and non-moving inventory:\n  1. Ask the CFO and the production/stores heads how obsolete and slow-moving items are identified and how NRV is estimated.\n  2. Obtain the ageing and non-moving inventory list; check that the outdated fittings and the discontinued stainless-steel stock appear in it.\n  3. Recompute the write-down: compare cost with NRV using recent selling prices, scrap values and sales after the quarter.\n  4. Analytical procedures: inventory holding days, gross margin, and provision as % of inventory compared with earlier quarters.\n  5. Read board/committee minutes on discontinuing the product line.\n  6. Where needed, physically inspect the obsolete stock or test details.\n  7. Obtain a written representation from management on inventory valuation.\n• Reporting:\n  (a) Valuation materially misstated: qualified conclusion (material, not pervasive) or adverse conclusion (material and pervasive), with a basis paragraph stating the effect.\n  (b) Sufficient appropriate evidence not obtained: qualified conclusion (possible effect material, not pervasive) or disclaimer of conclusion (material and pervasive).\n  (c) Communicate the matter to management and the audit committee.",
+     "icai": "Same conclusion as ICAI. ICAI quotes SRE 2400 ('practitioner') wording; a listed company's quarterly limited review by its own auditor falls under SRE 2410, and the reporting outcome is the same.",
+     "flag": null,
+     "trap": "Saying a review allows no extra procedures. Limited assurance still needs more work when something looks wrong.",
+     "minutes": 12
+    }
+   ]
+  },
+  {
+   "no": 3,
+   "title": "EarthCare Health Trust (EHT)",
+   "industry": "NGO: charitable eye hospital and environmental work",
+   "story": "A 12AB-registered trust that runs an eye hospital and green drives, funded by local donors, a state grant and FCRA money. The trustees ask about FCRA compliance, 12AB renewal, GST on renting its halls, overseas investment, measuring performance and the trust's tax.",
+   "marks_by_subject": {
+    "DT": 8,
+    "AFM": 6,
+    "Costing": 5,
+    "Law": 4,
+    "IDT": 2
+   },
+   "difficulty": "Moderate",
+   "first15": "Pick it if trust taxation (s.11-13, 115BBC) is clear: 3.7 is a standard computation, and 9 more marks are writing-only (VFM, import risks). The MCQs need FCRA/FEMA recall, and 3.2 and 3.4 have debatable keys.",
+   "questions": [
+    {
+     "q": "3.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Foreign Contribution (Regulation) Act, 2010",
+     "topic": "FC-4 due date, designated FCRA account, separate books, CA certification",
+     "ask": "Which statements on EHT's FCRA compliance are incorrect?",
+     "options": {
+      "a": "(i) and (iii)",
+      "b": "(i), (ii) and (iv)",
+      "c": "(ii), (iii) and (iv)",
+      "d": "(i), (iii) and (iv)"
+     },
+     "clue": "\"form FC-4, certified by a CA. Amit... filed on 15th January 2025\"",
+     "chapter_clear": true,
+     "think": [
+      "FC-4, FCRA account, separate records -> FCRA 2010 + FCRA Rules 2011.",
+      "Chapter clear -> Economic Laws -> FCRA -> 'annual return Form FC-4', 'FCRA account, SBI New Delhi Main Branch', 'books of accounts'.",
+      "FC-4 is due within 9 months (31 Dec) but was filed 15 Jan, so it is late. No separate FC records is a breach. Receipt in the designated SBI FCRA account is fine. Any practising CA can certify -> (A)."
+     ],
+     "look_up": {
+      "where": "ICAI SM Economic Laws: Foreign Contribution (Regulation) Act, 2010",
+      "index_keywords": [
+       "Form FC-4",
+       "nine months",
+       "FCRA account State Bank of India",
+       "separate set of accounts",
+       "chartered accountant certificate"
+      ]
+     },
+     "solve": "(i) The FC-4 for FY 2023-24 is due within 9 months of year-end, i.e., by 31.12.2024. It was filed on 15.01.2025, so it is late and the statement is incorrect.\n(ii) Foreign contribution must be received only in the 'FCRA Account' at the designated SBI branch (New Delhi Main Branch). EHT received the ₹75 lakh there, so the statement is correct.\n(iii) A separate set of accounts and records must be kept for FC receipts and their use. EHT kept none, so the statement is incorrect.\n(iv) FC-4 must be certified by a chartered accountant, who need not be the statutory auditor, so the statement is correct.\n(Also fine: administrative spend of ₹12 lakh is 16% of FC, within the 20% cap, and utilisation accounts may be held in other banks or branches.)",
+     "answer": "(A) (i) and (iii)",
+     "icai": "(A)",
+     "flag": null,
+     "trap": "Thinking only the statutory auditor can certify FC-4.",
+     "minutes": 3
+    },
+    {
+     "q": "3.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "Security Valuation (Valuation of Bonds)",
+     "topic": "Interest rate risk vs maturity and YTM; pull to par of premium and discount bonds",
+     "ask": "Which statements about the three bonds shortlisted for s.11(5) investment are correct?",
+     "options": {
+      "a": "(i), (ii) and (iv)",
+      "b": "(i), (iii) and (iv)",
+      "c": "(ii), (iii) and (iv)",
+      "d": "(iii) and (iv)"
+     },
+     "clue": "\"Maturity... Coupon Rate... Yield to Maturity... Currently Trading at\"",
+     "chapter_clear": true,
+     "think": [
+      "A bond table with maturity, coupon and YTM -> AFM Security Valuation (bond price, duration, interest rate risk).",
+      "Chapter clear -> AFM -> Security Valuation -> 'bond values with passage of time' and 'duration / interest rate risk'.",
+      "Risk rises with maturity and with a lower coupon or YTM. Bond 1 is the least risky and Bond 3 the most -> (i) ✓, (ii) ✗.",
+      "Pull to par: a discount bond's price rises and a premium bond's price falls -> (iii) ✓; (iv) ✓ only if Bond 1 really trades at a premium."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM: Security Valuation (Valuation of Bonds)",
+      "index_keywords": [
+       "interest rate risk",
+       "duration",
+       "bond value passage of time",
+       "premium discount pull to par"
+      ]
+     },
+     "solve": "(i) Bond 1 has the shortest maturity (2 years), the lowest duration and so the lowest interest rate risk. True.\n(ii) Bond 3 has the longest maturity, lowest coupon and lowest YTM, so the highest duration and highest risk. False.\n(iii) Bond 2 trades at a discount (coupon 7% < YTM 7.85%), so its price moves up to par over time. True.\n(iv) A premium bond's price falls to par over time. True on the label given.\nCheck: Bond 1's coupon of 8% is below its YTM of 8.25%. Price = 8/1.0825 + 108/1.0825² = ₹99.55, so it is actually at a discount and its price would rise. On the numbers, the true set is (i) and (iii) alone, which no option offers; (B) is the closest.",
+     "answer": "(B) (i), (iii) and (iv), taking the 'premium' label as given. On the coupon/YTM figures Bond 1 is at a discount and (iv) fails, but no option offers (i) and (iii) alone.",
+     "icai": "(B)",
+     "flag": "Bond 1's coupon (8%) is below its YTM (8.25%), so it must trade at a discount (about ₹99.55), not a premium. Statement (iv) holds only on the printed label.",
+     "trap": "Judging interest rate risk by YTM alone. Maturity (duration) drives it.",
+     "minutes": 3
+    },
+    {
+     "q": "3.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Foreign Exchange Management Act, 1999: Overseas Investment Rules, 2022",
+     "topic": "Overseas direct investment by a registered trust that runs a hospital",
+     "ask": "Which of the consultant's answers on ODI by EHT are correct?",
+     "options": {
+      "a": "(i) and (ii)",
+      "b": "(i) and (iii)",
+      "c": "(i), (ii) and (iii)",
+      "d": "(i), (iii) and (iv)"
+     },
+     "clue": "\"make overseas direct investment in foreign entity\"",
+     "chapter_clear": true,
+     "think": [
+      "Trust + ODI -> FEMA Overseas Investment Rules, 2022: the schedule for persons other than an Indian entity or individual (trusts and societies).",
+      "Chapter clear -> Economic Laws -> FEMA -> Overseas Investment -> 'registered trust or society'.",
+      "Conditions: the trust works in education or runs hospitals; prior approval of RBI (not the Central Government); the trust deed must permit it; the foreign entity is in the same sector; the trust has existed for 3 years.",
+      "So (i) ✓, (iii) ✓, (ii) ✗ (RBI), (iv) ✗ (same sector) -> (B)."
+     ],
+     "look_up": {
+      "where": "ICAI SM Economic Laws: FEMA, Overseas Investment Rules and Regulations, 2022",
+      "index_keywords": [
+       "registered trust society overseas investment",
+       "set up hospitals in India",
+       "prior approval of Reserve Bank",
+       "same sector",
+       "trust deed permits"
+      ]
+     },
+     "solve": "Under the OI Rules 2022, a registered trust or society that works in education or has set up hospitals in India may invest in a foreign entity with prior RBI approval, if:\n• the foreign entity is in the same sector;\n• the trust has existed for at least 3 financial years;\n• the trust deed permits the investment;\n• the trustees approve it;\n• no special licence from MHA or a local authority is needed (given).\nEHT runs a hospital and has been registered since 2012, so (i) ODI is permitted ✓. (ii) Approval comes from RBI, not the Central Government ✗. (iii) The deed has no clause, so it must be amended ✓. (iv) The foreign entity must be in the same sector, not just any charitable sector ✗.",
+     "answer": "(B) (i) and (iii)",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Writing 'Central Government approval'. For trusts it is RBI's prior approval.",
+     "minutes": 3
+    },
+    {
+     "q": "3.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "Exemptions from GST; Charge of GST (reverse charge)",
+     "topic": "Yoga camps by a 12AB trust; renting of halls; RCM on security and cleaning services",
+     "ask": "Which GST statements about EHT are incorrect?",
+     "options": {
+      "a": "(i), (ii) and (iii)",
+      "b": "(i), (ii) and (iv)",
+      "c": "(iii) and (iv)",
+      "d": "(ii), (iii) and (iv)"
+     },
+     "clue": "\"ABC Security Services Pvt. Ltd.\"; \"Purecare Services Co., a partnership firm\"; \"daily rent of 5,000\"",
+     "chapter_clear": true,
+     "think": [
+      "12AB trust + yoga + hall rent + outsourced security -> exemption notification 12/2017 + RCM notification 13/2017.",
+      "Chapter clear -> IDT -> Exemptions (charitable activities; renting of religious precincts) and Charge of GST (RCM list).",
+      "Security services fall under RCM only when the supplier is NOT a body corporate and the recipient is registered. ABC is a Pvt Ltd, so forward charge applies. Cleaning (Purecare) is not on the RCM list. So (iii) and (iv) are incorrect.",
+      "Hall rent: the ₹10,000-a-day exemption covers only halls in the precincts of a religious place. On a strict reading, (ii) is incorrect too."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT: Exemptions from GST; Charge of GST",
+      "index_keywords": [
+       "charitable activities 12AB",
+       "advancement of religion spirituality or yoga",
+       "renting of precincts of religious place",
+       "community halls ten thousand rupees",
+       "security services reverse charge body corporate"
+      ]
+     },
+     "solve": "(i) Exempt. A 12AB trust's charitable activities include advancing religion, spirituality or yoga. A residential camp whose main aim is yoga or spirituality is exempt even if the fee covers boarding and lodging (CBIC clarification). The statement is correct.\n(ii) Entry 13 of N/N 12/2017-CT(R) exempts renting of the precincts of a religious place by a 12AB trust, except community halls charged ₹10,000 or more a day. EHT's halls are in a hospital/charity building, not a religious place, so strictly the rent is taxable (with registration needed once aggregate turnover crosses the threshold). On a strict reading the statement is incorrect. ICAI treats ₹5,000 a day as exempt, so its key counts it as correct.\n(iii) Security services fall under RCM only when supplied by a person other than a body corporate to a registered person. ABC is a company and EHT is unregistered, so there is no RCM and no registration on this count. The statement is incorrect.\n(iv) Cleaning services by a firm are not on the RCM list. The statement is incorrect.",
+     "answer": "(c) (iii) and (iv), ICAI's key. A strict reading of the hall exemption supports (d): see the note.",
+     "icai": "(C)",
+     "flag": "The ₹10,000-a-day hall exemption (entry 13, N/N 12/2017-CT(R)) covers the precincts of a religious place run by a 12AB trust. EHT's halls are not in one, so (ii) is arguably incorrect and (D) is defensible. ICAI read ₹5,000 a day as exempt.",
+     "trap": "Applying RCM to security services bought from a Pvt Ltd. The RCM entry excludes body corporates.",
+     "minutes": 3
+    },
+    {
+     "q": "3.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "DT",
+     "also": null,
+     "chapter": "Charitable or Religious Trusts and Institutions (s.11-13, 12A, 12AB)",
+     "topic": "Renewal of 12AB registration; Form 10AB; specific-purpose grant vs corpus",
+     "ask": "Which statements on renewing EHT's registration and on treating the state grant are correct?",
+     "options": {
+      "a": "Only (i)",
+      "b": "(i) and (ii)",
+      "c": "(i) and (iii)",
+      "d": "Only (ii)"
+     },
+     "clue": "\"registered under section 12AB w.e.f. 1st April, 2021\"",
+     "chapter_clear": true,
+     "think": [
+      "A 12AB registration date + 'renewal' -> the s.12A(1)(ac) timeline. A grant -> corpus or income?",
+      "Chapter clear -> DT -> Trusts -> registration and renewal (5-year validity, apply 6 months before expiry, Form 10AB).",
+      "Registered from AY 2022-23, so valid to AY 2026-27 (ends 31.03.2026) -> apply by 30.09.2025 -> (i) ✓.",
+      "Form 10AB is verified by the trust (DSC/EVC) with no CA certification -> (ii) ✗. A specific-purpose grant is not corpus unless the donor says so -> (iii) ✗."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT: Charitable or Religious Trusts and Institutions",
+      "index_keywords": [
+       "section 12A(1)(ac)",
+       "renewal six months before expiry",
+       "Form 10AB",
+       "corpus donation specific direction"
+      ]
+     },
+     "solve": "(i) 12AB registration from 01.04.2021 (AY 2022-23) is valid for 5 years, i.e., up to AY 2026-27, ending 31.03.2026. Renewal must be sought at least 6 months before expiry, so on or before 30.09.2025, i.e., before 01.10.2025. Correct.\n(ii) Form 10AB is filed electronically with the documents and verified by the trust under DSC/EVC. There is no CA certification requirement. Incorrect.\n(iii) A donation is corpus only with a specific direction that it forms part of the corpus. A grant for a specific purpose (eye surgeries) is income/voluntary contribution, to be applied. Incorrect.",
+     "answer": "(A) Only (i)",
+     "icai": "(A)",
+     "flag": null,
+     "trap": "Equating 'specific purpose' with 'corpus'. Only a written direction to form part of the corpus makes it corpus.",
+     "minutes": 3
+    },
+    {
+     "q": "3.6",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCPM: Performance Measurement and Evaluation (not-for-profit organisations, Value for Money)",
+     "topic": "Value for Money pillars: Economy, Efficiency, Effectiveness, Equity",
+     "ask": "Critically evaluate EHT's healthcare and environmental performance for the year using the four VFM pillars.",
+     "options": null,
+     "clue": "\"Value for Money (VFM) framework would be the most suitable approach\"",
+     "chapter_clear": true,
+     "think": [
+      "NGO + 'Value for Money' -> SCPM performance measurement for not-for-profit bodies (the 3 Es + Equity).",
+      "Chapter clear -> SCPM -> Performance Measurement -> VFM: Economy (cheap inputs), Efficiency (output per input), Effectiveness (outcomes vs objectives), Equity (fair access).",
+      "For each pillar, give one fact from the case and one gap or missing KPI. That is what 'critically' requires.",
+      "You know the theory, so write without the book. 5 marks = about 5 well-supported points."
+     ],
+     "look_up": {
+      "where": "ICAI SM SCPM: Performance Measurement and Evaluation",
+      "index_keywords": [
+       "value for money",
+       "economy efficiency effectiveness",
+       "equity",
+       "not-for-profit organisations performance"
+      ]
+     },
+     "solve": "Economy: dustbins at ₹400 against an MRP of ₹700 save ₹7.5 lakh on 2,500 bins; 12,000 saplings for ₹5 lakh is about ₹42 a tree; solar was installed at 25% lower cost; medical supplies were bought at discount. Gap: no tender or life-cycle analysis for the ₹75 lakh import.\nEfficiency: 2,560 surgeries, 22,000+ patients, 60 camps, 50 campaigns; digital records cut paperwork. Gap: no cost per surgery, equipment utilisation or turnaround time.\nEffectiveness: a government survey shows less litter and more green cover; surgeries restore sight. Gap: no outcome, complication or tree-survival data.\nEquity: sliding-scale fees, free care for those who cannot pay, outreach, free dustbins. Gap: no profile of who was served.\nVerdict: strong on economy and outputs; outcomes and equity need measured KPIs.",
+     "answer": "VFM evaluation of EHT, FY 2024-25\n1. Economy (getting inputs at the lowest cost for the required quality)\n• Dustbins at ₹400 against an MRP of ₹700: ₹7.5 lakh saved on 2,500 bins.\n• 12,000 trees from ₹5 lakh of saplings (about ₹42 per tree); solar panels at 25% lower installation cost; discounted medical equipment and materials; a modest ₹4.5 lakh a year honorarium per doctor.\n• Critique: the ₹75 lakh first-of-its-kind import shows no quotations, tendering or life-cycle costing.\n2. Efficiency (output per rupee or per input)\n• 2,560 eye surgeries, 22,000+ patients, 60 camps, 50 cleanliness campaigns and 2,500 bins distributed; digital records cut administrative cost.\n• Critique: no cost per surgery or patient, equipment utilisation, downtime or patients per doctor is reported, so efficiency is claimed rather than measured.\n3. Effectiveness (were the objectives achieved?)\n• A government survey shows a visible fall in litter and a rise in vegetation cover; successful surgeries restore vision; preventive programmes target disease incidence.\n• Critique: no post-operative outcome or complication data, tree survival rate, or evidence that waste-segregation habits lasted.\n4. Equity (fair access for those in need)\n• Sliding-scale fees, free treatment for those who cannot pay, outreach in underserved areas, free dustbins.\n• Critique: no data on who was served (income group, gender, age, disability, remote villages), so fairness cannot be shown.\nConclusion: EHT scores well on Economy and on outputs. It should set KPIs and targets for outcomes and equity, and report them to donors, to prove value for money. (Ethics can be added as a fifth 'E'.)",
+     "icai": "Same conclusion as ICAI. ICAI adds Ethics as a fifth pillar; any four points are enough.",
+     "flag": null,
+     "trap": "Only defining the four Es. 'Critically evaluate' needs case facts and the missing measures under each pillar.",
+     "minutes": 15
+    },
+    {
+     "q": "3.7",
+     "type": "Descriptive",
+     "marks": 6,
+     "subject": "DT",
+     "also": null,
+     "chapter": "Charitable or Religious Trusts and Institutions (s.11-13, 115BBC)",
+     "topic": "Total income of a 12AB trust: anonymous donations at 30%, corpus, 15% accumulation, application",
+     "ask": "Compute EHT's total income and tax liability for AY 2025-26.",
+     "options": null,
+     "clue": "\"Voluntary contribution received... (names, addresses and PAN of donors not available)\"",
+     "chapter_clear": true,
+     "think": [
+      "Trust income table + anonymous donations -> s.11/12 with s.115BBC; corpus -> s.11(1)(d).",
+      "Chapter clear -> DT -> Trusts -> take the SM illustration on anonymous donations and swap in the figures.",
+      "Anonymous = 15 + 2 = 17. Exempt limit = higher of 5% of total donations (190 + 17 + 10 = 217 -> 10.85) or ₹1 lakh. So 6.15 is taxed at 30%.",
+      "The rest: 238 + 10.85, less 15% accumulation, less application of 213 = nil. Tax only on 6.15."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT: Charitable or Religious Trusts and Institutions",
+      "index_keywords": [
+       "anonymous donation section 115BBC",
+       "section 13(7)",
+       "corpus donation section 11(1)(d)",
+       "15% accumulation",
+       "application of income"
+      ]
+     },
+     "solve": "Income (₹ lakh): state grant 40 + voluntary contributions 190 + net property income 8 = 238. Corpus donations with donor details (10) are exempt u/s 11(1)(d), assuming they are invested in s.11(5) modes.\nAnonymous: 15 + 2 = 17. Total donations = 190 + 17 + 10 = 217; 5% = 10.85, which is more than ₹1 lakh. Taxable at 30% = 17 − 10.85 = 6.15; the other 10.85 stays in the s.11 pool.\nPool = 238 + 10.85 = 248.85; less 15% (37.3275) = 211.5225; less amount applied (213) = nil.\nTotal income = 6.15 (all of it anonymous donations at 30%).\nTax = 6.15 × 30% = 1.845; HEC 4% = 0.0738; total ₹1.9188 lakh = ₹1,91,880.",
+     "answer": "Computation of total income and tax: EHT, AY 2025-26 (₹ lakh)\nState Government grant for eye surgeries: 40.00\nVoluntary contributions (non-corpus, incl. FC): 190.00\nNet income from property held under trust: 8.00\nCorpus donations with donor details (exempt u/s 11(1)(d), assumed invested u/s 11(5)): Nil\nSub-total: 238.00\nAdd: anonymous donations not taxable at 30% [17 − 6.15]: 10.85\nIncome available for s.11: 248.85\nLess: 15% accumulated without conditions: (37.3275)\nBalance: 211.5225\nLess: amount applied to objects: (213.00)\nTaxable at normal rates: Nil\nAdd: anonymous donations taxable at 30% u/s 115BBC: 6.15\nTotal income: 6.15\n\nTax at 30% on 6.15: 1.8450\nAdd: HEC at 4%: 0.0738\nTax liability: 1.9188 (₹1,91,880)\n\nNote 1 (s.115BBC): anonymous donations (15 + 2 = 17) above the higher of 5% of total donations [5% × (190 + 17 + 10) = 10.85] or ₹1 lakh are taxed at 30%: 17 − 10.85 = 6.15. This part is not eligible for s.11/12 (s.13(7)).\nNote 2: the government grant is kept out of 'total donations' for the 5% limit because it is a conditional grant. If it is included, 5% × 257 = 12.85, taxable anonymous donations = 4.15, and tax with HEC = ₹1.2948 lakh. This is also acceptable.\nNote 3: ICAI also accepts a stricter s.13(7) view that keeps the whole ₹17 lakh outside s.11. Then the 15% is computed on ₹238 lakh (35.70) and the computation changes accordingly.",
+     "icai": "Same as ICAI: total income ₹6.15 lakh, tax ₹1.9188 lakh, with the same alternative notes.",
+     "flag": null,
+     "trap": "Taking 5% of only the anonymous or only the non-corpus donations. The base is all donations (190 + 17 + 10 = 217).",
+     "minutes": 18
+    },
+    {
+     "q": "3.8",
+     "type": "Descriptive",
+     "marks": 4,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "Risk Management",
+     "topic": "Types of risk: operational, financial (currency), compliance, strategic",
+     "ask": "Identify and explain any three risks EHT faces by importing first-of-its-kind equipment for eye surgeries.",
+     "options": null,
+     "clue": "\"imported latest medical equipment (first of its kind in India) worth ₹75 lakh\"",
+     "chapter_clear": false,
+     "think": [
+      "'Identify risks' could be AFM or Strategic Management. Unsure -> A-Z index -> 'types of risk' -> AFM Risk Management (strategic, operational, financial, compliance).",
+      "AFM -> Risk Management -> 'identification of types of risk faced by an organisation'.",
+      "Match the facts: 'first of its kind' -> operational/technology risk; 'imported' -> currency risk; imported + FCRA funds + medical device -> compliance risk.",
+      "4 marks -> 3 risks, each with its meaning, the case link and the effect, plus a short mitigation."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM: Risk Management",
+      "index_keywords": [
+       "types of risk",
+       "operational risk",
+       "currency risk",
+       "compliance risk"
+      ]
+     },
+     "solve": "Pick three and tie each to a case fact:\n• Operational/technology: no trained users, no local service, spares abroad, downtime.\n• Currency: price, spares and service contracts in foreign currency; rupee depreciation.\n• Compliance: FEMA/Customs import rules, a CDSCO licence under the Medical Devices Rules, and, if the purchase used foreign contribution, FCRA rules on use and records (EHT keeps no separate FC records).",
+     "answer": "1. Operational (technology) risk: the equipment is the first of its kind in India, so there are no trained surgeons or technicians, no local service engineers and no ready spares. A breakdown means long downtime, fewer surgeries and costly overseas support. Mitigation: vendor training, a comprehensive maintenance contract with a guaranteed response time, and a stock of critical spares.\n2. Currency (financial) risk: the price, spares, consumables and software updates are in foreign currency. A falling rupee raises the cost of any unpaid amount and of future upkeep, squeezing a trust that runs on fixed donations. Mitigation: forward cover on payables and rupee-priced maintenance contracts.\n3. Compliance (regulatory) risk: the import must follow FEMA/Customs rules and medical-device import licensing (CDSCO). If paid from foreign contribution, it must be paid from the FCRA utilisation account and recorded separately, and EHT keeps no separate FC records. A breach can bring penalties or suspension of FCRA registration. Mitigation: a compliance checklist and a separate FC asset register.\n(Also acceptable: strategic or obsolescence risk, since unproven technology may not deliver the expected outcomes.)",
+     "icai": "Same as ICAI: operational, currency and compliance risks.",
+     "flag": null,
+     "trap": "Listing risks with no link to 'first of its kind' or 'imported'. The marks come from the case link.",
+     "minutes": 12
+    }
+   ]
+  },
+  {
+   "no": 4,
+   "title": "Quick Bites Limited (QBL)",
+   "industry": "Quick service restaurants and casual dining (NIWALA brand)",
+   "story": "An unlisted public company running the NIWALA restaurant chain under the 5% GST scheme. It is setting up a German subsidiary and expanding its Agra central kitchen with a ₹15 crore loan, and faces questions on directors' pay, s.35AD, GST valuation and ITC, and auditor confidentiality.",
+   "marks_by_subject": {
+    "Costing": 8,
+    "IDT": 8,
+    "Ethics": 3,
+    "Law": 2,
+    "DT": 2,
+    "FR": 2
+   },
+   "difficulty": "Easy",
+   "first15": "Pick it first: 4.7 is a 6-mark GST valuation (₹8,85,000 ÷ 1.18), 4.6 and 4.8 are pure theory, and the MCQs are direct, section-based questions.",
+   "questions": [
+    {
+     "q": "4.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Appointment and Remuneration of Managerial Personnel (s.197, 198)",
+     "topic": "Limits on managerial remuneration; no stock options for independent directors",
+     "ask": "Are the payments to the MD and WTDs (₹418 lakh) and the stock options given to the independent directors (₹36.50 lakh) within the law?",
+     "options": {
+      "a": "MD/WTDs' remuneration is within limits; the independent directors are not entitled to ₹36.50 lakh.",
+      "b": "MD/WTDs' remuneration is not within limits; the independent directors are entitled to ₹36.50 lakh.",
+      "c": "MD/WTDs' remuneration is not within limits, and the independent directors are also not entitled to ₹36.50 lakh.",
+      "d": "MD/WTDs' remuneration is within limits, and the independent directors are also entitled to ₹36.50 lakh."
+     },
+     "clue": "\"remuneration... ₹418 lakhs\"; \"in the form of Stock Options totaling to ₹36.50 lakhs\"",
+     "chapter_clear": true,
+     "think": [
+      "Net profit + payments to the MD, WTDs and IDs -> s.197 limits on net profits computed u/s 198.",
+      "Chapter clear -> Law -> Managerial Remuneration -> s.197(1) limits and s.197(7) independent directors.",
+      "More than one MD/WTD -> 10% of ₹3,800 lakh = ₹380 lakh, but ₹418 lakh was paid. That is an excess, and no special resolution is mentioned.",
+      "IDs cannot get stock options at all (s.197(7)), even though ₹36.50 lakh is below 1% (₹38 lakh) -> (C)."
+     ],
+     "look_up": {
+      "where": "ICAI SM Corporate & Economic Laws: Appointment and Remuneration of Managerial Personnel",
+      "index_keywords": [
+       "section 197 overall maximum managerial remuneration",
+       "10% more than one whole-time director",
+       "independent director stock option",
+       "sitting fees",
+       "section 198 net profits"
+      ]
+     },
+     "solve": "Net profits (s.198) = ₹3,800 lakh.\nThe overall cap of 11% is ₹418 lakh. There is an MD and 2 WTDs (more than one), so their cap is 10% = ₹380 lakh. Paid ₹418 lakh, which exceeds the cap by ₹38 lakh. No special resolution (or lender approval, given the term loan) is mentioned, so it is not within limits.\nNon-executive directors: their 1% cap is ₹38 lakh, so ₹36.50 lakh is within the percentage. But under s.197(7) an independent director cannot get any stock option; only sitting fees, reimbursement of expenses and profit-linked commission are allowed. So the ₹36.50 lakh of options is not permitted. Sitting fees (₹5 lakh each) fall outside the percentage limits.",
+     "answer": "(C) The MD/WTDs' pay exceeds the 10% limit (₹418 lakh vs ₹380 lakh), and independent directors cannot receive stock options.",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Checking the ₹418 lakh against the 11% overall cap, which it exactly equals. With more than one MD/WTD, the cap is 10%.",
+     "minutes": 3
+    },
+    {
+     "q": "4.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "DT",
+     "also": null,
+     "chapter": "Profits and Gains of Business or Profession: s.35AD",
+     "topic": "Investment-linked deduction: the specified business test",
+     "ask": "What is the maximum s.35AD deduction for AY 2025-26 on the Agra kitchen expansion?",
+     "options": {
+      "a": "₹21.05 Crores",
+      "b": "₹17.00 Crores",
+      "c": "₹17.05 Crores",
+      "d": "Nil"
+     },
+     "clue": "\"special investment-linked deduction under Section 35AD for its Agra expansion project\"",
+     "chapter_clear": true,
+     "think": [
+      "'Investment-linked deduction' = s.35AD. The first test: is this a 'specified business'?",
+      "Chapter clear -> DT -> PGBP -> the s.35AD(8)(c) list: cold chain, agri-produce warehousing, 2-star+ hotel, hospital, affordable/slum housing, fertiliser, ICD/CFS, bee-keeping, sugar warehousing, slurry pipeline, semiconductor wafer, gas/oil pipeline, infrastructure facility.",
+      "A central food-preparation kitchen is not on the list, so the deduction is nil. The figures are distractors (land of ₹4 crore never qualifies anyway)."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT: Profits and Gains of Business or Profession",
+      "index_keywords": [
+       "section 35AD",
+       "specified business",
+       "investment linked deduction",
+       "land goodwill financial instrument excluded"
+      ]
+     },
+     "solve": "S.35AD gives a 100% deduction for capital expenditure (other than land, goodwill and financial instruments), but only for listed 'specified businesses'. QBL's Agra kitchen expansion (spice blends and frozen items for its restaurants) is not a specified business, so the deduction is Nil; normal depreciation u/s 32 applies instead. The distractors are built as 10.50 + 6.50 = 17.00; + 0.05 = 17.05; + land 4.00 = 21.05.",
+     "answer": "(D) Nil",
+     "icai": "(D)",
+     "flag": null,
+     "trap": "Computing 10.50 + 6.50 (+ 0.05) because QBL is 'not opting for 115BAA'. That only removes one bar; the business must still be a specified business.",
+     "minutes": 3
+    },
+    {
+     "q": "4.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCPM: Performance Measurement and Evaluation (Triple Bottom Line)",
+     "topic": "Triple bottom line: economic, environmental, social equity",
+     "ask": "Which bottom lines do QBL's sustainability initiatives cover?",
+     "options": {
+      "a": "(i), (ii) and (iii)",
+      "b": "(ii) and (iii)",
+      "c": "(iii) Only",
+      "d": "(iv) Only"
+     },
+     "clue": "\"adherence to ethical labour practices among its food ingredient vendors and reduce energy consumption\"",
+     "chapter_clear": false,
+     "think": [
+      "'Bottom lines' + sustainability = Triple Bottom Line. The chapter is unclear, so use the A-Z index -> 'triple bottom line' -> SCPM performance measurement.",
+      "The TBL lines are economic, environmental and social equity. 'Equitable' is not a separate line.",
+      "Ethical labour = social. Energy cut = environmental, and it is also a cost saving (economic). The profit and cost-leadership aims = economic. So all three -> (A)."
+     ],
+     "look_up": {
+      "where": "ICAI SM SCPM: Performance Measurement and Evaluation",
+      "index_keywords": [
+       "triple bottom line",
+       "people planet profit",
+       "sustainability",
+       "social equity"
+      ]
+     },
+     "solve": "TBL (Elkington) has three lines: Economic (profit), Environmental (planet) and Social equity (people). At QBL:\n• Ethical labour practices among vendors = social equity.\n• Energy-efficient machinery = environmental; lower energy bills = economic.\n• A strategy built on cost leadership and profit = economic.\n'Equitable' is not one of the three lines.",
+     "answer": "(A) (i), (ii) and (iii)",
+     "icai": "(A)",
+     "flag": null,
+     "trap": "Choosing (B) because only labour and energy are named. The energy saving and the cost-leadership aim cover the economic line too.",
+     "minutes": 3
+    },
+    {
+     "q": "4.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 16 Property, Plant and Equipment",
+     "topic": "Elements of cost; servicing equipment; disclosure requirements",
+     "ask": "Which statements on recognising machine M1 are correct?",
+     "options": {
+      "a": "(i) and (ii)",
+      "b": "(ii) and (iii)",
+      "c": "(i), (iii) and (iv)",
+      "d": "(i) and (iii)"
+     },
+     "clue": "\"List Price: ₹6.50 Crores, five year maintenance contract 10.00 lakhs, Operating losses\"",
+     "chapter_clear": true,
+     "think": [
+      "A list of costs around one machine -> Ind AS 16 elements of cost (para 16-22).",
+      "Chapter clear -> FR -> Ind AS 16 -> 'elements of cost', 'spare parts, stand-by and servicing equipment' (para 8), 'disclosure' (para 73, 79).",
+      "Cost = list price 6.50 + architect/site fee 0.05 = 6.55 Cr. The maintenance contract and pre-production losses are expensed; MSE is not PPE, so it goes to inventory.",
+      "Fair-value disclosure under the cost model is only encouraged; disclosing measurement bases is mandatory. So (iii) and (iv) are wrong -> (A)."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR: Ind AS 16 Property, Plant and Equipment",
+      "index_keywords": [
+       "elements of cost",
+       "initial operating losses",
+       "servicing equipment inventory",
+       "measurement bases disclosure",
+       "fair value disclosure encouraged"
+      ]
+     },
+     "solve": "Cost of M1 = list price 6.50 Cr + architect fee for site preparation 0.05 Cr = 6.55 Cr.\nExcluded from cost:\n• 5-year maintenance contract 0.10 Cr: a future service, expensed over the period.\n• Operating losses before commercial production 0.15 Cr: expensed (para 20).\n• MSE 0.25 Cr: not PPE because future benefits are not probable; classified as inventory under para 8, as ICAI holds.\nThe fair value of 7.05 Cr is irrelevant to cost.\n(i) ✓ (ii) ✓ (iii) ✗: under the cost model, disclosing fair value is only encouraged (para 79). (iv) ✗: measurement bases must be disclosed (para 73(a)).\nBorrowing cost: the asset took about 4.5 months to get ready, so it is not a qualifying asset and no borrowing cost is capitalised.",
+     "answer": "(A) (i) and (ii)",
+     "icai": "(A)",
+     "flag": null,
+     "trap": "Adding the maintenance contract or the pre-production operating losses to cost, or using the fair value of ₹7.05 crore.",
+     "minutes": 3
+    },
+    {
+     "q": "4.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "Input Tax Credit; Charge of GST (reverse charge); Payment of Tax",
+     "topic": "No ITC under the 5% restaurant scheme; RCM on directors' fees; bank charges on a GST deposit",
+     "ask": "Which GST statements for QBL are incorrect?",
+     "options": {
+      "a": "(i), (ii) and (iv)",
+      "b": "(i) and (iv)",
+      "c": "(i), (iii) and (iv)",
+      "d": "(ii), (iii) and (iv)"
+     },
+     "clue": "\"QBL is currently opting for 5% scheme for restaurant services\"",
+     "chapter_clear": true,
+     "think": [
+      "Several GST points in one MCQ. Start from the first fact: the 5% restaurant rate comes without ITC.",
+      "Chapter clear -> IDT -> ITC (5% restaurant condition), Charge of GST (RCM on director services), Payment of Tax.",
+      "No ITC on GTA freight or on the machinery -> (i) and (iv) incorrect. Directors' fees fall under RCM -> (ii) correct. The tax must reach the Government in full -> (iii) incorrect."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT: Input Tax Credit; Charge of GST; Payment of Tax",
+      "index_keywords": [
+       "restaurant service 5% without input tax credit",
+       "services by director reverse charge",
+       "GTA 12% forward charge",
+       "payment of tax bank charges"
+      ]
+     },
+     "solve": "(i) QBL pays 5% on restaurant service on the condition that it takes no ITC, so the GTA's 12% GST cannot be credited. Statement incorrect.\n(ii) Services by a director to the company, including independent directors' sitting fees, fall under RCM. QBL pays GST on the ₹15 lakh. Statement correct.\n(iii) The full GST must be credited to the Government. Bank charges are QBL's own cost and cannot be deducted from the tax, so the net remittance is a short payment. QBL's view is incorrect.\n(iv) The same 5% condition means no ITC on the machine. Statement incorrect.",
+     "answer": "(C) (i), (iii) and (iv)",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Allowing ITC because FPL Logistics charged 12% under forward charge. The block is on QBL's side (the 5% restaurant scheme).",
+     "minutes": 3
+    },
+    {
+     "q": "4.6",
+     "type": "Descriptive",
+     "marks": 6,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCPM: Introduction to Strategic Cost Management (Value Chain Analysis); TQM",
+     "topic": "Porter's value chain primary activities: making the spice blends in-house instead of buying them",
+     "ask": "In a TQM setting, analyse how making the spice blends in-house (Division-A) instead of buying them from outside vendors affects each primary activity in QBL's value chain.",
+     "options": null,
+     "clue": "\"primary activities of QBL's Value Chain\"; \"source high-grade spice blends internally\"",
+     "chapter_clear": true,
+     "think": [
+      "'Primary activities' + 'value chain' -> Porter: inbound logistics, operations, outbound logistics, marketing and sales, service.",
+      "Chapter clear -> SCPM -> Value chain analysis (also in Strategic Management, internal environment). You know it; write without the book.",
+      "For each activity: the gain, the cost, the TQM link and a case fact (Agra kitchen, Division-D and G demand, Germany).",
+      "6 marks -> 5 activities × 2-3 lines + a conclusion."
+     ],
+     "look_up": {
+      "where": "ICAI SM SCPM: Introduction to Strategic Cost Management (Value Chain Analysis)",
+      "index_keywords": [
+       "value chain analysis",
+       "primary activities",
+       "inbound logistics",
+       "outbound logistics",
+       "total quality management"
+      ]
+     },
+     "solve": "Take each primary activity in turn: state the net effect and the TQM angle, then give an overall view.",
+     "answer": "Impact of in-house spice blends on QBL's primary activities (TQM lens)\n1. Inbound logistics: QBL now buys raw spices, not finished blends. It controls purity, hygiene, traceability and supply timing, with less vendor quality risk. The cost is more raw-material storage, handling and supplier management.\n2. Operations: the biggest gain. One standard recipe and process at Agra gives the same taste in every outlet, in India and Germany. Quality is built in at source, and continuous improvement (kaizen) can be applied directly. It needs capacity planning: demand of 4,00,000 units against capacity of 5,00,000.\n3. Outbound logistics: QBL must now pack and ship blends and frozen items to Division-D outlets and to Germany, with export documents and cold chain where needed. That is more work, but consolidated shipments give economies of scale and tighter control.\n4. Marketing and sales: 'authentic, in-house NIWALA spice blends' becomes a USP. It supports the differentiation strategy and the food-safety and traceability claims that matter in Europe.\n5. Service: consistent taste and fewer quality complaints bring more repeat visits and loyalty, and a complaint can be traced back to its batch quickly.\nOverall: making the blends in-house adds cost and logistics work but strengthens quality control, consistency and the brand. It fits TQM and QBL's strategy of differentiation with cost leadership.",
+     "icai": "Same conclusion as ICAI.",
+     "flag": null,
+     "trap": "Writing about support activities (HR, technology, procurement). The question asks only for primary activities.",
+     "minutes": 18
+    },
+    {
+     "q": "4.7",
+     "type": "Descriptive",
+     "marks": 6,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "Value of Supply (s.15 CGST + Rule 27 CGST Rules)",
+     "topic": "Consideration partly in kind: open market value",
+     "ask": "Find the value of TechFab's machine supply and the GST on it, and advise the accountant on the right valuation approach. (5 + 1 marks)",
+     "options": null,
+     "clue": "\"QBL also provided 100 kilograms of specialized, high-grade spices... as consideration\"",
+     "chapter_clear": true,
+     "think": [
+      "Consideration = money + spices, so price is not the sole consideration. The s.15 transaction value fails -> valuation rules.",
+      "Chapter clear -> IDT -> Value of Supply -> Rule 27 (consideration not wholly in money): open market value comes first.",
+      "OMV given = ₹8,85,000 including GST -> ₹7,50,000 excluding GST -> GST at 18% = ₹1,35,000.",
+      "Do not add the ₹40,000 of spices. That route (money + money value) applies only when OMV is not known."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT: Value of Supply",
+      "index_keywords": [
+       "section 15 transaction value price sole consideration",
+       "rule 27 consideration not wholly in money",
+       "open market value"
+      ]
+     },
+     "solve": "S.15: the transaction value applies only when the parties are unrelated and price is the sole consideration. Here QBL also gives spices, so price is not the sole consideration and Rule 27 applies.\nRule 27(a): value = open market value. OMV = full value in money excluding GST = 8,85,000 × 100/118 = ₹7,50,000.\nGST at 18% = ₹1,35,000 (IGST, or CGST + SGST, depending on the place of supply).\nRule 27(b) (money + money value of the non-money consideration = 7,50,000 + 40,000 = 7,90,000) is used only when OMV is not available, which is not the case here.\nAlso: the 100 kg of spices QBL hands over is a separate supply by QBL to TechFab (barter), and QBL pays GST on it.",
+     "answer": "Provision: under s.15, value is the transaction value only if supplier and recipient are unrelated and price is the sole consideration. Where consideration is not wholly in money, Rule 27 of the CGST Rules applies, in this order: (a) open market value; (b) if OMV is not available, money + the money value of the non-monetary consideration, if known at the time of supply; (c) the value of supplies of like kind and quality; (d) the cost-based or residual method.\nAnalysis: QBL paid money and also gave 100 kg of spices (₹40,000), so price is not the sole consideration. The transaction value cannot be used; Rule 27(a) applies.\n(i) Value and GST\nOpen market value incl. GST: ₹8,85,000\nValue excl. GST (8,85,000 × 100/118): ₹7,50,000\nGST at 18%: ₹1,35,000\n(ii) Advice to Mr Vivek: value the supply at its open market value of ₹7,50,000 under s.15 read with Rule 27(a). Do not add the ₹40,000 of spices; money + non-money value is used only when OMV is not known. Separately, the spices handed over are QBL's own supply to TechFab and attract GST in QBL's hands.",
+     "icai": "Same as ICAI: value ₹7,50,000; GST ₹1,35,000. The barter point on the spices is extra.",
+     "flag": null,
+     "trap": "Adding the ₹40,000 to get ₹7,90,000. The OMV is given, so it governs.",
+     "minutes": 18
+    },
+    {
+     "q": "4.8",
+     "type": "Descriptive",
+     "marks": 3,
+     "subject": "Ethics",
+     "also": "Audit",
+     "chapter": "Professional Ethics (Code of Ethics; Second Schedule to the CA Act); SA 230 Audit Documentation",
+     "topic": "Confidentiality of client information; ownership of working papers",
+     "ask": "The banks ask CA. Lalit for extracts of his working papers on fixed assets. What are his duties on client confidentiality and disclosure to third-party lenders?",
+     "options": null,
+     "clue": "\"formally requested CA. Lalit to provide detailed extracts from his audit working papers\"",
+     "chapter_clear": true,
+     "think": [
+      "A third party wants the auditor's working papers -> confidentiality: Clause (1) of Part I of the Second Schedule + SA 200 / SA 230.",
+      "Chapter clear -> Audit SM -> Professional Ethics -> Clause (1) Part I Second Schedule. Working papers are the auditor's property.",
+      "Rule: no disclosure without the client's consent or a legal duty. Extracts are given only at the auditor's discretion; otherwise it is misconduct."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit: Professional Ethics and Liabilities of Auditors; SA 230",
+      "index_keywords": [
+       "Clause (1) Part I Second Schedule",
+       "disclosure of information without consent",
+       "working papers property of auditor",
+       "confidentiality SA 200"
+      ]
+     },
+     "solve": "Under Clause (1) of Part I of the Second Schedule, a CA in practice commits misconduct if he discloses information gained in an engagement to anyone other than the client, without the client's consent or a legal requirement. The duty continues after the engagement. Under SA 200, SA 230 and SQC 1, working papers belong to the auditor; he may at his discretion give extracts to the client, but others have no right to them. The banks are third parties, so CA. Lalit may share extracts only with QBL's written consent from a competent person (e.g., the Board or MD), and even then at his discretion. Otherwise he should refuse and suggest QBL gives the information itself.",
+     "answer": "• Provision: under Clause (1) of Part I of the Second Schedule to the CA Act, 1949, disclosing client information to a third party without the client's consent, or other than as required by law, is professional misconduct. The duty continues after the engagement ends.\n• SA 200 and SA 230 / SQC 1: the auditor must keep information confidential, and audit working papers are the auditor's property. He may at his discretion give extracts to the client, but third parties have no right to them.\n• Application: the nationalised bank and the consortium are third parties. CA. Lalit should not hand over working-paper extracts on fixed-asset valuation and useful life just because they ask.\n• What he may do: obtain QBL's written consent from a competent authority (Board or MD). Then, at his discretion, share limited extracts, preferably with a disclaimer on reliance, or ask QBL to give the information to the banks directly.\n• Conclusion: disclosing without the client's consent would make CA. Lalit guilty of professional misconduct.",
+     "icai": "Same conclusion as ICAI.",
+     "flag": null,
+     "trap": "Thinking a lender's request, or the bank's earlier loan, gives a right to the working papers. Only the client's consent or the law does.",
+     "minutes": 9
+    }
+   ]
+  },
+  {
+   "no": 5,
+   "title": "Oceanic Textiles Ltd. (OTL)",
+   "industry": "Organic cotton garments: 100% EOU exporter",
+   "story": "A listed 100% EOU in Mumbai exporting garments to Europe and the US, with profits hit by currency swings. Questions cover EOU GST and customs, a subsidiary's related party transaction, FX forecasting, summary financial statements, revaluation, accounting policy disclosure and tax on an imported machine.",
+   "marks_by_subject": {
+    "AFM": 7,
+    "FR": 7,
+    "DT": 5,
+    "IDT": 2,
+    "Law": 2,
+    "Audit": 2
+   },
+   "difficulty": "Moderate",
+   "first15": "Pick it if you know where the lists sit in the books: all 15 descriptive marks are direct look-ups (Ind AS 1 para 117B, AFM currency-risk parameters, s.43A + depreciation). Skip it if the EOU/LODR MCQs worry you; 5.2 has no correct option.",
+   "questions": [
+    {
+     "q": "5.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "Foreign Trade Policy (Export Oriented Units); GST deemed exports",
+     "topic": "Supplies to and by an EOU; job work; customs exemption on EOU imports",
+     "ask": "Which statements on OTL's purchase, sale, job work and machinery import are true?",
+     "options": {
+      "a": "Statement (i), (iii) and (iv)",
+      "b": "Statement (ii), (iii) and (iv)",
+      "c": "Statement (ii) and (iii)",
+      "d": "Statement (i) and (iv)"
+     },
+     "clue": "\"100% Export Oriented Unit\"; \"advance release order\"; \"no specific notification making countervailing duty applicable\"",
+     "chapter_clear": true,
+     "think": [
+      "'100% EOU' -> FTP Chapter 6 (EOU scheme) + GST deemed exports + the customs exemption for EOU imports.",
+      "Chapter clear -> IDT -> Foreign Trade Policy (EOU) and GST 'deemed exports' (s.147).",
+      "Zero-rated supplies are exports and SEZ supplies only; a supply to an EOU is a deemed export -> (i) false.",
+      "An EOU can supply advance authorisation holders against an ARO, and can send goods to a job worker without a BG (ICAI). EOU capital goods imports are exempt, with no CVD unless notified -> (ii) and (iii) true; (iv) false."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT: Foreign Trade Policy (EOU); GST deemed exports",
+      "index_keywords": [
+       "export oriented unit",
+       "deemed exports section 147",
+       "zero rated supply section 16 IGST",
+       "advance release order",
+       "EOU job work",
+       "duty free import capital goods EOU"
+      ]
+     },
+     "solve": "(i) Zero-rated supply (s.16 IGST) means exports or supplies to an SEZ unit or developer. A Ltd's supply to an EOU is a deemed export (s.147 CGST, N/N 48/2017): taxable at 12%, with a refund route. False.\n(ii) An EOU may supply goods to an advance authorisation holder against an advance release order; this counts as a permitted DTA sale or deemed export. True.\n(iii) An EOU may send goods to a job worker in the DTA under the scheme, and ICAI treats a bank guarantee as not required. True.\n(iv) An EOU imports capital goods for export production free of BCD and IGST. Countervailing duty applies only if a notification says so, and there is none. The legal department is wrong, so the statement is false.",
+     "answer": "(C) Statement (ii) and (iii)",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Calling a supply to an EOU 'zero-rated'. That label is only for exports and SEZ supplies; EOU supplies are deemed exports.",
+     "minutes": 3
+    },
+    {
+     "q": "5.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "SEBI (LODR) Regulations, 2015: corporate governance of subsidiaries; related party transactions",
+     "topic": "Reg 24 (unlisted material subsidiary, significant transactions) and Reg 23 (subsidiary RPT approved by the listed entity's audit committee)",
+     "ask": "Which statements on Pluto's ₹25 crore subcontract with group company ABC are incorrect?",
+     "options": {
+      "a": "Statement (i) and (iv)",
+      "b": "Statement (i), (iii) and (iv)",
+      "c": "Statement (ii), (iii) and (iv)",
+      "d": "Statement (i), (ii) and (iv)"
+     },
+     "clue": "\"contributes over 25% of the consolidated revenue\"; \"19.5% of total expenses of previous accounting year\"",
+     "chapter_clear": true,
+     "think": [
+      "Listed parent + unlisted subsidiary + related party deal -> SEBI LODR Reg 24 (subsidiary governance) and Reg 23 (RPT).",
+      "Chapter clear -> Law -> SEBI LODR -> Reg 24(1) ID on the board of an unlisted material subsidiary (>20%); Reg 24(4) significant transactions (>10%); Reg 23(2) subsidiary RPT approval.",
+      "Test: (i) only Pluto's management reports, not ABC ✗; (ii) the threshold is 10%, so 19.5% must be reported ✗; (iii) an ID is needed only on material (>20%) unlisted subsidiaries, not all ✗; (iv) audit committee approval is needed, so it is true.",
+      "Incorrect = (i), (ii), (iii). Every option contains (iv), so none fits. Write 'none' and give one line of reasoning."
+     ],
+     "look_up": {
+      "where": "ICAI SM Corporate & Economic Laws: SEBI (LODR) Regulations, 2015",
+      "index_keywords": [
+       "Regulation 24 unlisted material subsidiary",
+       "significant transaction ten per cent",
+       "independent director on board of material subsidiary",
+       "Regulation 23 related party transaction subsidiary",
+       "audit committee prior approval"
+      ]
+     },
+     "solve": "(i) Under Reg 24(4), the management of the unlisted subsidiary (Pluto) regularly places a statement of all significant transactions before the listed entity's board. ABC, a group company, has no such duty, so 'both' is incorrect.\n(ii) A 'significant transaction' is an individual transaction above 10% of the subsidiary's total revenue, expenses, assets or liabilities for the previous year. 19.5% is above 10%, so it must be reported. The statement is incorrect.\n(iii) Under Reg 24(1), at least one ID of the listed entity must sit on the board of an unlisted material subsidiary (income or net worth above 20% of consolidated). That means Pluto only, not all subsidiaries. Incorrect.\n(iv) Under Reg 23(2), an RPT to which a subsidiary is a party (and the listed entity is not) needs the listed entity's audit committee's prior approval once it exceeds 10% of the subsidiary's standalone turnover. ₹25 crore is about 19.5% of Pluto's expenses, so the limit is crossed. The statement is correct.\nThe incorrect set is (i), (ii), (iii), which no option offers.",
+     "answer": "None of the options. The incorrect statements are (i), (ii) and (iii), and every option includes (iv), which is correct.",
+     "icai": "None of the options is correct",
+     "flag": "Defective MCQ (ICAI itself says no option is correct): every option includes (iv), which is a correct statement. (iv) also depends on Pluto's turnover, which is not given.",
+     "trap": "Applying the 20% material-subsidiary test to 'significant transactions'. That test is 10%.",
+     "minutes": 3
+    },
+    {
+     "q": "5.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "Foreign Exchange Exposure and Risk Management (exchange rate forecasting)",
+     "topic": "Technical vs fundamental vs market-based forecasting",
+     "ask": "From the CFO's discussion with his team member on forecasting INR/USD, which statements are incorrect?",
+     "options": {
+      "a": "Statement (i) and (iv)",
+      "b": "Statement (ii) and (iii)",
+      "c": "Statement (ii), (iii) and (iv)",
+      "d": "Statement (i), (ii) and (iv)"
+     },
+     "clue": "\"CFO wants to use such technique which uses time series models\"",
+     "chapter_clear": true,
+     "think": [
+      "'Time series' = historical prices -> technical forecasting.",
+      "Chapter clear -> AFM -> Forex chapter -> 'techniques of exchange rate forecasting' (technical, fundamental, market-based, mixed).",
+      "'Sensitivity to each factor changes over time' is a limitation of FUNDAMENTAL forecasting. 'Uses spot/forward rates' is MARKET-BASED. The team member is wrong on both -> (ii) and (iii) incorrect.",
+      "Technical forecasting is short-term, gives no point or range estimates and is little used by MNCs -> (i) and (iv) correct -> (B)."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM: Foreign Exchange Exposure and Risk Management",
+      "index_keywords": [
+       "exchange rate forecasting",
+       "technical forecasting time series",
+       "fundamental forecasting limitations",
+       "market based forecasting spot forward rates"
+      ]
+     },
+     "solve": "(i) Time-series models on past rate data are technical forecasting. Correct.\n(ii) 'The sensitivity of currency movements to each factor changes over time' is a limitation of fundamental forecasting (regression on economic factors), not technical. Incorrect.\n(iii) Using current spot/forward rates is market-based forecasting. Incorrect.\n(iv) Technical forecasts are short-term, generally give no point or range estimates and are not widely used by MNCs for policy. Correct.",
+     "answer": "(B) Statement (ii) and (iii)",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Mixing up which limitation belongs to which method. The word 'factors' always signals fundamental forecasting.",
+     "minutes": 3
+    },
+    {
+     "q": "5.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "SA 810 (Revised) Engagements to Report on Summary Financial Statements",
+     "topic": "Wording of the opinion on summary financial statements",
+     "ask": "Why is the draft opinion ('presented fairly... in accordance with the applicable financial reporting framework') wrong for summary financial statements?",
+     "options": {
+      "a": "It does not mention the responsibilities of management and the auditor.",
+      "b": "It gives an opinion on fair presentation of the summary financial statements instead of their consistency with the audited full financial statements.",
+      "c": "It omits reference to the date of the auditor's report on the full financial statements.",
+      "d": "An opinion cannot be expressed in an engagement to report on summary financial statements."
+     },
+     "clue": "\"summary financial statements were derived from the audited full financial statements\"",
+     "chapter_clear": true,
+     "think": [
+      "'Summary financial statements' audited separately -> SA 810 (Revised).",
+      "Chapter clear -> Audit SM -> SA 810 -> 'opinion' wording.",
+      "The SA 810 opinion says the summary FS are consistent, in all material respects, with the audited FS, in accordance with the applied criteria (or are 'a fair summary'). It never says 'presented fairly per the framework' -> (B)."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit: SA 810 (Revised)",
+      "index_keywords": [
+       "SA 810",
+       "summary financial statements opinion",
+       "consistent in all material respects",
+       "applied criteria"
+      ]
+     },
+     "solve": "Under SA 810 (Revised), an unmodified opinion states that the summary financial statements are consistent, in all material respects, with the audited financial statements, in accordance with the applied criteria (or are a fair summary of them). Saying they are 'presented fairly in accordance with the applicable financial reporting framework' is full-audit (SA 700) language and is not appropriate. (A) and (C) are other parts of the report, not the reason the opinion paragraph is wrong. (D) is false, because SA 810 does give an opinion.",
+     "answer": "(B) The opinion should be on consistency with the audited full financial statements, not on fair presentation.",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Choosing (C). The date reference belongs elsewhere in the report; the defect here is what the opinion is about.",
+     "minutes": 3
+    },
+    {
+     "q": "5.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 16 Property, Plant and Equipment (revaluation model)",
+     "topic": "Revaluation gain to OCI; transfer of the revaluation surplus on disposal",
+     "ask": "How is the revaluation gain of 01.04.2020 treated, and what happens to the revaluation surplus when the machine is sold?",
+     "options": {
+      "a": "Gain of ₹25 lakh to P&L; surplus transferred to P&L on disposal.",
+      "b": "Gain of ₹25 lakh to OCI, accumulated as 'Revaluation Surplus'; surplus transferred directly to Retained Earnings on disposal.",
+      "c": "Only ₹15 lakh (FV − cost) to Revaluation Surplus, balance to P&L; surplus to Retained Earnings on disposal.",
+      "d": "Gain of ₹25 lakh to OCI as 'Revaluation Surplus'; ₹10 lakh of surplus stays in equity even after disposal."
+     },
+     "clue": "\"uses the revaluation model for subsequent measurement as per Ind AS 16\"",
+     "chapter_clear": true,
+     "think": [
+      "Revaluation model + gain + disposal -> Ind AS 16 para 39-41.",
+      "Chapter clear -> FR -> Ind AS 16 -> 'revaluation model'. An increase goes to OCI unless it reverses an earlier decrease; on derecognition the surplus goes to retained earnings, never to P&L.",
+      "Carrying amount at 1.4.2020 = 50 − 4 × 2.5 = 40; FV 65; gain 25 -> OCI -> (B)."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR: Ind AS 16 Property, Plant and Equipment",
+      "index_keywords": [
+       "revaluation model",
+       "revaluation surplus",
+       "other comprehensive income",
+       "transferred directly to retained earnings",
+       "derecognition"
+      ]
+     },
+     "solve": "Depreciation = 50 ÷ 20 = ₹2.5 lakh a year; after 4 years (to 31.03.2020) the carrying amount is ₹40 lakh. Fair value is ₹65 lakh, so the increase of ₹25 lakh goes to OCI and accumulates as revaluation surplus (there is no earlier revaluation loss to reverse).\nAfter revaluation, depreciation = 65 ÷ 16 = ₹4.0625 lakh a year. After 4 years the carrying amount at 31.03.2024 is ₹48.75 lakh. Sale proceeds of ₹18 lakh give a loss of ₹30.75 lakh in P&L.\nOn disposal, the revaluation surplus is transferred directly to retained earnings (or year by year through the extra depreciation, 1.5625 × 4 = 6.25, leaving 18.75 on disposal). It is never recycled to P&L.",
+     "answer": "(B)",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Taking the gain as ₹15 lakh (FV − original cost). Compare the FV with the carrying amount of ₹40 lakh.",
+     "minutes": 3
+    },
+    {
+     "q": "5.6",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 1 Presentation of Financial Statements (material accounting policy information)",
+     "topic": "Not disclosing an immaterial policy; when accounting policy information is material (para 117-117B)",
+     "ask": "Do you agree with management not disclosing the capitalisation policy for repairs and upgrades? When is accounting policy information material? (1 + 4 marks)",
+     "options": null,
+     "clue": "\"has not disclosed capitalization policy for repair or upgrades\"",
+     "chapter_clear": true,
+     "think": [
+      "'Accounting policy disclosure' + 'immaterial' -> Ind AS 1 'material accounting policy information' (amended).",
+      "Chapter clear -> FR -> Ind AS 1 -> para 117-117E.",
+      "Part 1: policy information on immaterial items need not be disclosed -> agree, if it is truly immaterial (qualitatively too).",
+      "Part 2: write the definition and the para 117B list (a)-(e). That is the 4 marks."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR: Ind AS 1 Presentation of Financial Statements",
+      "index_keywords": [
+       "material accounting policy information",
+       "paragraph 117A",
+       "paragraph 117B",
+       "significant judgements and assumptions",
+       "options permitted by Ind AS"
+      ]
+     },
+     "solve": "Ind AS 1 para 117: disclose material accounting policy information. Para 117A: policy information about immaterial transactions or events is immaterial and need not be disclosed. So management's view is acceptable if repairs and upgrades are immaterial in amount and in nature. Para 117 and 117B give the definition and the indicators.",
+     "answer": "Part 1 (1 mark): Agree. Under Ind AS 1, only material accounting policy information must be disclosed; policy information about immaterial transactions need not be. If OTL's repairs and upgrades are immaterial in both amount and nature, leaving out the capitalisation policy is not a non-compliance. (If upgrades are large, such as technology upgrades, the policy becomes material.)\n\nPart 2 (4 marks): Accounting policy information is material if, read with the other information in the financial statements, it could reasonably be expected to influence the decisions of primary users of general purpose financial statements. It is likely to be material when it relates to material transactions, events or conditions and:\n(a) the entity changed its accounting policy during the period and the change materially changed the financial statements;\n(b) the entity chose the policy from options permitted by Ind AS (e.g., the cost or revaluation model);\n(c) the policy was developed under Ind AS 8 because no Ind AS specifically applies;\n(d) the policy relates to an area needing significant judgements or assumptions, disclosed under paras 122 and 125;\n(e) the accounting is complex and users would not otherwise understand the transactions (e.g., more than one Ind AS applies to a class of transactions).\nAlso, entity-specific information is more useful than standardised text that repeats Ind AS.",
+     "icai": "Same conclusion as ICAI.",
+     "flag": null,
+     "trap": "Writing the old 'significant accounting policies' answer. The amended Ind AS 1 asks for material accounting policy information.",
+     "minutes": 15
+    },
+    {
+     "q": "5.7",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "Risk Management (financial risk: currency risk)",
+     "topic": "Parameters for identifying currency risk",
+     "ask": "Suggest parameters management can use to identify the currency risk that is squeezing OTL's profits.",
+     "options": null,
+     "clue": "\"provide some inputs on various parameters to identify the currency risk\"",
+     "chapter_clear": false,
+     "think": [
+      "'Parameters to identify currency risk' could sit in the Forex chapter or in Risk Management. Unsure -> A-Z index -> 'currency risk' -> AFM Risk Management (financial risk).",
+      "AFM -> Risk Management -> currency risk -> 'parameters to identify the currency risk' (a ready list).",
+      "Write the six parameters, then link them to OTL (EUR/USD revenue against INR, the $10 million payable)."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM: Risk Management",
+      "index_keywords": [
+       "currency risk",
+       "parameters to identify currency risk",
+       "government action",
+       "interest rate parity",
+       "purchasing power parity"
+      ]
+     },
+     "solve": "The SM list is: government action, nominal interest rates (IRP), inflation (PPP), natural calamities, war/coup/rebellion and change of government. Then add the OTL-specific angle: currency mix of receivables and payables, and the timing of the $10 million payment.",
+     "answer": "Currency risk depends on economic developments and on government action. Parameters OTL should track:\n1. Government action: policy moves can shift a currency sharply (e.g., Brexit pushed the pound to multi-decade lows). Watch trade, tariff and capital-control decisions in the US, the EU and India.\n2. Nominal interest rates: under interest rate parity, interest-rate differences drive forward rates and capital flows (US Fed/ECB vs RBI rates).\n3. Inflation rates: under purchasing power parity, higher inflation weakens a currency over time.\n4. Natural calamities: disasters disrupt the economy and weaken the currency.\n5. War, coup or rebellion: political shocks cause sudden, large moves.\n6. Change of government: a new government's stance on foreign investment and trade changes the currency outlook.\nFor OTL specifically: track the EUR/INR and USD/INR trend against its pricing, the mix of receivables by currency, and the $10 million payable due in 6 months. This tells it what to hedge (forwards/options) and whether to invoice in INR.",
+     "icai": "Same as ICAI (the six parameters). The OTL-specific lines are extra.",
+     "flag": null,
+     "trap": "Writing hedging techniques (forwards, options) instead of the parameters that identify the risk.",
+     "minutes": 15
+    },
+    {
+     "q": "5.8",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "DT",
+     "also": null,
+     "chapter": "ICDS VI Effects of Changes in Foreign Exchange Rates; s.43A; Depreciation u/s 32",
+     "topic": "Exchange difference on the liability for an imported asset; actual cost; normal and additional depreciation (half-year rule)",
+     "ask": "(i) How is the 31.03.2025 exchange difference on TECH M treated under ICDS VI and s.43A? (ii) What is its actual cost on 31.03.2025? (iii) What depreciation is allowable for FY 2024-25? (3 + 1 + 1 marks)",
+     "options": null,
+     "clue": "\"EUR 5,00,000 on deferred credit (payment to be made in September 2026)\"",
+     "chapter_clear": true,
+     "think": [
+      "Imported asset + unpaid foreign-currency liability + year-end rate -> s.43A (payment basis) read with ICDS VI.",
+      "Chapter clear -> DT -> ICDS VI and PGBP s.43A; depreciation u/s 32 (half rate if used for less than 180 days; additional 20%).",
+      "Nothing was paid by 31.03.2025, so actual cost does not change. The asset is non-monetary, so it is not restated.",
+      "Cost = 5,00,000 × 88 = ₹4.40 crore. Put to use 15.10.2024 (168 days) -> 7.5% normal + 10% additional."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT: ICDS VI; Profits and Gains of Business or Profession (s.43A, s.32)",
+      "index_keywords": [
+       "section 43A",
+       "ICDS VI non-monetary items",
+       "exchange difference actual cost payment basis",
+       "additional depreciation 20%",
+       "put to use less than 180 days"
+      ]
+     },
+     "solve": "(i) The asset is non-monetary, so it stays at the transaction-date rate (₹88) and no exchange difference arises on it (ICDS VI). The EUR creditor is monetary; restating it at ₹92 adds ₹20 lakh to the liability (5,00,000 × 4). But for an asset acquired from outside India, s.43A governs (the Act overrides ICDS): the change in liability is added to actual cost only when payment is made. Payment is due in September 2026, so nothing is adjusted or deducted for FY 2024-25.\n(ii) Actual cost = 5,00,000 × ₹88 = ₹4,40,00,000.\n(iii) Put to use 15.10.2024, i.e., 168 days (less than 180), so half rates apply.\nNormal: 4.40 crore × 15% × 50% = ₹33,00,000.\nAdditional u/s 32(1)(iia) (new P&M of a manufacturer): 4.40 crore × 20% × 50% = ₹44,00,000; the balance ₹44 lakh is allowed in FY 2025-26.\nTotal ₹77,00,000.",
+     "answer": "(i) Treatment of the exchange difference on 31.03.2025\n• ICDS VI: TECH M is a non-monetary item, carried at the transaction-date rate (₹88/EUR). No exchange difference arises on the asset.\n• The EUR 5,00,000 creditor is monetary; at ₹92 it rises by ₹20,00,000. But it relates to an asset acquired from outside India, so s.43A applies (the Act prevails over ICDS): any increase or decrease in the liability is added to or deducted from actual cost only in the year the payment is made.\n• Payment is due in September 2026, so there is no adjustment to cost and no deduction of the ₹20 lakh in FY 2024-25.\n\n(ii) Actual cost on 31.03.2025 = EUR 5,00,000 × ₹88 = ₹4,40,00,000\n\n(iii) Depreciation for FY 2024-25 (put to use 15.10.2024 = 168 days, i.e., less than 180 days)\nNormal: ₹4,40,00,000 × 15% × 50% = ₹33,00,000\nAdditional u/s 32(1)(iia): ₹4,40,00,000 × 20% × 50% = ₹44,00,000 (assuming OTL has not opted for s.115BAA)\nTotal depreciation allowable = ₹77,00,000. The remaining additional depreciation of ₹44,00,000 is allowed in FY 2025-26.",
+     "icai": "Same conclusion as ICAI: no adjustment, cost ₹4.40 crore, ₹33 lakh + ₹44 lakh. ICAI neither totals these nor mentions the ₹20 lakh restatement of the liability.",
+     "flag": null,
+     "trap": "Capitalising the ₹20 lakh at ₹92/EUR at year-end. s.43A works only on actual payment.",
+     "minutes": 15
+    }
+   ]
+  }
+ ]
+}

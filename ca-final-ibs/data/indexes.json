@@ -1,0 +1,1046 @@
+{
+ "subjects": [
+  {
+   "id": "az",
+   "label": "A–Z (all subjects)",
+   "hint": "Start here if you are not sure of the chapter"
+  },
+  {
+   "id": "fr",
+   "label": "FR",
+   "hint": ""
+  },
+  {
+   "id": "afm",
+   "label": "AFM",
+   "hint": ""
+  },
+  {
+   "id": "audit",
+   "label": "Audit",
+   "hint": ""
+  },
+  {
+   "id": "dt",
+   "label": "DT",
+   "hint": ""
+  },
+  {
+   "id": "idt",
+   "label": "IDT",
+   "hint": ""
+  },
+  {
+   "id": "law",
+   "label": "Law",
+   "hint": "SPOM Set A"
+  },
+  {
+   "id": "costing",
+   "label": "Costing",
+   "hint": "SPOM Set B"
+  },
+  {
+   "id": "strategy",
+   "label": "Strategy sheets",
+   "hint": ""
+  }
+ ],
+ "files": [
+  {
+   "subject": "az",
+   "faculty": "CA Rohit Chipper",
+   "title": "SM Index All Subjects - concepts and questions (ICAI SM, May 2026)",
+   "for_book": "ICAI Study Material, all 7 IBS subjects",
+   "pages": 312,
+   "size_kb": 5491,
+   "path": "files/az/CA-Rohit-Chipper-SM-Index-All-Subjects-concepts-and-questions-ICAI-SM-May-2026.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "az",
+   "faculty": "Jaggu Bhai",
+   "title": "ICAI Module Index all subjects (Nov 2026)",
+   "for_book": "ICAI study modules, all IBS subjects",
+   "pages": 300,
+   "size_kb": 4605,
+   "path": "files/az/Jaggu-Bhai-ICAI-Module-Index-all-subjects-Nov-2026.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "az",
+   "faculty": "Team VSmart",
+   "title": "IBS Smart Index - FR, AFM, IDT, DT, Audit (VSmart books + ICAI SM)",
+   "for_book": "V'Smart Academy faculty books",
+   "pages": 109,
+   "size_kb": 2191,
+   "path": "files/az/Team-VSmart-IBS-Smart-Index-FR-AFM-IDT-DT-Audit-VSmart-books-ICAI-SM.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "az",
+   "faculty": "AIR1CA (CA Atul & Ajay Agarwal)",
+   "title": "IBS Case Study QB Topic-wise Index (May 26)",
+   "for_book": "AIR1CA IBS Case Studies Question Bank",
+   "pages": 36,
+   "size_kb": 1327,
+   "path": "files/az/AIR1CA-IBS-Case-Study-QB-Topic-wise-Index-May-26.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "fr",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "FR Concept Topic-wise A-Z Index (ICAI SM May 2026)",
+   "for_book": "ICAI SM FR, May 2026 + RTP amendments May 2026",
+   "pages": 61,
+   "size_kb": 1448,
+   "path": "files/fr/CA-Vinay-Kumar-CA-Avishi-Gupta-FR-Concept-Topic-wise-A-Z-Index-ICAI-SM-May-2026.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "fr",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "FR Ind AS + Topic-wise A-Z Index (ICAI SM May 2026)",
+   "for_book": "ICAI SM FR, May 2026",
+   "pages": 65,
+   "size_kb": 1713,
+   "path": "files/fr/CA-Vinay-Kumar-CA-Avishi-Gupta-FR-Ind-AS-Topic-wise-A-Z-Index-ICAI-SM-May-2026.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "fr",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "FR Amendments and Index (May 2026 RTP)",
+   "for_book": "ICAI RTP May 2026 amendments",
+   "pages": 9,
+   "size_kb": 2081,
+   "path": "files/fr/CA-Vinay-Kumar-CA-Avishi-Gupta-FR-Amendments-and-Index-May-2026-RTP.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "fr",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "Ind AS Summary - key points for IBS",
+   "for_book": "ICAI SM FR",
+   "pages": 10,
+   "size_kb": 905,
+   "path": "files/fr/CA-Vinay-Kumar-CA-Avishi-Gupta-Ind-AS-Summary-key-points-for-IBS.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "fr",
+   "faculty": "CA Bhavik Chokshi",
+   "title": "FR Disclosures relevant for IBS (2026)",
+   "for_book": "Ind AS disclosures",
+   "pages": 100,
+   "size_kb": 2913,
+   "path": "files/fr/CA-Bhavik-Chokshi-FR-Disclosures-relevant-for-IBS-2026.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "fr",
+   "faculty": "CA Bhavik Chokshi",
+   "title": "FR Disclosures for IBS - Addendum",
+   "for_book": "Addendum to the FR Disclosures file",
+   "pages": 22,
+   "size_kb": 1617,
+   "path": "files/fr/CA-Bhavik-Chokshi-FR-Disclosures-for-IBS-Addendum.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "fr",
+   "faculty": "CA Bhavik Chokshi",
+   "title": "FR Detailed Index (ICAI SM May25-Sep25-Jan26)",
+   "for_book": "ICAI SM FR",
+   "pages": 36,
+   "size_kb": 1071,
+   "path": "files/fr/CA-Bhavik-Chokshi-FR-Detailed-Index-ICAI-SM-May25-Sep25-Jan26.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "fr",
+   "faculty": "CA Bhavik Chokshi",
+   "title": "FR Detailed Index (FR Shield 5.0)",
+   "for_book": "Bhavik Chokshi FR Shield 5.0",
+   "pages": 15,
+   "size_kb": 860,
+   "path": "files/fr/CA-Bhavik-Chokshi-FR-Detailed-Index-FR-Shield-5-0.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "fr",
+   "faculty": "CA Aakash Kandoi",
+   "title": "FR Concept Book Index for IBS (FRwithAK)",
+   "for_book": "Aakash Kandoi FR Concept Book",
+   "pages": 11,
+   "size_kb": 362,
+   "path": "files/fr/CA-Aakash-Kandoi-FR-Concept-Book-Index-for-IBS-FRwithAK.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "fr",
+   "faculty": "CA Jai Chawla",
+   "title": "FR IBS Index (ICAI SM + Jai Chawla FR Concept Book)",
+   "for_book": "ICAI SM FR + Jai Chawla FR Concept Book",
+   "pages": 15,
+   "size_kb": 363,
+   "path": "files/fr/CA-Jai-Chawla-FR-IBS-Index-ICAI-SM-Jai-Chawla-FR-Concept-Book.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "fr",
+   "faculty": "CA Sarthak Jain",
+   "title": "FR Brahmastra Detailed Index (Vol 1, May 2025)",
+   "for_book": "Sarthak Jain FR Brahmastra Vol 1",
+   "pages": 14,
+   "size_kb": 749,
+   "path": "files/fr/CA-Sarthak-Jain-FR-Brahmastra-Detailed-Index-Vol-1-May-2025.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "fr",
+   "faculty": "AIR1CA (CA Atul & Ajay Agarwal)",
+   "title": "FR Concept Book Detailed Index",
+   "for_book": "AIR1CA FR Concept Book",
+   "pages": 14,
+   "size_kb": 875,
+   "path": "files/fr/AIR1CA-FR-Concept-Book-Detailed-Index.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "afm",
+   "faculty": "CA Divesh Harpalani",
+   "title": "AFM ICAI SM Topic-wise IBS Index (May 26 SM)",
+   "for_book": "ICAI SM AFM",
+   "pages": 8,
+   "size_kb": 636,
+   "path": "files/afm/CA-Divesh-Harpalani-AFM-ICAI-SM-Topic-wise-IBS-Index-May-26-SM.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "afm",
+   "faculty": "CA Divesh Harpalani",
+   "title": "AFM Pulse Part 2 (Theory Notes) IBS Index",
+   "for_book": "Divesh Harpalani AFM Pulse Part 2 theory notes",
+   "pages": 8,
+   "size_kb": 649,
+   "path": "files/afm/CA-Divesh-Harpalani-AFM-Pulse-Part-2-Theory-Notes-IBS-Index.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "afm",
+   "faculty": "CA Divesh Harpalani",
+   "title": "AFM Question Bank IBS Index",
+   "for_book": "Divesh Harpalani AFM Question Bank",
+   "pages": 4,
+   "size_kb": 145,
+   "path": "files/afm/CA-Divesh-Harpalani-AFM-Question-Bank-IBS-Index.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "afm",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "AFM and SCMPE Concept Topic-wise A-Z Index (ICAI SM May 2026)",
+   "for_book": "ICAI SM AFM + SCPM",
+   "pages": 44,
+   "size_kb": 975,
+   "path": "files/afm/CA-Vinay-Kumar-CA-Avishi-Gupta-AFM-and-SCMPE-Concept-Topic-wise-A-Z-Index-ICAI-SM-May-2026.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "afm",
+   "faculty": "CA Bhavik Chokshi",
+   "title": "AFM Detailed Index (ICAI SM May25-Sep25-Jan26)",
+   "for_book": "ICAI SM AFM",
+   "pages": 21,
+   "size_kb": 713,
+   "path": "files/afm/CA-Bhavik-Chokshi-AFM-Detailed-Index-ICAI-SM-May25-Sep25-Jan26.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "afm",
+   "faculty": "CA Bhavik Chokshi",
+   "title": "AFM Detailed Index (AFM Shield 2.0)",
+   "for_book": "Bhavik Chokshi AFM Shield 2.0",
+   "pages": 8,
+   "size_kb": 1009,
+   "path": "files/afm/CA-Bhavik-Chokshi-AFM-Detailed-Index-AFM-Shield-2-0.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "afm",
+   "faculty": "AIR1CA (CA Atul & Ajay Agarwal)",
+   "title": "AFM Concept Book Detailed Index",
+   "for_book": "AIR1CA AFM Concept Book",
+   "pages": 10,
+   "size_kb": 740,
+   "path": "files/afm/AIR1CA-AFM-Concept-Book-Detailed-Index.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "afm",
+   "faculty": "AIR1CA (CA Atul & Ajay Agarwal)",
+   "title": "AFM QB Topic-wise Detailed Index (student-made, QB Nov 24)",
+   "for_book": "AIR1CA Question Bank Nov'24",
+   "pages": 6,
+   "size_kb": 2580,
+   "path": "files/afm/AIR1CA-AFM-QB-Topic-wise-Detailed-Index-student-made-QB-Nov-24.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "afm",
+   "faculty": "CA Nitin Guru",
+   "title": "AFM Theory Book Detailed Index",
+   "for_book": "Nitin Guru AFM Theory Book",
+   "pages": 23,
+   "size_kb": 369,
+   "path": "files/afm/CA-Nitin-Guru-AFM-Theory-Book-Detailed-Index.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "afm",
+   "faculty": "CA Praveen Khatod",
+   "title": "AFM Revision Detailed Index (Ver 11)",
+   "for_book": "Praveen Khatod AFM revision book, version 11",
+   "pages": 16,
+   "size_kb": 2320,
+   "path": "files/afm/CA-Praveen-Khatod-AFM-Revision-Detailed-Index-Ver-11.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "afm",
+   "faculty": "CA Mayank Kothari",
+   "title": "AFM Concept Sheet Compiler 5.0 Index for IBS",
+   "for_book": "Mayank Kothari AFM Concept Sheet Compiler 5.0",
+   "pages": 42,
+   "size_kb": 969,
+   "path": "files/afm/CA-Mayank-Kothari-AFM-Concept-Sheet-Compiler-5-0-Index-for-IBS.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "afm",
+   "faculty": "Student-made",
+   "title": "AFM Index - ICAI SM with Pavan Karmele Concept and Question Bank pages",
+   "for_book": "ICAI SM AFM + Pavan Karmele",
+   "pages": 8,
+   "size_kb": 300,
+   "path": "files/afm/Student-made-AFM-Index-ICAI-SM-with-Pavan-Karmele-Concept-and-Question-Bank-pages.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "Audit Concept Topic-wise A-Z Index (ICAI SM May 2026)",
+   "for_book": "ICAI SM Audit, May 2026",
+   "pages": 44,
+   "size_kb": 1353,
+   "path": "files/audit/CA-Vinay-Kumar-CA-Avishi-Gupta-Audit-Concept-Topic-wise-A-Z-Index-ICAI-SM-May-2026.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "Audit Concept Chapter+Topic A-Z Index (ICAI SM May 2026)",
+   "for_book": "ICAI SM Audit, May 2026",
+   "pages": 44,
+   "size_kb": 1637,
+   "path": "files/audit/CA-Vinay-Kumar-CA-Avishi-Gupta-Audit-Concept-Chapter-Topic-A-Z-Index-ICAI-SM-May-2026.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Ravi Taori",
+   "title": "Audit Index for IBS (ICAI SM + Titanium Concept Book)",
+   "for_book": "Ravi Taori Audit Titanium Concept Book + latest ICAI SM",
+   "pages": 46,
+   "size_kb": 1259,
+   "path": "files/audit/CA-Ravi-Taori-Audit-Index-for-IBS-ICAI-SM-Titanium-Concept-Book.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Siddharth Agarwal",
+   "title": "Audit Index for IBS (new 2-book version)",
+   "for_book": "Siddharth Agarwal Audit books",
+   "pages": 23,
+   "size_kb": 334,
+   "path": "files/audit/CA-Siddharth-Agarwal-Audit-Index-for-IBS-new-2-book-version.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Siddharth Agarwal",
+   "title": "Audit Index for IBS (old 3-book version)",
+   "for_book": "Siddharth Agarwal Audit books",
+   "pages": 15,
+   "size_kb": 230,
+   "path": "files/audit/CA-Siddharth-Agarwal-Audit-Index-for-IBS-old-3-book-version.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Hemant Somani",
+   "title": "Audit Topic-wise Index for IBS (All in One Book PW4, Nov 26)",
+   "for_book": "Hemant Somani CA Final Audit All in One Book - PW4",
+   "pages": 24,
+   "size_kb": 692,
+   "path": "files/audit/CA-Hemant-Somani-Audit-Topic-wise-Index-for-IBS-All-in-One-Book-PW4-Nov-26.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Shubham Keswani",
+   "title": "Audit Notes Detailed Index (Apr 25 edition)",
+   "for_book": "Shubham Keswani Audit Notes, Apr'25 edition",
+   "pages": 21,
+   "size_kb": 1251,
+   "path": "files/audit/CA-Shubham-Keswani-Audit-Notes-Detailed-Index-Apr-25-edition.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Shankar Lakhwani",
+   "title": "Audit Detailed Index for IBS (220-page Magic Book)",
+   "for_book": "Shankar Lakhwani Audit Magic Book",
+   "pages": 38,
+   "size_kb": 667,
+   "path": "files/audit/CA-Shankar-Lakhwani-Audit-Detailed-Index-for-IBS-220-page-Magic-Book.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Kapil Goyal",
+   "title": "Audit Module 1 and 2 Concept-wise Index",
+   "for_book": "Audit Module 1 & 2",
+   "pages": 7,
+   "size_kb": 63,
+   "path": "files/audit/CA-Kapil-Goyal-Audit-Module-1-and-2-Concept-wise-Index.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Pankaj Garg",
+   "title": "Audit Main Book Detailed Index (15th edition)",
+   "for_book": "Pankaj Garg Final Audit Main Book, 15th edition",
+   "pages": 3,
+   "size_kb": 187,
+   "path": "files/audit/CA-Pankaj-Garg-Audit-Main-Book-Detailed-Index-15th-edition.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Pankaj Garg",
+   "title": "Audit Class Notes Detailed Index (4th edition)",
+   "for_book": "Pankaj Garg Final Audit Class Notes, 4th edition",
+   "pages": 3,
+   "size_kb": 188,
+   "path": "files/audit/CA-Pankaj-Garg-Audit-Class-Notes-Detailed-Index-4th-edition.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Pankaj Garg",
+   "title": "Audit Cracker Book Detailed Index (16th edition)",
+   "for_book": "Pankaj Garg Final Audit Cracker, 16th edition",
+   "pages": 3,
+   "size_kb": 180,
+   "path": "files/audit/CA-Pankaj-Garg-Audit-Cracker-Book-Detailed-Index-16th-edition.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Sarthak Jain",
+   "title": "Audit Crush All-Chapter Index",
+   "for_book": "Sarthak Jain Audit Crush book",
+   "pages": 30,
+   "size_kb": 12531,
+   "path": "files/audit/CA-Sarthak-Jain-Audit-Crush-All-Chapter-Index.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "CA Sarthak Jain",
+   "title": "Audit Brahmastra Index for IBS (Vol 1)",
+   "for_book": "Sarthak Jain Audit Brahmastra Vol 1",
+   "pages": 22,
+   "size_kb": 811,
+   "path": "files/audit/CA-Sarthak-Jain-Audit-Brahmastra-Index-for-IBS-Vol-1.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "audit",
+   "faculty": "AIR1CA (CA Atul & Ajay Agarwal)",
+   "title": "Audit Concept Book Detailed Index",
+   "for_book": "AIR1CA Audit Concept Book",
+   "pages": 14,
+   "size_kb": 857,
+   "path": "files/audit/AIR1CA-Audit-Concept-Book-Detailed-Index.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "dt",
+   "faculty": "CA Bhanwar Borana",
+   "title": "DT COMPACT Detail Index (May-Sep 26 and Jan 27)",
+   "for_book": "Bhanwar Borana DT COMPACT, May/Sep 2026 & Jan 2027 edition",
+   "pages": 7,
+   "size_kb": 332,
+   "path": "files/dt/CA-Bhanwar-Borana-DT-COMPACT-Detail-Index-May-Sep-26-and-Jan-27.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "dt",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "DT Concept Topic-wise A-Z Index (ICAI SM May 2026)",
+   "for_book": "ICAI SM DT, May 2026",
+   "pages": 44,
+   "size_kb": 1628,
+   "path": "files/dt/CA-Vinay-Kumar-CA-Avishi-Gupta-DT-Concept-Topic-wise-A-Z-Index-ICAI-SM-May-2026.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "dt",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "DT Concept Chapter+Topic A-Z Index (ICAI SM May 2026)",
+   "for_book": "ICAI SM DT, May 2026",
+   "pages": 44,
+   "size_kb": 1500,
+   "path": "files/dt/CA-Vinay-Kumar-CA-Avishi-Gupta-DT-Concept-Chapter-Topic-A-Z-Index-ICAI-SM-May-2026.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "dt",
+   "faculty": "AIR1CA (CA Atul & Ajay Agarwal)",
+   "title": "DT Concept Book Detailed Index",
+   "for_book": "AIR1CA DT Concept Book",
+   "pages": 13,
+   "size_kb": 854,
+   "path": "files/dt/AIR1CA-DT-Concept-Book-Detailed-Index.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "dt",
+   "faculty": "Your CA Buddy",
+   "title": "DT Index for IBS (Edition 4 book)",
+   "for_book": "A DT book 'Edition 4'",
+   "pages": 15,
+   "size_kb": 2782,
+   "path": "files/dt/Your-CA-Buddy-DT-Index-for-IBS-Edition-4-book.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "idt",
+   "faculty": "CA Vijender Aggarwal",
+   "title": "IDT Open-Book Index for Nov 2026 (Ultimate Compact Book + ICAI SM)",
+   "for_book": "Vijender Aggarwal 'The Ultimate Compact Book on IDT', cross-referenced to ICAI S",
+   "pages": 26,
+   "size_kb": 912,
+   "path": "files/idt/CA-Vijender-Aggarwal-IDT-Open-Book-Index-for-Nov-2026-Ultimate-Compact-Book-ICAI-SM.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "idt",
+   "faculty": "CA Vijender Aggarwal",
+   "title": "IDT in IBS - past paper analysis (May 2024 to May 2026)",
+   "for_book": "ICAI IBS papers",
+   "pages": 5,
+   "size_kb": 296,
+   "path": "files/idt/CA-Vijender-Aggarwal-IDT-in-IBS-past-paper-analysis-May-2024-to-May-2026.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "idt",
+   "faculty": "CA Yashvant Mangal",
+   "title": "IDT Concept Book Index for IBS (32nd edition)",
+   "for_book": "Yashvant Mangal IDT Concept Book, 32nd edition",
+   "pages": 24,
+   "size_kb": 885,
+   "path": "files/idt/CA-Yashvant-Mangal-IDT-Concept-Book-Index-for-IBS-32nd-edition.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "idt",
+   "faculty": "CA Yashvant Mangal",
+   "title": "IDT Concept Book Index for IBS (31st edition)",
+   "for_book": "Yashvant Mangal IDT Concept Book, 31st edition",
+   "pages": 24,
+   "size_kb": 764,
+   "path": "files/idt/CA-Yashvant-Mangal-IDT-Concept-Book-Index-for-IBS-31st-edition.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "idt",
+   "faculty": "CA Akshansh Garg",
+   "title": "IDT Summary Book Index for IBS (9th edition, Nov 26-May 27)",
+   "for_book": "Akshansh Garg IDT Summary Book, 9th edition",
+   "pages": 15,
+   "size_kb": 505,
+   "path": "files/idt/CA-Akshansh-Garg-IDT-Summary-Book-Index-for-IBS-9th-edition-Nov-26-May-27.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "idt",
+   "faculty": "CA Akshansh Garg",
+   "title": "IDT Summary Book Index for IBS (8th edition, May 26-Nov 26)",
+   "for_book": "Akshansh Garg IDT Summary Book, 8th edition",
+   "pages": 15,
+   "size_kb": 518,
+   "path": "files/idt/CA-Akshansh-Garg-IDT-Summary-Book-Index-for-IBS-8th-edition-May-26-Nov-26.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "idt",
+   "faculty": "CA Ramesh Soni",
+   "title": "IDT SUMART V13 Detailed Index for IBS (Vol I and II)",
+   "for_book": "Ramesh Soni IDT SUMART Version 13",
+   "pages": 26,
+   "size_kb": 753,
+   "path": "files/idt/CA-Ramesh-Soni-IDT-SUMART-V13-Detailed-Index-for-IBS-Vol-I-and-II.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "idt",
+   "faculty": "CA Siddhesh Valimbe",
+   "title": "IDT Concise Edition 4 Index for IBS",
+   "for_book": "Siddhesh Valimbe IDT Concise, Edition 4",
+   "pages": 20,
+   "size_kb": 365,
+   "path": "files/idt/CA-Siddhesh-Valimbe-IDT-Concise-Edition-4-Index-for-IBS.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "idt",
+   "faculty": "CA Riddhi Baghmar",
+   "title": "IDT Book Version 9 Index for IBS",
+   "for_book": "Riddhi Baghmar IDT book, Version 9",
+   "pages": 9,
+   "size_kb": 660,
+   "path": "files/idt/CA-Riddhi-Baghmar-IDT-Book-Version-9-Index-for-IBS.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "idt",
+   "faculty": "AIR1CA (CA Surender Mittal)",
+   "title": "IDT Concept Book Detailed Index (May-Sep 26 and Jan 27)",
+   "for_book": "AIR1CA IDT Concept Book by CA Surender Mittal, May/Sep 26 & Jan 27 edition",
+   "pages": 12,
+   "size_kb": 834,
+   "path": "files/idt/AIR1CA-IDT-Concept-Book-Detailed-Index-May-Sep-26-and-Jan-27.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "idt",
+   "faculty": "Student-made",
+   "title": "GST Index and Important Time Limits",
+   "for_book": "Section-wise",
+   "pages": 11,
+   "size_kb": 385,
+   "path": "files/idt/Student-made-GST-Index-and-Important-Time-Limits.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "idt",
+   "faculty": "Student-made",
+   "title": "Customs Index (410-page book)",
+   "for_book": "A 410-page IDT book",
+   "pages": 4,
+   "size_kb": 712,
+   "path": "files/idt/Student-made-Customs-Index-410-page-book.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "law",
+   "faculty": "CA Rohit Chipper",
+   "title": "Law Alphabetical Index (ICAI SM)",
+   "for_book": "ICAI SM Law",
+   "pages": 32,
+   "size_kb": 952,
+   "path": "files/law/CA-Rohit-Chipper-Law-Alphabetical-Index-ICAI-SM.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "law",
+   "faculty": "ICAI (Board of Studies)",
+   "title": "Relevant Amendments Set A for Nov 2026 IBS (till 30 Apr 2026)",
+   "for_book": "ICAI SM Set A, September 2025 edition",
+   "pages": 17,
+   "size_kb": 245,
+   "path": "files/law/ICAI-Relevant-Amendments-Set-A-for-Nov-2026-IBS-till-30-Apr-2026.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "law",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "Law Topic-wise A-Z Index (ICAI SM)",
+   "for_book": "ICAI SM Law",
+   "pages": 50,
+   "size_kb": 1586,
+   "path": "files/law/CA-Vinay-Kumar-CA-Avishi-Gupta-Law-Topic-wise-A-Z-Index-ICAI-SM.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "law",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "Law Chapter+Topic A-Z Index (ICAI SM)",
+   "for_book": "ICAI SM Law",
+   "pages": 46,
+   "size_kb": 1531,
+   "path": "files/law/CA-Vinay-Kumar-CA-Avishi-Gupta-Law-Chapter-Topic-A-Z-Index-ICAI-SM.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "law",
+   "faculty": "CA Hemant Somani",
+   "title": "SPOM Set A Law Book Index (V4)",
+   "for_book": "Hemant Somani SPOM Set A",
+   "pages": 29,
+   "size_kb": 483,
+   "path": "files/law/CA-Hemant-Somani-SPOM-Set-A-Law-Book-Index-V4.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "law",
+   "faculty": "AIR1CA (CA Atul & Ajay Agarwal)",
+   "title": "Law Concept Book Detailed Index for IBS",
+   "for_book": "AIR1CA Law Concept Book",
+   "pages": 6,
+   "size_kb": 326,
+   "path": "files/law/AIR1CA-Law-Concept-Book-Detailed-Index-for-IBS.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "law",
+   "faculty": "CA Shubham Singhal",
+   "title": "The Ultimate Solution - appendix summary (forms, resolutions)",
+   "for_book": "Shubham Singhal 'The Ultimate Solution'",
+   "pages": 9,
+   "size_kb": 530,
+   "path": "files/law/CA-Shubham-Singhal-The-Ultimate-Solution-appendix-summary-forms-resolutions.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "costing",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "SCPM (SPOM B) Index A-Z (ICAI SM)",
+   "for_book": "ICAI SM SPOM Set B",
+   "pages": 47,
+   "size_kb": 1395,
+   "path": "files/costing/CA-Vinay-Kumar-CA-Avishi-Gupta-SCPM-SPOM-B-Index-A-Z-ICAI-SM.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "costing",
+   "faculty": "CA Rohit Chipper",
+   "title": "SCPM Alphabetical Index (ICAI SM)",
+   "for_book": "ICAI SM SCPM",
+   "pages": 16,
+   "size_kb": 354,
+   "path": "files/costing/CA-Rohit-Chipper-SCPM-Alphabetical-Index-ICAI-SM.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "costing",
+   "faculty": "Jaggu Bhai",
+   "title": "SCPM Topic-wise Index (ICAI module)",
+   "for_book": "ICAI module SCPM",
+   "pages": 3,
+   "size_kb": 147,
+   "path": "files/costing/Jaggu-Bhai-SCPM-Topic-wise-Index-ICAI-module.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "costing",
+   "faculty": "AIR1CA (CA Atul & Ajay Agarwal)",
+   "title": "SCPM Concept Book Detailed Index",
+   "for_book": "AIR1CA SCPM Concept Book",
+   "pages": 5,
+   "size_kb": 605,
+   "path": "files/costing/AIR1CA-SCPM-Concept-Book-Detailed-Index.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "costing",
+   "faculty": "CA Sankalp Kanstiya",
+   "title": "IBS Study Guide - AFM and SCPM Study Mentor Index (part 1 of 2, pages 1-48)",
+   "for_book": "Sankalp Kanstiya Study Mentor books",
+   "pages": 48,
+   "size_kb": 12731,
+   "path": "files/costing/CA-Sankalp-Kanstiya-IBS-Study-Guide-AFM-and-SCPM-Study-Mentor-Index-part-1-of-2-pp-1-48.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "costing",
+   "faculty": "CA Sankalp Kanstiya",
+   "title": "IBS Study Guide - AFM and SCPM Study Mentor Index (part 2 of 2, pages 49-97)",
+   "for_book": "Sankalp Kanstiya Study Mentor books",
+   "pages": 49,
+   "size_kb": 13116,
+   "path": "files/costing/CA-Sankalp-Kanstiya-IBS-Study-Guide-AFM-and-SCPM-Study-Mentor-Index-part-2-of-2-pp-49-97.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "costing",
+   "faculty": "CA Riddhi Baghmar",
+   "title": "SPOM Set B IBS Index",
+   "for_book": "Riddhi Baghmar SPOM Set B notes",
+   "pages": 9,
+   "size_kb": 210,
+   "path": "files/costing/CA-Riddhi-Baghmar-SPOM-Set-B-IBS-Index.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "costing",
+   "faculty": "CA Vidit Mittal",
+   "title": "SCPM Formula Sheet for SPOM B and IBS",
+   "for_book": "SCPM",
+   "pages": 33,
+   "size_kb": 379,
+   "path": "files/costing/CA-Vidit-Mittal-SCPM-Formula-Sheet-for-SPOM-B-and-IBS.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "costing",
+   "faculty": "CA Sankalp Kanstiya",
+   "title": "SCMPE Formula Sheet",
+   "for_book": "SCMPE",
+   "pages": 15,
+   "size_kb": 5785,
+   "path": "files/costing/CA-Sankalp-Kanstiya-SCMPE-Formula-Sheet.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "costing",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "SCMPE Important Topics with ICAI SM pages",
+   "for_book": "ICAI SM SCMPE",
+   "pages": 3,
+   "size_kb": 69,
+   "path": "files/costing/CA-Vinay-Kumar-CA-Avishi-Gupta-SCMPE-Important-Topics-with-ICAI-SM-pages.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "strategy",
+   "faculty": "CA Sarthak Jain",
+   "title": "IBS Errors to Avoid (marks weightage, command words, examiner comments)",
+   "for_book": "",
+   "pages": 7,
+   "size_kb": 2490,
+   "path": "files/strategy/CA-Sarthak-Jain-IBS-Errors-to-Avoid-marks-weightage-command-words-examiner-comments.pdf",
+   "best": true,
+   "note": ""
+  },
+  {
+   "subject": "strategy",
+   "faculty": "CA Sarthak Jain",
+   "title": "IBS 4-Attempt Complete Analysis for Nov 26 (Excel)",
+   "for_book": "ICAI IBS papers May 25 to May 26",
+   "pages": null,
+   "size_kb": 54,
+   "path": "files/strategy/CA-Sarthak-Jain-IBS-4-Attempt-Complete-Analysis-for-Nov-26-Excel.xlsx",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "strategy",
+   "faculty": "CA Rohit Chipper",
+   "title": "IBS Trend Analysis and Strategy",
+   "for_book": "ICAI IBS papers May 24 to Jan 26",
+   "pages": 18,
+   "size_kb": 518,
+   "path": "files/strategy/CA-Rohit-Chipper-IBS-Trend-Analysis-and-Strategy.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "strategy",
+   "faculty": "CA Rohit Chipper",
+   "title": "IBS Important Concepts (all subjects, asked repeatedly)",
+   "for_book": "Exam, RTP, MTP, case study digest and journals",
+   "pages": 107,
+   "size_kb": 3415,
+   "path": "files/strategy/CA-Rohit-Chipper-IBS-Important-Concepts-all-subjects-asked-repeatedly.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "strategy",
+   "faculty": "CA Hemant Somani",
+   "title": "IBS Important Topics - Law, SCPM, Audit",
+   "for_book": "Trend analysis",
+   "pages": 7,
+   "size_kb": 248,
+   "path": "files/strategy/CA-Hemant-Somani-IBS-Important-Topics-Law-SCPM-Audit.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "strategy",
+   "faculty": "CA Siddhant Misra (IBS 80 marks)",
+   "title": "IBS Preparation Guide and Index",
+   "for_book": "All subjects",
+   "pages": 44,
+   "size_kb": 14094,
+   "path": "files/strategy/CA-Siddhant-Misra-IBS-Preparation-Guide-and-Index.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "strategy",
+   "faculty": "CA Shubham Keswani",
+   "title": "IBS Exam Day Strategy (tips from AIR 2, 7, 11)",
+   "for_book": "",
+   "pages": 2,
+   "size_kb": 423,
+   "path": "files/strategy/CA-Shubham-Keswani-IBS-Exam-Day-Strategy-tips-from-AIR-2-7-11.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "strategy",
+   "faculty": "AIR1CA (CA Atul & Ajay Agarwal)",
+   "title": "IBS Detailed Strategy and Resources",
+   "for_book": "",
+   "pages": 2,
+   "size_kb": 491,
+   "path": "files/strategy/AIR1CA-IBS-Detailed-Strategy-and-Resources.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "strategy",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "IBS Important Concepts (Jan 2026 paper)",
+   "for_book": "",
+   "pages": 20,
+   "size_kb": 1952,
+   "path": "files/strategy/CA-Vinay-Kumar-CA-Avishi-Gupta-IBS-Important-Concepts-Jan-2026-paper.pdf",
+   "best": false,
+   "note": ""
+  },
+  {
+   "subject": "strategy",
+   "faculty": "CA Vinay Kumar & CA Avishi Gupta",
+   "title": "IBS Exam Guide - 6-attempt pattern analysis (Excel)",
+   "for_book": "ICAI IBS papers May 24 to Sep 26",
+   "pages": null,
+   "size_kb": 47,
+   "path": "files/strategy/CA-Vinay-Kumar-CA-Avishi-Gupta-IBS-Exam-Guide-6-attempt-pattern-analysis-Excel.xlsx",
+   "best": false,
+   "note": ""
+  }
+ ],
+ "zips": {
+  "az": {
+   "count": 4,
+   "size_kb": 13614
+  },
+  "fr": {
+   "count": 12,
+   "size_kb": 14957
+  },
+  "afm": {
+   "count": 12,
+   "size_kb": 11406
+  },
+  "audit": {
+   "count": 15,
+   "size_kb": 22242
+  },
+  "dt": {
+   "count": 5,
+   "size_kb": 7096
+  },
+  "idt": {
+   "count": 12,
+   "size_kb": 7591
+  },
+  "law": {
+   "count": 7,
+   "size_kb": 5653
+  },
+  "costing": {
+   "count": 10,
+   "size_kb": 34790
+  },
+  "strategy": {
+   "count": 10,
+   "size_kb": 23730
+  }
+ }
+}
