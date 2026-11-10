@@ -521,11 +521,6 @@ function refreshCardReviews() {
       a.href = `/articleship-firm-review.html?firm=${encodeURIComponent(info.firmName || "")}`;
       a.innerHTML = `<i class="fa-solid fa-star" style="color: #ca8a04; margin-right: 4px;"></i>${info.avgOverall.toFixed(1)} (${info.count})`;
     }
-    const divider = card.querySelector(".jc-divider");
-    if (divider && !card.querySelector(".jc-review-facts")) {
-      const html = buildReviewFactsHtml(info);
-      if (html) divider.insertAdjacentHTML("beforebegin", html);
-    }
   });
 }
 
@@ -648,7 +643,6 @@ function renderJobCard(job) {
             ${industryType ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right: 4px; color: #94a3b8;"></i>${industryType}</span>` : ""}
             ${job.Experience ? `<span class="jc-chip">${job.Experience}</span>` : ""}
         </div>
-        ${buildReviewFactsHtml(ratingInfo)}
         <div class="jc-divider"></div>
         <div class="jc-footer">
             <div class="jc-footer-left">
@@ -1474,6 +1468,7 @@ function showJobDetail(job) {
                         <div class="jd-hero-location">${job.Location || ""}</div>
                     </div>
                 </div>
+                ${currentTable === "Articleship Jobs" ? buildReviewFactsHtml(ratingInfo) : ""}
                 <div class="jd-meta-pills">
                     ${job['Secondary Domain'] ? `<span class="jc-chip jc-chip-domain" style="background-color:#e0f2fe;color:#0369a1;border-color:#bae6fd;">${job['Secondary Domain']}</span>` : ""}
                     ${showCompanyTypePill ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right:4px;color:#94a3b8;"></i>${job['Company Type']}</span>` : ""}
