@@ -40,6 +40,19 @@ p { margin: 0; }
 .top-nav { display: flex; gap: 22px; }
 .top-nav a { color: var(--navy); text-decoration: none; font-weight: 600; font-size: 15px; }
 .top-nav a:hover { color: var(--blue); }
+.top-cta { display: inline-flex; align-items: center; gap: 7px; flex: none; min-height: 40px; padding: 8px 14px; border-radius: 999px;
+  background: #128C4B; color: #fff; font-family: var(--head); font-weight: 700; font-size: 14.5px; text-decoration: none;
+  box-shadow: 0 2px 10px rgba(18, 140, 75, .28); white-space: nowrap; }
+.top-cta:hover { background: #0e743e; }
+.top-cta svg { width: 18px; height: 18px; flex: none; }
+.top-cta .short { display: none; }
+@media (max-width: 1100px) { .top-nav { gap: 16px; } }
+@media (max-width: 480px) {
+  .top-cta { padding: 7px 11px; font-size: 13px; min-height: 36px; }
+  .top-cta .long { display: none; }
+  .top-cta .short { display: inline; }
+  .brand img { height: 30px; }
+}
 
 /* hero */
 .hero { background: var(--blue); color: #fff; padding: 56px 0 44px; position: relative; overflow: hidden; }
