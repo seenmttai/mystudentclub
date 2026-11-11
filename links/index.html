@@ -31,7 +31,7 @@
   <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css?v=20261110">
+  <link rel="stylesheet" href="style.css?v=20261111">
   <!-- Standard Favicon -->
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   
@@ -53,10 +53,11 @@
     <nav class="tabs-wrapper" aria-label="Show links for">
       <p class="tabs-caption">Show links for</p>
       <div class="tabs-container" role="tablist">
-        <button class="tab-btn active" id="tab-industrial" role="tab" aria-selected="true" aria-controls="industrial" onclick="switchTab(this, 'industrial')">Industrial Training</button>
-        <button class="tab-btn" id="tab-ca" role="tab" aria-selected="false" aria-controls="ca" onclick="switchTab(this, 'ca')">CA Fresher</button>
-        <button class="tab-btn" id="tab-articleship" role="tab" aria-selected="false" aria-controls="articleship" onclick="switchTab(this, 'articleship')">Articleship</button>
-        <button class="tab-btn" id="tab-semi-qualified" role="tab" aria-selected="false" aria-controls="semi-qualified" onclick="switchTab(this, 'semi-qualified')">Semi Qualified CA</button>
+        <button class="tab-btn active" id="tab-industrial" onclick="switchTab(this, 'industrial')">Industrial Training</button>
+        <button class="tab-btn" id="tab-ca" onclick="switchTab(this, 'ca')">CA Fresher</button>
+        <button class="tab-btn" id="tab-articleship" onclick="switchTab(this, 'articleship')">Articleship</button>
+        <button class="tab-btn" id="tab-semi-qualified" onclick="switchTab(this, 'semi-qualified')">Semi Qualified CA</button>
+        <button class="tab-btn" id="tab-experienced-CA" onclick="switchTab(this, 'experienced-CA')">Experienced CA</button>
       </div>
     </nav>
 
@@ -64,7 +65,7 @@
          fetched). /links/render.js rebuilds them as a programme banner plus headed groups. -->
     <main class="links-container">
       <!-- Industrial Training Section -->
-      <div id="industrial" class="tab-content active" role="tabpanel" aria-labelledby="tab-industrial">
+      <div id="industrial" class="tab-content active">
         <a href="https://www.mystudentclub.com/ca-industrial-training-program" target="_blank" rel="noopener noreferrer" class="link-card program" id="link-industrial-program">
           <i class="fas fa-graduation-cap"></i>
           <span>MSC Industrial Training Program Details</span>
@@ -96,14 +97,18 @@
       </div>
 
       <!-- CA Section -->
-      <div id="ca" class="tab-content" role="tabpanel" aria-labelledby="tab-ca">
+      <div id="ca" class="tab-content">
         <a href="https://www.mystudentclub.com/msc-ca-fresher-program/" target="_blank" rel="noopener noreferrer" class="link-card program" id="link-ca-program">
           <i class="fas fa-graduation-cap"></i>
           <span>Program Details</span>
         </a>
-        <a href="https://whatsapp.com/channel/0029Vb8XM5GDzgT6YyWk4x0F" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-ca-whatsapp">
+        <a href="https://chat.whatsapp.com/DsFD7rCA7Wn6s7kyemDCr2" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-ca-whatsapp">
           <i class="fab fa-whatsapp"></i>
           <span>Whatsapp Community</span>
+        </a>
+        <a href="https://whatsapp.com/channel/0029Vb9LBiB7tkj30VLeNm1X" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-ca-whatsapp-channel">
+          <i class="fab fa-whatsapp"></i>
+          <span>Vacancy Alerts Channel</span>
         </a>
         <a href="https://www.mystudentclub.com/ca-fresher-training-resources" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-ca-resources">
           <i class="fas fa-book-open"></i>
@@ -124,14 +129,18 @@
       </div>
 
       <!-- Articleship Section -->
-      <div id="articleship" class="tab-content" role="tabpanel" aria-labelledby="tab-articleship">
+      <div id="articleship" class="tab-content">
         <a href="https://www.mystudentclub.com/articleship-program/" target="_blank" rel="noopener noreferrer" class="link-card program" id="link-articleship-program">
           <i class="fas fa-graduation-cap"></i>
           <span>Program Details</span>
         </a>
-        <a href="https://whatsapp.com/channel/0029Vb8XM5GDzgT6YyWk4x0F" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-articleship-whatsapp">
+        <a href="https://chat.whatsapp.com/FMQvEUsMZw2EN2t2h2LnRZ" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-articleship-whatsapp">
           <i class="fab fa-whatsapp"></i>
           <span>Whatsapp Community</span>
+        </a>
+        <a href="https://whatsapp.com/channel/0029VbEUohh7tkjDhIDgCn0d" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-articleship-whatsapp-channel">
+          <i class="fab fa-whatsapp"></i>
+          <span>Vacancy Alerts Channel</span>
         </a>
         <a href="https://www.mystudentclub.com/ca-articleship-opportunities" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-articleship-resources">
           <i class="fas fa-book-open"></i>
@@ -152,10 +161,14 @@
       </div>
 
       <!-- Semi Qualified Section -->
-      <div id="semi-qualified" class="tab-content" role="tabpanel" aria-labelledby="tab-semi-qualified">
-        <a href="https://whatsapp.com/channel/0029Vb8XM5GDzgT6YyWk4x0F" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-semiqualified-whatsapp">
+      <div id="semi-qualified" class="tab-content">
+        <a href="https://chat.whatsapp.com/FQSSe5uCeIlITf5brb2J6M" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-semiqualified-whatsapp">
           <i class="fab fa-whatsapp"></i>
           <span>Whatsapp Community</span>
+        </a>
+        <a href="https://whatsapp.com/channel/0029Vb9IK44FcowClqwgz92j" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-semiqualified-whatsapp-channel">
+          <i class="fab fa-whatsapp"></i>
+          <span>Vacancy Alerts Channel</span>
         </a>
         <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-semiqualified-linkedin-personal">
           <i class="fab fa-linkedin"></i>
@@ -170,6 +183,26 @@
           <span>Free Guidance Session</span>
         </a>
       </div>
+
+      <!-- Experienced CA Section (the links table calls this tab "experienced-CA") -->
+      <div id="experienced-CA" class="tab-content">
+        <a href="https://whatsapp.com/channel/0029Vb9MCbMKrWQxhiM1wz0W" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-experienced-whatsapp-channel">
+          <i class="fab fa-whatsapp"></i>
+          <span>Vacancy Alerts Channel</span>
+        </a>
+        <a href="https://www.mystudentclub.com/experienced-ca-jobs" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-experienced-jobs">
+          <i class="fas fa-briefcase"></i>
+          <span>Experienced CA Jobs</span>
+        </a>
+        <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-experienced-linkedin-personal">
+          <i class="fab fa-linkedin"></i>
+          <span>Personal LinkedIn</span>
+        </a>
+        <a href="https://www.linkedin.com/company/mystudentclub/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-experienced-linkedin-company">
+          <i class="fab fa-linkedin"></i>
+          <span>MSC LinkedIn Page</span>
+        </a>
+      </div>
     </main>
 
     <footer class="social-footer">
@@ -180,7 +213,7 @@
     <p class="site-line"><a href="/">mystudentclub.com</a></p>
   </div>
 
-  <script src="/links/render.js?v=20261110"></script>
+  <script src="/links/render.js?v=20261111"></script>
   <script>
     function switchTab(element, tabId) {
       // Deactivate all tab buttons
@@ -199,8 +232,24 @@
       if (target) target.classList.add('active');
     }
 
+    // Tells screen readers which button is a tab and which panel it opens (also for tabs the admin adds).
+    function markTabs() {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        const panelId = btn.id.replace(/^tab-/, '');
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-controls', panelId);
+        btn.setAttribute('aria-selected', btn.classList.contains('active') ? 'true' : 'false');
+        const panel = document.getElementById(panelId);
+        if (panel) {
+          panel.setAttribute('role', 'tabpanel');
+          panel.setAttribute('aria-labelledby', btn.id);
+        }
+      });
+    }
+
     // Lay out the built-in links at once, so the page never shows the plain list first.
     (function layOutBuiltInLinks() {
+      markTabs();
       const render = window.MSCLinksRender;
       if (!render) return;
       document.querySelectorAll('.tab-content').forEach(panel => {
@@ -247,7 +296,8 @@
           'industrial': document.getElementById('industrial'),
           'ca': document.getElementById('ca'),
           'articleship': document.getElementById('articleship'),
-          'semi-qualified': document.getElementById('semi-qualified')
+          'semi-qualified': document.getElementById('semi-qualified'),
+          'experienced-CA': document.getElementById('experienced-CA')
         };
 
         // Render category links for each tab
@@ -277,9 +327,6 @@
                 tabBtn = document.createElement('button');
                 tabBtn.className = 'tab-btn';
                 tabBtn.id = `tab-${cat}`;
-                tabBtn.setAttribute('role', 'tab');
-                tabBtn.setAttribute('aria-selected', 'false');
-                tabBtn.setAttribute('aria-controls', cat);
                 tabBtn.textContent = cat.charAt(0).toUpperCase() + cat.slice(1).replace(/-/g, ' ');
                 tabBtn.onclick = function () { switchTab(this, cat); };
                 tabsWrapper.appendChild(tabBtn);
@@ -289,8 +336,6 @@
                 tabContent = document.createElement('div');
                 tabContent.className = 'tab-content';
                 tabContent.id = cat;
-                tabContent.setAttribute('role', 'tabpanel');
-                tabContent.setAttribute('aria-labelledby', `tab-${cat}`);
                 linksContainer.appendChild(tabContent);
               }
 
@@ -298,6 +343,7 @@
             }
           });
         }
+        markTabs();
       } catch (err) {
         console.warn('Error hydrating live links:', err);
       } finally {

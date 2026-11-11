@@ -92,6 +92,12 @@ test('groups carry a clear head, and every link says what it opens and has a but
   assert.match(r.renderTab([industrial[2]]), /<span class="group-name">WhatsApp channel<\/span>/);
   assert.match(r.renderTab([industrial[1]]), /<span class="group-name">WhatsApp group<\/span>/);
   assert.match(r.renderTab([industrial[1]]), /class="link-groups single"/);
+
+  // Job-portal links (the Experienced CA tab) sit under "Jobs", not "Resources".
+  const jobs = r.renderTab([{ title: 'Experienced CA Jobs', url: 'https://www.mystudentclub.com/experienced-ca-jobs', icon: 'fas fa-briefcase', card_type: 'resources' }]);
+  assert.match(jobs, /<i class="fas fa-briefcase" aria-hidden="true"><\/i><\/span><span class="group-name">Jobs<\/span>/);
+  const mixed = r.renderTab([industrial[3], { title: 'Experienced CA Jobs', url: 'https://www.mystudentclub.com/experienced-ca-jobs', card_type: 'resources' }]);
+  assert.match(mixed, /<span class="group-name">Resources<\/span>/);
 });
 
 test('titles, addresses and icons from the table cannot inject markup or scripts', () => {
@@ -132,9 +138,9 @@ function openPage() {
   return window;
 }
 
-test('the page lays out its built-in links: a banner on the three programme tabs, headed groups on all four', () => {
+test('the page lays out its built-in links: a banner on the three programme tabs, headed groups on all five', () => {
   const { document } = openPage();
-  const expected = { industrial: 1, ca: 1, articleship: 1, 'semi-qualified': 0 };
+  const expected = { industrial: 1, ca: 1, articleship: 1, 'semi-qualified': 0, 'experienced-CA': 0 };
   for (const [id, banners] of Object.entries(expected)) {
     const panel = document.getElementById(id);
     assert.equal(panel.querySelectorAll('.program-banner').length, banners, id);
@@ -147,6 +153,13 @@ test('the page lays out its built-in links: a banner on the three programme tabs
   assert.equal(document.getElementById('link-industrial-program').className, 'program-banner');
   assert.equal(document.getElementById('link-articleship-resources').getAttribute('href'), 'https://www.mystudentclub.com/ca-articleship-opportunities');
   assert.equal(document.querySelectorAll('.tab-content.active').length, 1);
+  assert.deepEqual([...document.getElementById('experienced-CA').querySelectorAll('.group-name')].map((h) => h.textContent), ['WhatsApp channel', 'Jobs', 'Follow on LinkedIn']);
+  // Screen readers: every button is a tab tied to its panel.
+  for (const btn of document.querySelectorAll('.tab-btn')) {
+    assert.equal(btn.getAttribute('role'), 'tab');
+    assert.equal(document.getElementById(btn.getAttribute('aria-controls')).getAttribute('aria-labelledby'), btn.id);
+  }
+  assert.deepEqual([...document.querySelectorAll('.tab-btn[aria-selected="true"]')].map((b) => b.id), ['tab-industrial']);
 });
 
 test('switching tabs shows one panel and marks the chosen tab for screen readers', () => {

@@ -8,9 +8,9 @@ const root = path.resolve(__dirname, '..');
 const source = fs.readFileSync(path.join(root, 'links', 'tabs.js'), 'utf8');
 const page = fs.readFileSync(path.join(root, 'links', 'index.html'), 'utf8');
 
-// A page with the four static tabs; `extra` adds admin-created tabs.
+// A page with the five static tabs; `extra` adds admin-created tabs.
 function fakePage({ search = '', hash = '', extra = [] } = {}) {
-  const ids = new Set(['industrial', 'ca', 'articleship', 'semi-qualified', ...extra]);
+  const ids = new Set(['industrial', 'ca', 'articleship', 'semi-qualified', 'experienced-CA', ...extra]);
   const el = (id) => ({ id, scrollIntoView() { calls.scrolled += 1; } });
   const nodes = new Map();
   for (const id of ids) {
@@ -43,7 +43,7 @@ function load(pageState) {
 }
 
 test('?tab= names open the matching tab', () => {
-  const cases = { articleship: 'articleship', fresher: 'ca', semi: 'semi-qualified', industrial: 'industrial', 'Semi-Qualified': 'semi-qualified', it: 'industrial', 'ca-fresher': 'ca' };
+  const cases = { articleship: 'articleship', fresher: 'ca', semi: 'semi-qualified', industrial: 'industrial', 'Semi-Qualified': 'semi-qualified', it: 'industrial', 'ca-fresher': 'ca', experienced: 'experienced-CA', 'experienced-ca': 'experienced-CA', 'Experienced-CA': 'experienced-CA' };
   for (const [name, id] of Object.entries(cases)) {
     const p = fakePage({ search: `?tab=${encodeURIComponent(name)}` });
     load(p);
@@ -96,4 +96,22 @@ test('the links page loads tabs.js after switchTab and signals when live links a
 test('the Articleship "Free Resources" card no longer points at the missing /ca-articleship-resources page', () => {
   assert.ok(!page.includes('/ca-articleship-resources'));
   assert.match(page, /href="https:\/\/www\.mystudentclub\.com\/ca-articleship-opportunities"[^>]*id="link-articleship-resources"/);
+});
+
+test('every tab has its own WhatsApp vacancy channel, and Experienced CA has a tab', () => {
+  const channels = {
+    'link-industrial-whatsapp': '0029Vb8XM5GDzgT6YyWk4x0F',
+    'link-ca-whatsapp-channel': '0029Vb9LBiB7tkj30VLeNm1X',
+    'link-articleship-whatsapp-channel': '0029VbEUohh7tkjDhIDgCn0d',
+    'link-semiqualified-whatsapp-channel': '0029Vb9IK44FcowClqwgz92j',
+    'link-experienced-whatsapp-channel': '0029Vb9MCbMKrWQxhiM1wz0W',
+  };
+  for (const [id, code] of Object.entries(channels)) {
+    assert.match(page, new RegExp(`href="https://whatsapp\\.com/channel/${code}"[^>]*id="${id}"`), id);
+    assert.equal(page.split(`whatsapp.com/channel/${code}`).length - 1, 1, `${id}: one card per channel`);
+  }
+  assert.match(page, /id="tab-experienced-CA" onclick="switchTab\(this, 'experienced-CA'\)">Experienced CA</);
+  assert.match(page, /<div id="experienced-CA" class="tab-content">/);
+  // the live table fills this tab in place (otherwise the page would add a second "Experienced CA" tab)
+  assert.match(page, /'experienced-CA': document\.getElementById\('experienced-CA'\)/);
 });

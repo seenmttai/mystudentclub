@@ -138,16 +138,23 @@
     '</a>';
   }
 
+  function isJobsLink(link) {
+    return /fa-briefcase/.test(String(link.icon || '')) || /(^|[\/-])jobs?([\/?#-]|$)/i.test(String(link.url || ''));
+  }
+
+  /** A group's head: { name, icon }. A lone WhatsApp link is named exactly; job-portal links read "Jobs". */
   function groupHead(kind, links) {
-    if (kind === 'whatsapp' && links.length === 1) return describe(links[0].url);
-    return (GROUPS[kind] || GROUPS.default).head;
+    var group = GROUPS[kind] || GROUPS.default;
+    if (kind === 'whatsapp' && links.length === 1) return { name: describe(links[0].url), icon: group.icon };
+    if (kind === 'resources' && links.every(isJobsLink)) return { name: 'Jobs', icon: 'fas fa-briefcase' };
+    return { name: group.head, icon: group.icon };
   }
 
   function renderGroup(kind, links) {
-    var group = GROUPS[kind] || GROUPS.default;
+    var head = groupHead(kind, links);
     return '<section class="link-group ' + kind + '">' +
-      '<h2 class="group-head"><span class="group-icon"><i class="' + group.icon + '" aria-hidden="true"></i></span>' +
-        '<span class="group-name">' + esc(groupHead(kind, links)) + '</span></h2>' +
+      '<h2 class="group-head"><span class="group-icon"><i class="' + head.icon + '" aria-hidden="true"></i></span>' +
+        '<span class="group-name">' + esc(head.name) + '</span></h2>' +
       '<div class="group-links">' + links.map(function (l) { return renderRow(l, kind); }).join('') + '</div>' +
     '</section>';
   }
