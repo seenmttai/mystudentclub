@@ -1,65 +1,362 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connect with My Student Club | CA Community & Resources</title>
-  <meta name="description" content="Join the My Student Club community on WhatsApp, Telegram, YouTube, and LinkedIn for the latest CA jobs, industrial training, and resources.">
-  <meta property="og:title" content="Connect with My Student Club">
-  <meta property="og:description" content="Official links for My Student Club community and social media channels.">
-  <meta property="og:image" content="/assets/logo.png">
+  <title>Connect with My Student Club | Official Links & Communities</title>
+  <meta name="description" content="Join 50,000+ CA students on WhatsApp, Telegram, YouTube, and LinkedIn for verified jobs, articleships, and resources.">
+  <!-- Open Graph / WhatsApp / Facebook / LinkedIn -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.mystudentclub.com/links/">
+  <meta property="og:title" content="Connect with My Student Club | Official Links & Communities">
+  <meta property="og:description" content="Join 50,000+ CA students on WhatsApp, Telegram, YouTube, and LinkedIn for verified jobs, articleships, and resources.">
+  <meta property="og:image" content="https://www.mystudentclub.com/assets/og-image.png">
+  <meta property="og:image:secure_url" content="https://www.mystudentclub.com/assets/og-image.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Connect with My Student Club | Official Links & Communities">
+  <meta property="og:site_name" content="My Student Club">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Connect with My Student Club | Official Links & Communities">
+  <meta name="twitter:description" content="Join 50,000+ CA students on WhatsApp, Telegram, YouTube, and LinkedIn for verified jobs, articleships, and resources.">
+  <meta name="twitter:image" content="https://www.mystudentclub.com/assets/og-image.png">
   <meta name="robots" content="index, follow">
-  
+
   <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261111">
+  <!-- Standard Favicon -->
+  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+  
+  <!-- Fallback Shortcut Icon -->
+  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
   <div class="container">
     <header class="profile">
-      <svg class="avatar" style="padding:14px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750.00 886.43" role="img" aria-label="My Student Club"><g transform="translate(0.00 0.00) scale(1.00000) translate(-255.00 -95.57)"><path fill="#4A8BFF" d="M255 982L255 392.57A95 95 0 0 1 413.57 321.97L733.99 610.48A8 8 0 0 1 733.99 622.37L648.74 699.13A28 28 0 0 1 611.26 699.13L453.06 556.68A24 24 0 0 0 413 574.52L413 830C413 890 312.06 963.46 255 982Z"/><path fill="#FFFFFF" d="M1005 982L1005 392.57A95 95 0 0 0 846.43 321.97L648.56 500.14A8 8 0 0 0 648.56 512.03L747.19 600.84A8 8 0 0 0 757.9 600.84L806.94 556.68A24 24 0 0 1 847 574.52L847 830C847 890 947.94 963.46 1005 982Z"/><circle fill="#4A8BFF" cx="350.00" cy="185.57" r="90.0"/><circle fill="#FFFFFF" cx="910.00" cy="185.57" r="90.0"/></g></svg>
-      <h1>My Student Club</h1>
+      <a class="brand" href="/" aria-label="My Student Club home">
+        <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750.00 886.43" role="img" aria-label="My Student Club"><g transform="translate(0.00 0.00) scale(1.00000) translate(-255.00 -95.57)"><path fill="#0057FF" d="M255 982L255 392.57A95 95 0 0 1 413.57 321.97L733.99 610.48A8 8 0 0 1 733.99 622.37L648.74 699.13A28 28 0 0 1 611.26 699.13L453.06 556.68A24 24 0 0 0 413 574.52L413 830C413 890 312.06 963.46 255 982Z"/><path fill="#06152F" d="M1005 982L1005 392.57A95 95 0 0 0 846.43 321.97L648.56 500.14A8 8 0 0 0 648.56 512.03L747.19 600.84A8 8 0 0 0 757.9 600.84L806.94 556.68A24 24 0 0 1 847 574.52L847 830C847 890 947.94 963.46 1005 982Z"/><circle fill="#0057FF" cx="350.00" cy="185.57" r="90.0"/><circle fill="#06152F" cx="910.00" cy="185.57" r="90.0"/></g></svg>
+      </a>
+      <h1>My Student <span>Club</span></h1>
       <p>Helping Chartered Accountants & Students grow through community and resources.</p>
     </header>
 
+    <nav class="tabs-wrapper" aria-label="Show links for">
+      <p class="tabs-caption">Show links for</p>
+      <div class="tabs-container" role="tablist">
+        <button class="tab-btn active" id="tab-industrial" onclick="switchTab(this, 'industrial')">Industrial Training</button>
+        <button class="tab-btn" id="tab-ca" onclick="switchTab(this, 'ca')">CA Fresher</button>
+        <button class="tab-btn" id="tab-articleship" onclick="switchTab(this, 'articleship')">Articleship</button>
+        <button class="tab-btn" id="tab-semi-qualified" onclick="switchTab(this, 'semi-qualified')">Semi Qualified CA</button>
+        <button class="tab-btn" id="tab-experienced-CA" onclick="switchTab(this, 'experienced-CA')">Experienced CA</button>
+      </div>
+    </nav>
+
+    <!-- Each tab holds plain links (what shows with scripts off, and when the live list can't be
+         fetched). /links/render.js rebuilds them as a programme banner plus headed groups. -->
     <main class="links-container">
-      <a href="https://chat.whatsapp.com/F2Z3HbWNnAaBtKP8hpCOco" target="_blank" rel="noopener noreferrer" class="link-card whatsapp">
-        <i class="fab fa-whatsapp"></i>
-        <span>MSCIT Whatsapp Community</span>
-      </a>
+      <!-- Industrial Training Section -->
+      <div id="industrial" class="tab-content active">
+        <a href="https://www.mystudentclub.com/ca-industrial-training-program" target="_blank" rel="noopener noreferrer" class="link-card program" id="link-industrial-program">
+          <i class="fas fa-graduation-cap"></i>
+          <span>MSC Industrial Training Program Details</span>
+        </a>
+        <a href="https://whatsapp.com/channel/0029Vb8XM5GDzgT6YyWk4x0F" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-industrial-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+          <span>Vacancy Alerts Channel</span>
+        </a>
+        <a href="https://chat.whatsapp.com/EraSLyThpGLEoquF8Inmkr" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-industrial-whatsapp-aspirants">
+          <i class="fab fa-whatsapp"></i>
+          <span>Industrial Training Aspirants Whatsapp Group</span>
+        </a>
+        <a href="https://www.mystudentclub.com/ca-industrial-training-resources" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-industrial-resources">
+          <i class="fas fa-book-open"></i>
+          <span>Free Resources</span>
+        </a>
+        <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-industrial-linkedin-personal">
+          <i class="fab fa-linkedin"></i>
+          <span>Personal LinkedIn</span>
+        </a>
+        <a href="https://www.linkedin.com/company/mystudentclub/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-industrial-linkedin-company">
+          <i class="fab fa-linkedin"></i>
+          <span>MSC LinkedIn Page</span>
+        </a>
+        <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="link-card youtube" id="link-industrial-youtube">
+          <i class="fab fa-youtube"></i>
+          <span>Free Guidance Session</span>
+        </a>
+      </div>
 
-      <a href="https://t.me/my_student_club_ca" target="_blank" rel="noopener noreferrer" class="link-card telegram">
-        <i class="fab fa-telegram"></i>
-        <span>MSCIT Telegram Channel</span>
-      </a>
+      <!-- CA Section -->
+      <div id="ca" class="tab-content">
+        <a href="https://www.mystudentclub.com/msc-ca-fresher-program/" target="_blank" rel="noopener noreferrer" class="link-card program" id="link-ca-program">
+          <i class="fas fa-graduation-cap"></i>
+          <span>Program Details</span>
+        </a>
+        <a href="https://chat.whatsapp.com/DsFD7rCA7Wn6s7kyemDCr2" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-ca-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+          <span>Whatsapp Community</span>
+        </a>
+        <a href="https://whatsapp.com/channel/0029Vb9LBiB7tkj30VLeNm1X" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-ca-whatsapp-channel">
+          <i class="fab fa-whatsapp"></i>
+          <span>Vacancy Alerts Channel</span>
+        </a>
+        <a href="https://www.mystudentclub.com/ca-fresher-training-resources" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-ca-resources">
+          <i class="fas fa-book-open"></i>
+          <span>Free Resources</span>
+        </a>
+        <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-ca-linkedin-personal">
+          <i class="fab fa-linkedin"></i>
+          <span>Personal LinkedIn</span>
+        </a>
+        <a href="https://www.linkedin.com/company/mystudentclub/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-ca-linkedin-company">
+          <i class="fab fa-linkedin"></i>
+          <span>MSC LinkedIn Page</span>
+        </a>
+        <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="link-card youtube" id="link-ca-youtube">
+          <i class="fab fa-youtube"></i>
+          <span>Free Guidance Session</span>
+        </a>
+      </div>
 
-      <a href="https://t.me/+1dgmnWTw1z4xMWI1" target="_blank" rel="noopener noreferrer" class="link-card telegram">
-        <i class="fab fa-telegram-plane"></i>
-        <span>MSCIT Telegram Discussion</span>
-      </a>
+      <!-- Articleship Section -->
+      <div id="articleship" class="tab-content">
+        <a href="https://www.mystudentclub.com/articleship-program/" target="_blank" rel="noopener noreferrer" class="link-card program" id="link-articleship-program">
+          <i class="fas fa-graduation-cap"></i>
+          <span>Program Details</span>
+        </a>
+        <a href="https://chat.whatsapp.com/FMQvEUsMZw2EN2t2h2LnRZ" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-articleship-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+          <span>Whatsapp Community</span>
+        </a>
+        <a href="https://whatsapp.com/channel/0029VbEUohh7tkjDhIDgCn0d" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-articleship-whatsapp-channel">
+          <i class="fab fa-whatsapp"></i>
+          <span>Vacancy Alerts Channel</span>
+        </a>
+        <a href="https://www.mystudentclub.com/ca-articleship-opportunities" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-articleship-resources">
+          <i class="fas fa-book-open"></i>
+          <span>Free Resources</span>
+        </a>
+        <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-articleship-linkedin-personal">
+          <i class="fab fa-linkedin"></i>
+          <span>Personal LinkedIn</span>
+        </a>
+        <a href="https://www.linkedin.com/company/mystudentclub/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-articleship-linkedin-company">
+          <i class="fab fa-linkedin"></i>
+          <span>MSC LinkedIn Page</span>
+        </a>
+        <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="link-card youtube" id="link-articleship-youtube">
+          <i class="fab fa-youtube"></i>
+          <span>Free Guidance Session</span>
+        </a>
+      </div>
 
-      <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="link-card youtube">
-        <i class="fab fa-youtube"></i>
-        <span>Official Youtube Channel</span>
-      </a>
+      <!-- Semi Qualified Section -->
+      <div id="semi-qualified" class="tab-content">
+        <a href="https://chat.whatsapp.com/FQSSe5uCeIlITf5brb2J6M" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-semiqualified-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+          <span>Whatsapp Community</span>
+        </a>
+        <a href="https://whatsapp.com/channel/0029Vb9IK44FcowClqwgz92j" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-semiqualified-whatsapp-channel">
+          <i class="fab fa-whatsapp"></i>
+          <span>Vacancy Alerts Channel</span>
+        </a>
+        <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-semiqualified-linkedin-personal">
+          <i class="fab fa-linkedin"></i>
+          <span>Personal LinkedIn</span>
+        </a>
+        <a href="https://www.linkedin.com/company/mystudentclub/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-semiqualified-linkedin-company">
+          <i class="fab fa-linkedin"></i>
+          <span>MSC LinkedIn Page</span>
+        </a>
+        <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="link-card youtube" id="link-semiqualified-youtube">
+          <i class="fab fa-youtube"></i>
+          <span>Free Guidance Session</span>
+        </a>
+      </div>
 
-      <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin">
-        <i class="fab fa-linkedin"></i>
-        <span>Connect on LinkedIn</span>
-      </a>
-      
-      <a href="/" class="link-card">
-        <i class="fas fa-globe"></i>
-        <span>Visit Our Website</span>
-      </a>
+      <!-- Experienced CA Section (the links table calls this tab "experienced-CA") -->
+      <div id="experienced-CA" class="tab-content">
+        <a href="https://whatsapp.com/channel/0029Vb9MCbMKrWQxhiM1wz0W" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-experienced-whatsapp-channel">
+          <i class="fab fa-whatsapp"></i>
+          <span>Vacancy Alerts Channel</span>
+        </a>
+        <a href="https://www.mystudentclub.com/experienced-ca-jobs" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-experienced-jobs">
+          <i class="fas fa-briefcase"></i>
+          <span>Experienced CA Jobs</span>
+        </a>
+        <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-experienced-linkedin-personal">
+          <i class="fab fa-linkedin"></i>
+          <span>Personal LinkedIn</span>
+        </a>
+        <a href="https://www.linkedin.com/company/mystudentclub/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-experienced-linkedin-company">
+          <i class="fab fa-linkedin"></i>
+          <span>MSC LinkedIn Page</span>
+        </a>
+      </div>
     </main>
 
     <footer class="social-footer">
-      <a href="https://www.youtube.com/@capadambhansali" target="_blank" class="social-icon"><i class="fab fa-youtube"></i></a>
-      <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" class="social-icon"><i class="fab fa-linkedin"></i></a>
-      <a href="mailto:contact@mystudentclub.com" class="social-icon"><i class="fas fa-envelope"></i></a>
+      <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="social-icon" id="footer-youtube" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+      <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="social-icon" id="footer-linkedin" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+      <a href="mailto:contact@mystudentclub.com" class="social-icon" id="footer-email" aria-label="Email"><i class="fas fa-envelope"></i></a>
     </footer>
+    <p class="site-line"><a href="/">mystudentclub.com</a></p>
   </div>
+
+  <script src="/links/render.js?v=20261111"></script>
+  <script>
+    function switchTab(element, tabId) {
+      // Deactivate all tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-selected', 'false');
+      });
+      // Activate clicked button
+      element.classList.add('active');
+      element.setAttribute('aria-selected', 'true');
+
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      // Show target tab content
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
+    }
+
+    // Tells screen readers which button is a tab and which panel it opens (also for tabs the admin adds).
+    function markTabs() {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        const panelId = btn.id.replace(/^tab-/, '');
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-controls', panelId);
+        btn.setAttribute('aria-selected', btn.classList.contains('active') ? 'true' : 'false');
+        const panel = document.getElementById(panelId);
+        if (panel) {
+          panel.setAttribute('role', 'tabpanel');
+          panel.setAttribute('aria-labelledby', btn.id);
+        }
+      });
+    }
+
+    // Lay out the built-in links at once, so the page never shows the plain list first.
+    (function layOutBuiltInLinks() {
+      markTabs();
+      const render = window.MSCLinksRender;
+      if (!render) return;
+      document.querySelectorAll('.tab-content').forEach(panel => {
+        const rows = render.rowsFromAnchors(panel);
+        if (rows.length) panel.innerHTML = render.renderTab(rows);
+      });
+    })();
+
+    async function loadLiveLinks() {
+      const SUPABASE_URL = 'https://auth.mystudentclub.com';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+
+      try {
+        const render = window.MSCLinksRender;
+        if (!render || !window.supabase || typeof window.supabase.createClient !== 'function') {
+          return;
+        }
+
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const { data, error } = await supabaseClient
+          .from('links')
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true })
+          .order('created_at', { ascending: true });
+
+        if (error) {
+          console.warn('Could not fetch links from Supabase (using static fallback):', error.message);
+          return;
+        }
+
+        if (!data || data.length === 0) return;
+
+        // Group links by category
+        const categorized = {};
+        data.forEach(item => {
+          const cat = item.category || 'other';
+          if (!categorized[cat]) categorized[cat] = [];
+          categorized[cat].push(item);
+        });
+
+        // Predefined tabs mapping
+        const tabContainers = {
+          'industrial': document.getElementById('industrial'),
+          'ca': document.getElementById('ca'),
+          'articleship': document.getElementById('articleship'),
+          'semi-qualified': document.getElementById('semi-qualified'),
+          'experienced-CA': document.getElementById('experienced-CA')
+        };
+
+        // Render category links for each tab
+        Object.keys(tabContainers).forEach(cat => {
+          const container = tabContainers[cat];
+          if (container && categorized[cat] && categorized[cat].length > 0) {
+            container.innerHTML = render.renderTab(categorized[cat]);
+          }
+        });
+
+        // Render social footer links if present
+        if (categorized['social'] && categorized['social'].length > 0) {
+          const footer = document.querySelector('.social-footer');
+          if (footer) footer.innerHTML = render.renderSocial(categorized['social']);
+        }
+
+        // Handle any additional categories dynamically created by admin
+        const tabsWrapper = document.querySelector('.tabs-container');
+        const linksContainer = document.querySelector('.links-container');
+        if (tabsWrapper && linksContainer) {
+          Object.keys(categorized).forEach(cat => {
+            if (!tabContainers[cat] && cat !== 'social') {
+              let tabBtn = document.getElementById(`tab-${cat}`);
+              let tabContent = document.getElementById(cat);
+
+              if (!tabBtn) {
+                tabBtn = document.createElement('button');
+                tabBtn.className = 'tab-btn';
+                tabBtn.id = `tab-${cat}`;
+                tabBtn.textContent = cat.charAt(0).toUpperCase() + cat.slice(1).replace(/-/g, ' ');
+                tabBtn.onclick = function () { switchTab(this, cat); };
+                tabsWrapper.appendChild(tabBtn);
+              }
+
+              if (!tabContent) {
+                tabContent = document.createElement('div');
+                tabContent.className = 'tab-content';
+                tabContent.id = cat;
+                linksContainer.appendChild(tabContent);
+              }
+
+              tabContent.innerHTML = render.renderTab(categorized[cat]);
+            }
+          });
+        }
+        markTabs();
+      } catch (err) {
+        console.warn('Error hydrating live links:', err);
+      } finally {
+        // tabs.js opens a ?tab= / #hash tab that only exists once the admin's links are rendered.
+        document.dispatchEvent(new CustomEvent('msc:links-hydrated'));
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadLiveLinks);
+    } else {
+      loadLiveLinks();
+    }
+  </script>
+  <script src="/links/tabs.js"></script>
 </body>
+
 </html>
