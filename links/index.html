@@ -29,9 +29,9 @@
   <meta name="robots" content="index, follow">
 
   <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261111">
   <!-- Standard Favicon -->
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   
@@ -43,21 +43,26 @@
 <body>
   <div class="container">
     <header class="profile">
-      <svg class="avatar header-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750.00 886.43" role="img" aria-label="My Student Club"><g transform="translate(0.00 0.00) scale(1.00000) translate(-255.00 -95.57)"><path fill="#4A8BFF" d="M255 982L255 392.57A95 95 0 0 1 413.57 321.97L733.99 610.48A8 8 0 0 1 733.99 622.37L648.74 699.13A28 28 0 0 1 611.26 699.13L453.06 556.68A24 24 0 0 0 413 574.52L413 830C413 890 312.06 963.46 255 982Z"/><path fill="#FFFFFF" d="M1005 982L1005 392.57A95 95 0 0 0 846.43 321.97L648.56 500.14A8 8 0 0 0 648.56 512.03L747.19 600.84A8 8 0 0 0 757.9 600.84L806.94 556.68A24 24 0 0 1 847 574.52L847 830C847 890 947.94 963.46 1005 982Z"/><circle fill="#4A8BFF" cx="350.00" cy="185.57" r="90.0"/><circle fill="#FFFFFF" cx="910.00" cy="185.57" r="90.0"/></g></svg>
-      <h1>My Student Club</h1>
+      <a class="brand" href="/" aria-label="My Student Club home">
+        <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750.00 886.43" role="img" aria-label="My Student Club"><g transform="translate(0.00 0.00) scale(1.00000) translate(-255.00 -95.57)"><path fill="#0057FF" d="M255 982L255 392.57A95 95 0 0 1 413.57 321.97L733.99 610.48A8 8 0 0 1 733.99 622.37L648.74 699.13A28 28 0 0 1 611.26 699.13L453.06 556.68A24 24 0 0 0 413 574.52L413 830C413 890 312.06 963.46 255 982Z"/><path fill="#06152F" d="M1005 982L1005 392.57A95 95 0 0 0 846.43 321.97L648.56 500.14A8 8 0 0 0 648.56 512.03L747.19 600.84A8 8 0 0 0 757.9 600.84L806.94 556.68A24 24 0 0 1 847 574.52L847 830C847 890 947.94 963.46 1005 982Z"/><circle fill="#0057FF" cx="350.00" cy="185.57" r="90.0"/><circle fill="#06152F" cx="910.00" cy="185.57" r="90.0"/></g></svg>
+      </a>
+      <h1>My Student <span>Club</span></h1>
       <p>Helping Chartered Accountants & Students grow through community and resources.</p>
     </header>
 
-    <div class="tabs-wrapper">
-      <div class="tabs-container">
+    <nav class="tabs-wrapper" aria-label="Show links for">
+      <p class="tabs-caption">Show links for</p>
+      <div class="tabs-container" role="tablist">
         <button class="tab-btn active" id="tab-industrial" onclick="switchTab(this, 'industrial')">Industrial Training</button>
         <button class="tab-btn" id="tab-ca" onclick="switchTab(this, 'ca')">CA Fresher</button>
         <button class="tab-btn" id="tab-articleship" onclick="switchTab(this, 'articleship')">Articleship</button>
         <button class="tab-btn" id="tab-semi-qualified" onclick="switchTab(this, 'semi-qualified')">Semi Qualified CA</button>
         <button class="tab-btn" id="tab-experienced-CA" onclick="switchTab(this, 'experienced-CA')">Experienced CA</button>
       </div>
-    </div>
+    </nav>
 
+    <!-- Each tab holds plain links (what shows with scripts off, and when the live list can't be
+         fetched). /links/render.js rebuilds them as a programme banner plus headed groups. -->
     <main class="links-container">
       <!-- Industrial Training Section -->
       <div id="industrial" class="tab-content active">
@@ -201,19 +206,25 @@
     </main>
 
     <footer class="social-footer">
-      <a href="https://www.youtube.com/@capadambhansali" target="_blank" class="social-icon" id="footer-youtube"><i class="fab fa-youtube"></i></a>
-      <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" class="social-icon" id="footer-linkedin"><i class="fab fa-linkedin"></i></a>
-      <a href="mailto:contact@mystudentclub.com" class="social-icon" id="footer-email"><i class="fas fa-envelope"></i></a>
+      <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="social-icon" id="footer-youtube" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+      <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="social-icon" id="footer-linkedin" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+      <a href="mailto:contact@mystudentclub.com" class="social-icon" id="footer-email" aria-label="Email"><i class="fas fa-envelope"></i></a>
     </footer>
+    <p class="site-line"><a href="/">mystudentclub.com</a></p>
   </div>
 
+  <script src="/links/render.js?v=20261111"></script>
   <script>
     function switchTab(element, tabId) {
       // Deactivate all tab buttons
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-selected', 'false');
+      });
       // Activate clicked button
       element.classList.add('active');
-      
+      element.setAttribute('aria-selected', 'true');
+
       // Hide all tab contents
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       // Show target tab content
@@ -221,22 +232,39 @@
       if (target) target.classList.add('active');
     }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+    // Tells screen readers which button is a tab and which panel it opens (also for tabs the admin adds).
+    function markTabs() {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        const panelId = btn.id.replace(/^tab-/, '');
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-controls', panelId);
+        btn.setAttribute('aria-selected', btn.classList.contains('active') ? 'true' : 'false');
+        const panel = document.getElementById(panelId);
+        if (panel) {
+          panel.setAttribute('role', 'tabpanel');
+          panel.setAttribute('aria-labelledby', btn.id);
+        }
+      });
     }
+
+    // Lay out the built-in links at once, so the page never shows the plain list first.
+    (function layOutBuiltInLinks() {
+      markTabs();
+      const render = window.MSCLinksRender;
+      if (!render) return;
+      document.querySelectorAll('.tab-content').forEach(panel => {
+        const rows = render.rowsFromAnchors(panel);
+        if (rows.length) panel.innerHTML = render.renderTab(rows);
+      });
+    })();
 
     async function loadLiveLinks() {
       const SUPABASE_URL = 'https://auth.mystudentclub.com';
       const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 
       try {
-        if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+        const render = window.MSCLinksRender;
+        if (!render || !window.supabase || typeof window.supabase.createClient !== 'function') {
           return;
         }
 
@@ -276,30 +304,14 @@
         Object.keys(tabContainers).forEach(cat => {
           const container = tabContainers[cat];
           if (container && categorized[cat] && categorized[cat].length > 0) {
-            container.innerHTML = categorized[cat].map(link => {
-              const cardClass = (link.card_type && link.card_type !== 'default' && link.card_type !== 'social')
-                ? `link-card ${link.card_type}`
-                : 'link-card';
-              return `
-                <a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer" class="${cardClass}">
-                  <i class="${escapeHtml(link.icon || 'fas fa-link')}"></i>
-                  <span>${escapeHtml(link.title)}</span>
-                </a>
-              `;
-            }).join('');
+            container.innerHTML = render.renderTab(categorized[cat]);
           }
         });
 
         // Render social footer links if present
         if (categorized['social'] && categorized['social'].length > 0) {
           const footer = document.querySelector('.social-footer');
-          if (footer) {
-            footer.innerHTML = categorized['social'].map(item => `
-              <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="social-icon" title="${escapeHtml(item.title)}">
-                <i class="${escapeHtml(item.icon || 'fas fa-link')}"></i>
-              </a>
-            `).join('');
-          }
+          if (footer) footer.innerHTML = render.renderSocial(categorized['social']);
         }
 
         // Handle any additional categories dynamically created by admin
@@ -327,20 +339,11 @@
                 linksContainer.appendChild(tabContent);
               }
 
-              tabContent.innerHTML = categorized[cat].map(link => {
-                const cardClass = (link.card_type && link.card_type !== 'default' && link.card_type !== 'social')
-                  ? `link-card ${link.card_type}`
-                  : 'link-card';
-                return `
-                  <a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer" class="${cardClass}">
-                    <i class="${escapeHtml(link.icon || 'fas fa-link')}"></i>
-                    <span>${escapeHtml(link.title)}</span>
-                  </a>
-                `;
-              }).join('');
+              tabContent.innerHTML = render.renderTab(categorized[cat]);
             }
           });
         }
+        markTabs();
       } catch (err) {
         console.warn('Error hydrating live links:', err);
       } finally {
