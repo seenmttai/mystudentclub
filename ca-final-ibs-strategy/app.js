@@ -321,5 +321,5 @@
     el.scrollIntoView({ block: 'start' });
     root.style.scrollBehavior = prev;
   }
-  Promise.all([indexesReady, siteReady]).then(function () { requestAnimationFrame(landOnHash); });
+  Promise.all([indexesReady, siteReady]).then(function () { setTimeout(landOnHash, 60); });
 })();
