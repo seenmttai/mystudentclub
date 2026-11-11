@@ -6,6 +6,18 @@ import {
   showToast,
 } from "./ai-helper.js";
 import { unlockJobDetails, getCachedUnlockedJob } from "./browser-guard.js";
+import {
+  portalFor,
+  extraSelectColumns,
+  applyJobFilters,
+  describeJobFilters,
+  withoutFilterValue,
+  renderJobFilters,
+  syncJobFilters,
+  formatPayRange,
+  formatDeadline,
+} from "./job-filters.js";
+import { assessmentGate } from "./apply-assessment.js";
 
 // config
 const supabaseUrl = "https://auth.mystudentclub.com";
@@ -39,6 +51,17 @@ const JOB_TYPES_NOTIF = [
   { value: "fresher", label: "Fresher" },
   { value: "articleship", label: "Articleship" },
 ];
+
+// Type-wide ("All India") topic name for each job type, exactly as formatTopicForDisplay
+// expects them. "Industrial-all" is capitalized where the other three aren't — that's an
+// existing inconsistency in how these topics were named, not a typo.
+function getTypeWideTopicForJobType(jobType) {
+  if (jobType === "industrial") return "Industrial-all";
+  if (jobType === "fresher") return "fresher-all";
+  if (jobType === "semi") return "semi-all";
+  if (jobType === "articleship") return "articleship-all";
+  return null;
+}
 const LOCATIONS_NOTIF = [
   "mumbai",
   "bangalore",
@@ -128,6 +151,8 @@ let cachedSortedCategories = null;
 let currentFcmToken = null;
 let firebaseMessaging;
 let firmReviewsMap = new Map();
+// Articleship exclusives pinned on top of page 1; later pages skip them so they don't show twice.
+let pinnedExclusiveIds = new Set();
 
 const state = {
   keywords: [],
@@ -136,7 +161,71 @@ const state = {
   salary: "",
   sortBy: "popular",
   applicationStatus: "all",
+  // Structured filters from scripts/job-filters.js (same module as www), keyed by filter key.
+  extra: {},
 };
+
+// This site has no Firm/Company Type dropdowns of its own, so the module adds them.
+const JOB_FILTER_OPTIONS = { withTypeFilters: true };
+
+// False once the database answers that the filter columns are missing (migration
+// 202611060003 on master not run yet): the sheet then shows only the older filters.
+let jobFilterColumnsAvailable = true;
+let extraBeforeSheet = null;
+
+function currentJobPortal() {
+  return portalFor(currentTable, false);
+}
+
+function isAnnualPayTable() {
+  return currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs";
+}
+
+// PostgREST answers a missing column with 42703 / PGRST204 and "column <table>.<name> does not exist".
+const FILTER_COLUMN_NAMES = ["pay_min", "pay_max", "apply_methods", "deadline", "company_key", "is_pan_india", "work_mode",
+  "immediate_joining", "joining_month", "notice_days", "attempt_from", "attempt_to", "duration_min_months", "duration_max_months",
+  "exam_criteria", "employer_type", "inter_requirement", "itt_oc_required", "transfer_accepted", "firm_size", "exposure_areas",
+  "client_types", "outstation_audits", "work_types", "shift", "pqe_required", "tools", "working_days", "yoe"];
+
+function isMissingFilterColumnError(error) {
+  if (!error) return false;
+  const message = String(error.message || "");
+  const missing = error.code === "42703" || error.code === "PGRST204" || /does not exist|could not find .* column/i.test(message);
+  if (!missing) return false;
+  const named = message.match(/'([a-z_]+)' column/i) || message.match(/column\s+(?:[^\n]*\.)?"?([a-z_]+)"?\s+does not exist/i);
+  return Boolean(named && FILTER_COLUMN_NAMES.includes(named[1]));
+}
+
+function renderStructuredFilters() {
+  const sheetBody = document.querySelector("#filterSheet .sheet-body");
+  if (!sheetBody) return;
+  let el = document.getElementById("jobFiltersMobile");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "jobFiltersMobile";
+    el.className = "jf-container";
+    sheetBody.appendChild(el);
+  }
+  const portal = currentJobPortal();
+  if (!jobFilterColumnsAvailable || !portal) {
+    el.innerHTML = "";
+    el.style.display = "none";
+    return;
+  }
+  el.style.display = "";
+  renderJobFilters(el, portal, {
+    idPrefix: "jfm",
+    payKind: isAnnualPayTable() ? "annual" : "monthly",
+    withTypeFilters: true,
+    classes: { group: "filter-group-new", label: "filter-label", select: "filter-select", text: "filter-input" },
+    getValues: () => state.extra,
+    // Applied with the rest of the sheet on "Apply".
+    onChange: (next) => {
+      state.extra = next;
+      syncJobFilters(el, state.extra);
+    },
+  });
+}
 
 const dom = {};
 
@@ -254,6 +343,27 @@ function renderPortalChips() {
 
 
 // Helper to return public columns (excluding protected Application ID)
+// Locations are stored with one name per city (migration 202611060004: Bangalore = Bengaluru, Gurgaon = Gurugram...).
+// A student typing the other name still finds them, and older rows that kept the other name still match.
+const CITY_ALIASES = [
+    ['bengaluru', 'bangalore'], ['gurugram', 'gurgaon'], ['mumbai', 'bombay'], ['kolkata', 'calcutta'],
+    ['chennai', 'madras'], ['vadodara', 'baroda'], ['kochi', 'cochin'], ['mysuru', 'mysore'],
+    ['mangaluru', 'mangalore'], ['thiruvananthapuram', 'trivandrum'], ['delhi', 'new delhi'],
+];
+
+function expandLocationTerms(locations) {
+    const terms = [];
+    const add = (t) => { if (t && !terms.some(x => x.toLowerCase() === t.toLowerCase())) terms.push(t); };
+    for (const loc of locations) {
+        add(loc);
+        const low = String(loc).trim().toLowerCase();
+        for (const group of CITY_ALIASES) {
+            if (group.includes(low)) group.forEach(add);
+        }
+    }
+    return terms;
+}
+
 function getPublicJobSelectColumns(tableName) {
   let columns =
     'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain"';
@@ -264,9 +374,22 @@ function getPublicJobSelectColumns(tableName) {
   } else if (tableName === "Industrial Training Job Portal") {
     columns += ', "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive, "Company Type", "Industry Type"';
   } else if (tableName === "Articleship Jobs") {
-    columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+    columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
   }
   return columns;
+}
+
+// If is_exclusive isn't in the database yet (before its migration runs), drop it from a select.
+function withoutMissingExclusive(cols, error) {
+  return error && /is_exclusive/.test(error.message || "") && cols.includes(", is_exclusive")
+    ? cols.replace(", is_exclusive", "")
+    : null;
+}
+
+// Articleship exclusives are free to apply (ICAI Regulation 47: nothing may be charged to an articled
+// assistant for an engagement). On the other portals exclusives stay for enrolled members.
+function isExclusiveLocked(job) {
+  return !!(job && job.is_exclusive) && currentTable !== "Articleship Jobs" && !isEnrolledSync("Industrial Training Job Portal");
 }
 
 //  TRENDING SECTION
@@ -274,12 +397,15 @@ async function fetchTrendingJobs() {
   if (!dom.trendingSection || !dom.trendingScroll) return;
   dom.trendingScroll.innerHTML = `<div class="trending-placeholder">${[0, 1, 2].map(() => '<div class="trending-card-skeleton"></div>').join("")}</div>`;
   try {
-    const selectCols = getPublicJobSelectColumns(currentTable);
-    const { data, error } = await supabaseClient
+    const trendingQuery = (cols) => supabaseClient
       .from(currentTable)
-      .select(selectCols)
+      .select(cols)
       .order("application_count", { ascending: false, nullsFirst: false })
       .limit(8);
+    const selectCols = getPublicJobSelectColumns(currentTable);
+    let { data, error } = await trendingQuery(selectCols);
+    const trendingFallback = withoutMissingExclusive(selectCols, error);
+    if (trendingFallback) ({ data, error } = await trendingQuery(trendingFallback));
     if (error) throw error;
     const jobs = (data || []).filter((j) => (j.application_count || 0) > 0);
     if (jobs.length === 0) {
@@ -296,6 +422,107 @@ async function fetchTrendingJobs() {
   } catch (_) {
     dom.trendingSection.style.display = "none";
   }
+}
+
+// Exclusive articleship vacancies that match the current filters and are under 15 days old.
+async function fetchPinnedExclusives(buildQuery, selectCols) {
+  try {
+    const cutoff = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString();
+    const { data, error } = await buildQuery(selectCols).eq("is_exclusive", true).gte("Created_At", cutoff);
+    // buildQuery already orders them by the sort the student picked.
+    return error || !Array.isArray(data) ? [] : data;
+  } catch (_) {
+    return [];
+  }
+}
+
+function hasReviewRating(info) {
+  return Boolean(info && info.count > 0 && typeof info.avgOverall === "number" && !Number.isNaN(info.avgOverall));
+}
+
+// One short line of what students reported about a firm, built from review counts (no review text).
+// A fact shows only when at least 60% of the answers agree.
+function buildReviewFactsHtml(info) {
+  if (!info || !(info.count > 0)) return "";
+  const facts = [];
+  if (info.stipendMedian) facts.push(`Stipend ~₹${Number(info.stipendMedian).toLocaleString("en-IN")}`);
+  if (info.stipendAnswers > 0) {
+    if (info.stipendOnTime / info.stipendAnswers >= 0.6) facts.push("Stipend paid on time");
+    else if (info.stipendDelayed / info.stipendAnswers >= 0.6) facts.push("Stipend delays reported");
+  }
+  if (info.leaveAnswers > 0) {
+    if (info.leaveEasy / info.leaveAnswers >= 0.6) facts.push("Leave easy to get");
+    else if (info.leaveDifficult / info.leaveAnswers >= 0.6) facts.push("Leave hard to get");
+  }
+  if (facts.length === 0) return "";
+  const who = `${info.count} student review${info.count > 1 ? "s" : ""}`;
+  const safe = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  return `<p class="jc-review-facts"><i class="fa-solid fa-comments" aria-hidden="true"></i> <span>From ${safe(who)}: ${facts.map(safe).join(" · ")}</span></p>`;
+}
+
+function toReviewInfo(name, row) {
+  if (!row) return { firmName: name, avgOverall: null, count: 0 };
+  const num = (v) => (v === null || v === undefined || v === "" ? null : Number(v));
+  return {
+    firmName: row.firm_name || name,
+    avgOverall: num(row.avg_overall),
+    count: Number(row.review_count) || 0,
+    stipendMedian: num(row.stipend_median),
+    stipendAnswers: Number(row.stipend_answers) || 0,
+    stipendOnTime: Number(row.stipend_on_time) || 0,
+    stipendDelayed: Number(row.stipend_delayed) || 0,
+    leaveAnswers: Number(row.leave_answers) || 0,
+    leaveEasy: Number(row.leave_easy) || 0,
+    leaveDifficult: Number(row.leave_difficult) || 0,
+  };
+}
+
+// Review summaries for the companies on this page, matching spellings of the same firm
+// ("K K & Co." = "K K and Company"; S R Batliboi = EY). Updates the cards already shown.
+const reviewSummaryDone = new Set();
+// False after get_firm_review_summaries fails once (e.g. before its migration).
+let reviewSummaryRpcAvailable = true;
+async function fetchReviewSummariesFor(jobs) {
+  const names = Array.from(new Set((jobs || []).map((j) => (j.Company || "").trim())
+    .filter((n) => n && !reviewSummaryDone.has(n.toLowerCase()))));
+  if (names.length === 0 || !reviewSummaryRpcAvailable) return;
+  try {
+    const { data, error } = await supabaseClient.rpc("get_firm_review_summaries", { p_names: names });
+    if (error || !Array.isArray(data)) {
+      reviewSummaryRpcAvailable = false; // before the function exists: keep the exact-name ratings
+      return;
+    }
+    const byName = new Map(data.map((r) => [String(r.name || "").trim().toLowerCase(), r]));
+    names.forEach((n) => {
+      const key = n.toLowerCase();
+      reviewSummaryDone.add(key);
+      if (byName.has(key)) firmReviewsMap.set(key, toReviewInfo(n, byName.get(key)));
+    });
+    refreshCardReviews();
+  } catch (_) { /* ratings are optional */ }
+}
+
+function refreshCardReviews() {
+  if (currentTable !== "Articleship Jobs" || !dom.jobsList) return;
+  dom.jobsList.querySelectorAll(".job-card-new[data-company]").forEach((card) => {
+    const info = firmReviewsMap.get(card.dataset.company);
+    if (!info) return;
+    const chips = card.querySelector(".jc-chips");
+    if (chips && hasReviewRating(info)) {
+      // The first render may already show a chip from the exact-name ratings: update it to the matched summary.
+      let a = card.querySelector(".jc-chip-rating");
+      if (!a) {
+        a = document.createElement("a");
+        a.className = "jc-chip jc-chip-rating";
+        a.style.cssText = "background: #fef9c3; color: #854d0e; border-color: #fde047; font-weight: 700; text-decoration: none;";
+        a.addEventListener("click", (e) => e.stopPropagation());
+        const exclusive = chips.querySelector(".jc-chip:not(.jc-chip-domain)");
+        if (exclusive && /Exclusive/.test(exclusive.textContent)) exclusive.after(a); else chips.prepend(a);
+      }
+      a.href = `/articleship-firm-review.html?firm=${encodeURIComponent(info.firmName || "")}`;
+      a.innerHTML = `<i class="fa-solid fa-star" style="color: #ca8a04; margin-right: 4px;"></i>${info.avgOverall.toFixed(1)} (${info.count})`;
+    }
+  });
 }
 
 async function fetchFirmReviews() {
@@ -378,12 +605,12 @@ function renderJobCard(job) {
   const primaryDomain = job['Primary Domain'] || job.Category || '';
   const secondaryDomain = (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') ? job['Secondary Domain'] : null;
   const companyType = job['Company Type'];
-  const firmType = job['Firm Type'];
+  const firmType = job['Firm Type'] || (job.firm_size && job.firm_size !== 'Other' ? job.firm_size : '');
   const industryType = job['Industry Type'];
   const postedText = postedDate ? `Posted ${postedDate}` : "";
 
   const isExclusive = !!job.is_exclusive;
-  const isLocked = isExclusive && !isEnrolledSync("Industrial Training Job Portal");
+  const isLocked = isExclusiveLocked(job);
 
   const companyKey = (job.Company || "").trim().toLowerCase();
   const ratingInfo = currentTable === "Articleship Jobs" ? firmReviewsMap.get(companyKey) : null;
@@ -391,6 +618,7 @@ function renderJobCard(job) {
   const card = document.createElement("article");
   card.className = "job-card-new" + (isExclusive ? " job-card-exclusive" : "");
   card.dataset.jobId = job.id;
+  card.dataset.company = companyKey;
   card.innerHTML = `
         <div class="jc-top">
             <div class="jc-avatar" style="background:${colors.bg};color:${colors.fg}">${initials}</div>
@@ -405,12 +633,14 @@ function renderJobCard(job) {
             </button>
         </div>
         <div class="jc-chips">
+            ${formatDeadline(job) ? `<span class="jc-chip jc-chip-deadline">${formatDeadline(job)}</span>` : ""}
             ${isExclusive ? `<span class="jc-chip" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border-color: #d97706; font-weight: 700;">⭐ Exclusive</span>` : ""}
-            ${ratingInfo && ratingInfo.count > 5 ? `<a href="/articleship-firm-review.html?firm=${encodeURIComponent(job.Company || '')}" class="jc-chip" style="background: #fef9c3; color: #854d0e; border-color: #fde047; font-weight: 700; text-decoration: none;" onclick="event.stopPropagation();"><i class="fa-solid fa-star" style="color: #ca8a04; margin-right: 4px;"></i>${ratingInfo.avgOverall.toFixed(1)} (${ratingInfo.count})</a>` : ""}
+            ${hasReviewRating(ratingInfo) ? `<a href="/articleship-firm-review.html?firm=${encodeURIComponent(ratingInfo.firmName || job.Company || '')}" class="jc-chip jc-chip-rating" style="background: #fef9c3; color: #854d0e; border-color: #fde047; font-weight: 700; text-decoration: none;" onclick="event.stopPropagation();"><i class="fa-solid fa-star" style="color: #ca8a04; margin-right: 4px;"></i>${ratingInfo.avgOverall.toFixed(1)} (${ratingInfo.count})</a>` : ""}
             ${primaryDomain ? `<span class="jc-chip jc-chip-domain">${primaryDomain}</span>` : ""}
             ${secondaryDomain ? `<span class="jc-chip jc-chip-domain" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">${secondaryDomain}</span>` : ""}
             ${companyType ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right: 4px; color: #94a3b8;"></i>${companyType}</span>` : ""}
             ${firmType ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right: 4px; color: #94a3b8;"></i>${firmType}</span>` : ""}
+            ${job.transfer_accepted === true ? `<span class="jc-chip"><i class="fa-solid fa-right-left" style="margin-right: 4px; color: #94a3b8;"></i>Transfer cases welcome</span>` : ""}
             ${industryType ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right: 4px; color: #94a3b8;"></i>${industryType}</span>` : ""}
             ${job.Experience ? `<span class="jc-chip">${job.Experience}</span>` : ""}
         </div>
@@ -430,6 +660,9 @@ function renderJobCard(job) {
                     }
                     const period = isStipend ? '<span class="jc-salary-period">/month</span>' : "";
                     return `<div class="jc-salary">${range}${period}</div>`;
+                  } else if (formatPayRange(job, isAnnualPayTable())) {
+                    // Pay read from the vacancy text (pay_min / pay_max).
+                    return `<div class="jc-salary">${formatPayRange(job, isAnnualPayTable())}</div>`;
                   } else {
                     return "";
                   }
@@ -464,8 +697,10 @@ async function fetchJobs() {
   if (page > 0 && sentinelSpinner) sentinelSpinner.style.display = "block";
 
   try {
-    const selectCols = getPublicJobSelectColumns(currentTable);
-    let query = supabaseClient.from(currentTable).select(selectCols);
+    let selectCols = getPublicJobSelectColumns(currentTable);
+    if (jobFilterColumnsAvailable) selectCols += extraSelectColumns(currentTable);
+    const buildQuery = (cols, useFilterColumns) => {
+    let query = supabaseClient.from(currentTable).select(cols);
 
     if (state.keywords.length > 0) {
       const ors = state.keywords.map((k) => {
@@ -476,7 +711,7 @@ async function fetchJobs() {
     }
     if (state.locations.length > 0) {
       query = query.or(
-        state.locations.map((l) => `Location.ilike."%${l}%"`).join(","),
+        expandLocationTerms(state.locations).map((l) => `Location.ilike."%${l}%"`).join(","),
       );
     }
     if (state.categories.length > 0) {
@@ -484,14 +719,18 @@ async function fetchJobs() {
         state.categories.map((c) => `Category.ilike."%${c}%"`).join(","),
       );
     }
+    // pay_min / pay_max hold the stipend (per month) or salary (per year) read from the vacancy,
+    // so a range matches every job whose pay range overlaps it.
+    const payLow = useFilterColumns ? "pay_max" : "Salary";
+    const payHigh = useFilterColumns ? "pay_min" : "Salary";
     if (state.salary) {
       if (state.salary.endsWith("+")) {
         const min = parseInt(state.salary);
-        if (!isNaN(min)) query = query.gte("Salary", min);
+        if (!isNaN(min)) query = query.gte(payLow, min);
       } else if (state.salary.includes("-")) {
         const [min, max] = state.salary.split("-").map(Number);
         if (!isNaN(min) && !isNaN(max))
-          query = query.gte("Salary", min).lte("Salary", max);
+          query = query.gte(payLow, min).lte(payHigh, max);
       }
     }
     if (currentTable === "Fresher Jobs") {
@@ -507,35 +746,74 @@ async function fetchJobs() {
     ) {
       query = query.not("id", "in", `(${Array.from(appliedJobIds).join(",")})`);
     }
+    if (useFilterColumns) {
+      query = applyJobFilters(query, currentJobPortal(), state.extra, new Date(), JOB_FILTER_OPTIONS);
+    }
 
     let sortCol = "Created_At",
       isAsc = false;
     if (state.sortBy === "salary_asc") {
-      sortCol = "Salary";
+      sortCol = useFilterColumns ? "pay_min" : "Salary";
       isAsc = true;
     } else if (state.sortBy === "salary_desc") {
-      sortCol = "Salary";
+      sortCol = useFilterColumns ? "pay_max" : "Salary";
       isAsc = false;
     }
     query = query
       .order(sortCol, { ascending: isAsc, nullsFirst: false })
       .order("id", { ascending: false });
     query = query.range(page * limit, (page + 1) * limit - 1);
+    return query;
+    };
 
-    let { data, error } = await query;
+    let { data, error } = await buildQuery(selectCols, jobFilterColumnsAvailable);
+    // Failsafes for columns the database does not have yet (filter columns, is_exclusive).
+    // Either can come first, so retry until neither applies.
+    for (let retry = 0; retry < 2 && error; retry++) {
+      if (jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
+        console.warn("Structured filter columns are not available yet; using the basic filters.", error.message);
+        jobFilterColumnsAvailable = false;
+        state.extra = {};
+        renderStructuredFilters();
+        renderActiveFilters();
+        selectCols = selectCols.replace(extraSelectColumns(currentTable), "");
+      } else {
+        const fallbackCols = withoutMissingExclusive(selectCols, error);
+        if (!fallbackCols) break;
+        selectCols = fallbackCols;
+      }
+      ({ data, error } = await buildQuery(selectCols, jobFilterColumnsAvailable));
+    }
     if (!error && data && state.sortBy === "popular") {
       data.sort(
         (a, b) => (b.application_count || 0) - (a.application_count || 0),
       );
     }
     if (error) throw error;
+    // Rows the database returned for this page, before pinning: decides paging.
+    const dbPageLength = Array.isArray(data) ? data.length : 0;
+
+    // Articleship: exclusive vacancies sit on top of page 1; later pages skip them.
+    if (data) {
+      if (page === 0) pinnedExclusiveIds = new Set();
+      if (page === 0 && currentTable === "Articleship Jobs" && selectCols.includes("is_exclusive")) {
+        const pinned = await fetchPinnedExclusives((cols) => buildQuery(cols, jobFilterColumnsAvailable), selectCols);
+        if (pinned.length > 0) {
+          pinned.forEach((job) => pinnedExclusiveIds.add(job.id));
+          data = [...pinned, ...data.filter((job) => !pinnedExclusiveIds.has(job.id))];
+        }
+      } else if (page > 0 && pinnedExclusiveIds.size > 0) {
+        data = data.filter((job) => !pinnedExclusiveIds.has(job.id));
+      }
+    }
 
     if (data && data.length > 0) {
       const frag = document.createDocumentFragment();
       data.forEach((job) => frag.appendChild(renderJobCard(job)));
       if (dom.jobsList) dom.jobsList.appendChild(frag);
       page++;
-      hasMoreData = data.length === limit;
+      hasMoreData = dbPageLength === limit;
+      if (currentTable === "Articleship Jobs") fetchReviewSummariesFor(data);
     } else {
       hasMoreData = false;
       if (page === 0 && dom.jobsList) {
@@ -649,6 +927,11 @@ function renderActiveFilters() {
     ...(state.salary
       ? [{ text: `Stipend: ${state.salary}`, type: "salary", val: "" }]
       : []),
+    ...(jobFilterColumnsAvailable
+      ? describeJobFilters(currentJobPortal(), state.extra, JOB_FILTER_OPTIONS).map((p) => ({
+          text: p.label, type: `extra:${p.key}`, val: Array.isArray(state.extra[p.key]) ? p.value : "",
+        }))
+      : []),
   ];
   if (pills.length === 0) {
     dom.activeFiltersBar.style.display = "none";
@@ -660,7 +943,7 @@ function renderActiveFilters() {
       (p) => `
         <span class="active-filter-tag">
             ${p.text}
-            <button class="filter-tag-remove" data-type="${p.type}" data-val="${p.val}">×</button>
+            <button class="filter-tag-remove" data-type="${p.type}" data-val="${String(p.val).replace(/"/g, "&quot;")}">×</button>
         </span>`,
     )
     .join("");
@@ -668,6 +951,7 @@ function renderActiveFilters() {
     btn.addEventListener("click", () => {
       const { type, val } = btn.dataset;
       if (type === "salary") state.salary = "";
+      else if (type.startsWith("extra:")) state.extra = withoutFilterValue(state.extra, type.slice(6), val || undefined);
       else state[type] = state[type].filter((i) => i !== val);
       renderActiveFilters();
       resetAndFetch();
@@ -684,12 +968,20 @@ function showFilterSheet() {
   renderLocationPills();
   renderStatusToggles();
   setupLocationDropdown();
+  extraBeforeSheet = { ...state.extra };
+  syncJobFilters(document.getElementById("jobFiltersMobile"), state.extra);
 }
 
 function hideFilterSheet() {
   const overlay = dom.filterSheetOverlay || document.getElementById("filterSheetOverlay");
   if (overlay) overlay.classList.remove("show");
   document.body.style.overflow = "";
+  // Closed without "Apply": throw away the structured filter changes made in the sheet.
+  if (extraBeforeSheet) {
+    state.extra = extraBeforeSheet;
+    extraBeforeSheet = null;
+    syncJobFilters(document.getElementById("jobFiltersMobile"), state.extra);
+  }
 }
 
 function renderLocationPills() {
@@ -793,7 +1085,8 @@ function formatSalaryTriggerLabel(val, isFresher, isStipend, maxVal) {
 function populateSalaryFilter() {
   if (!dom.salaryFilter) return;
 
-  const isFresher = currentTable === "Fresher Jobs";
+  // Fresher and Semi Qualified pay is stored per year (Semi Qualified median about ₹6 LPA).
+  const isFresher = currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs";
   const maxVal = isFresher ? 3000000 : 100000;
   const stepVal = isFresher ? 50000 : 1000;
   const isStipend = currentTable === "Industrial Training Job Portal" || currentTable === "Articleship Jobs";
@@ -1037,7 +1330,7 @@ function showExclusiveLockedModal(job) {
 //  JOB DETAIL BOTTOM SHEET
 
 function showJobDetail(job) {
-  if (job.is_exclusive && !isEnrolledSync("Industrial Training Job Portal")) {
+  if (isExclusiveLocked(job)) {
     showExclusiveLockedModal(job);
     return;
   }
@@ -1121,10 +1414,10 @@ function showJobDetail(job) {
             </div>`;
   }
 
-  // Truncate and mask description for unverified/unlocked state
+  // Full description; contact details masked until the application is revealed
   const rawDesc = isApplicationUnlocked
     ? effectiveDescription
-    : getTruncatedDescription(effectiveDescription, 260);
+    : getMaskedDescription(effectiveDescription);
 
   // Application details section depending on lock / login state
   let applicationDetailsHtml = "";
@@ -1171,11 +1464,12 @@ function showJobDetail(job) {
                     <div class="jd-hero-info">
                         <div class="jd-hero-company">
                             ${job.Company || ""}
-                            ${ratingInfo && ratingInfo.count > 5 ? `<span style="display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;color:#ca8a04;background:#fef9c3;padding:2px 7px;border-radius:6px;margin-left:6px;border:1px solid #fde047;vertical-align:middle;"><i class="fa-solid fa-star" style="font-size:10px;"></i>${ratingInfo.avgOverall.toFixed(1)}</span>` : ""}
+                            ${hasReviewRating(ratingInfo) ? `<span style="display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;color:#ca8a04;background:#fef9c3;padding:2px 7px;border-radius:6px;margin-left:6px;border:1px solid #fde047;vertical-align:middle;"><i class="fa-solid fa-star" style="font-size:10px;"></i>${ratingInfo.avgOverall.toFixed(1)}</span>` : ""}
                         </div>
                         <div class="jd-hero-location">${job.Location || ""}</div>
                     </div>
                 </div>
+                ${currentTable === "Articleship Jobs" ? buildReviewFactsHtml(ratingInfo) : ""}
                 <div class="jd-meta-pills">
                     ${job['Secondary Domain'] ? `<span class="jc-chip jc-chip-domain" style="background-color:#e0f2fe;color:#0369a1;border-color:#bae6fd;">${job['Secondary Domain']}</span>` : ""}
                     ${showCompanyTypePill ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right:4px;color:#94a3b8;"></i>${job['Company Type']}</span>` : ""}
@@ -1211,7 +1505,7 @@ function showJobDetail(job) {
                 </button>
                 ${currentTable === "Articleship Jobs" ? (
                   ratingInfo && ratingInfo.count > 0 ? `
-                    <a href="/articleship-firm-review.html?firm=${encodeURIComponent(job.Company || '')}" class="jd-action-link" style="color: #2563eb;">
+                    <a href="/articleship-firm-review.html?firm=${encodeURIComponent(ratingInfo.firmName || job.Company || '')}" class="jd-action-link" style="color: #2563eb;">
                         <i class="fas fa-comments"></i> Read Reviews (${ratingInfo.count})
                     </a>` : `
                     <a href="/submit-review.html?firm=${encodeURIComponent(job.Company || '')}&location=${encodeURIComponent(job.Location ? job.Location.split(',')[0].trim() : '')}" class="jd-action-link">
@@ -1276,14 +1570,13 @@ function showJobDetail(job) {
 
       const targetApplyLink = getApplicationLink(unlocked.applicationId, job.Company);
 
-      if (autoRedirect) {
-        await recordApplication(unlockedJob, btnElement);
-      }
+      // false: the vacancy's mandatory assessment was not finished, so nothing opens.
+      const proceed = autoRedirect ? await recordApplication(unlockedJob, btnElement) : true;
 
       // Re-render bottom sheet in unlocked state
       showJobDetail(unlockedJob);
 
-      if (autoRedirect && targetApplyLink && targetApplyLink !== "#") {
+      if (proceed && autoRedirect && targetApplyLink && targetApplyLink !== "#") {
         if (targetApplyLink.startsWith("mailto:")) {
           openMailtoLink(targetApplyLink);
         } else {
@@ -1327,8 +1620,7 @@ function showJobDetail(job) {
       document
         .getElementById("jdSimpleApplyBtn")
         ?.addEventListener("click", async (e) => {
-          await recordApplication(unlockedJob, e.currentTarget);
-          openMailtoLink(applyLink);
+          if (await recordApplication(unlockedJob, e.currentTarget)) openMailtoLink(applyLink);
         });
       document
         .getElementById("jdAiApplyBtn")
@@ -1340,8 +1632,7 @@ function showJobDetail(job) {
         .getElementById("jdExternalApplyBtn")
         ?.addEventListener("click", async (e) => {
           e.preventDefault();
-          await recordApplication(unlockedJob, e.currentTarget);
-          window.open(applyLink, "_blank");
+          if (await recordApplication(unlockedJob, e.currentTarget)) window.open(applyLink, "_blank");
         });
     }
   }
@@ -1447,31 +1738,14 @@ function generateApplicationLinks(applicationId) {
     .join("");
 }
 
-// Truncate job description and mask potential contact details for unverified users
-function getTruncatedDescription(desc, maxLength = 260) {
+// Full job description with contact details masked, for users who haven't revealed the application yet.
+// The whole text is shown (no length cut); only emails, links and phone numbers are hidden.
+function getMaskedDescription(desc) {
   if (!desc) return "No description available.";
-  let clean = String(desc).trim();
-
-  // Mask emails that might have been pasted into the description
-  clean = clean.replace(
-    /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi,
-    "[email protected]",
-  );
-  // Mask URLs
-  clean = clean.replace(/https?:\/\/[^\s\)]+/gi, "[link protected]");
-  // Mask phone numbers
-  clean = clean.replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, "[phone protected]");
-
-  if (clean.length <= maxLength) {
-    return clean;
-  }
-
-  let cut = clean.slice(0, maxLength);
-  const lastSpace = cut.lastIndexOf(" ");
-  if (lastSpace > maxLength * 0.6) {
-    cut = cut.slice(0, lastSpace);
-  }
-  return cut + "...";
+  return String(desc).trim()
+    .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, "[email protected]")
+    .replace(/https?:\/\/[^\s\)]+/gi, "[link protected]")
+    .replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, "[phone protected]");
 }
 
 function renderMarkdown(text) {
@@ -1537,8 +1811,14 @@ function shareJob(job, btnElement) {
   }
 }
 
+// -> false when the vacancy's mandatory assessment (hire.mystudentclub.com) was not finished: nothing is recorded and
+// the caller opens nothing. Hire answers at once for the many vacancies without one.
 async function recordApplication(job, btnElement) {
   if (!currentSession) return true;
+  if (!(await assessmentGate({ table: currentTable, job, supabaseClient, session: currentSession }))) {
+    showToast("Your application is not sent yet. Complete the assessment to apply.", "info");
+    return false;
+  }
   const origHtml = btnElement.innerHTML;
   btnElement.innerHTML =
     '<div class="loader-spinner" style="width:18px;height:18px;border-width:2px;display:inline-block"></div>';
@@ -1610,12 +1890,10 @@ async function handleAiApplyClick(
       simpleMailtoLink.split("subject=")[1]?.split("&")[0] ||
       `Application for ${job.Category} (Ref: My Student Club)`;
     const aiMailto = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(emailBody)}`;
-    await recordApplication(job, btnElement);
-    openMailtoLink(aiMailto);
+    if (await recordApplication(job, btnElement)) openMailtoLink(aiMailto);
   } catch (_) {
     showToast("Server busy, reverting to simple apply", "error");
-    await recordApplication(job, btnElement);
-    setTimeout(() => openMailtoLink(simpleMailtoLink), 3000);
+    if (await recordApplication(job, btnElement)) setTimeout(() => openMailtoLink(simpleMailtoLink), 3000);
   } finally {
     if (btnText) btnText.textContent = origText;
     if (spinner) spinner.style.display = "none";
@@ -1631,10 +1909,19 @@ async function loadBanners() {
   const bannerSection = document.querySelector(".banner-section");
   if (!carousel || !bannerSection) return;
   try {
-    const { data, error } = await supabaseClient
+    // web_only banners (paid programs) never show inside the phone apps.
+    let { data, error } = await supabaseClient
       .from("Banners")
-      .select("Image, Hyperlink, Type, visible_to_unenrolled");
+      .select("Image, Hyperlink, Type, visible_to_unenrolled, web_only")
+      .order("id", { ascending: true });
+    if (error && /web_only/.test(error.message || "")) {
+      ({ data, error } = await supabaseClient
+        .from("Banners")
+        .select("Image, Hyperlink, Type, visible_to_unenrolled")
+        .order("id", { ascending: true }));
+    }
     if (error) throw error;
+    data = (data || []).filter((b) => b.web_only !== true);
     const currentType =
       currentTable === "Semi Qualified Jobs"
         ? "Semi-Qualified"
@@ -1979,6 +2266,9 @@ async function fetchAndCacheProfileData() {
           "subscribedTopics",
           JSON.stringify(profileObj.notification_subscriptions),
         );
+                if (currentFcmToken && !(window.flutter_app && window.flutter_app.isReady)) {
+                    mscReconcileTopics(currentFcmToken, profileObj.notification_subscriptions, false).catch(() => {});
+                }
         updateNotificationBadge();
       }
       return profileObj;
@@ -2006,6 +2296,40 @@ async function saveJobPreference(preference) {
           updated_at: new Date().toISOString(),
         });
     } catch (_) {}
+  }
+}
+
+// Auto-subscribe a student to their matching job-category topic ("{Type}-all") the
+// first time they set a job preference, so batched job notifications actually reach
+// them without requiring them to find the manual subscribe UI first.
+//
+// "First time" check: call this ONLY from the onboarding segment modal's submit
+// handler (see its one call site below). That modal is only ever shown when
+// `!profile?.looking_for` (see initializePage), i.e. the student has never completed
+// career intake before — so every save reachable from there is a first-time save,
+// never a later edit. As a second, independent safeguard against duplicate
+// subscribes (e.g. a user who already subscribed manually, or a modal shown twice),
+// this also skips subscribing if the topic is already subscribed.
+// The modal's submit button click is a real user gesture, so it's a legitimate
+// moment to ask for browser notification permission here (same call the manual
+// "Enable Notifications" button makes) rather than silently giving up when
+// permission hasn't been granted yet. If the student denies it (or this page is
+// loaded inside the Flutter WebView, where permission is the native app's job, not
+// the browser's), this just skips subscribing — it never blocks or fails the
+// job-preference save itself, which has already completed by the time this runs.
+async function autoSubscribeToJobCategoryTopic(preference) {
+  const jobType = String(preference || "").split("_")[0];
+  const topic = getTypeWideTopicForJobType(jobType);
+  if (!topic || getSubscribedTopics().includes(topic)) return;
+  try {
+    if (!window.flutter_app.isReady && Notification.permission === "default") {
+      const permission = await Notification.requestPermission();
+      updatePermissionStatusUI();
+      if (permission === "granted") await initializeFCM();
+    }
+    await subscribeToTopic(topic);
+  } catch (err) {
+    console.warn("Auto-subscribe to job category topic failed:", err);
   }
 }
 
@@ -2183,6 +2507,72 @@ function updateSpecificTopicAreaVisibility() {
       : "block";
 }
 
+// ---- Per-browser topic sync ------------------------------------------------------------------------------------
+// Firebase subscribes a device token, not a person. The header list ('subscribedTopics') is the account's list: it is
+// saved on the profile and shared by every browser and the app. So this browser also remembers which topics ITS OWN
+// token is really subscribed to ('mscDeviceTopics'), and reconciles the two: a topic turned off on another device is
+// unsubscribed here too, and one turned on elsewhere is subscribed. Without this, a browser could keep receiving a
+// topic its header no longer shows, with no way to turn it off.
+const MSC_TOPIC_URL = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription';
+const MSC_DEVICE_TOPICS_KEY = 'mscDeviceTopics';
+const MSC_TYPE_WIDE_TOPICS = { industrial: 'Industrial-all', fresher: 'fresher-all', semi: 'semi-all', articleship: 'articleship-all' };
+// Every job topic a browser can hold: used once per browser token to clear subscriptions made before this sync existed.
+const MSC_ALL_JOB_TOPICS = ['all']
+    .concat(JOB_TYPES_NOTIF.map(type => MSC_TYPE_WIDE_TOPICS[type.value]).filter(Boolean))
+    .concat(LOCATIONS_NOTIF.flatMap(location => JOB_TYPES_NOTIF.map(type => `${location}-${type.value}`)));
+
+function mscReadDeviceTopics() {
+    try { return JSON.parse(localStorage.getItem(MSC_DEVICE_TOPICS_KEY) || 'null'); } catch (_) { return null; }
+}
+function mscWriteDeviceTopics(token, topics) {
+    try { localStorage.setItem(MSC_DEVICE_TOPICS_KEY, JSON.stringify({ token, topics })); } catch (_) {}
+}
+async function mscFcmTopicCall(token, topic, action) {
+    const response = await fetch(MSC_TOPIC_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, topic, action }),
+    });
+    if (!response.ok) throw new Error(await response.text());
+}
+// One subscribe/unsubscribe for this browser's token; keeps this browser's own list in step. Throws on failure.
+async function mscTopicRequest(token, topic, action) {
+    await mscFcmTopicCall(token, topic, action);
+    const saved = mscReadDeviceTopics();
+    let topics = saved && saved.token === token ? saved.topics : [];
+    topics = action === 'subscribe' ? Array.from(new Set(topics.concat(topic))) : topics.filter(t => t !== topic);
+    mscWriteDeviceTopics(token, topics);
+}
+// Make this browser's token hold exactly the account's topics ([wanted]). resubscribeAll repeats every subscribe
+// (the old once-a-day refresh). Returns how many calls failed; failures are retried on the next page load.
+async function mscReconcileTopics(token, wanted, resubscribeAll) {
+    wanted = Array.isArray(wanted) ? wanted : [];
+    const saved = mscReadDeviceTopics();
+    let failures = 0;
+    const run = async (list, action, call) => {
+        for (let i = 0; i < list.length; i += 8) {
+            await Promise.all(list.slice(i, i + 8).map(topic => call(topic, action).catch(() => { failures++; })));
+        }
+    };
+    // The browser got a new token: the old one keeps its topics until told otherwise, so release them.
+    if (saved && saved.token && saved.token !== token && Array.isArray(saved.topics) && saved.topics.length) {
+        await run(saved.topics, 'unsubscribe', (topic, action) => mscFcmTopicCall(saved.token, topic, action));
+        failures = 0; // an expired old token cannot be released; never retry that forever
+    }
+    const known = saved && saved.token === token && Array.isArray(saved.topics) ? saved.topics : null;
+    // First time with this token: clear every job topic it might hold from before; afterwards only what it added.
+    const toRemove = (known === null ? MSC_ALL_JOB_TOPICS : known).filter(topic => !wanted.includes(topic));
+    const toAdd = resubscribeAll || known === null ? wanted : wanted.filter(topic => !known.includes(topic));
+    if (known === null) mscWriteDeviceTopics(token, []);
+    const call = (topic, action) => mscTopicRequest(token, topic, action);
+    await run(toRemove, 'unsubscribe', call);
+    await run(toAdd, 'subscribe', call);
+    // A first clean-up that did not fully succeed runs again next time.
+    if (known === null && failures > 0) { try { localStorage.removeItem(MSC_DEVICE_TOPICS_KEY); } catch (_) {} }
+    return failures;
+}
+// ---- end per-browser topic sync --------------------------------------------------------------------------------
+
 async function manageTopicSubscription(topic, action) {
   if (!currentFcmToken) {
     if (window.flutter_app.fcmToken)
@@ -2203,15 +2593,7 @@ async function manageTopicSubscription(topic, action) {
     return false;
   }
   try {
-    const response = await fetch(
-      "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: currentFcmToken, topic, action }),
-      },
-    );
-    if (!response.ok) throw new Error(await response.text());
+    await mscTopicRequest(currentFcmToken, topic, action);
     let topics = getSubscribedTopics();
     if (action === "subscribe" && !topics.includes(topic)) topics.push(topic);
     else if (action === "unsubscribe")
@@ -2472,14 +2854,13 @@ function shouldSync() {
 }
 
 async function syncNotificationTopics() {
-  currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
-  if (!currentFcmToken || !shouldSync()) return;
-  await Promise.all(
-    getSubscribedTopics().map((topic) =>
-      manageTopicSubscription(topic, "subscribe"),
-    ),
-  );
-  localStorage.setItem("notificationSyncTimestamp", Date.now().toString());
+    // Inside the MSC app the app manages its own topics natively.
+    if (window.flutter_app && window.flutter_app.isReady) return;
+    currentFcmToken = currentFcmToken || (window.flutter_app && window.flutter_app.fcmToken);
+    if (!currentFcmToken) return;
+    const daily = shouldSync();
+    await mscReconcileTopics(currentFcmToken, getSubscribedTopics(), daily);
+    if (daily) localStorage.setItem('notificationSyncTimestamp', Date.now().toString());
 }
 
 
@@ -2519,16 +2900,22 @@ function checkAndOpenSharedJob() {
 async function fetchSharedJob(jobId, targetTable) {
   const table = targetTable || currentTable;
   try {
+    let sharedCols = getPublicJobSelectColumns(table);
     let { data, error } = await supabaseClient
       .from(table)
-      .select(getPublicJobSelectColumns(table))
+      .select(sharedCols)
       .eq("id", jobId)
       .single();
+    const sharedFallback = withoutMissingExclusive(sharedCols, error);
+    if (sharedFallback) {
+      sharedCols = sharedFallback;
+      ({ data, error } = await supabaseClient.from(table).select(sharedCols).eq("id", jobId).single());
+    }
 
     if (error && !isNaN(jobId)) {
       const retry = await supabaseClient
         .from(table)
-        .select(getPublicJobSelectColumns(table))
+        .select(sharedCols)
         .eq("id", Number(jobId))
         .single();
       if (!retry.error && retry.data) {
@@ -2739,6 +3126,7 @@ function initOnboardingSegmentForm() {
       const mappedPref = prefMapping[lookingFor];
       if (mappedPref) {
         await saveJobPreference(mappedPref);
+        autoSubscribeToJobCategoryTopic(mappedPref);
         const targetPortalId = PREF_TO_PORTAL[mappedPref];
         if (targetPortalId && targetPortalId !== currentPortalId)
           setTimeout(() => switchPortal(targetPortalId), 800);
@@ -2854,6 +3242,12 @@ function setupEventListeners() {
   document.getElementById("applyFiltersBtn")?.addEventListener("click", () => {
     if (dom.sortBySelect) state.sortBy = dom.sortBySelect.value;
     if (dom.salaryFilter) state.salary = dom.salaryFilter.value;
+    document.querySelectorAll("#jobFiltersMobile .jf-text").forEach((input) => {
+      const text = input.value.trim();
+      if (text) state.extra = { ...state.extra, [input.dataset.key]: text };
+      else state.extra = withoutFilterValue(state.extra, input.dataset.key);
+    });
+    extraBeforeSheet = null;
     renderActiveFilters();
     resetAndFetch();
     hideFilterSheet();
@@ -2865,6 +3259,9 @@ function setupEventListeners() {
     state.salary = "";
     state.sortBy = "popular";
     state.applicationStatus = "all";
+    state.extra = {};
+    extraBeforeSheet = {};
+    syncJobFilters(document.getElementById("jobFiltersMobile"), state.extra);
     if (dom.sortBySelect) dom.sortBySelect.value = "popular";
     if (dom.salaryFilter) dom.salaryFilter.value = "";
     if (dom.locationInput) dom.locationInput.value = "";
@@ -2958,8 +3355,7 @@ function setupEventListeners() {
     const jobType = dom.jobTypeSelectEl?.dataset.value;
     if (!location || !jobType) return;
     let topicName;
-    if (location === "all")
-      topicName = `${jobType === "industrial" ? "Industrial" : jobType}-all`;
+    if (location === "all") topicName = getTypeWideTopicForJobType(jobType);
     else topicName = `${location}-${jobType}`;
     if (await subscribeToTopic(topicName)) {
       resetCustomSelect(dom.locationSelectEl, "Select Location");
@@ -3332,6 +3728,7 @@ async function initializePage() {
   // Load filter options and populate
   await fetchFilterOptions();
   populateSalaryFilter();
+  renderStructuredFilters();
 
   // Wire up event listeners
   setupEventListeners();

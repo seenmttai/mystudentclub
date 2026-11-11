@@ -1828,12 +1828,7 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } });
 
-    const CLOUDFLARE_WORKER_URL = 'https://auth-check.bhansalimanan55.workers.dev';
 
-    const PREDEFINED_LOCATIONS = ["mumbai", "bangalore", "bengaluru", "gurgaon", "gurugram", "pune", "kolkata", "delhi", "new delhi", "noida", "hyderabad", "ahmedabad", "chennai", "jaipur"];
-    const JOB_TYPE_MAP = { "Industrial Training Job Portal": "industrial", "Fresher Jobs": "fresher", "Semi Qualified Jobs": "semi", "Articleship Jobs": "articleship" };
-    const PORTAL_NAME_MAP = { "Industrial Training Job Portal": "Industrial Training", "Fresher Jobs": "Fresher", "Semi Qualified Jobs": "Semi Qualified", "Articleship Jobs": "Articleship" };
-    const PORTAL_LINK_MAP = { "Industrial Training Job Portal": "https://www.mystudentclub.com/", "Fresher Jobs": "https://www.mystudentclub.com/ca-fresher-jobs", "Semi Qualified Jobs": "https://www.mystudentclub.com/semi-qualified-ca-jobs", "Articleship Jobs": "https://www.mystudentclub.com/ca-articleship-jobs" };
 
     let currentSession = null;
     let isFetching = false;
@@ -1988,12 +1983,6 @@
       label: PROFILE_EXPORT_LABEL_OVERRIDES[key] || humanizeFieldLabel(key)
     }));
 
-    function normalizeLocation(location) { if (!location) return ''; const lowerLoc = location.toLowerCase().trim(); if (lowerLoc === 'gurugram') return 'gurgaon'; if (lowerLoc === 'bengaluru') return 'bangalore'; if (lowerLoc === 'new delhi') return 'delhi'; return lowerLoc; }
-    function findMatchingLocationKeyword(jobLocation) { const normalizedJobLoc = normalizeLocation(jobLocation); if (!normalizedJobLoc) return null; for (const keyword of PREDEFINED_LOCATIONS) { if (normalizedJobLoc.includes(normalizeLocation(keyword))) { return normalizeLocation(keyword); } } return null; }
-    function generateTopicName(locationKeyword, jobType) { if (!locationKeyword || !jobType) return null; return `${locationKeyword.toLowerCase().replace(/\s+/g, '-')}-${jobType}`; }
-    function truncateDescription(description, wordLimit = 20) { if (!description) return ''; const words = description.split(/\s+/); return words.length <= wordLimit ? description : words.slice(0, wordLimit).join(' ') + '...'; }
-    async function sendNotification(topic, title, description, link, accessToken) { if (!topic || !title || !description || !link || !accessToken) return; try { const response = await fetch(CLOUDFLARE_WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` }, body: JSON.stringify({ title, description, link, topic }) }); const result = await response.json(); if (!response.ok || !result.success) { console.error(`Failed to send notification to topic ${topic}:`, result.error || response.statusText); } else { console.log(`Successfully sent notification request for topic: ${topic}`); } } catch (error) { console.error(`Error sending notification fetch request for topic ${topic}:`, error); } }
-    async function triggerNotifications(jobData, accessToken) { if (!jobData || !accessToken) return; const { Company = 'A Company', Location = 'Various Locations', Description = '', table = currentTable } = jobData; const portalName = PORTAL_NAME_MAP[table] || 'Job'; const jobType = JOB_TYPE_MAP[table]; const link = PORTAL_LINK_MAP[table] || 'https://www.mystudentclub.com/'; const notificationTitle = `New ${portalName} job in ${Location}: ${Company}`; const notificationBody = truncateDescription(Description); const matchedLocationKeyword = findMatchingLocationKeyword(Location); const specificTopic = generateTopicName(matchedLocationKeyword, jobType); if (specificTopic) { await sendNotification(specificTopic, notificationTitle, notificationBody, link, accessToken); } await sendNotification('all', notificationTitle, notificationBody, link, accessToken); }
     function showAccessDenied(message = "You don't have permission to access this page.") {
       document.getElementById('access-denied').style.display = 'flex';
       document.getElementById('admin-content').style.display = 'none';
@@ -3638,9 +3627,6 @@
             const { data, error } = await supabaseClient.from(table).insert([dataToSave]).select().single();
             if (error) throw error;
             savedJob = data;
-            if (currentSession?.access_token) {
-              await triggerNotifications({ ...savedJob, table }, currentSession.access_token);
-            }
           }
 
           closeJobEditModal();

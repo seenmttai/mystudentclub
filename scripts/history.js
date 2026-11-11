@@ -76,28 +76,14 @@ function renderMarkdown(text) {
         .replace(/\n/g, '<br>') + '</p>';
 }
 
-// Truncate job description and mask potential contact details
-function getTruncatedDescription(desc, maxLength = 260) {
-    if (!desc) return 'No description available.';
-    let clean = String(desc).trim();
-
-    // Mask emails that might have been pasted into the description
-    clean = clean.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '[email protected]');
-    // Mask URLs
-    clean = clean.replace(/https?:\/\/[^\s\)]+/gi, '[link protected]');
-    // Mask phone numbers
-    clean = clean.replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, '[phone protected]');
-
-    if (clean.length <= maxLength) {
-        return clean;
-    }
-
-    let cut = clean.slice(0, maxLength);
-    const lastSpace = cut.lastIndexOf(' ');
-    if (lastSpace > maxLength * 0.6) {
-        cut = cut.slice(0, lastSpace);
-    }
-    return cut + '...';
+// Full job description with contact details masked, for users who haven't revealed the application yet.
+// The whole text is shown (no length cut); only emails, links and phone numbers are hidden.
+function getMaskedDescription(desc) {
+  if (!desc) return 'No description available.';
+  return String(desc).trim()
+    .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '[email protected]')
+    .replace(/https?:\/\/[^\s\)]+/gi, '[link protected]')
+    .replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, '[phone protected]');
 }
 
 // ── Bookmarks ──
@@ -482,7 +468,7 @@ function showJobDetail(job, meta) {
     const savedJobType = PORTAL_TYPE_MAP[savedTable] || 'industrial';
     const savedJobId = meta?.jobId || job.id;
 
-    const rawDesc = getTruncatedDescription(job.Description || '', 260);
+    const rawDesc = getMaskedDescription(job.Description || '');
     const descHtml = renderMarkdown(rawDesc);
 
     content.innerHTML = `
