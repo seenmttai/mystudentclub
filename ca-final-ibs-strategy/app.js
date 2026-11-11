@@ -128,6 +128,8 @@
   document.addEventListener('click', function (e) {
     var wa = e.target.closest('a[href*="chat.whatsapp.com"]');
     if (wa) track('ibs_community_click', { where: wa.dataset.wa || 'practice' });
+    var yt = e.target.closest('a[href="#video"], a[data-yt]');
+    if (yt) track('ibs_video_click', { where: yt.dataset.yt || 'nav' });
     var a = e.target.closest('a[download][data-file]');
     if (!a) return;
     if (leadInMemory) { track('ibs_download', { file: a.dataset.file }); return; }
@@ -296,10 +298,10 @@
     }).join('');
   }
 
-  getJSON('data/indexes.json').then(renderIndexes).catch(function () {
+  var indexesReady = getJSON('data/indexes.json').then(renderIndexes).catch(function () {
     $('#idx-panel').innerHTML = '<p class="muted">Could not load the indexes. Refresh the page.</p>';
   });
-  getJSON('data/site.json').then(function (s) {
+  var siteReady = getJSON('data/site.json').then(function (s) {
     renderAnalysis(s.analysis);
     renderSolved(s.papers);
     renderDownloads([].concat(s.downloads.notes, s.downloads.solutions, s.downloads.analysis), 'all-dl');
@@ -307,4 +309,17 @@
     $('#an-marks').innerHTML = '<p class="muted">Could not load. Refresh the page.</p>';
     $('#sol-panel').innerHTML = '';
   });
+
+  // Arriving from another page with a #section (the home menu's "IBS Index" opens #indexes): the browser's own
+  // smooth jump gets cut short while the page is still filling in, so land there once the content has loaded.
+  function landOnHash() {
+    var el = null;
+    try { el = location.hash.length > 1 && document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch (e) { /* bad hash */ }
+    if (!el) return;
+    var root = document.documentElement, prev = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    el.scrollIntoView({ block: 'start' });
+    root.style.scrollBehavior = prev;
+  }
+  Promise.all([indexesReady, siteReady]).then(function () { setTimeout(landOnHash, 60); });
 })();
