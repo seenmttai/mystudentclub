@@ -1,0 +1,9 @@
+# Cloudflare Pages response headers.
+# Work Simulation: its script, style and level files carry no version in their names, so the browser must check
+# for a newer copy every time (an old script must never run with new level data).
+/articleship-program/work-simulation/js/*
+  Cache-Control: no-cache
+/articleship-program/work-simulation/css/*
+  Cache-Control: no-cache
+/articleship-program/work-simulation/data/*
+  Cache-Control: no-cache

@@ -25,7 +25,7 @@
   <meta name="twitter:description" content="Structured modules, real-world case studies, and Excel financial models taught by leading Chartered Accountants.">
   <meta name="twitter:image" content="https://www.mystudentclub.com/assets/og-lms.png">
     <link rel="stylesheet" href="/learning-management-system/styles.css?v=3.6">
-    <link rel="stylesheet" href="/learning-management-system/course-styles.css?v=3.6">
+    <link rel="stylesheet" href="/learning-management-system/course-styles.css?v=3.7">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Plyr Video Player -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
@@ -233,6 +233,7 @@
                                         class="fas fa-arrow-right"></i></button>
                             </div>
 
+                            <h2 class="articleship-session-title" id="session-title" hidden></h2>
                             <div class="course-tabs" id="course-tabs-container"></div>
 
                             <div id="tab-content-overview" class="tab-content"></div>
@@ -391,14 +392,16 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2025 My Student Club LMS. All rights reserved.</p>
+                <p>© <span class="lms-year">2026</span> My Student Club LMS. All rights reserved.</p>
+                <script>document.querySelectorAll('.lms-year').forEach(function (n) { n.textContent = new Date().getFullYear(); });</script>
             </div>
         </footer>
     </div>
 
 
 
-    <script src="/learning-management-system/course-script.js?v=3.5"></script>
+    <script src="/scripts/articleship-lms.js?v=3"></script>
+    <script src="/learning-management-system/course-script.js?v=3.6"></script>
 </body>
 
 </html>

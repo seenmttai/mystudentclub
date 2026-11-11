@@ -120,7 +120,8 @@ test('course page: Tests 2-9 after the data fix say Download Excel and explain t
     const source = fs.readFileSync(path.join(root, 'learning-management-system/course-script.js'), 'utf8');
     const start = source.indexOf('const isGoogleSheetResource');
     const end = source.indexOf('const updateLearningStreak', start);
-    const context = {};
+    // The label helpers read the page's course table (Articleship v3 compact resources).
+    const context = { courses: {}, state: { courseSlug: 'industrial-training-mastery' } };
     vm.createContext(context);
     vm.runInContext(source.slice(start, end) + '\nthis.api = { getResourceDownloadLabel, getResourceFormatNote, getResourceViewerSubtitle };', context);
     const { getResourceDownloadLabel, getResourceFormatNote, getResourceViewerSubtitle } = context.api;
