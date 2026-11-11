@@ -1727,6 +1727,11 @@
               <input id="lmsResourceFilePdf" type="file" accept=".pdf" class="form-input">
               <div class="lms-resource-inline-note">LMS needs a PDF to render the view securely. The DOCX file will be used as the download.</div>
             </div>
+            <div class="form-group" id="lmsCsvExcelUpload" style="display:none; border-top: 1px solid #333; padding-top: 15px; margin-top: 15px;">
+              <label class="form-label" for="lmsResourceFileExcel">Excel file for download (optional)</label>
+              <input id="lmsResourceFileExcel" type="file" accept=".xlsx,.xls" class="form-input">
+              <div class="lms-resource-inline-note">The CSV is only the preview. Students download this workbook with every sheet. Leave it empty and they download the CSV.</div>
+            </div>
             <label class="lms-resource-checkbox" id="lmsResourceViewOnlyWrap">
               <input id="lmsResourceViewOnly" type="checkbox">
               <span>View only resource (disable LMS download)</span>
@@ -2467,6 +2472,13 @@
     function isManagedLmsStoragePath(path) {
       return typeof path === 'string' && path.startsWith(`admin-managed/`);
     }
+    // Matches the extensions the LMS labels "Download Excel".
+    const LMS_EXCEL_FILE_PATTERN = /\.(xlsx|xls)$/i;
+    function getLmsExcelDownloadPath(resource) {
+      // A CSV resource can carry the original workbook as its download (view = .csv, download = .xlsx).
+      const path = String(resource?.download_storage_path || '').trim();
+      return LMS_EXCEL_FILE_PATTERN.test(path) && path !== resource?.view_storage_path ? path : null;
+    }
     function collectManagedPaths(resource) {
       const paths = new Set();
       [resource?.view_storage_path, resource?.download_storage_path].forEach((path) => {
@@ -2613,11 +2625,14 @@
       if (mode === 'link' && typeSelect) typeSelect.value = 'pdf';
 
       const isDocx = typeSelect?.value === 'docx';
+      const isCsv = typeSelect?.value === 'csv';
       const fileLabel = document.getElementById('lmsResourceFileLabel');
       const docxExtra = document.getElementById('lmsDocxExtraUpload');
+      const csvExcelExtra = document.getElementById('lmsCsvExcelUpload');
       const viewOnlyWrap = document.getElementById('lmsResourceViewOnlyWrap');
-      if (fileLabel) fileLabel.textContent = isDocx ? 'Upload DOCX File (For Download)' : 'Upload file';
+      if (fileLabel) fileLabel.textContent = isDocx ? 'Upload DOCX File (For Download)' : (isCsv ? 'Upload CSV (For Preview)' : 'Upload file');
       if (docxExtra) docxExtra.style.display = isDocx && mode === 'file' ? 'block' : 'none';
+      if (csvExcelExtra) csvExcelExtra.style.display = isCsv && mode === 'file' ? 'block' : 'none';
       if (viewOnlyWrap) viewOnlyWrap.style.display = isDocx ? 'none' : 'block';
     }
     function inferLmsResourceTypeFromName(fileName) {
@@ -3012,6 +3027,12 @@
       }
       const pdfFileInput = document.getElementById('lmsResourceFilePdf');
       const pdfFile = pdfFileInput ? pdfFileInput.files[0] : null;
+      const excelFileInput = document.getElementById('lmsResourceFileExcel');
+      const excelFile = mode === 'file' && typeSelect.value === 'csv' && excelFileInput ? excelFileInput.files[0] || null : null;
+      if (excelFile && !LMS_EXCEL_FILE_PATTERN.test(excelFile.name)) {
+        setLmsResourceStatus('The download file must be an Excel workbook (.xlsx).', 'error');
+        return;
+      }
 
       if (mode === 'file' && typeSelect.value === 'docx') {
         const hasExisting = existingResource && existingResource.download_storage_path && existingResource.download_storage_path !== 'None';
@@ -3091,10 +3112,26 @@
                   ? existingResource.download_storage_path
                   : existingResource.view_storage_path || 'None');
             }
+
+            const existingExcelPath = getLmsExcelDownloadPath(existingResource);
+            if (nextResource.type === 'csv' && !isViewOnly) {
+              if (excelFile) {
+                const excelPath = await uploadLmsResourceFile(excelFile, video, title + '_excel');
+                rollbackUploads.push(excelPath);
+                nextResource.download_storage_path = excelPath;
+                if (existingResource) cleanupAfterSave.push(...collectManagedPaths(existingResource));
+              } else if (existingExcelPath) {
+                // A new CSV preview keeps the workbook students already download.
+                nextResource.download_storage_path = existingExcelPath;
+              }
+            }
           }
         } else if (existingResource) {
           cleanupAfterSave.push(...collectManagedPaths(existingResource));
         }
+
+        const pathsInUse = new Set([nextResource.view_storage_path, nextResource.download_storage_path]);
+        const pathsToRemove = [...new Set(cleanupAfterSave)].filter((path) => !pathsInUse.has(path));
 
         if (editingIndex != null) {
           nextResources[editingIndex] = normalizeLmsResource(nextResource);
@@ -3104,9 +3141,9 @@
 
         await persistSelectedLmsResources(nextResources);
 
-        if (cleanupAfterSave.length) {
+        if (pathsToRemove.length) {
           try {
-            await removeLmsStoragePaths(cleanupAfterSave);
+            await removeLmsStoragePaths(pathsToRemove);
           } catch (cleanupError) {
             console.warn('Resource mapping updated but storage cleanup failed:', cleanupError);
             setLmsResourceStatus('Resource saved, but old storage cleanup needs a quick manual check.', 'success');
@@ -3129,6 +3166,7 @@
           saveBtn.textContent = 'Save Resource';
         }
         if (fileInput) fileInput.value = '';
+        if (excelFileInput) excelFileInput.value = '';
       }
     }
     async function handleLmsResourceDelete(index) {

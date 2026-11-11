@@ -30,7 +30,7 @@
 
   <!-- Site styles (synced from master) -->
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="sections.css?v=20261008.comp4">
+  <link rel="stylesheet" href="sections.css?v=20261025.nextbatch">
   <link rel="stylesheet" href="footer.css?v=20261006.1">
   <!-- Mobile WebView layer: Airy Flow header/drawer, responsive + dark-mode overrides -->
   <link rel="stylesheet" href="header.css?v=20261016.1">
@@ -228,9 +228,17 @@
       <div class="hero-wrapper">
         <!-- Hero Left Column -->
         <div class="hero-left" data-aos="fade-right" data-aos-duration="800">
-          <div class="eyebrow-pill">
-            <span class="eyebrow-dot"></span>
-            <span>LIMITED SEATS LEFT!</span>
+          <div class="hero-status-row">
+            <div class="eyebrow-pill">
+              <span class="eyebrow-dot"></span>
+              <span>REGISTRATION CLOSED</span>
+            </div>
+
+            <div class="next-batch-pill" role="status">
+              <i class="fas fa-calendar-check" aria-hidden="true"></i>
+              <span>Next Batch Registrations Start on</span>
+              <span class="next-batch-date">Nov 15th</span>
+            </div>
           </div>
 
           <h1 class="hero-heading">
@@ -1102,6 +1110,7 @@
   <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script src="app.js?v=20261003.actual1" type="module"></script>
   <script src="/scripts/program-chrome.js?v=20261016.1"></script>
+  <script src="/scripts/notify-waitlist.js?v=20261031.1"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
     // Supabase (CDN client, shared auth storage key so the app-injected session is picked up)
@@ -1194,15 +1203,6 @@
       return token;
     }
 
-    function getOrCreateDeviceKey() {
-      let key = localStorage.getItem("msc_device_key");
-      if (!key) {
-        key = "dk_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 9);
-        localStorage.setItem("msc_device_key", key);
-      }
-      return key;
-    }
-
     function setNotifyStatus(msg, type) {
       // Inline status line (when the page has one) + floating toast.
       const inline = document.getElementById("notifyStatus");
@@ -1227,12 +1227,7 @@
 
     async function saveToNotifiable(fcmToken) {
       if (!sb) return;
-      const deviceKey = getOrCreateDeviceKey();
-      const email = session?.user?.email || null;
-      await sb
-        .from("notifiable")
-        .insert({ key: deviceKey, email })
-        .throwOnError();
+      await window.MSCWaitlist?.join(sb, "articleship", session?.user?.email);
     }
 
     async function initNotifyMe() {
@@ -1249,6 +1244,11 @@
 
       const isSubscribed = localStorage.getItem(SUBSCRIBED_KEY) === "true";
       syncButtonStates(isSubscribed);
+      window.MSCWaitlist?.isOn(sb, "articleship")?.then((on) => {
+        if (!on) return;
+        localStorage.setItem(SUBSCRIBED_KEY, "true");
+        syncButtonStates(true);
+      });
 
       async function handleNotifyClick() {
         if (this.disabled) return;
