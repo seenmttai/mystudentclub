@@ -30,6 +30,16 @@ if (!paramPdf) window.location.replace('/ca-resource/resource/?name=doc.pdf');
 const PDF_URL = paramPdf || '';
 const PDF_FETCH_URL = window.resolvePdfFetchUrl ? window.resolvePdfFetchUrl(PDF_URL) : PDF_URL;
 
+// Copy mode (Articleship rows flagged `copy`, see scripts/articleship-lms.js): text stays unselectable like every other
+// file; each template box gets a Copy button and in-document links work. It needs ?copy=1 AND a signed link into the
+// Articleship bucket, so adding ?copy=1 to any other course's file changes nothing.
+const readerCore = window.MSCReaderCore || null;
+const readerQuery = readerCore ? readerCore.parseQuery(window.location.search, window.location.hash) : { page: 1, title: '' };
+const INITIAL_PAGE = readerQuery.page;
+const copyMode = Boolean(readerCore && urlParams.get('copy') === '1' && readerCore.isArticleshipFileUrl(PDF_URL, window.location));
+let pendingCopyText = null; // handed to the copy-event handler for the one copy a Copy button makes
+if (readerQuery.title) document.title = readerQuery.title + ' | My Student Club';
+
 let pdfDoc = null;
 let totalPages = 0;
 let sidebarOpen = false;
@@ -188,6 +198,7 @@ function drawWatermarkOnCanvas(ctx, canvasWidth, canvasHeight, outputScale, emai
 
 // ─── Render Annotations Layer (Links) ───
 async function renderAnnotationLayer(page, viewport, container) {
+    if (copyMode) return renderProgrammeLinks(page, viewport, container);
     try {
         const annotations = await page.getAnnotations();
         // Remove any existing annotation layer in this page element first
@@ -239,6 +250,198 @@ async function renderAnnotationLayer(page, viewport, container) {
     } catch (e) {
         console.error('Annotation rendering error:', e);
     }
+}
+
+// ─── Copy mode: links and Copy buttons ───
+// Taps and clicks on a link or a Copy button never reach the page-flip, pan, swipe or double-tap handlers.
+function keepTapFromFlipping(el) {
+    ['pointerdown', 'mousedown', 'touchstart', 'touchend'].forEach(type =>
+        el.addEventListener(type, e => e.stopPropagation(), { passive: true }));
+}
+
+// Web, mail and phone links (MSC's own links stay on the site the reader is on) and in-document links such as
+// "(question 3)"; never javascript: or data: links.
+async function renderProgrammeLinks(page, viewport, container) {
+    try {
+        const annotations = await page.getAnnotations({ intent: 'display' });
+        container.querySelectorAll('.pdf-annotation-layer').forEach(layer => layer.remove());
+        const layer = document.createElement('div');
+        layer.className = 'pdf-annotation-layer';
+        layer.style.width = Math.round(viewport.width) + 'px';
+        layer.style.height = Math.round(viewport.height) + 'px';
+        (annotations || []).forEach(annotation => {
+            if (annotation.subtype !== 'Link') return;
+            const link = document.createElement('a');
+            const url = annotation.url || annotation.unsafeUrl;
+            if (url && readerCore.isSafeLink(url)) {
+                const own = readerCore.siteLink(url, window.location);
+                link.href = own || url;
+                if (/^https?:/i.test(url) && !(own && readerCore.opensInPlace(window.location, window))) {
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                }
+                link.title = /^mailto:/i.test(url) ? 'Open in your mail app' : url;
+            } else if (annotation.dest) {
+                link.href = '#';
+                link.title = 'Go to page';
+                link.addEventListener('click', e => { e.preventDefault(); goToDest(annotation.dest); });
+            } else {
+                return;
+            }
+            const [x1, y1, x2, y2] = viewport.convertToViewportRectangle(annotation.rect);
+            link.style.left = Math.min(x1, x2) + 'px';
+            link.style.top = Math.min(y1, y2) + 'px';
+            link.style.width = Math.abs(x2 - x1) + 'px';
+            link.style.height = Math.abs(y2 - y1) + 'px';
+            keepTapFromFlipping(link);
+            layer.appendChild(link);
+        });
+        if (layer.childElementCount) container.appendChild(layer);
+    } catch (e) {
+        console.error('Annotation rendering error:', e);
+    }
+}
+
+async function goToDest(dest) {
+    try {
+        const explicit = typeof dest === 'string' ? await pdfDoc.getDestination(dest) : dest;
+        if (!explicit || !explicit[0]) return;
+        const index = typeof explicit[0] === 'object' ? await pdfDoc.getPageIndex(explicit[0]) : Number(explicit[0]);
+        if (Number.isInteger(index)) goToPage(index + 1);
+    } catch (_) { /* a broken internal link does nothing */ }
+}
+
+// A page's copy boxes and their text, worked out once per page and only for pages that get rendered (zoom, fit and
+// search re-renders reuse it), so a long Guidebook stays fast.
+const copyDataCache = new Map();
+function copyDataFor(page) {
+    const key = page.pageNumber;
+    if (!copyDataCache.has(key)) {
+        copyDataCache.set(key, Promise.all([page.getOperatorList(), page.getTextContent()]).then(([opList, textContent]) => {
+            const items = textContent.items || [];
+            const boxes = readerCore.copyBoxes(opList, pdfjsLib.OPS)
+                .map(box => ({ box, text: readerCore.textInBox(items, box) }))
+                // A CV sample or template (its contact line at the top) is there to look at, not to paste.
+                .filter(entry => entry.text && !readerCore.isCvSample(entry.text));
+            return { boxes, items };
+        }).catch(() => {
+            copyDataCache.delete(key);
+            return { boxes: [], items: [] };
+        }));
+    }
+    return copyDataCache.get(key);
+}
+
+/** The page's text lines in page pixels (a little taller than the glyphs), so a Copy button never covers one. */
+function textRects(items, viewport) {
+    return (items || []).filter(item => item && item.str && item.str.trim() && item.transform).map(item => {
+        const h = Math.abs(item.height || item.transform[3] || 10);
+        const x = item.transform[4];
+        const y = item.transform[5];
+        const r = viewport.convertToViewportRectangle([x, y - h * 0.25, x + (item.width || 0), y + h * 0.95]);
+        return { left: Math.min(r[0], r[2]), right: Math.max(r[0], r[2]), top: Math.min(r[1], r[3]), bottom: Math.max(r[1], r[3]) };
+    });
+}
+
+/** Labelled button first, then icon only; on a phone both are icon only. Fixed sizes, so placing needs no layout. */
+function copyButtonSizes() {
+    const height = window.innerWidth < 480 ? 26 : 30;
+    return [{ width: window.innerWidth < 480 ? height : 78, height }, { width: height, height }];
+}
+
+const COPY_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>';
+
+async function renderCopyLayer(page, viewport, container, canvas) {
+    const data = await copyDataFor(page);
+    // The page may have been re-rendered (zoom, fit, search) meanwhile: only the render this was worked out for gets it.
+    if (!data.boxes.length || !container.contains(canvas)) return;
+    container.querySelectorAll('.pdf-copy-layer').forEach(layer => layer.remove());
+    const layer = document.createElement('div');
+    layer.className = 'pdf-copy-layer';
+    layer.style.width = Math.round(viewport.width) + 'px';
+    layer.style.height = Math.round(viewport.height) + 'px';
+    const texts = textRects(data.items, viewport);
+    const sizes = copyButtonSizes();
+    data.boxes.forEach(({ box, text }) => {
+        const r = viewport.convertToViewportRectangle(box);
+        const spot = readerCore.copyButtonSpot(
+            { left: Math.min(r[0], r[2]), right: Math.max(r[0], r[2]), top: Math.min(r[1], r[3]), bottom: Math.max(r[1], r[3]) },
+            texts, sizes, { width: viewport.width, height: viewport.height });
+        const size = sizes[spot.size] || sizes[0];
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'pdf-copy-btn' + (size.width === size.height ? ' is-compact' : '');
+        button.innerHTML = COPY_ICON + '<span>Copy</span>';
+        button.setAttribute('aria-label', 'Copy this box');
+        button.style.left = spot.left + 'px';
+        button.style.top = spot.top + 'px';
+        button.style.width = size.width + 'px';
+        button.style.height = size.height + 'px';
+        keepTapFromFlipping(button);
+        button.addEventListener('click', async e => {
+            e.preventDefault();
+            const label = button.querySelector('span');
+            if (await copyToClipboard(text)) {
+                button.classList.add('is-done');
+                label.textContent = 'Copied';
+                showCopyToast(/\[[^\]]+\]/.test(text) ? 'Copied. Fill in the [brackets] before you send.' : 'Copied');
+                setTimeout(() => { button.classList.remove('is-done'); label.textContent = 'Copy'; }, 2200);
+            } else {
+                showCopyToast('Could not copy. Please try again.');
+            }
+        });
+        layer.appendChild(button);
+    });
+    container.appendChild(layer);
+}
+
+// The page blocks copying (content protection, below). A Copy button is the one way out: the clipboard API first, and
+// where a phone's WebView has none, a hidden field plus the copy-event handler, which puts this box's text in for that
+// single copy.
+async function copyToClipboard(text) {
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+            return true;
+        }
+    } catch (_) { /* fall back below */ }
+    const area = document.createElement('textarea');
+    area.className = 'copy-fallback';
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(area);
+    pendingCopyText = text;
+    let ok = false;
+    try {
+        area.focus({ preventScroll: true });
+        area.select();
+        area.setSelectionRange(0, text.length);
+        ok = document.execCommand('copy');
+    } catch (_) {
+        ok = false;
+    } finally {
+        pendingCopyText = null;
+        area.remove();
+    }
+    return ok;
+}
+
+let copyToastTimer = null;
+function showCopyToast(message) {
+    let toast = document.getElementById('copy-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'copy-toast';
+        toast.className = 'copy-toast';
+        toast.setAttribute('role', 'status');
+        toast.setAttribute('aria-live', 'polite');
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('is-on');
+    clearTimeout(copyToastTimer);
+    copyToastTimer = setTimeout(() => toast.classList.remove('is-on'), 2200);
 }
 
 // ─── Highlighting Logic ───
@@ -336,6 +539,7 @@ async function buildFlipbook() {
     $(flipbookEl).turn({
         width: bookWidth,
         height: initialPageH,
+        page: Math.max(1, Math.min(INITIAL_PAGE, totalPages)), // ?page=N or #page=N (a deep link to a page)
         autoCenter: true,
         display: viewMode,
         acceleration: false,
@@ -470,6 +674,7 @@ async function renderFlipbookPage(pageNum, pageW, pageH) {
                 if (index === 0) {
                     div.appendChild(canvas);
                     renderAnnotationLayer(page, viewport, div);
+                    if (copyMode) renderCopyLayer(page, viewport, div, canvas);
                 } else {
                     const cloneCanvas = document.createElement('canvas');
                     cloneCanvas.width = canvas.width;
@@ -485,6 +690,7 @@ async function renderFlipbookPage(pageNum, pageW, pageH) {
                     cloneCtx.drawImage(canvas, 0, 0);
                     div.appendChild(cloneCanvas);
                     renderAnnotationLayer(page, viewport, div);
+                    if (copyMode) renderCopyLayer(page, viewport, div, cloneCanvas);
                 }
             });
 
@@ -939,6 +1145,8 @@ function setDocumentTitle(pdf) {
         t = (t || '').trim();
         if (el && t) { el.textContent = t; el.title = t; }
     };
+    // A title the course passed (?title=, the row's own name) wins over the file name and the PDF's metadata.
+    if (readerQuery.title) { apply(readerQuery.title); return; }
     apply(guessTitleFromUrl(PDF_URL));
     if (pdf && pdf.getMetadata) {
         pdf.getMetadata().then(m => {
@@ -1245,7 +1453,11 @@ viewerArea.addEventListener('touchcancel', () => {
 
 // Content protection
 document.addEventListener('contextmenu', e => e.preventDefault());
-document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('copy', e => {
+    // Only a Copy button's own copy carries text (copy mode); every other copy is blocked as before.
+    if (pendingCopyText !== null && e.clipboardData) e.clipboardData.setData('text/plain', pendingCopyText);
+    e.preventDefault();
+});
 document.addEventListener('cut', e => e.preventDefault());
 document.addEventListener('dragstart', e => e.preventDefault());
 window.addEventListener('beforeprint', e => {
