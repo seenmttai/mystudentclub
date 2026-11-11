@@ -393,11 +393,13 @@ body {
   font-size: 1.25rem;
 }
 
-/* Groups */
-.link-groups {
-  display: grid;
-  grid-template-columns: 1fr;
+/* Groups: stacked on phones, two balanced columns on laptops */
+.link-groups,
+.link-col {
+  display: flex;
+  flex-direction: column;
   gap: 1.35rem;
+  min-width: 0;
 }
 
 .link-group {
@@ -663,7 +665,8 @@ body {
     padding: 0.8rem 1.5rem;
   }
 
-  .link-groups {
+  .link-groups,
+  .link-col {
     gap: 1.1rem;
   }
 
@@ -698,11 +701,12 @@ body {
 
 @media (min-width: 800px) {
   .link-groups {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex-direction: row;
+    align-items: flex-start;
   }
 
-  .link-groups.single {
-    grid-template-columns: minmax(0, 1fr);
+  .link-col {
+    flex: 1 1 0;
   }
 }
 

@@ -174,13 +174,35 @@
     return { programs: programs, groups: groups };
   }
 
+  /**
+   * Splits the groups into two columns for laptops, in order (so a phone, which stacks the
+   * columns, still shows the admin's order), at the point that leaves the columns closest in height.
+   */
+  function splitColumns(groups) {
+    if (groups.length < 2) return groups.length ? [groups] : [];
+    var weight = function (g) { return 1 + g.links.length; }; // a head plus its links
+    var total = groups.reduce(function (sum, g) { return sum + weight(g); }, 0);
+    var best = 1;
+    var bestGap = Infinity;
+    var left = 0;
+    for (var k = 1; k < groups.length; k += 1) {
+      left += weight(groups[k - 1]);
+      var gap = Math.abs(total - 2 * left);
+      if (gap < bestGap) { bestGap = gap; best = k; }
+    }
+    return [groups.slice(0, best), groups.slice(best)];
+  }
+
   /** The HTML of one tab: programme banners, then the headed groups. */
   function renderTab(links) {
     var a = arrange(links);
     var html = a.programs.map(renderProgram).join('');
     if (a.groups.length) {
-      html += '<div class="link-groups' + (a.groups.length === 1 ? ' single' : '') + '">' +
-        a.groups.map(function (g) { return renderGroup(g.kind, g.links); }).join('') + '</div>';
+      var columns = splitColumns(a.groups);
+      html += '<div class="link-groups' + (columns.length === 1 ? ' single' : '') + '">' +
+        columns.map(function (col) {
+          return '<div class="link-col">' + col.map(function (g) { return renderGroup(g.kind, g.links); }).join('') + '</div>';
+        }).join('') + '</div>';
     }
     return html;
   }
@@ -212,6 +234,6 @@
 
   global.MSCLinksRender = {
     GROUPS: GROUPS, PROGRAMS: PROGRAMS, esc: esc, safeHref: safeHref, kindOf: kindOf, describe: describe,
-    arrange: arrange, renderTab: renderTab, renderSocial: renderSocial, rowsFromAnchors: rowsFromAnchors
+    arrange: arrange, splitColumns: splitColumns, renderTab: renderTab, renderSocial: renderSocial, rowsFromAnchors: rowsFromAnchors
   };
 })(typeof window !== 'undefined' ? window : globalThis);

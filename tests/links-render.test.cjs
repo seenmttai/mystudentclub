@@ -100,6 +100,19 @@ test('groups carry a clear head, and every link says what it opens and has a but
   assert.match(mixed, /<span class="group-name">Resources<\/span>/);
 });
 
+test('laptop columns are balanced and keep the admin\'s order', () => {
+  const r = load();
+  const group = (kind, n) => ({ kind, links: new Array(n).fill({}) });
+  const shape = (groups) => Array.from(r.splitColumns(groups), (col) => Array.from(col, (g) => g.kind).join('+'));
+  assert.deepEqual(shape([group('whatsapp', 2), group('resources', 1), group('linkedin', 2), group('youtube', 1)]), ['whatsapp+resources', 'linkedin+youtube']);
+  assert.deepEqual(shape([group('whatsapp', 2), group('linkedin', 2), group('youtube', 1)]), ['whatsapp', 'linkedin+youtube']);
+  assert.deepEqual(shape([group('whatsapp', 1), group('resources', 1), group('linkedin', 2)]), ['whatsapp+resources', 'linkedin']);
+  assert.deepEqual(shape([group('whatsapp', 3)]), ['whatsapp']);
+  assert.deepEqual(shape([]), []);
+  const html = r.renderTab(industrial);
+  assert.equal((html.match(/<div class="link-col">/g) || []).length, 2);
+});
+
 test('titles, addresses and icons from the table cannot inject markup or scripts', () => {
   const r = load();
   const html = r.renderTab([
