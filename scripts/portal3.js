@@ -3218,7 +3218,8 @@ async function loadBanners() {
         if (error) throw error;
         const banners = data;
         carousel.innerHTML = '';
-        const currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" : currentTable === "Fresher Jobs" ? "Freshers" : currentTable.split(' ')[0];
+        // Banner Type per page. Experienced CA shares the Fresher table but gets its own Type, so CA Fresher banners stay off it.
+        const currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" : currentTable === "Fresher Jobs" ? (isExperiencedFresherPortal() ? "Experienced" : "Freshers") : currentTable.split(' ')[0];
 
         // Determine if current user is enrolled in any course
         let isEnrolled = false;
