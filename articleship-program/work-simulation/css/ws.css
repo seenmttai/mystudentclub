@@ -84,12 +84,14 @@ button { cursor: pointer; }
 /* ---------- page frame ---------- */
 .page { max-width: 780px; margin: 0 auto; padding: 18px var(--gutter) 56px; }
 .page.wide { max-width: 1100px; }
-/* The home matches the other Articleship tools: 1440 px on a desktop (shared articleship-tools.css), with the
+/* Work Simulation pages match the other Articleship tools: 1440 px on a desktop (shared articleship-tools.css), with the
    single dropdown and the hero quote kept at a readable width instead of stretching across the whole page. */
 @media (min-width: 1024px) {
-  .page.wide { max-width: 1440px; padding-left: 40px; padding-right: 40px; }
+  .page, .page.wide { max-width: 1440px; padding-left: 40px; padding-right: 40px; }
   .page.wide .hero .quote { max-width: 62em; }
   .page.wide .mydomain { max-width: 560px; }
+  .level-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .wa { max-width: 900px; }
 }
 .crumb { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--blue); font-weight: 800; font-size: 15px; text-decoration: none; }
 .crumb svg { width: 22px; height: 14px; flex: none; }
