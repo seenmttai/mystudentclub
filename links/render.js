@@ -34,12 +34,17 @@
     { match: /fresher-program/i, eyebrow: 'MSC CA Freshers Program', lead: 'Launch Your', accent: 'Dream Career', points: ['CV', 'Applications', 'Interviews'] }
   ];
 
-  /** Only web, mail and phone links are followed; a bare "www.site.com" gets https://. */
+  /**
+   * Web, mail, phone, SMS and WhatsApp links are followed, and so are paths on this site.
+   * A bare "www.site.com" gets https://. Any other scheme (javascript:, data: …) becomes "#".
+   */
   function safeHref(url) {
     var u = String(url == null ? '' : url).trim();
-    if (/^(https?:\/\/|mailto:|tel:)/i.test(u) || /^[\/#]/.test(u)) return u;
-    if (/^[a-z0-9-]+(\.[a-z0-9-]+)+([\/?#]|$)/i.test(u)) return 'https://' + u;
-    return '#';
+    if (!u) return '#';
+    if (/^(https?:\/\/|mailto:|tel:|sms:|whatsapp:)/i.test(u)) return u;
+    if (/^[a-z0-9-]+(\.[a-z0-9-]+)+([\/?#]|$)/i.test(u) && !/^[^\/?#]*\.html?([?#]|$)/i.test(u)) return 'https://' + u;
+    if (/^[a-z][a-z0-9+.-]*:/i.test(u)) return '#';
+    return u;
   }
 
   function hostOf(url) {
@@ -50,7 +55,7 @@
   function siteOf(url) {
     var u = String(url || '').toLowerCase();
     var h = hostOf(safeHref(u));
-    if (/(^|\.)whatsapp\.com$/.test(h) || h === 'wa.me') return 'whatsapp';
+    if (/(^|\.)whatsapp\.com$/.test(h) || h === 'wa.me' || /^whatsapp:/.test(u)) return 'whatsapp';
     if (h === 't.me' || /(^|\.)telegram\.(me|org)$/.test(h)) return 'telegram';
     if (/(^|\.)youtube\.com$/.test(h) || h === 'youtu.be') return 'youtube';
     if (/(^|\.)linkedin\.com$/.test(h)) return 'linkedin';
@@ -73,7 +78,7 @@
     if (/^tel:/.test(low)) return u.replace(/^tel:/i, '');
     var h = hostOf(safeHref(low));
     var site = siteOf(low);
-    if (site === 'whatsapp') return h === 'wa.me' ? 'WhatsApp chat' : /\/channel\//.test(low) ? 'WhatsApp channel' : 'WhatsApp group';
+    if (site === 'whatsapp') return /\/channel\//.test(low) ? 'WhatsApp channel' : h === 'chat.whatsapp.com' ? 'WhatsApp group' : 'WhatsApp chat';
     if (site === 'telegram') return 'Telegram';
     if (site === 'linkedin') return /\/(company|school|showcase)\//.test(low) ? 'LinkedIn page' : /\/in\//.test(low) ? 'LinkedIn profile' : 'LinkedIn';
     if (site === 'youtube') return /\/watch|youtu\.be\/|\/live\/|\/shorts\//.test(low) ? 'YouTube video' : /playlist/.test(low) ? 'YouTube playlist' : 'YouTube channel';
@@ -134,18 +139,24 @@
       '<span class="row-icon"><i class="' + esc(iconClass(link.icon, group.icon)) + '" aria-hidden="true"></i></span>' +
       '<span class="row-text"><span class="row-title">' + esc(link.title) + '</span>' +
         '<span class="row-sub">' + esc(describe(link.url)) + '</span></span>' +
-      '<span class="row-cta">' + esc(group.cta) + ' <span class="fas fa-arrow-right" aria-hidden="true"></span></span>' +
+      '<span class="row-cta">' + esc(describe(link.url) === 'WhatsApp chat' ? 'Chat' : group.cta) + ' <span class="fas fa-arrow-right" aria-hidden="true"></span></span>' +
     '</a>';
   }
 
   function isJobsLink(link) {
-    return /fa-briefcase/.test(String(link.icon || '')) || /(^|[\/-])jobs?([\/?#-]|$)/i.test(String(link.url || ''));
+    return /(^|[\/-])jobs([\/?#]|$)/i.test(String(link.url || ''));
   }
 
   /** A group's head: { name, icon }. A lone WhatsApp link is named exactly; job-portal links read "Jobs". */
   function groupHead(kind, links) {
     var group = GROUPS[kind] || GROUPS.default;
-    if (kind === 'whatsapp' && links.length === 1) return { name: describe(links[0].url), icon: group.icon };
+    if (kind === 'whatsapp') {
+      var sorts = links.map(function (l) { return describe(l.url); });
+      var same = sorts.every(function (d) { return d === sorts[0]; });
+      if (links.length === 1) return { name: sorts[0], icon: group.icon };
+      if (same && sorts[0] === 'WhatsApp channel') return { name: 'WhatsApp channels', icon: group.icon };
+      if (same && sorts[0] === 'WhatsApp chat') return { name: 'Chat on WhatsApp', icon: group.icon };
+    }
     if (kind === 'resources' && links.every(isJobsLink)) return { name: 'Jobs', icon: 'fas fa-briefcase' };
     return { name: group.head, icon: group.icon };
   }
