@@ -3,7 +3,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const test = require('node:test');
-const { JSDOM } = require('jsdom');
+// jsdom is a dev dependency on master only; on the app branch the page-level tests below are skipped.
+let JSDOM = null;
+try { ({ JSDOM } = require('jsdom')); } catch (e) { JSDOM = null; }
+const needsDom = { skip: JSDOM ? false : 'jsdom is not installed on this branch' };
 
 const root = path.resolve(__dirname, '..');
 const source = fs.readFileSync(path.join(root, 'links', 'render.js'), 'utf8');
@@ -151,7 +154,7 @@ function openPage() {
   return window;
 }
 
-test('the page lays out its built-in links: a banner on the three programme tabs, headed groups on all five', () => {
+test('the page lays out its built-in links: a banner on the three programme tabs, headed groups on all five', needsDom, () => {
   const { document } = openPage();
   const expected = { industrial: 1, ca: 1, articleship: 1, 'semi-qualified': 0, 'experienced-CA': 0 };
   for (const [id, banners] of Object.entries(expected)) {
@@ -175,7 +178,7 @@ test('the page lays out its built-in links: a banner on the three programme tabs
   assert.deepEqual([...document.querySelectorAll('.tab-btn[aria-selected="true"]')].map((b) => b.id), ['tab-industrial']);
 });
 
-test('switching tabs shows one panel and marks the chosen tab for screen readers', () => {
+test('switching tabs shows one panel and marks the chosen tab for screen readers', needsDom, () => {
   const window = openPage();
   const { document } = window;
   window.switchTab(document.getElementById('tab-articleship'), 'articleship');
