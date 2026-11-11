@@ -128,6 +128,8 @@
   document.addEventListener('click', function (e) {
     var wa = e.target.closest('a[href*="chat.whatsapp.com"]');
     if (wa) track('ibs_community_click', { where: wa.dataset.wa || 'practice' });
+    var yt = e.target.closest('a[href="#video"], a[data-yt]');
+    if (yt) track('ibs_video_click', { where: yt.dataset.yt || 'nav' });
     var a = e.target.closest('a[download][data-file]');
     if (!a) return;
     if (leadInMemory) { track('ibs_download', { file: a.dataset.file }); return; }

@@ -46,3 +46,12 @@ test('downloads and solved papers referenced by site.json exist', () => {
   const a = site.analysis;
   assert.ok(a.papers.length >= 6 && a.subjects.includes('Law') && a.subjects.includes('Costing'));
 });
+
+test('the strategy video is embedded near the top and linked from the hero and chips', () => {
+  const html = fs.readFileSync(path.join(DIR, 'index.html'), 'utf8');
+  const VID = 'ZH8jNNRAVgk';
+  assert.ok(html.includes(`youtube-nocookie.com/embed/${VID}`), 'embed iframe for the final video');
+  assert.ok(html.includes(`https://youtu.be/${VID}`), 'fallback link to YouTube');
+  assert.ok(html.indexOf('id="video"') < html.indexOf('id="preword"'), 'video sits before the pre-word');
+  assert.ok((html.match(/href="#video"/g) || []).length >= 2, 'hero button and chip point at #video');
+});
