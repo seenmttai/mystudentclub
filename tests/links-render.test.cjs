@@ -134,6 +134,19 @@ test('titles, addresses and icons from the table cannot inject markup or scripts
   assert.equal(r.safeHref('  /events/ '), '/events/');
   assert.equal(r.safeHref('data:text/html,hi'), '#');
   assert.equal(r.safeHref(null), '#');
+  // Paths on this site and app links still work; only unknown schemes are dropped.
+  assert.equal(r.safeHref('sessions/'), 'sessions/');
+  assert.equal(r.safeHref('contact.html'), 'contact.html');
+  assert.equal(r.safeHref('whatsapp://send?phone=918104135784'), 'whatsapp://send?phone=918104135784');
+  assert.equal(r.safeHref('vbscript:x'), '#');
+  // Click-to-chat links are a chat, not a group to join; channels-only tabs say so.
+  const chat = r.renderTab([{ title: 'Message us', url: 'https://api.whatsapp.com/send?phone=918104135784', card_type: 'whatsapp' }]);
+  assert.match(chat, /<span class="group-name">WhatsApp chat<\/span>/);
+  assert.match(chat, /<span class="row-cta">Chat /);
+  const ch = { title: 'Alerts', url: 'https://whatsapp.com/channel/abc', card_type: 'whatsapp' };
+  assert.match(r.renderTab([ch, ch]), /<span class="group-name">WhatsApp channels<\/span>/);
+  // The icon alone does not make a resource a job portal.
+  assert.match(r.renderTab([{ title: 'Interview kit', url: 'https://www.mystudentclub.com/kit.pdf', icon: 'fas fa-briefcase', card_type: 'resources' }]), /<span class="group-name">Resources<\/span>/);
 });
 
 test('footer icons are rendered from the "social" links', () => {
