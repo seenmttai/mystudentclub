@@ -47,11 +47,17 @@ test('downloads and solved papers referenced by site.json exist', () => {
   assert.ok(a.papers.length >= 6 && a.subjects.includes('Law') && a.subjects.includes('Costing'));
 });
 
-test('the strategy video is embedded near the top and linked from the hero and chips', () => {
+test('the strategy video sits inside the hero, and the page menu links to the indexes', () => {
   const html = fs.readFileSync(path.join(DIR, 'index.html'), 'utf8');
   const VID = 'ZH8jNNRAVgk';
-  assert.ok(html.includes(`youtube-nocookie.com/embed/${VID}`), 'embed iframe for the final video');
+  const embed = html.indexOf(`youtube-nocookie.com/embed/${VID}`);
+  assert.ok(embed > 0, 'embed iframe for the final video');
   assert.ok(html.includes(`https://youtu.be/${VID}`), 'fallback link to YouTube');
-  assert.ok(html.indexOf('id="video"') < html.indexOf('id="preword"'), 'video sits before the pre-word');
-  assert.ok((html.match(/href="#video"/g) || []).length >= 2, 'hero button and chip point at #video');
+  assert.ok(html.indexOf('class="hero"') < embed && embed < html.indexOf('class="chips'), 'video is in the hero, above the fold');
+  assert.ok(html.includes('id="indexes"') && /<nav class="top-nav"[\s\S]*?href="#indexes"[\s\S]*?<\/nav>/.test(html), 'top menu has the IBS Index link');
+});
+
+test('the home page menu has a CA Final IBS Index button that opens the indexes', () => {
+  const home = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.ok(/href="\/ca-final-ibs-strategy\/#indexes"[^>]*data-ibs-menu="drawer"/.test(home), 'side menu item');
 });
