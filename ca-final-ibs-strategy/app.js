@@ -298,10 +298,10 @@
     }).join('');
   }
 
-  getJSON('data/indexes.json').then(renderIndexes).catch(function () {
+  var indexesReady = getJSON('data/indexes.json').then(renderIndexes).catch(function () {
     $('#idx-panel').innerHTML = '<p class="muted">Could not load the indexes. Refresh the page.</p>';
   });
-  getJSON('data/site.json').then(function (s) {
+  var siteReady = getJSON('data/site.json').then(function (s) {
     renderAnalysis(s.analysis);
     renderSolved(s.papers);
     renderDownloads([].concat(s.downloads.notes, s.downloads.solutions, s.downloads.analysis), 'all-dl');
@@ -309,4 +309,17 @@
     $('#an-marks').innerHTML = '<p class="muted">Could not load. Refresh the page.</p>';
     $('#sol-panel').innerHTML = '';
   });
+
+  // Arriving from another page with a #section (the home menu's "IBS Index" opens #indexes): the browser's own
+  // smooth jump gets cut short while the page is still filling in, so land there once the content has loaded.
+  function landOnHash() {
+    var el = null;
+    try { el = location.hash.length > 1 && document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch (e) { /* bad hash */ }
+    if (!el) return;
+    var root = document.documentElement, prev = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    el.scrollIntoView({ block: 'start' });
+    root.style.scrollBehavior = prev;
+  }
+  Promise.all([indexesReady, siteReady]).then(function () { requestAnimationFrame(landOnHash); });
 })();
