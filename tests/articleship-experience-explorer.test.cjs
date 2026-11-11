@@ -686,21 +686,23 @@ test('page: a thin domain offers the nearest domain with its count; every view e
     assert.equal(window.document.querySelector('.xp-next').previousElementSibling.className, 'xp-more', 'after Show more');
 });
 
-test('page: on a phone the at-a-glance block sits after the third card', () => {
+test('page: at-a-glance block stays above the cards at every width (UI 11 Nov: interleaving confused phone users)', () => {
     const listeners = [];
     const query = { matches: true, addEventListener: (type, fn) => listeners.push(fn), removeEventListener() {} };
     const { $, container } = page('?domain=gst', { matchMedia: () => query });
     const results = $('.xp-results');
-    const kids = [...results.children];
-    assert.equal(kids[3].classList.contains('xp-glance'), true, 'after three cards');
-    assert.ok(kids.slice(0, 3).every(node => node.classList.contains('xp-card')));
+    // Glance is in the container (above results), not inside the results list, even on a phone.
+    assert.equal($('.xp-glance').parentNode, container, 'phone: glance above results, not interleaved');
     assert.equal(results.querySelectorAll('.xp-card').length, 12, 'still 12 cards');
+    assert.ok([...results.children].every(node => node.classList.contains('xp-card')), 'results list has only cards');
+    // Show more: glance stays in the container.
     $('.xp-more button').click();
     assert.equal(results.querySelectorAll('.xp-card').length, 24);
-    assert.equal(results.children[3].classList.contains('xp-glance'), true, 'kept in place after Show more');
+    assert.equal($('.xp-glance').parentNode, container, 'after Show more: still above the cards');
+    // Wider viewport: same position.
     query.matches = false;
     listeners.forEach(fn => fn());
-    assert.equal($('.xp-glance').parentNode, container, 'wider: back above the cards');
+    assert.equal($('.xp-glance').parentNode, container, 'wider: above the cards');
     assert.equal(page('?domain=gst').$('.xp-glance').parentNode.id, 'explorer', 'no matchMedia: above the cards');
 });
 

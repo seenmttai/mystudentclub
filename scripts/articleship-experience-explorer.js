@@ -39,7 +39,6 @@
     const COMMON_LINES = 6;
     const THIN = 8;
     const BIG_FIRM = 20; // a firm with this many cards or more is spread out, so smaller firms are seen too
-    const GLANCE_AFTER = 3;
     const PHONE = '(max-width: 599px)';
     const ACCOUNT_SCRIPTS = ['/scripts/supabase.js', '/scripts/supabase-init.js'];
     const FIRM_CHIPS = 10;
@@ -1095,16 +1094,13 @@
             placeGlance();
         }
 
-        // On a phone the at-a-glance block sits after the first cards, so the first screen shows real work.
+        // The at-a-glance block keeps one place at every width: above the results, as on a desktop
+        // (UI pass 11 Nov: cards between results read as results and confused the list on a phone).
         function placeGlance() {
-            const cards = results.querySelectorAll('.xp-card');
-            const inline = Boolean(phone && phone.matches) && !glance.hidden && cards.length > GLANCE_AFTER;
-            if (inline) {
-                if (glance.parentNode !== results || glance.previousElementSibling !== cards[GLANCE_AFTER - 1]) results.insertBefore(glance, cards[GLANCE_AFTER]);
-            } else if (glance.parentNode !== container || glance.nextSibling !== empty) {
+            if (glance.parentNode !== container || glance.nextSibling !== empty) {
                 container.insertBefore(glance, empty);
             }
-            glance.classList.toggle('is-inline', inline);
+            glance.classList.remove('is-inline');
         }
 
         function emptyTitle() {

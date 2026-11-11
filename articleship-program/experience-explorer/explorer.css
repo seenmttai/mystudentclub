@@ -150,7 +150,6 @@
 .xp-firm-chip-n { flex: 0 0 auto; color: var(--ap-muted); font-weight: 500; }
 .xp-firm-chip:hover { border-color: var(--ap-accent); background: var(--ap-hover); }
 /* On a phone the block sits after the third card, and the firms are one row that scrolls sideways */
-.xp-glance.is-inline { margin: 4px 0; }
 @media (max-width: 599px) {
     .xp-firm-chips {
         flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity;

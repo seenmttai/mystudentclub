@@ -16,11 +16,11 @@ body.ap-page .ap-topbar { background: var(--ap-panel); }
 /* The lede has a phone line and a laptop line (a phone can't put the profile next to this page). */
 .lc-on-wide { display: none; }
 
-/* Phone: open card, then the list, then the notes. */
+/* Phone: the checklist first; "Open my profile" and the notes close the page (a phone can't keep the profile beside the list, so the list leads and the profile step comes when the checks are read). */
 .lc-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "open" "list" "notes";
+    grid-template-areas: "list" "open" "notes";
     gap: 14px;
 }
 .lc-side { display: contents; }
