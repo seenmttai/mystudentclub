@@ -144,6 +144,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return type === 'docx' && hasPreview && hasDownload;
     };
 
+    // A row whose only file is an Excel workbook opens in the in-page sheet viewer, with Download beside it (scripts/excel-sheet-view.js).
+    const excelSheets = () => (typeof window !== 'undefined' && window.MSCExcelSheets) || null;
+    const isExcelViewerResource = (resource) => Boolean(excelSheets()?.isExcelViewerRow(resource));
+
     const isCompactResourceCourse = () => Boolean(courses[state.courseSlug]?.compactResources);
 
     const isExcelDownloadResource = (resource) => {
@@ -153,7 +157,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const getResourceViewLabel = (resource) => resource?.type === 'external_link' && isCompactResourceCourse()
-        ? 'Open' : isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
+        ? 'Open' : isDocxPreviewResource(resource) ? 'Preview PDF' :
+            (isExcelViewerResource(resource) || isExcelDownloadResource(resource)) ? 'Preview Excel' : 'View';
 
     const articleshipLms = () => (typeof window !== 'undefined' && window.MSCArticleshipLms) || null;
 
@@ -173,11 +178,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const getResourceFormatNote = (resource) => {
         if (isCompactResourceCourse()) return '';
         if (isDocxPreviewResource(resource)) return 'PDF preview available. Download returns the original DOCX file.';
-        if (isExcelDownloadResource(resource)) return 'Preview shows one sheet. Download the Excel file for every sheet.';
+        if (isExcelDownloadResource(resource)) return 'Preview every sheet here. Download the Excel file to edit it.';
+        if (isExcelViewerResource(resource)) return 'Preview opens here. Download the Excel file to edit it.';
         return '';
     };
 
     const getResourceViewerSubtitle = (resource, type) => {
+        if (type === 'xlsx') return 'Preview only. Download the Excel file to edit it and keep the formulas.';
         if (isDocxPreviewResource(resource) && type === 'pdf') {
             return 'Previewing the PDF version. Use download to get the original DOCX file.';
         }
@@ -1415,7 +1422,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const viewLabel = getResourceViewLabel(resource);
                     const downloadLabel = getResourceDownloadLabel(resource);
                     const formatNote = getResourceFormatNote(resource);
-                    const hasViewTarget = Boolean(resource.url) || resource.type === 'external_link' ||
+                    const hasViewTarget = Boolean(resource.url) || resource.type === 'external_link' || isExcelViewerResource(resource) ||
                         Boolean(resource.view_storage_path && resource.view_storage_path !== 'None' && String(resource.view_storage_path).trim() !== '');
                     // Compact rows with only a file to download (e.g. the Excel test) show just the Download button.
                     const showView = hasViewTarget || !isCompactResourceCourse();
@@ -1587,7 +1594,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (resource.view_storage_path && resource.view_storage_path !== 'None') {
             const path = resource.view_storage_path.toLowerCase();
             if (path.endsWith('.csv')) {
-                await openResourceViewer(resource, 'csv');
+                await openResourceViewer(resource, isExcelDownloadResource(resource) ? 'xlsx' : 'csv');
             } else if (resource.group && resource.group.toLowerCase().includes('template') &&
                 courses[state.courseSlug]?.templateCanvas !== false) {
                 // Templates (CV, Cover Letter, etc.) use the inline modal viewer (switched off for the Articleship course)
@@ -1628,6 +1635,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('Could not open the resource. Please try again.');
                 }
             }
+            return;
+        }
+        if (isExcelViewerResource(resource)) {
+            await openResourceViewer(resource, 'xlsx');
             return;
         }
         downloadResource(resource);
@@ -1817,6 +1828,238 @@ document.addEventListener('DOMContentLoaded', () => {
     const certBtn = document.getElementById('download-certificate-btn');
     if (certBtn) certBtn.addEventListener('click', generateCertificate);
 
+    // Draws rows of text in the spreadsheet viewer: a CSV file, or one sheet of a workbook.
+    const renderCsvTable = (data) => {
+        const table = DOMElements.csvViewerContainer.querySelector('table');
+        table.innerHTML = '';
+
+        if (data.length === 0) {
+            table.innerHTML = '<tbody><tr><td style="text-align:center; padding: 2rem;">No data found in CSV</td></tr></tbody>';
+            return;
+        }
+
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        data[0].forEach(cell => {
+            const th = document.createElement('th');
+            th.textContent = cell;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        for (let i = 1; i < data.length; i++) {
+            const row = document.createElement('tr');
+            data[i].forEach(cell => {
+                const td = document.createElement('td');
+                td.textContent = cell;
+                td.title = cell;
+                row.appendChild(td);
+            });
+            tbody.appendChild(row);
+        }
+        table.appendChild(tbody);
+    };
+
+    // The sheet tabs of a workbook; a single sheet shows no tabs.
+    const renderSheetTabs = (names, activeIndex, onPick) => {
+        const container = DOMElements.csvViewerContainer;
+        if (!container) return;
+        let bar = document.getElementById('csv-sheet-tabs');
+        if (!bar) {
+            bar = document.createElement('div');
+            bar.id = 'csv-sheet-tabs';
+            bar.className = 'csv-sheet-tabs';
+            bar.setAttribute('role', 'tablist');
+            container.insertBefore(bar, container.firstChild);
+        }
+        bar.innerHTML = '';
+        if (names.length < 2) { bar.style.display = 'none'; return; }
+        bar.style.display = 'flex';
+        names.forEach((name, index) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'csv-sheet-tab' + (index === activeIndex ? ' active' : '');
+            btn.setAttribute('role', 'tab');
+            btn.setAttribute('aria-selected', String(index === activeIndex));
+            btn.textContent = name;
+            btn.addEventListener('click', () => { if (index !== activeIndex) onPick(index); });
+            bar.appendChild(btn);
+        });
+    };
+
+    let xlsxLibPromise = null;
+    // SheetJS loads only when a student opens a workbook.
+    const ensureXlsxLib = () => {
+        if (typeof window !== 'undefined' && window.XLSX) return Promise.resolve(window.XLSX);
+        if (!xlsxLibPromise) {
+            xlsxLibPromise = new Promise((resolve, reject) => {
+                const el = document.createElement('script');
+                el.src = excelSheets().SHEETJS_URL;
+                el.onload = () => (window.XLSX ? resolve(window.XLSX) : reject(new Error('Excel reader did not start')));
+                el.onerror = () => { xlsxLibPromise = null; el.remove(); reject(new Error('Could not load the Excel reader')); };
+                document.head.appendChild(el);
+            });
+        }
+        return xlsxLibPromise;
+    };
+
+    const excelGrid = () => (typeof window !== 'undefined' && window.MSCExcelGrid) || null;
+
+    let exceljsLibPromise = null;
+    // ExcelJS (the styles) loads only when a workbook is opened.
+    const ensureExcelJsLib = () => {
+        if (typeof window !== 'undefined' && window.ExcelJS) return Promise.resolve(window.ExcelJS);
+        if (!exceljsLibPromise) {
+            exceljsLibPromise = new Promise((resolve, reject) => {
+                const el = document.createElement('script');
+                el.src = excelSheets().EXCELJS_URL;
+                el.onload = () => (window.ExcelJS ? resolve(window.ExcelJS) : reject(new Error('Style reader did not start')));
+                el.onerror = () => { exceljsLibPromise = null; el.remove(); reject(new Error('Could not load the style reader')); };
+                document.head.appendChild(el);
+            });
+        }
+        return exceljsLibPromise;
+    };
+
+    const excelGridHost = () => document.getElementById('csv-table-scroll') || DOMElements.csvViewerContainer;
+
+    // Takes the Excel-look grid and its sheet tabs out of the viewer, and gives the plain table back.
+    const hideExcelGrid = () => {
+        const wrap = document.getElementById('xl-grid-wrap');
+        if (wrap) wrap.remove();
+        const tabs = document.getElementById('xl-sheet-tabs');
+        if (tabs) tabs.remove();
+        const host = excelGridHost();
+        const csvTable = host && host.querySelector('table.csv-preview-table');
+        if (csvTable) csvTable.style.display = '';
+    };
+
+    // Sheet tabs at the bottom, as in Excel.
+    const renderGridTabs = (names, activeIndex, onPick, host) => {
+        let bar = document.getElementById('xl-sheet-tabs');
+        if (!bar) {
+            bar = document.createElement('div');
+            bar.id = 'xl-sheet-tabs';
+            bar.className = 'xl-sheet-tabs';
+            bar.setAttribute('role', 'tablist');
+        }
+        host.appendChild(bar);
+        bar.innerHTML = '';
+        names.forEach((name, index) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'xl-sheet-tab' + (index === activeIndex ? ' active' : '');
+            btn.setAttribute('role', 'tab');
+            btn.setAttribute('aria-selected', String(index === activeIndex));
+            btn.textContent = name;
+            btn.addEventListener('click', () => { if (index !== activeIndex) onPick(index); });
+            bar.appendChild(btn);
+        });
+    };
+
+    // The workbook as an Excel-look grid: each cell's colours, fonts, borders, merges, widths and frozen panes.
+    // Returns false (and leaves the viewer untouched) when it cannot be built, so the caller shows the plain table.
+    const showExcelGrid = async (XLSX, buffer, resource, path) => {
+        const grid = excelGrid();
+        if (!grid || !/\.xlsx$/i.test(String(path))) return false;
+        let models;
+        try {
+            const ExcelJS = await ensureExcelJsLib();
+            const excelWorkbook = await new ExcelJS.Workbook().xlsx.load(buffer.slice(0));
+            models = grid.buildModels(XLSX, XLSX.read(buffer, { type: 'array' }), excelWorkbook);
+        } catch (err) {
+            console.warn('Excel-look grid unavailable, showing the plain table instead.', err);
+            return false;
+        }
+        if (!models.length) return false;
+        // The student may have closed the viewer, or opened another file, while this one loaded.
+        if (state.currentResource !== resource || state.previewType !== 'xlsx') return true;
+        const host = excelGridHost();
+        const csvTable = host.querySelector('table.csv-preview-table');
+        if (csvTable) csvTable.style.display = 'none';
+        DOMElements.csvViewerContainer.style.display = document.getElementById('csv-table-scroll') ? 'flex' : 'block';
+        DOMElements.viewerLoadingScreen.style.display = 'none';
+        const show = (index) => {
+            const previous = document.getElementById('xl-grid-wrap');
+            if (previous) previous.remove();
+            const model = models[index];
+            const wrap = document.createElement('div');
+            wrap.id = 'xl-grid-wrap';
+            wrap.className = 'xl-grid-wrap';
+            const drawn = grid.renderGrid(document, model);
+            wrap.appendChild(drawn.table);
+            host.appendChild(wrap);
+            grid.applyFreeze(drawn.table, model, drawn.visibleCols);
+            if (DOMElements.csvSearchInput) DOMElements.csvSearchInput.value = '';
+            if (DOMElements.csvInfoBar) {
+                DOMElements.csvInfoBar.textContent = model.truncated
+                    ? `First ${model.rows.toLocaleString()} of ${model.total.toLocaleString()} rows · ${model.cols} cols`
+                    : `${model.rows.toLocaleString()} row${model.rows !== 1 ? 's' : ''} · ${model.cols} col${model.cols !== 1 ? 's' : ''}`;
+            }
+            renderGridTabs(models.map(item => item.name), index, show, host);
+            host.scrollTop = 0;
+        };
+        show(0);
+        return true;
+    };
+
+    // Opens the workbook of a row in the sheet viewer: every visible sheet, as tabs.
+    const showCsvGrid = (rows) => {
+        const grid = excelGrid();
+        if (!grid || !Array.isArray(rows) || !rows.length) return false;
+        const model = grid.buildCsvModel(rows);
+        const host = excelGridHost();
+        const table = host.querySelector('table.csv-preview-table');
+        if (table) table.style.display = 'none';
+        const wrap = document.createElement('div');
+        wrap.id = 'xl-grid-wrap';
+        wrap.className = 'xl-grid-wrap';
+        wrap.appendChild(grid.renderGrid(document, model).table);
+        host.appendChild(wrap);
+        DOMElements.csvViewerContainer.style.display = 'block';
+        return true;
+    };
+
+    const openExcelWorkbook = async (resource) => {
+        if (!excelSheets()) throw new Error('Excel viewer is unavailable');
+        const path = resource.download_storage_path;
+        const [XLSX, signed] = await Promise.all([
+            ensureXlsxLib(),
+            supabase.storage.from(articleshipLms()?.bucketFor(path) || 'industrial-training-mastery-resources').createSignedUrl(path, 300)
+        ]);
+        if (signed.error) throw signed.error;
+        const response = await fetch(signed.data.signedUrl);
+        if (!response.ok) throw new Error('Network response was not ok.');
+        const buffer = await response.arrayBuffer();
+        // The Excel-look grid first (colours, merges, widths); the plain table when it cannot be built.
+        if (await showExcelGrid(XLSX, buffer, resource, path)) return;
+        const sheets = excelSheets().workbookToSheets(XLSX, buffer);
+        // The student may have closed the viewer, or opened another file, while this one loaded.
+        if (state.currentResource !== resource || state.previewType !== 'xlsx') return;
+        DOMElements.csvViewerContainer.style.display = 'block';
+        if (!sheets.length) {
+            renderCsvTable([]);
+            renderSheetTabs([], 0, () => {});
+            return;
+        }
+        const show = (index) => {
+            const sheet = sheets[index];
+            renderCsvTable(sheet.rows);
+            renderSheetTabs(sheets.map(item => item.name), index, show);
+            const subtitle = document.getElementById('resource-viewer-subtitle');
+            if (subtitle && sheet.truncated) {
+                subtitle.textContent = `First ${sheet.rows.length.toLocaleString()} of ${sheet.total.toLocaleString()} rows. Download the Excel file for every row.`;
+                subtitle.style.display = 'block';
+            } else if (subtitle) {
+                subtitle.textContent = getResourceViewerSubtitle(resource, 'xlsx');
+                subtitle.style.display = subtitle.textContent ? 'block' : 'none';
+            }
+        };
+        show(0);
+    };
+
     const openResourceViewer = async (resource, type, initialPage = 1) => {
         if (state.courseSlug === 'msc-articleship-program' && (!state.user || !state.isEnrolled)) return;
         state.pdfDoc = null; state.csvData = null; state.pdfCurrentPage = 1; state.pdfTotalPages = 1;
@@ -1837,6 +2080,9 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.pdfViewerContainer.style.display = 'none';
         DOMElements.csvViewerContainer.style.display = 'none';
         DOMElements.iframeViewerContainer.style.display = 'none';
+        const sheetTabBar = document.getElementById('csv-sheet-tabs');
+        if (sheetTabBar) sheetTabBar.style.display = 'none';
+        hideExcelGrid();
 
         const courseZoomControls = document.getElementById('course-zoom-controls');
         if (courseZoomControls) courseZoomControls.style.display = type === 'pdf' ? 'flex' : 'none';
@@ -1876,6 +2122,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            if (type === 'xlsx') {
+                try {
+                    await openExcelWorkbook(resource);
+                } catch (error) {
+                    if (!isExcelDownloadResource(resource)) throw error;
+                    console.warn('Workbook preview unavailable; opening CSV preview:', error);
+                    await openResourceViewer(resource, 'csv');
+                }
+                return;
+            }
+
             const { data, error } = await supabase.storage.from(articleshipLms()?.bucketFor(resource.view_storage_path) || 'industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
             if (error) throw error;
             const response = await fetch(`https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`);
@@ -1893,37 +2150,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 Papa.parse(csvText, {
                     skipEmptyLines: true,
                     complete: function (results) {
-                        const data = results.data;
-                        const table = DOMElements.csvViewerContainer.querySelector('table');
-                        table.innerHTML = '';
-
-                        if (data.length === 0) {
-                            table.innerHTML = '<tbody><tr><td style="text-align:center; padding: 2rem;">No data found in CSV</td></tr></tbody>';
-                            return;
-                        }
-
-                        const thead = document.createElement('thead');
-                        const headerRow = document.createElement('tr');
-                        data[0].forEach(cell => {
-                            const th = document.createElement('th');
-                            th.textContent = cell;
-                            headerRow.appendChild(th);
-                        });
-                        thead.appendChild(headerRow);
-                        table.appendChild(thead);
-
-                        const tbody = document.createElement('tbody');
-                        for (let i = 1; i < data.length; i++) {
-                            const row = document.createElement('tr');
-                            data[i].forEach(cell => {
-                                const td = document.createElement('td');
-                                td.textContent = cell;
-                                td.title = cell;
-                                row.appendChild(td);
-                            });
-                            tbody.appendChild(row);
-                        }
-                        table.appendChild(tbody);
+                        if (state.currentResource === resource && state.previewType === 'csv' && !showCsvGrid(results.data)) renderCsvTable(results.data);
                     },
                     error: function (err) {
                         console.error("CSV Parse Error:", err);

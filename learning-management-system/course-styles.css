@@ -1246,7 +1246,7 @@
     }
 
     .resource-viewer-content {
-        padding: 1rem;
+        padding: max(calc(env(safe-area-inset-top, 0px) + 12px), 36px) 12px max(calc(env(safe-area-inset-bottom, 0px) + 12px), 12px);
     }
 
     .resource-viewer-title {
@@ -2243,4 +2243,160 @@
     .articleship-course .video-progress-center { min-width: 0; }
     .articleship-course .video-counter { white-space: normal; font-size: .75rem; }
     .articleship-course .nav-button-premium span { font-size: .875rem; }
+}
+
+/* Sheet tabs of an Excel workbook opened in the spreadsheet viewer */
+.csv-sheet-tabs {
+    display: flex;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    overflow-x: auto;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    -webkit-overflow-scrolling: touch;
+}
+
+.csv-sheet-tab {
+    flex: 0 0 auto;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #475569;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.csv-sheet-tab.active {
+    background: #0f172a;
+    border-color: #0f172a;
+    color: #ffffff;
+}
+
+/* Excel-look grid for a workbook opened in the sheet viewer (scripts/excel-grid.js) */
+.xl-grid-wrap {
+    background: #ffffff;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.xl-grid {
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    background: #ffffff;
+    font-family: Calibri, Carlito, 'Segoe UI', Arial, sans-serif;
+    font-size: 14.67px;
+    color: #000000;
+}
+
+.xl-grid th,
+.xl-grid td {
+    box-sizing: border-box;
+    padding: 1px 4px;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 1px solid #e1e1e1;
+    border-bottom: 1px solid #e1e1e1;
+    line-height: 1.25;
+}
+
+.xl-grid .xl-corner,
+.xl-grid .xl-col-head,
+.xl-grid .xl-row-head {
+    background: #f3f3f3;
+    color: #444444;
+    font-size: 12px;
+    font-weight: 400;
+    text-align: center;
+    border-right: 1px solid #c8c8c8;
+    border-bottom: 1px solid #c8c8c8;
+}
+
+.xl-grid thead th {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    height: 22px;
+}
+
+.xl-grid .xl-corner,
+.xl-grid .xl-row-head {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+}
+
+.xl-grid .xl-corner {
+    z-index: 5;
+}
+
+.xl-grid td.xl-frozen,
+.xl-grid td.xl-frozen-col {
+    position: sticky;
+    z-index: 2;
+    background-color: #ffffff;
+}
+
+.xl-grid td.xl-frozen.xl-frozen-col {
+    z-index: 3;
+}
+
+.xl-grid td.xl-frozen-col {
+    border-right: 1px solid #9aa0a6;
+}
+
+.xl-grid td.xl-match {
+    box-shadow: inset 0 0 0 2px #f4b400;
+}
+
+.xl-grid tr.xl-row-hidden {
+    display: none;
+}
+
+.xl-grid a.xl-link {
+    color: #0563c1;
+    text-decoration: underline;
+}
+
+/* Sheet tabs at the bottom, as in Excel */
+.xl-sheet-tabs {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    z-index: 6;
+    display: flex;
+    gap: 2px;
+    padding: 0 8px;
+    overflow-x: auto;
+    background: #f3f3f3;
+    border-top: 1px solid #c8c8c8;
+    -webkit-overflow-scrolling: touch;
+}
+
+.xl-sheet-tab {
+    flex: 0 0 auto;
+    padding: 6px 16px;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    color: #444444;
+    font: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.xl-sheet-tab:hover {
+    background: #e6e6e6;
+}
+
+.xl-sheet-tab.active {
+    background: #ffffff;
+    color: #217346;
+    font-weight: 600;
+    border-bottom-color: #217346;
 }

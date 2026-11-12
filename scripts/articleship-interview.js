@@ -1294,7 +1294,8 @@
             ])]);
             wrap.appendChild(label);
         });
-        return el(doc, 'fieldset', { class: 'aii-field' }, [el(doc, 'legend', { class: 'aii-label', text: legend }), wrap]);
+        const fieldClass = 'aii-field' + (name ? ' ' + name.replace(/^aii-/, 'aii-field-') : '');
+        return el(doc, 'fieldset', { class: fieldClass }, [el(doc, 'legend', { class: 'aii-label', text: legend }), wrap]);
     }
 
     function checkedValue(form, name) {
@@ -1352,11 +1353,11 @@
         const domainSelect = el(doc, 'select', { id: 'aii-domain', class: 'aii-input', name: 'aii-domain' });
         DOMAINS.forEach(domain => domainSelect.appendChild(el(doc, 'option', { value: domain.slug, text: domain.label })));
         domainSelect.value = domainDefault;
-        form.appendChild(el(doc, 'div', { class: 'aii-field' }, [el(doc, 'label', { class: 'aii-label', for: 'aii-domain', text: 'Domain' }), domainSelect]));
+        form.appendChild(el(doc, 'div', { class: 'aii-field aii-field-domain' }, [el(doc, 'label', { class: 'aii-label', for: 'aii-domain', text: 'Domain' }), domainSelect]));
 
         const firmInput = el(doc, 'input', { id: 'aii-firm', class: 'aii-input', type: 'text', maxlength: '80', autocomplete: 'off', placeholder: 'Firm name (optional)' });
         firmInput.value = cleanFirm(preset.firm || last.firm);
-        form.appendChild(el(doc, 'div', { class: 'aii-field' }, [el(doc, 'label', { class: 'aii-label', for: 'aii-firm', text: 'Firm' }), firmInput]));
+        form.appendChild(el(doc, 'div', { class: 'aii-field aii-field-firm' }, [el(doc, 'label', { class: 'aii-label', for: 'aii-firm', text: 'Firm' }), firmInput]));
         // Firm size and toughness fold under "More options", their current choice shown on the row.
         const moreState = el(doc, 'span', { class: 'aii-more-state' });
         const more = el(doc, 'details', { class: 'aii-more' }, [
@@ -1456,7 +1457,7 @@
             form.appendChild(el(doc, 'p', { class: 'aii-other' }, [el(doc, 'a', { class: 'ap-link', href: opts.otherRolesHref, text: 'Practising for another role?' })]));
         }
 
-        const main = el(doc, 'main', { class: 'ap-main aii-main' }, [el(doc, 'div', { class: 'ap-hero' }, [title, lede, done]), form]);
+        const main = el(doc, 'main', { class: 'ap-main is-wide aii-main' }, [el(doc, 'div', { class: 'ap-hero' }, [title, lede, done]), form]);
         container.replaceChildren(topbar, main);
 
         function readSetup() {

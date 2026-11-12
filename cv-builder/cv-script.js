@@ -31,22 +31,48 @@
         // store also starts empty when another student signs in on this browser. The normal CV stays on this device only.
         let articleshipDraftStore = null;
 
+        // The normal Builder's draft and both Builders' saved versions sync through cv-builder/cv-sync.js (see its header):
+        // a slot is the device copy plus one row in the student's account. DRAFT_KEY stays a plain copy of the CV on this
+        // device because other pages (AI interview, Work Simulation) read it.
+        const CV_SYNC = window.MSCCvSync;
+        const SYNC_TABLES = { normal: 'cv_builder_progress', articleship: 'articleship_tool_progress' };
+        const SYNC_KEYS = { draft: 'msc.cv-builder.draft', history: { normal: 'msc.cv-builder.history', articleship: 'msc.cv-builder.history.articleship' } };
+        const LEGACY_OWNER_KEY = 'msc.cv-builder.legacy-owner';
+        // The Articleship table rejects a row above 256 KB; the normal table allows 512 KB.
+        const HISTORY_BYTES = CV_MODE === 'articleship' ? CV_SYNC.HISTORY_MAX_BYTES_ARTICLESHIP : CV_SYNC.HISTORY_MAX_BYTES;
+        let draftSlot = null;
+        let historySlot = null;
+        // CVs that lost a two-device conflict; they become saved versions once the page is ready.
+        const conflictLosers = [];
+
+        function syncClient() {
+            return window.mscSupabase || window.supabaseClient || null;
+        }
+
         function readDraft() {
-            if (CV_MODE !== 'articleship') return localStorage.getItem(DRAFT_KEY);
+            if (CV_MODE !== 'articleship') {
+                const saved = draftSlot ? draftSlot.get().cv : null;
+                return saved ? JSON.stringify(saved) : null;
+            }
             const saved = articleshipDraftStore ? articleshipDraftStore.get().cv : null;
             return saved ? JSON.stringify(saved) : null;
         }
 
         function writeDraft(data) {
-            if (CV_MODE !== 'articleship') { localStorage.setItem(DRAFT_KEY, JSON.stringify(data)); return; }
+            if (CV_MODE !== 'articleship') {
+                if (!draftSlot) return;
+                // An unchanged CV is not saved again, so opening the page never outdates a newer copy from another device.
+                if (JSON.stringify(draftSlot.get().cv) === JSON.stringify(data)) return;
+                draftSlot.set({ cv: data, at: Date.now() });
+                return;
+            }
             if (!articleshipDraftStore) return;
-            // An unchanged CV is not saved again, so opening the page never outdates a newer copy from another device.
             if (JSON.stringify(articleshipDraftStore.get().cv) === JSON.stringify(data)) return;
             articleshipDraftStore.set({ cv: data });
         }
 
         function clearDraft() {
-            if (CV_MODE !== 'articleship') localStorage.removeItem(DRAFT_KEY);
+            if (CV_MODE !== 'articleship') { if (draftSlot) draftSlot.set({ cv: null, at: Date.now() }); }
             else if (articleshipDraftStore) articleshipDraftStore.set({ cv: null });
         }
         // The Articleship catalog exists only after the gate allowed access, so a template belongs to Articleship
@@ -294,6 +320,155 @@
         let summaryLinkRange = null;
         const inlineRichEditors = new Map();
 
+        // ---- Account sync: slots, device copies from before sync existed, first pull ----
+        const legacyCopies = { draft: null, history: null, owner: null };
+
+        // The mobile page has no Supabase client of its own. A signed-in student gets the site's shared client (the same
+        // one the other mobile pages use, with the session the app or browser already holds); a signed-out one loads nothing.
+        async function whenSyncClient(timeoutMs) {
+            if (syncClient()) return syncClient();
+            if (!CV_SYNC.sessionUserId()) return null;
+            try {
+                await Promise.race([
+                    loadAssets([{ type: 'script', src: '/scripts/supabase.js' }, { type: 'script', src: '/scripts/supabase-init.js' }]),
+                    new Promise((resolve, reject) => setTimeout(() => reject(new Error('timeout')), timeoutMs))
+                ]);
+                if (typeof window.getSupabaseClient === 'function') return window.getSupabaseClient();
+            } catch (_) { /* the device copy keeps working */ }
+            return syncClient();
+        }
+
+        function mirrorDraft(cv) {
+            try {
+                if (cv) {
+                    localStorage.setItem(DRAFT_KEY, JSON.stringify(cv));
+                    const id = CV_SYNC.sessionUserId();
+                    if (id) localStorage.setItem(LEGACY_OWNER_KEY, id);
+                } else {
+                    localStorage.removeItem(DRAFT_KEY);
+                }
+            } catch (_) { /* storage blocked: the slot still holds the CV */ }
+        }
+
+        function setupCvSync() {
+            if (historySlot) return;
+            try {
+                legacyCopies.owner = localStorage.getItem(LEGACY_OWNER_KEY);
+                if (CV_MODE !== 'articleship') legacyCopies.draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+                legacyCopies.history = JSON.parse(localStorage.getItem(HISTORY_KEY) || 'null');
+            } catch (_) { /* a damaged old copy is ignored */ }
+            if (CV_MODE !== 'articleship') {
+                draftSlot = CV_SYNC.createSlot({
+                    table: SYNC_TABLES.normal, tool: 'cv-draft', key: SYNC_KEYS.draft, getClient: syncClient,
+                    defaults: { cv: null, at: 0 }, maxBytes: CV_SYNC.DRAFT_MAX_BYTES,
+                    merge: (local, remote) => {
+                        const merged = CV_SYNC.mergeDrafts(local, remote, value => !hasUserEnteredData(value));
+                        if (merged.loser) conflictLosers.push(merged.loser);
+                        return merged.data;
+                    }
+                });
+                draftSlot.subscribe(data => mirrorDraft(data.cv));
+            }
+            historySlot = CV_SYNC.createSlot({
+                table: SYNC_TABLES[CV_MODE], tool: 'cv-history', key: SYNC_KEYS.history[CV_MODE], getClient: syncClient,
+                defaults: { items: [], deleted: [] }, maxBytes: HISTORY_BYTES + 12000,
+                merge: (local, remote) => CV_SYNC.mergeHistory(local, remote, HISTORY_BYTES)
+            });
+            adoptDeviceCopies();
+            applyConflictLosers();
+        }
+
+        /**
+         * Draft and versions that this device made before sync existed move into the slots, once. They are skipped when
+         * they belong to another student who used this browser (the slots reset for a new account, and so do these).
+         */
+        function adoptDeviceCopies() {
+            const userId = CV_SYNC.sessionUserId();
+            const foreign = Boolean(userId && legacyCopies.owner && legacyCopies.owner !== userId)
+                || Boolean(draftSlot && draftSlot.ownerChanged()) || historySlot.ownerChanged();
+            if (foreign) {
+                try { localStorage.removeItem(HISTORY_KEY); } catch (_) { /* ignore */ }
+                if (draftSlot) mirrorDraft(draftSlot.get().cv);
+                return;
+            }
+            const doneKey = 'msc.cv-builder.legacy-done:' + (userId || 'device');
+            let done = false;
+            try { done = Boolean(localStorage.getItem(doneKey)); } catch (_) { /* ignore */ }
+            const old = legacyCopies.draft;
+            if (draftSlot && !done && old && hasUserEnteredData(old)) {
+                const current = draftSlot.get().cv;
+                if (!hasUserEnteredData(current)) draftSlot.set({ cv: old, at: Date.now() }, 'legacy');
+                else if (JSON.stringify(current) !== JSON.stringify(old)) conflictLosers.push({ cv: old, at: 0 });
+                try { localStorage.setItem(doneKey, '1'); } catch (_) { /* ignore */ }
+            }
+            const oldVersions = legacyCopies.history;
+            if (Array.isArray(oldVersions) && oldVersions.length) {
+                // The newest 10 sync. The rest stay on this device, out of sight, so nothing is deleted.
+                const sorted = CV_SYNC.trimHistory(oldVersions, Infinity, Infinity);
+                const extra = sorted.slice(CV_SYNC.HISTORY_LIMIT);
+                try {
+                    if (extra.length) {
+                        const archiveKey = HISTORY_KEY + '_archive';
+                        const archived = JSON.parse(localStorage.getItem(archiveKey) || '[]');
+                        localStorage.setItem(archiveKey, JSON.stringify(CV_SYNC.trimHistory([...(Array.isArray(archived) ? archived : []), ...extra], Infinity, Infinity)));
+                    }
+                } catch (_) { /* archive is best effort */ }
+                historySlot.set(CV_SYNC.mergeHistory(historySlot.get(), { items: sorted.slice(0, CV_SYNC.HISTORY_LIMIT), deleted: [] }, HISTORY_BYTES));
+                try { localStorage.removeItem(HISTORY_KEY); } catch (_) { /* ignore */ }
+            }
+        }
+
+        /** The CV that lost a two-device conflict is kept as a saved version. */
+        function applyConflictLosers() {
+            conflictLosers.splice(0).forEach((loser, index) => {
+                if (!loser || !hasUserEnteredData(loser.cv)) return;
+                historySlot.set(CV_SYNC.withVersion(historySlot.get(), {
+                    id: Date.now() + index,
+                    at: new Date(loser.at || Date.now()).toISOString(),
+                    source: 'other-device',
+                    title: normalizeImportedString(loser.cv.personal?.name || '') || 'Untitled CV',
+                    data: JSON.parse(JSON.stringify(loser.cv))
+                }, HISTORY_BYTES));
+            });
+        }
+
+        async function runAccountSync() {
+            // Signed out: nothing to fetch, and the page must not wait for a client it will not use.
+            if (!CV_SYNC.sessionUserId()) return ['local', 'local'];
+            await whenSyncClient(3000);
+            const draftAction = draftSlot ? await draftSlot.pull() : 'none';
+            applyConflictLosers();
+            const historyAction = await historySlot.pull();
+            return [draftAction, historyAction];
+        }
+
+        function reloadForAccountCopy() {
+            try {
+                const last = Number(sessionStorage.getItem('msc.cv-sync.reloaded')) || 0;
+                if (Date.now() - last < 60000) return;
+                sessionStorage.setItem('msc.cv-sync.reloaded', String(Date.now()));
+            } catch (_) { /* no session storage: reload once anyway */ }
+            showToast('Updated from your account');
+            setTimeout(() => window.location.reload(), 900);
+        }
+
+        // The page waits a moment for the account copy so a CV made on another device opens here. When the account is
+        // slow, the page opens with this device's copy and reloads if the account copy turns out to be different.
+        async function prepareCvSync() {
+            setupCvSync();
+            const work = runAccountSync();
+            const finished = await Promise.race([work.then(() => true, () => true), new Promise(resolve => setTimeout(() => resolve(false), 3500))]);
+            if (!finished) work.then(actions => { if (actions.some(action => action === 'pull' || action === 'merge')) reloadForAccountCopy(); }).catch(() => {});
+        }
+
+        function flushCvSync() {
+            if (draftSlot) draftSlot.flush();
+            if (historySlot) historySlot.flush();
+        }
+        window.addEventListener('pagehide', flushCvSync);
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushCvSync(); });
+        window.addEventListener('online', flushCvSync);
+
         // Initialization: the normal Builder starts at once; Articleship mode starts only from the gate's onAllow.
         function startBuilder() {
             if ('scrollRestoration' in window.history) {
@@ -475,6 +650,12 @@
                 showModeShell('unavailable', bootArticleship);
                 return;
             }
+            await prepareCvSync();
+            startBuilder();
+        }
+
+        async function bootNormal() {
+            await prepareCvSync();
             startBuilder();
         }
 
@@ -492,7 +673,7 @@
 
         window.onload = () => {
             if (IS_ARTICLESHIP_MODE) startArticleshipRoute();
-            else startBuilder();
+            else bootNormal();
         };
 
         function resetEditorScrollToTop() {
@@ -4128,27 +4309,16 @@ async function deliverDownloadedBlob(blob, filename) {
         }
 
         // ---- Snapshot History (Local Storage) ----
+        // The newest 10 versions, synced to the account (cv-builder/cv-sync.js). A new save pushes out the oldest.
         function loadHistory() {
-            try {
-                const raw = localStorage.getItem(HISTORY_KEY);
-                if (!raw) {
-                    history = [];
-                } else {
-                    history = JSON.parse(raw) || [];
-                }
-            } catch (e) {
-                console.error('Failed to load history', e);
-                history = [];
-            }
+            history = historySlot ? CV_SYNC.normaliseHistory(historySlot.get(), HISTORY_BYTES).items : [];
             renderHistory();
         }
 
-        function saveHistory() {
-            try {
-                localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-            } catch (e) {
-                console.error('Failed to save history', e);
-            }
+        function commitHistory(next) {
+            if (!historySlot) return;
+            historySlot.set(next);
+            history = CV_SYNC.normaliseHistory(historySlot.get(), HISTORY_BYTES).items;
         }
 
         function createSnapshot(source) {
@@ -4159,11 +4329,7 @@ async function deliverDownloadedBlob(blob, filename) {
                 title: normalizeImportedString(cvData.personal.name || '') || 'Untitled CV',
                 data: JSON.parse(JSON.stringify(cvData))
             };
-            history.unshift(snapshot);
-            if (history.length > 25) {
-                history = history.slice(0, 25);
-            }
-            saveHistory();
+            commitHistory(CV_SYNC.withVersion(historySlot ? historySlot.get() : {}, snapshot, HISTORY_BYTES));
             renderHistory();
         }
 
@@ -4196,9 +4362,10 @@ async function deliverDownloadedBlob(blob, filename) {
 
         function deleteSnapshot(id) {
             const before = history.length;
-            history = history.filter(h => h.id !== id);
+            if (history.some(h => h.id === id)) {
+                commitHistory(CV_SYNC.withoutVersion(historySlot ? historySlot.get() : {}, id));
+            }
             if (history.length !== before) {
-                saveHistory();
                 renderHistory();
                 showToast('Snapshot deleted');
             }

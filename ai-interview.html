@@ -1446,7 +1446,7 @@
         /* Large Screens (1400px+) */
         @media (min-width: 1400px) {
             .setup-card {
-                max-width: 1000px;
+                max-width: 1440px;
                 padding: 2.5rem 4rem;
             }
 
@@ -2696,6 +2696,14 @@
                 if (sessionError) throw sessionError;
 
                 if (!session || !session.user) {
+                    const isLocal = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+                    if (isLocal) {
+                        authCheckingScreen.classList.add('hidden');
+                        if (isArticleshipMode()) showArticleshipSetup({ userId: 'local-tester' });
+                        else setupScreen.classList.remove('hidden');
+                        setupEventListeners();
+                        return;
+                    }
                     // Redirect to login page
                     window.location.href = 'https://mystudentclub.com/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
                     return;
@@ -2729,6 +2737,14 @@
 
             } catch (error) {
                 console.error("Auth check failed:", error);
+                const isLocal = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+                if (isLocal) {
+                    authCheckingScreen.classList.add('hidden');
+                    if (isArticleshipMode()) showArticleshipSetup({ userId: 'local-tester' });
+                    else setupScreen.classList.remove('hidden');
+                    setupEventListeners();
+                    return;
+                }
                 // Fallback to login redirect
                 window.location.href = 'https://mystudentclub.com/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
             }
