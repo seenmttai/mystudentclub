@@ -393,6 +393,287 @@ body {
   font-size: 1.25rem;
 }
 
+/* Each MSC programme has its own banner look (render.js sets data-look from the programme):
+   Industrial Training "steps", Articleship "blue", CA Freshers "light". Any other programme
+   link keeps the navy banner above. Same words and markup in every look. */
+
+/* Look "blue": bright brand blue, white button */
+.program-banner[data-look="blue"] {
+  background-color: #0057ff;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='255 95 750 887'%3E%3Cg fill='%23ffffff' fill-opacity='.13'%3E%3Cpath d='M255 982L255 392.57A95 95 0 0 1 413.57 321.97L733.99 610.48A8 8 0 0 1 733.99 622.37L648.74 699.13A28 28 0 0 1 611.26 699.13L453.06 556.68A24 24 0 0 0 413 574.52L413 830C413 890 312.06 963.46 255 982Z'/%3E%3Cpath d='M1005 982L1005 392.57A95 95 0 0 0 846.43 321.97L648.56 500.14A8 8 0 0 0 648.56 512.03L747.19 600.84A8 8 0 0 0 757.9 600.84L806.94 556.68A24 24 0 0 1 847 574.52L847 830C847 890 947.94 963.46 1005 982Z'/%3E%3Ccircle cx='350' cy='185.57' r='90'/%3E%3Ccircle cx='910' cy='185.57' r='90'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(circle at -10% -40%, rgba(255, 255, 255, 0.22) 0%, transparent 45%),
+    linear-gradient(135deg, #0048d6 0%, #0057ff 45%, #3d86ff 100%);
+  background-repeat: no-repeat;
+  background-position: right -26px bottom -34px, 0 0, 0 0;
+  background-size: 190px auto, 100% 100%, 100% 100%;
+  box-shadow: 0 14px 30px rgba(0, 87, 255, 0.3);
+}
+
+.program-banner[data-look="blue"]:hover {
+  box-shadow: 0 20px 38px rgba(0, 87, 255, 0.36);
+}
+
+.program-banner[data-look="blue"] .pb-eyebrow {
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+.program-banner[data-look="blue"] .pb-title em {
+  width: fit-content;
+  margin-left: -0.12em;
+  padding: 0 0.12em;
+  color: #ffffff;
+  background-image: linear-gradient(transparent 86%, rgba(255, 184, 34, 0.95) 86%, rgba(255, 184, 34, 0.95) 98%, transparent 98%);
+}
+
+.program-banner[data-look="blue"] .pb-points {
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+  color: #ffffff;
+  font-size: 0.8rem;
+}
+
+.program-banner[data-look="blue"] .pb-points > span {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.17);
+}
+
+.program-banner[data-look="blue"] .pb-points .fa-check {
+  color: #ffffff;
+}
+
+.program-banner[data-look="blue"] .pb-cta {
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 3px 0 rgba(0, 28, 92, 0.35);
+  color: #0048d6;
+}
+
+/* Look "light": a white card with a blue edge and blue button */
+.program-banner[data-look="light"] {
+  border: 1.5px solid #cfdcf7;
+  color: var(--ink);
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(90deg, var(--brand) 0, var(--brand) 6px, transparent 6px),
+    radial-gradient(circle at 108% -20%, #d6e4ff 0%, transparent 52%),
+    linear-gradient(180deg, #ffffff 0%, #f4f8ff 100%);
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  box-shadow: var(--shadow-sm);
+  padding-left: 1.5rem;
+}
+
+.program-banner[data-look="light"]:hover {
+  border-color: var(--brand);
+  box-shadow: var(--shadow-md);
+}
+
+.program-banner[data-look="light"]::after {
+  content: "\f19d";
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: var(--brand);
+  color: #ffffff;
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 1.15rem;
+  box-shadow: 0 8px 16px rgba(0, 87, 255, 0.28);
+}
+
+.program-banner[data-look="light"] .pb-eyebrow {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--brand);
+  max-width: calc(100% - 60px);
+}
+
+.program-banner[data-look="light"] .pb-title {
+  margin-top: 0.45rem;
+  color: var(--ink);
+}
+
+.program-banner[data-look="light"] .pb-title em {
+  color: var(--brand);
+}
+
+.program-banner[data-look="light"] .pb-points {
+  color: var(--ink-2);
+}
+
+.program-banner[data-look="light"] .pb-points .fa-check {
+  color: #128c4a;
+}
+
+.program-banner[data-look="light"] .pb-cta {
+  background: var(--brand);
+  box-shadow: 0 3px 0 #003fbd;
+  color: #ffffff;
+}
+
+.program-banner[data-look="light"] .pb-sheet {
+  box-shadow: 0 12px 26px rgba(6, 21, 47, 0.16);
+  border: 1px solid #e1e7f2;
+}
+
+/* Look "steps": what the programme covers, as a numbered path */
+.program-banner[data-look="steps"] {
+  background-color: #06152f;
+  background-image:
+    radial-gradient(circle at 100% 0%, rgba(0, 87, 255, 0.55) 0%, transparent 55%),
+    linear-gradient(180deg, #06152f 0%, #0a1f4d 100%);
+  background-size: 100% 100%, 100% 100%;
+  border-top: 4px solid var(--gold);
+}
+
+.program-banner[data-look="steps"] .pb-body {
+  flex: 1 1 auto;
+  align-items: stretch;
+}
+
+.program-banner[data-look="steps"] .pb-eyebrow {
+  align-self: flex-start;
+  border: 0;
+  padding: 0;
+  background: none;
+}
+
+.program-banner[data-look="steps"] .pb-title {
+  margin-top: 0.35rem;
+  font-size: 1.5rem;
+}
+
+.program-banner[data-look="steps"] .pb-points {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 0;
+  margin-top: 1.1rem;
+  counter-reset: step;
+  font-size: 0.7rem;
+  color: #ffffff;
+}
+
+.program-banner[data-look="steps"] .pb-points::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 12.5%;
+  right: 12.5%;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, rgba(255, 184, 34, 0.75) 0 6px, transparent 6px 11px);
+}
+
+.program-banner[data-look="steps"] .pb-points > span {
+  position: relative;
+  flex-direction: column;
+  gap: 0.4rem;
+  text-align: center;
+  counter-increment: step;
+  min-width: 0;
+}
+
+.program-banner[data-look="steps"] .pb-points > span::before {
+  content: counter(step);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 800;
+  box-shadow: 0 0 0 4px #0a1f4d;
+}
+
+.program-banner[data-look="steps"] .pb-points .fa-check {
+  display: none;
+}
+
+.program-banner[data-look="steps"] .pb-cta {
+  justify-content: center;
+  margin-top: 1.15rem;
+}
+
+@media (max-width: 380px) {
+  .program-banner[data-look="steps"] .pb-title {
+    font-size: 1.35rem;
+  }
+
+  .program-banner[data-look="steps"] .pb-points {
+    font-size: 0.64rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .program-banner[data-look="blue"] {
+    background-size: 240px auto, 100% 100%, 100% 100%;
+  }
+
+  .program-banner[data-look="blue"] .pb-points {
+    font-size: 0.88rem;
+  }
+
+  .program-banner[data-look="light"] {
+    padding-left: 2.3rem;
+  }
+
+  .program-banner[data-look="steps"] .pb-title {
+    font-size: 2rem;
+  }
+
+  .program-banner[data-look="steps"] .pb-title em {
+    display: inline;
+  }
+
+  .program-banner[data-look="steps"] .pb-points {
+    max-width: 520px;
+    font-size: 0.85rem;
+  }
+
+  .program-banner[data-look="steps"] .pb-points > span::before {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+
+  .program-banner[data-look="steps"] .pb-points::before {
+    top: 18px;
+  }
+
+  .program-banner[data-look="steps"] .pb-cta {
+    align-self: flex-start;
+  }
+}
+
+/* Beside the offer-letter artwork (laptops) the blue look drops its watermark and the light look its corner badge. */
+@media (min-width: 720px) {
+  .program-banner[data-look="blue"] {
+    background-size: 0 0, 100% 100%, 100% 100%;
+  }
+
+  .program-banner[data-look="light"]::after {
+    display: none;
+  }
+
+  .program-banner[data-look="light"] .pb-eyebrow {
+    max-width: none;
+  }
+}
+
 /* Groups: stacked on phones, two balanced columns on laptops */
 .link-groups,
 .link-col {
