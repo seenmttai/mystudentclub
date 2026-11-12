@@ -80,6 +80,24 @@ test('each MSC programme gets its banner; an unknown programme link gets one wit
   assert.ok(other.includes('<span class="pb-title">CS &lt;Executive&gt; Program</span>'));
 });
 
+test('the three programmes each get their own banner look; any other programme keeps the default banner', () => {
+  const r = load();
+  const css = fs.readFileSync(path.join(root, 'links', 'style.css'), 'utf8');
+  const looks = {
+    'https://www.mystudentclub.com/ca-industrial-training-program': 'steps',
+    'https://www.mystudentclub.com/articleship-program/': 'blue',
+    'https://www.mystudentclub.com/msc-ca-fresher-program/': 'light',
+  };
+  for (const [url, look] of Object.entries(looks)) {
+    const html = r.renderTab([{ title: 'Program Details', url, card_type: 'program' }]);
+    assert.ok(html.includes(` data-look="${look}"`), url);
+    assert.ok(css.includes(`.program-banner[data-look="${look}"]`), `style.css styles the "${look}" look`);
+  }
+  assert.equal(new Set(Object.values(looks)).size, 3, 'three different looks');
+  const other = r.renderTab([{ title: 'CS Program', url: 'https://www.mystudentclub.com/cs-program', card_type: 'program' }]);
+  assert.ok(!other.includes('data-look'));
+});
+
 test('groups carry a clear head, and every link says what it opens and has a button', () => {
   const r = load();
   const html = r.renderTab(industrial);

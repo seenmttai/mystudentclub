@@ -28,10 +28,12 @@
   // Banner wording for the three MSC programmes, matched on the link's address. The words come
   // from each programme's own page and carry no price, date or registration status, so they
   // stay true between batches. Any other "Program" link gets a banner with its own title.
+  // `look` picks the banner's style in style.css, one per programme so the three tabs differ:
+  // "steps" (navy, the points as a numbered path), "blue" (brand blue), "light" (white card).
   var PROGRAMS = [
-    { match: /industrial-training-program/i, eyebrow: 'MSC Industrial Training Program', lead: 'Crack Your', accent: 'Industrial Training', points: ['CV', 'LinkedIn', 'Applications', 'Interviews'] },
-    { match: /articleship-program/i, eyebrow: 'MSC Articleship Program', lead: 'Crack Your', accent: 'Articleship', points: ['CV', 'LinkedIn', 'Applications', 'Interviews'] },
-    { match: /fresher-program/i, eyebrow: 'MSC CA Freshers Program', lead: 'Launch Your', accent: 'Dream Career', points: ['CV', 'Applications', 'Interviews'] }
+    { match: /industrial-training-program/i, look: 'steps', eyebrow: 'MSC Industrial Training Program', lead: 'Crack Your', accent: 'Industrial Training', points: ['CV', 'LinkedIn', 'Applications', 'Interviews'] },
+    { match: /articleship-program/i, look: 'blue', eyebrow: 'MSC Articleship Program', lead: 'Crack Your', accent: 'Articleship', points: ['CV', 'LinkedIn', 'Applications', 'Interviews'] },
+    { match: /fresher-program/i, look: 'light', eyebrow: 'MSC CA Freshers Program', lead: 'Launch Your', accent: 'Dream Career', points: ['CV', 'Applications', 'Interviews'] }
   ];
 
   /**
@@ -126,7 +128,8 @@
           return '<span><span class="fas fa-check" aria-hidden="true"></span>' + esc(p) + '</span>';
         }).join('') + '</span>'
       : '<span class="pb-eyebrow">MSC Program</span><span class="pb-title">' + esc(title) + '</span>';
-    return '<a class="program-banner" ' + linkAttrs(link) + ' aria-label="' + esc(copy ? copy.eyebrow + ': view program' : title) + '">' +
+    return '<a class="program-banner" ' + linkAttrs(link) + (copy && copy.look ? ' data-look="' + esc(copy.look) + '"' : '') +
+      ' aria-label="' + esc(copy ? copy.eyebrow + ': view program' : title) + '">' +
       '<span class="pb-body">' + body +
         '<span class="pb-cta">View program <span class="fas fa-arrow-right" aria-hidden="true"></span></span>' +
       '</span>' + BANNER_ART +
