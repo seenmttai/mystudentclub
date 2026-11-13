@@ -7,18 +7,15 @@ html { scroll-padding-top: calc(var(--af-header-h, 58px) + var(--msc-sai-top, 0p
 body { overflow-x: clip; -webkit-tap-highlight-color: transparent; }
 main { overflow-x: clip; }
 .skip-link:focus { top: calc(var(--af-header-h, 58px) + var(--msc-sai-top, 0px) + 8px); }
-.events-hero-title, .session-title, .deck-heading, .desc, .state-title, .state-text, .events-hero-sub { overflow-wrap: anywhere; }
-.events-hero-title { font-size: clamp(1.55rem, 7vw, 2.1rem); }
+.session-title, .deck-heading, .desc, .state-title, .state-text { overflow-wrap: anywhere; }
 .filters { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; max-width: 100%; padding-bottom: 2px; }
 .filters::-webkit-scrollbar { display: none; }
 .filter { flex: 0 0 auto; min-height: 40px; touch-action: manipulation; }
-.btn, .events-hero-btn, .footer-links a { min-height: 44px; touch-action: manipulation; }
+.btn, .footer-links a { min-height: 44px; touch-action: manipulation; }
 @media (max-width: 480px) {
-  .events-hero-inner { padding: 0 16px; }
   .events-body-wrapper { padding: 0 16px 3rem; }
   .session { padding: 1.25rem; }
   .events-command-deck { padding: 1.1rem 1rem; }
-  .hero-advantage-item { padding: 0.75rem; }
   .footer-container { padding-left: 16px; padding-right: 16px; }
 }
 
@@ -44,7 +41,6 @@ main { overflow-x: clip; }
   --shadow-lg: none;
 }
 :root[data-theme="dark"] body { background: var(--bg); color: var(--text); }
-:root[data-theme="dark"] .events-hero { border-bottom-color: #27324a; }
 :root[data-theme="dark"] .events-command-deck { background: #111a2e; border-color: #27324a; box-shadow: none; }
 :root[data-theme="dark"] .deck-heading { color: #e8eefb; }
 :root[data-theme="dark"] .deck-heading i { color: #7db0ff; }
