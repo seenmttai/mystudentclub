@@ -372,7 +372,7 @@ function getPublicJobSelectColumns(tableName) {
   } else if (tableName === "Semi Qualified Jobs") {
     columns += ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"';
   } else if (tableName === "Industrial Training Job Portal") {
-    columns += ', "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive, "Company Type", "Industry Type"';
+    columns += ', "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive, "Company Type", "Industry Type", joining_label';
   } else if (tableName === "Articleship Jobs") {
     columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
   }
@@ -637,6 +637,7 @@ function renderJobCard(job) {
             ${isExclusive ? `<span class="jc-chip" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border-color: #d97706; font-weight: 700;">⭐ Exclusive</span>` : ""}
             ${hasReviewRating(ratingInfo) ? `<a href="/articleship-firm-review.html?firm=${encodeURIComponent(ratingInfo.firmName || job.Company || '')}" class="jc-chip jc-chip-rating" style="background: #fef9c3; color: #854d0e; border-color: #fde047; font-weight: 700; text-decoration: none;" onclick="event.stopPropagation();"><i class="fa-solid fa-star" style="color: #ca8a04; margin-right: 4px;"></i>${ratingInfo.avgOverall.toFixed(1)} (${ratingInfo.count})</a>` : ""}
             ${primaryDomain ? `<span class="jc-chip jc-chip-domain">${primaryDomain}</span>` : ""}
+            ${currentTable === "Industrial Training Job Portal" && job.joining_label ? `<span class="jc-chip jc-chip-joining"><i class="fa-regular fa-calendar-check" style="margin-right: 4px;"></i>${job.joining_label}</span>` : ""}
             ${secondaryDomain ? `<span class="jc-chip jc-chip-domain" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">${secondaryDomain}</span>` : ""}
             ${companyType ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right: 4px; color: #94a3b8;"></i>${companyType}</span>` : ""}
             ${firmType ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right: 4px; color: #94a3b8;"></i>${firmType}</span>` : ""}
@@ -1471,6 +1472,7 @@ function showJobDetail(job) {
                 </div>
                 ${currentTable === "Articleship Jobs" ? buildReviewFactsHtml(ratingInfo) : ""}
                 <div class="jd-meta-pills">
+                    ${currentTable === "Industrial Training Job Portal" && job.joining_label ? `<span class="jc-chip jc-chip-joining"><i class="fa-regular fa-calendar-check" style="margin-right:4px;"></i>${job.joining_label}</span>` : ""}
                     ${job['Secondary Domain'] ? `<span class="jc-chip jc-chip-domain" style="background-color:#e0f2fe;color:#0369a1;border-color:#bae6fd;">${job['Secondary Domain']}</span>` : ""}
                     ${showCompanyTypePill ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right:4px;color:#94a3b8;"></i>${job['Company Type']}</span>` : ""}
                     ${showFirmTypePill ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right:4px;color:#94a3b8;"></i>${job['Firm Type']}</span>` : ""}
