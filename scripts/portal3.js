@@ -1,4 +1,5 @@
 import { getDaysAgo } from "./date-utils.js";
+import { FEATURED_SELECT, isFeatured, isFeaturedColumnError, mergePinnedJobs, applyFeaturedDemo } from "./featured-vacancy.js";
 import {
   ensureCvAvailable,
   generateEmailBody,
@@ -153,6 +154,8 @@ let firebaseMessaging;
 let firmReviewsMap = new Map();
 // Articleship exclusives pinned on top of page 1; later pages skip them so they don't show twice.
 let pinnedExclusiveIds = new Set();
+// False once the database says featured_until can't be read (Vacancy Boost SQL not run yet): stop asking for it.
+let featuredColumnAvailable = true;
 
 const state = {
   keywords: [],
@@ -376,11 +379,16 @@ function getPublicJobSelectColumns(tableName) {
   } else if (tableName === "Articleship Jobs") {
     columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
   }
+  if (featuredColumnAvailable) columns += FEATURED_SELECT;
   return columns;
 }
 
-// If is_exclusive isn't in the database yet (before its migration runs), drop it from a select.
+// If is_exclusive or featured_until can't be read yet (before their SQL runs), drop it from a select.
 function withoutMissingExclusive(cols, error) {
+  if (error && cols.includes(FEATURED_SELECT) && isFeaturedColumnError(error)) {
+    featuredColumnAvailable = false;
+    return cols.replace(FEATURED_SELECT, "");
+  }
   return error && /is_exclusive/.test(error.message || "") && cols.includes(", is_exclusive")
     ? cols.replace(", is_exclusive", "")
     : null;
@@ -421,6 +429,16 @@ async function fetchTrendingJobs() {
     });
   } catch (_) {
     dom.trendingSection.style.display = "none";
+  }
+}
+
+// Featured vacancies (₹999 Vacancy Boost on hire.msc, featured_until in the future) that match the current filters.
+async function fetchPinnedFeatured(buildQuery, selectCols) {
+  try {
+    const { data, error } = await buildQuery(selectCols).gt("featured_until", new Date().toISOString());
+    return error || !Array.isArray(data) ? [] : data;
+  } catch (_) {
+    return [];
   }
 }
 
@@ -634,6 +652,7 @@ function renderJobCard(job) {
         </div>
         <div class="jc-chips">
             ${formatDeadline(job) ? `<span class="jc-chip jc-chip-deadline">${formatDeadline(job)}</span>` : ""}
+            ${isFeatured(job) ? `<span class="jc-chip jc-chip-featured">⚡ Featured</span>` : ""}
             ${isExclusive ? `<span class="jc-chip" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border-color: #d97706; font-weight: 700;">⭐ Exclusive</span>` : ""}
             ${hasReviewRating(ratingInfo) ? `<a href="/articleship-firm-review.html?firm=${encodeURIComponent(ratingInfo.firmName || job.Company || '')}" class="jc-chip jc-chip-rating" style="background: #fef9c3; color: #854d0e; border-color: #fde047; font-weight: 700; text-decoration: none;" onclick="event.stopPropagation();"><i class="fa-solid fa-star" style="color: #ca8a04; margin-right: 4px;"></i>${ratingInfo.avgOverall.toFixed(1)} (${ratingInfo.count})</a>` : ""}
             ${primaryDomain ? `<span class="jc-chip jc-chip-domain">${primaryDomain}</span>` : ""}
@@ -769,7 +788,7 @@ async function fetchJobs() {
     let { data, error } = await buildQuery(selectCols, jobFilterColumnsAvailable);
     // Failsafes for columns the database does not have yet (filter columns, is_exclusive).
     // Either can come first, so retry until neither applies.
-    for (let retry = 0; retry < 2 && error; retry++) {
+    for (let retry = 0; retry < 3 && error; retry++) {
       if (jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
         console.warn("Structured filter columns are not available yet; using the basic filters.", error.message);
         jobFilterColumnsAvailable = false;
@@ -793,16 +812,25 @@ async function fetchJobs() {
     // Rows the database returned for this page, before pinning: decides paging.
     const dbPageLength = Array.isArray(data) ? data.length : 0;
 
-    // Articleship: exclusive vacancies sit on top of page 1; later pages skip them.
+    // Pinned on top of page 1: Featured vacancies (Vacancy Boost) on every portal, then the Articleship exclusives.
+    // Each group keeps the student's sort; later pages skip them.
     if (data) {
-      if (page === 0) pinnedExclusiveIds = new Set();
-      if (page === 0 && currentTable === "Articleship Jobs" && selectCols.includes("is_exclusive")) {
-        const pinned = await fetchPinnedExclusives((cols) => buildQuery(cols, jobFilterColumnsAvailable), selectCols);
-        if (pinned.length > 0) {
-          pinned.forEach((job) => pinnedExclusiveIds.add(job.id));
-          data = [...pinned, ...data.filter((job) => !pinnedExclusiveIds.has(job.id))];
+      if (page === 0) {
+        pinnedExclusiveIds = new Set();
+        const query = (cols) => buildQuery(cols, jobFilterColumnsAvailable);
+        const wantFeatured = selectCols.includes(FEATURED_SELECT);
+        const wantExclusives = currentTable === "Articleship Jobs" && selectCols.includes("is_exclusive");
+        if (wantFeatured || wantExclusives) {
+          const [featured, exclusives] = await Promise.all([
+            wantFeatured ? fetchPinnedFeatured(query, selectCols) : [],
+            wantExclusives ? fetchPinnedExclusives(query, selectCols) : [],
+          ]);
+          const merged = mergePinnedJobs(data, [featured, exclusives], state.sortBy);
+          data = merged.jobs;
+          pinnedExclusiveIds = merged.pinnedIds;
         }
-      } else if (page > 0 && pinnedExclusiveIds.size > 0) {
+        applyFeaturedDemo(data);
+      } else if (pinnedExclusiveIds.size > 0) {
         data = data.filter((job) => !pinnedExclusiveIds.has(job.id));
       }
     }
