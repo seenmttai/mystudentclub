@@ -78,6 +78,68 @@ const supabaseClient = window.supabaseClient || (typeof getSupabaseClient === 'f
 const BROWSER_GUARD_WORKER_URL = window.BROWSER_GUARD_WORKER_URL || 'https://browser-guard-unlock.bhansalimanan55.workers.dev';
 const WORKER_URL = window.WORKER_URL || 'https://storer.bhansalimanan55.workers.dev';
 
+// 10 Nov 2026: signed-in students see the application link as soon as a job opens, with no
+// "View Application Details" tap. The old tap went through the BrowserGuard Worker on
+// workers.dev; when a network, blocker or preview link could not reach it, students got a bare
+// "Failed to fetch" and could not apply at all. The link is now read straight from Supabase
+// (signed-in users can already read "Application ID"); BrowserGuard is only the backup.
+const applicationDetailsCache = new Map();
+const applicationDetailsInFlight = new Map();
+
+function applicationDetailsKey(job, tableName = currentTable) {
+    return `${currentSession?.user?.id || ''}:${tableName}:${job?.id}`;
+}
+
+function getCachedApplicationDetails(job) {
+    if (!currentSession || !job) return null;
+    return applicationDetailsCache.get(applicationDetailsKey(job))
+        || getCachedUnlockedJob(job.id, currentTable, currentSession);
+}
+
+async function loadApplicationDetails(job) {
+    const tableName = currentTable;
+    const session = currentSession;
+    const key = applicationDetailsKey(job, tableName);
+    if (applicationDetailsCache.has(key)) return applicationDetailsCache.get(key);
+    if (applicationDetailsInFlight.has(key)) return applicationDetailsInFlight.get(key);
+
+    const pending = (async () => {
+        let details = null;
+        try {
+            const { data, error } = await supabaseClient
+                .from(tableName)
+                .select('"Application ID", Description')
+                .eq('id', job.id)
+                .maybeSingle();
+            if (error) console.warn('Direct application link read failed, trying BrowserGuard:', error.message);
+            else if (data) details = { applicationId: data['Application ID'] || null, description: data.Description || null };
+        } catch (err) {
+            console.warn('Direct application link read failed, trying BrowserGuard:', err);
+        }
+        if (!details) {
+            const unlocked = await unlockJobDetails(job, tableName, session, { endpoint: BROWSER_GUARD_WORKER_URL });
+            details = { applicationId: unlocked.applicationId || null, description: unlocked.description || null };
+        }
+        applicationDetailsCache.set(key, details);
+        return details;
+    })();
+
+    applicationDetailsInFlight.set(key, pending);
+    try {
+        return await pending;
+    } finally {
+        applicationDetailsInFlight.delete(key);
+    }
+}
+
+function friendlyApplicationLoadError(error) {
+    const message = String(error?.message || '');
+    if (!message || error instanceof TypeError || /failed to fetch|load failed|networkerror|network request failed/i.test(message)) {
+        return "Couldn't load the application link. Check your internet and try again.";
+    }
+    return message;
+}
+
 let currentJobFetchController = null;
 let lastCursor = null; // { createdAt, id }
 let lastFilterFingerprint = null;
@@ -1006,8 +1068,13 @@ function showModal(job) {
     const isExpired = isJobExpired(job.Created_At);
     const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'N/A');
     const applyCount = job.application_count || 0;
-    const cachedUnlocked = currentSession ? getCachedUnlockedJob(job.id, currentTable, currentSession) : null;
+    const cachedUnlocked = currentSession ? getCachedApplicationDetails(job) : null;
     const isApplicationUnlocked = recruiterPosted || job.__browserGuardUnlocked === true || Boolean(cachedUnlocked) || Boolean(job['Application ID']);
+    const needsApplicationLoad = Boolean(currentSession) && !isApplicationUnlocked;
+    const applicationJobKey = applicationDetailsKey(job);
+    // True while the popup still shows this job (not closed, not switched to another job).
+    const isShowingThisJob = () => dom.modalOverlay.style.display === 'flex'
+        && document.getElementById('modalAppLinksContainer')?.dataset.jobKey === applicationJobKey;
     const effectiveApplicationId = recruiterPosted ? null : (cachedUnlocked?.applicationId || job['Application ID']);
     const effectiveDescription = cachedUnlocked?.description || job.Description || '';
     const applyLink = getApplicationLink(effectiveApplicationId, job.Company);
@@ -1184,9 +1251,11 @@ function showModal(job) {
                 if (!error && data && data.Description) {
                     job.Description = data.Description;
                     const descEl = document.getElementById('modalDescriptionContent');
-                    if (descEl) {
-                        const updatedEffective = (currentSession ? getCachedUnlockedJob(job.id, currentTable, currentSession)?.description : null) || job.Description;
-                        const finalRaw = isApplicationUnlocked ? updatedEffective : getMaskedDescription(updatedEffective);
+                    if (descEl && isShowingThisJob()) {
+                        // The application link may have loaded (and the popup re-rendered) while this ran.
+                        const loaded = currentSession ? getCachedApplicationDetails(job) : null;
+                        const updatedEffective = loaded?.description || job.Description;
+                        const finalRaw = (isApplicationUnlocked || loaded) ? updatedEffective : getMaskedDescription(updatedEffective);
                         descEl.innerHTML = renderMarkdown(finalRaw);
                     }
                 }
@@ -1209,10 +1278,9 @@ function showModal(job) {
                 </div>`
             : `
                 <div class="apply-prompt-box" id="applyPromptBox">
-                    <button type="button" class="btn btn-primary btn-reveal-app" id="btnRevealAppId">
-                        <i class="fas fa-external-link-alt" style="font-size: 0.85rem; margin-right: 4px;"></i>
-                        <span>View Application Details & Link to Apply</span>
-                    </button>
+                    <p class="modal-description" style="margin: 0; color: #64748b;">
+                        <i class="fas fa-spinner fa-spin" style="margin-right: 6px;"></i>Loading application link...
+                    </p>
                 </div>`;
 
     dom.modalBody.innerHTML = `
@@ -1244,7 +1312,7 @@ function showModal(job) {
         ${tagsSectionsHtml}
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>Apply here!</h3>
-            <div id="modalAppLinksContainer">
+            <div id="modalAppLinksContainer" data-job-key="${applicationJobKey.replace(/"/g, '&quot;')}">
                 ${applicationContentHtml}
             </div>
         </div>
@@ -1262,8 +1330,23 @@ function showModal(job) {
     dom.modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    // Handler to unlock via BrowserGuard and optionally redirect immediately
-    const handleUnlockAndApply = async (btnElement, autoRedirect = true) => {
+    const withApplicationDetails = (details) => ({
+        ...job,
+        'Application ID': details.applicationId,
+        Description: details.description || job.Description,
+        __browserGuardUnlocked: true
+    });
+
+    // Re-render this job with its application link, keeping the reader's scroll position.
+    const showModalWithApplicationDetails = (details) => {
+        const scrollers = [dom.modalBody, dom.modalBody?.parentElement].filter(Boolean);
+        const scrollTops = scrollers.map((el) => el.scrollTop);
+        showModal(withApplicationDetails(details));
+        scrollers.forEach((el, i) => { el.scrollTop = scrollTops[i]; });
+    };
+
+    // Apply Now pressed while the link is still loading: wait for it, record, then open it.
+    const handleUnlockAndApply = async (btnElement) => {
         if (!currentSession) {
             window.location.href = '/login.html';
             return;
@@ -1275,29 +1358,13 @@ function showModal(job) {
         btnElement.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size: 1.1rem;"></i>';
 
         try {
-            const unlocked = await unlockJobDetails(job, currentTable, currentSession, {
-                endpoint: BROWSER_GUARD_WORKER_URL
-            });
+            const details = await loadApplicationDetails(job);
+            const targetApplyLink = getApplicationLink(details.applicationId, job.Company);
+            await recordApplication(withApplicationDetails(details), btnElement);
+            // Re-render only if the student is still on this job (they may have closed it or opened another).
+            if (isShowingThisJob()) showModalWithApplicationDetails(details);
 
-            const unlockedJob = {
-                ...job,
-                'Application ID': unlocked.applicationId,
-                Description: unlocked.description || job.Description,
-                __browserGuardUnlocked: true
-            };
-
-            const targetApplyLink = getApplicationLink(unlocked.applicationId, job.Company);
-
-            // Only record application when the Apply button was clicked, not for 'View Application Link'
-            if (autoRedirect) {
-                await recordApplication(unlockedJob, btnElement);
-            }
-
-            // Re-render modal in fully unlocked state (untruncates description and displays links)
-            showModal(unlockedJob);
-
-            // Directly navigate only if primary Apply Now was clicked
-            if (autoRedirect && targetApplyLink) {
+            if (targetApplyLink && targetApplyLink !== '#') {
                 if (targetApplyLink.startsWith('mailto:')) {
                     window.location.href = targetApplyLink;
                 } else {
@@ -1305,8 +1372,12 @@ function showModal(job) {
                 }
             }
         } catch (error) {
-            console.error('BrowserGuard unlock failed:', error);
-            showToast(error.message || 'Unable to verify this browser. Please try again.', 'error');
+            console.error('Application link load failed:', error);
+            if (error?.status === 401) {
+                window.location.href = '/login.html';
+                return;
+            }
+            showToast(friendlyApplicationLoadError(error), 'error');
             btnElement.disabled = false;
             btnElement.innerHTML = originalHtml;
         }
@@ -1315,15 +1386,35 @@ function showModal(job) {
     const modalApplyNowLockedBtn = document.getElementById('modalApplyNowLockedBtn');
     if (modalApplyNowLockedBtn) {
         modalApplyNowLockedBtn.addEventListener('click', () => {
-            handleUnlockAndApply(modalApplyNowLockedBtn, true);
+            handleUnlockAndApply(modalApplyNowLockedBtn);
         });
     }
 
-    const revealButton = document.getElementById('btnRevealAppId');
-    if (revealButton) {
-        revealButton.addEventListener('click', () => {
-            handleUnlockAndApply(revealButton, false);
-        });
+    // Signed in: load the application link straight away (no "View Application Details" tap).
+    if (needsApplicationLoad) {
+        loadApplicationDetails(job)
+            .then((details) => {
+                if (isShowingThisJob() && document.getElementById('applyPromptBox')) showModalWithApplicationDetails(details);
+            })
+            .catch((error) => {
+                console.error('Application link load failed:', error);
+                const box = document.getElementById('applyPromptBox');
+                if (!isShowingThisJob() || !box) return;
+                if (error?.status === 401) {
+                    // Expired session: retrying can't work, signing in again does.
+                    box.innerHTML = `
+                        <p class="modal-description" style="margin: 0 0 0.75rem; color: #b91c1c;">Your session has expired. Please sign in again to see the application link.</p>
+                        <a href="/login.html" class="btn btn-primary">Sign in again</a>`;
+                    return;
+                }
+                box.innerHTML = `
+                    <p class="modal-description" style="margin: 0 0 0.75rem; color: #b91c1c;"></p>
+                    <button type="button" class="btn btn-secondary" id="btnRetryAppLink">
+                        <i class="fas fa-redo" style="margin-right: 6px;"></i>Try again
+                    </button>`;
+                box.querySelector('p').textContent = friendlyApplicationLoadError(error);
+                document.getElementById('btnRetryAppLink')?.addEventListener('click', () => showModal(job));
+            });
     }
 
     // Copy button event listener binding helper
@@ -1390,7 +1481,7 @@ function showModal(job) {
                     await recordApplication(job, e.currentTarget);
                 } else {
                     if (currentSession) await recordApplication(job, e.currentTarget);
-                    window.open(applyLink, '_blank');
+                    if (applyLink && applyLink !== '#') window.open(applyLink, '_blank');
                 }
             });
         }
