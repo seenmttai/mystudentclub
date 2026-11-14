@@ -10,3 +10,5 @@
 /IBS /ca-final-ibs-strategy/ 301
 /ca-final-ibs /ca-final-ibs-strategy/ 301
 /ca-final-ibs/* /ca-final-ibs-strategy/:splat 301
+/it-community https://chat.whatsapp.com/CC89CXevGso5XLsEHch5qv 302
+/it-community/ https://chat.whatsapp.com/CC89CXevGso5XLsEHch5qv 302
