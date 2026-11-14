@@ -1117,13 +1117,13 @@
   <script src="register.js?v=20261109.4" defer></script>
   <script src="/scripts/program-chrome.js?v=20261016.1"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-    // Supabase (CDN client, shared auth storage key so the app-injected session is picked up)
+    // Supabase (CDN client, shared auth storage key so the app-injected session is picked up).
+    // Created at top level, not in DOMContentLoaded: register.js (defer) runs before that event
+    // and reads window.supabaseClient to prefill the form for logged-in students.
     const SUPABASE_URL = "https://auth.mystudentclub.com";
     const SUPABASE_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
     let sb = null;
-    let session = null;
     try {
       if (window.supabase && window.supabase.createClient) {
         sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
@@ -1132,6 +1132,9 @@
         window.supabaseClient = sb;
       }
     } catch (_) {}
+
+    document.addEventListener("DOMContentLoaded", async () => {
+    let session = null;
 
     // Auth icon + gated drawer links
     if (sb) {
