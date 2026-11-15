@@ -587,6 +587,8 @@ test('download-only rows show one button on a phone', () => {
     const start = courseScript.indexOf('    const renderTabsAndContent =');
     const body = courseScript.slice(start, courseScript.indexOf('\n    const setActiveTab', start));
     assert.match(body, /const showView = hasViewTarget \|\| !isCompactResourceCourse\(\);/);
+    // A workbook-only row is not download-only any more: it also opens in the sheet viewer.
+    assert.match(body, /isExcelViewerResource\(resource\) \|\|/);
 });
 
 test('the sidebar names a one-session Day by its action, not the Day title again', () => {
