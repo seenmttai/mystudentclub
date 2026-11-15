@@ -273,3 +273,22 @@ test('Work Simulation: a newer line for a domain replaces the older one in the A
     assert.equal(page.read('cv_maker_data'), null, 'no normal CV is created');
     page.close();
 });
+
+test('Articleship route: saved versions are the newest 10, sync to the account, and never touch the normal Builder\'s versions', async () => {
+    const old = Array.from({ length: 12 }, (_, i) => ({ id: i + 1, at: new Date(2026, 10, 1, 0, 0, i + 1).toISOString(), source: 'manual', title: 'V' + (i + 1), data: { personal: { name: 'V' + (i + 1) } } }));
+    const normalOld = JSON.stringify([{ id: 99, at: new Date(2026, 9, 1).toISOString(), source: 'manual', title: 'Normal', data: { personal: { name: 'Normal' } } }]);
+    const page = await boot('?stage=articleship', {
+        user: { id: 'u1' }, courses: ['msc-articleship-program'],
+        storage: { msc_articleship_cv_maker_history_v1: JSON.stringify(old), cv_maker_history_v1: normalOld },
+        wait: 2600
+    });
+    const row = page.pushes.filter(push => push.tool === 'cv-history').at(-1);
+    assert.ok(row, 'the versions were saved to the account');
+    assert.equal(row.data.items.length, 10);
+    assert.equal(row.data.items[0].id, 12);
+    assert.equal(page.read('msc_articleship_cv_maker_history_v1'), null, 'moved into the synced list');
+    assert.equal(JSON.parse(page.read('msc_articleship_cv_maker_history_v1_archive')).length, 2, 'the 2 older ones stay on the device');
+    assert.equal(page.read('cv_maker_history_v1'), normalOld, 'the normal Builder\'s versions are untouched');
+    assert.ok(!JSON.stringify(page.pushes).includes('"Normal"'), 'and never reach the account from this route');
+    page.close();
+});

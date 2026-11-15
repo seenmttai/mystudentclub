@@ -121,15 +121,17 @@ test('course page: a CSV preview with a workbook download says Download Excel an
     const start = source.indexOf('const isDocxPreviewResource');
     const end = source.indexOf('const updateLearningStreak', start);
     // The label helpers read the page's course table (Articleship v3 compact resources).
-    const context = { courses: {}, state: { courseSlug: 'industrial-training-mastery' } };
+    const context = { courses: {}, state: { courseSlug: 'industrial-training-mastery' },
+        window: { MSCExcelSheets: require('../scripts/excel-sheet-view.js') } };
     vm.createContext(context);
-    vm.runInContext(source.slice(start, end) + '\nthis.api = { getResourceDownloadLabel, getResourceFormatNote, getResourceViewerSubtitle };', context);
-    const { getResourceDownloadLabel, getResourceFormatNote, getResourceViewerSubtitle } = context.api;
+    vm.runInContext(source.slice(start, end) + '\nthis.api = { getResourceViewLabel, getResourceDownloadLabel, getResourceFormatNote, getResourceViewerSubtitle };', context);
+    const { getResourceViewLabel, getResourceDownloadLabel, getResourceFormatNote, getResourceViewerSubtitle } = context.api;
     const excel = { type: 'csv', view_storage_path: 'Excel Test_.csv', download_storage_path: 'Excel Test.xlsx' };
     const csvOnly = { type: 'csv', view_storage_path: 'Excel Test_.csv', download_storage_path: 'Excel Test_.csv' };
     assert.equal(getResourceDownloadLabel(excel), 'Download Excel');
-    assert.match(getResourceFormatNote(excel), /one sheet/);
-    assert.match(getResourceViewerSubtitle(excel, 'csv'), /one sheet/);
+    assert.equal(getResourceViewLabel(excel), 'Preview Excel');
+    assert.match(getResourceFormatNote(excel), /every sheet/);
+    assert.match(getResourceViewerSubtitle(excel, 'xlsx'), /keep the formulas/);
     assert.equal(getResourceDownloadLabel(csvOnly), 'Download CSV'); // v3 names every file type on its button
     assert.equal(getResourceFormatNote(csvOnly), '');
 });

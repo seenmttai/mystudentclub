@@ -94,7 +94,9 @@ test('Articleship code is reachable only through the gate: loader -> bootArticle
     assert.equal((script.match(/onAllow: bootArticleship/g) || []).length, 1);
     assert.equal((script.match(/bootArticleship/g) || []).length, 3, 'definition, retry, onAllow, no other caller');
     // Normal mode starts the Builder directly and never touches the gate or the feature loader.
-    assert.match(script, /if \(IS_ARTICLESHIP_MODE\) startArticleshipRoute\(\);\s*else startBuilder\(\);/);
+    assert.match(script, /if \(IS_ARTICLESHIP_MODE\) startArticleshipRoute\(\);\s*else bootNormal\(\);/);
+    const normalBoot = script.slice(script.indexOf('async function bootNormal'), script.indexOf('async function startArticleshipRoute'));
+    assert.doesNotMatch(normalBoot, /loadArticleshipFeature|startArticleshipRoute|MSCArticleshipGate/);
     // Only Articleship mode starts the stage, with an explicit authorised host.
     assert.match(script, /if \(IS_ARTICLESHIP_MODE\) window\.MSCArticleshipStage\?\.init\?\.\(articleshipStageHost\(\)\)/);
     assert.match(script, /mode: CV_MODE,\s*access: 'allow'/);

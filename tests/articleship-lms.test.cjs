@@ -255,7 +255,7 @@ test('PDF deep links use signed storage and clamp the requested page after loadi
         } }) } },
         fetch: async url => { calls.push(['fetch', url]); return { ok: true, arrayBuffer: async () => new ArrayBuffer(0) }; },
         pdfjsLib: { getDocument: () => ({ promise: Promise.resolve({ numPages: 11 }) }) },
-        applyCourseZoom() {}, initCoursePinchZoom() {},
+        applyCourseZoom() {}, initCoursePinchZoom() {}, hideExcelGrid() {},
         renderPdfPage: async page => calls.push(['page', page]),
         alert(message) { throw new Error(message); }, closeResourceViewer() { throw new Error('Viewer failed'); } });
     const resource = { title: 'MSC Domain Roadmaps', view_storage_path: 'articleship-program-v2/day-5/domain-roadmaps/MSC Domain Roadmaps.pdf' };
@@ -412,7 +412,7 @@ test('view-only Slides and external links omit dead download actions on mobile',
     } };
     const run = courseFunction('renderTabsAndContent', { state: { currentVideoId: 1 }, DOMElements,
         document: { createElement: element }, findVideoById: () => ({ resources }),
-        isCompactResourceCourse: () => true, getResourceViewLabel: () => 'View',
+        isCompactResourceCourse: () => true, getResourceViewLabel: () => 'View', isExcelViewerResource: () => false,
         getResourceDownloadLabel: () => 'Download', getResourceFormatNote: () => '', getResourceIcon: () => ''
     });
     run();
@@ -463,7 +463,7 @@ test('template rows open the inline viewer at their page in other courses; the A
     assert.match(window.location.href, /^\/ca-resource\/\?pdf=/);
 });
 
-test('v3 rows: an Excel download-only row shows only its Download button, a tool row only Open', () => {
+test('v3 rows: a workbook row shows Preview Excel and Download, a tool row only Open', () => {
     const resources = [
         { title: 'Top 100 Articleship Firms', type: 'xlsx', group: 'Choose your domain', download_storage_path: 'articleship-program-v3/day-5/Top 100 Articleship Firms.xlsx' },
         { title: 'Domain roadmaps', type: 'external_link', group: 'Choose your domain', url: '/articleship-program/domain-roadmaps/' }
@@ -474,15 +474,16 @@ test('v3 rows: an Excel download-only row shows only its Download button, a tool
     const element = () => ({ style: {}, dataset: {}, classList: { add() {} }, addEventListener() {} });
     const run = courseFunction('renderTabsAndContent', { state: { currentVideoId: 1 }, DOMElements,
         document: { createElement: element }, findVideoById: () => ({ resources }),
-        isCompactResourceCourse: () => true, getResourceViewLabel: r => (r.type === 'external_link' ? 'Open' : 'View'),
+        isCompactResourceCourse: () => true, isExcelViewerResource: r => r.type === 'xlsx',
+        getResourceViewLabel: r => (r.type === 'external_link' ? 'Open' : 'Preview Excel'),
         getResourceDownloadLabel: () => 'Download Excel', getResourceFormatNote: () => '', getResourceIcon: () => ''
     });
     run();
     const html = DOMElements.tabContents.resources.innerHTML;
     const items = html.split('<li class="resource-item">').slice(1);
     assert.equal(items.length, 2);
-    assert.ok(!/resource-btn-view/.test(items[0]), 'no View for an .xlsx (the PDF viewer cannot show it)');
-    assert.match(items[0], /resource-btn-download"[^>]*><i class="fas fa-download"><\/i> Download Excel/);
+    assert.match(items[0], /resource-btn-view[\s\S]*Preview Excel/, 'the workbook opens in the sheet viewer');
+    assert.match(items[0], /resource-btn-download"[^>]*><i class="fas fa-download"><\/i> Download Excel/, 'with the download beside it');
     assert.match(items[1], /resource-btn-view[\s\S]*Open/);
     assert.ok(!/resource-btn-download/.test(items[1]));
 });
