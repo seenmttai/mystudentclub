@@ -59,48 +59,7 @@
     }
   } catch (e) { /* old browsers: no banner */ }
 
-  // Already enrolled: every Register CTA becomes "Open the course" (15 Nov 2026).
-  // Courtesy only, like articleship-gate.js: real protection lives in Supabase.
-  var COURSE_URL = '/learning-management-system/course?course=msc-articleship-program';
-  var COURSE_NAMES = ['msc-articleship-program', 'articleship', 'articleship-program', 'articleship-mastery', 'msc-articleship-mastery'];
-
-  function ownsCourse(rows) {
-    return (rows || []).some(function (row) {
-      return COURSE_NAMES.indexOf(String((row && row.course) || '').trim().toLowerCase()) !== -1;
-    });
-  }
-
-  function showEnrolled() {
-    var hero = document.getElementById('heroPrimaryCta');
-    if (hero) {
-      hero.href = COURSE_URL;
-      hero.innerHTML = '<span>Already Enrolled &bull; Open Course</span> <i class="fas fa-arrow-right" aria-hidden="true"></i>';
-    }
-    var footerBtn = document.getElementById('registerFooterBtn');
-    if (footerBtn) {
-      footerBtn.href = COURSE_URL;
-      var footerText = footerBtn.querySelector('.notify-footer-text');
-      if (footerText) footerText.textContent = 'Open Course';
-    }
-    document.querySelectorAll('a[href="#register"]').forEach(function (a) { a.href = COURSE_URL; });
-    var card = form.closest ? form.closest('.register-card') : null;
-    if (card) {
-      var title = card.querySelector('.notify-card-title');
-      if (title) title.textContent = "You're already enrolled 🎉";
-      var price = card.querySelector('.register-price-row');
-      if (price) price.style.display = 'none';
-      var trust = card.querySelector('.notify-trust-line');
-      if (trust) trust.textContent = 'Your course is ready. See you inside!';
-    }
-    var open = document.createElement('a');
-    open.href = COURSE_URL;
-    open.className = 'notify-me-btn register-submit-btn';
-    open.id = 'openCourseBtn';
-    open.innerHTML = '<i class="fas fa-graduation-cap" aria-hidden="true"></i> <span class="register-submit-text">Open the course</span>';
-    form.parentNode.replaceChild(open, form);
-  }
-
-  // Logged-in students: fill what we already know, and swap to "Open the course" if they own it.
+  // Logged-in students: fill what we already know.
   try {
     var sb = window.getSupabaseClient ? window.getSupabaseClient() : window.supabaseClient;
     if (sb && sb.auth && sb.auth.getSession) {
@@ -111,10 +70,6 @@
         var meta = user.user_metadata || {};
         var nm = meta.full_name || meta.name || '';
         if (!nameEl.value && nm) nameEl.value = nm;
-        if (!sb.from) return;
-        return sb.from('enrollment').select('course').eq('uuid', user.id).then(function (q) {
-          if (q && !q.error && ownsCourse(q.data)) showEnrolled();
-        });
       }).catch(function () {});
     }
   } catch (e) { /* prefill is optional */ }
