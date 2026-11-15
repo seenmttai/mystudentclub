@@ -57,7 +57,7 @@ test('the strategy video sits inside the hero, and the page menu links to the in
   assert.ok(html.includes('id="indexes"') && /<nav class="top-nav"[\s\S]*?href="#indexes"[\s\S]*?<\/nav>/.test(html), 'top menu has the IBS Index link');
 });
 
-test('the home page menu has a CA Final IBS Index button that opens the indexes', () => {
+test('the home page menu no longer links to the IBS Index (removed 15 Nov 2026)', () => {
   const home = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-  assert.ok(/href="\/ca-final-ibs-strategy\/#indexes"[^>]*data-ibs-menu="drawer"/.test(home), 'side menu item');
+  assert.ok(!/ca-final-ibs-strategy\/#indexes|data-ibs-menu/.test(home), 'no IBS Index menu link on the home page');
 });
