@@ -497,7 +497,12 @@
                 }
 
                 let targetStoragePath = resourceName;
-                const targetBucket = 'industrial-training-mastery-resources';
+                // Each file lives in the bucket its path says (the Articleship Program has its own private bucket).
+                // Same rule as bucketFor() in scripts/articleship-lms.js, which the LMS uses for the same files.
+                const BUCKET_DEFAULT = 'industrial-training-mastery-resources';
+                const BUCKET_ARTICLESHIP = 'articleship-program-resources';
+                const bucketFor = (path) => /^articleship-program-v\d+\//.test(String(path === undefined || path === null ? '' : path).trim())
+                    ? BUCKET_ARTICLESHIP : BUCKET_DEFAULT;
 
                 // 3. Check videos catalog for resource ownership and file path
                 try {
@@ -508,6 +513,11 @@
                     if (videos && Array.isArray(videos)) {
                         let matchedResource = null;
                         let matchedCourse = null;
+                        let otherResource = null;
+                        let otherCourse = null;
+                        // A title such as "Application Template 1" can exist in more than one course. Take the one from the
+                        // program the student came from (Semi-Qualified students use the Industrial Training course).
+                        const wantedProgram = requestedProgram === 'semi-qualified' ? 'industrial-training' : requestedProgram;
 
                         for (const video of videos) {
                             let resList = video.resources;
@@ -525,12 +535,16 @@
                                            rTitle === target.replace(/\.[^/.]+$/, '');
                                 });
                                 if (found) {
-                                    matchedResource = found;
-                                    matchedCourse = video.course;
-                                    break;
+                                    if (!wantedProgram || normalizeProgram(video.course) === wantedProgram) {
+                                        matchedResource = found;
+                                        matchedCourse = video.course;
+                                        break;
+                                    }
+                                    if (!otherResource) { otherResource = found; otherCourse = video.course; }
                                 }
                             }
                         }
+                        if (!matchedResource && otherResource) { matchedResource = otherResource; matchedCourse = otherCourse; }
 
                         if (matchedCourse) {
                             const courseProgram = normalizeProgram(matchedCourse);
@@ -556,6 +570,7 @@
                 }
 
                 // Attempt to generate signed URLs from the bucket
+                let targetBucket = bucketFor(targetStoragePath);
                 let { data: viewData, error: viewError } = await supabaseClient.storage
                     .from(targetBucket)
                     .createSignedUrl(targetStoragePath, 300);
@@ -563,11 +578,13 @@
                 if (viewError || !viewData || !viewData.signedUrl) {
                     if (targetStoragePath !== resourceName) {
                         const fb = await supabaseClient.storage
-                            .from(targetBucket)
+                            .from(bucketFor(resourceName))
                             .createSignedUrl(resourceName, 300);
                         if (!fb.error && fb.data?.signedUrl) {
                             viewData = fb.data;
                             viewError = null;
+                            targetStoragePath = resourceName;
+                            targetBucket = bucketFor(resourceName);
                         }
                     }
                 }
