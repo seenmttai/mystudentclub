@@ -402,9 +402,14 @@
         copy.append(titleRow, element('p', 'resource-section-intro', description));
         header.append(copy);
         const actions = element('div', 'resource-section-actions');
-        const viewAll = element('a', 'hub-view-link', 'View all →');
-        viewAll.href = '#' + (id === 'free' ? 'resource-free' : 'resource-premium');
-        actions.append(viewAll);
+        if (id === 'premium') {
+            // "View all" shows the whole premium library: no category, search or day filter, and every collection open.
+            // (It used to link to its own heading, so it did nothing. The Free list already shows every free resource.)
+            const viewAll = element('a', 'hub-view-link', 'View all →');
+            viewAll.href = '#resource-premium';
+            viewAll.addEventListener('click', event => { event.preventDefault(); showAllPremium(); });
+            actions.append(viewAll);
+        }
         header.append(actions);
         return header;
     }
@@ -493,7 +498,21 @@
             count: (tile.querySelector('.tile-content p')?.textContent.match(/\d+/) || [null])[0]
         }));
     }
+    // Each tile shows how many resources of this page's own program are in that category, from the same catalogue as the
+    // list below (the LMS resources of that course). Not loaded yet: "…". Unavailable: "—".
+    function syncTileCounts() {
+        const counts = {};
+        premiumRows.forEach(row => { const name = resourceCategory(row); counts[name] = (counts[name] || 0) + 1; });
+        document.querySelectorAll('.category-tile[data-category]').forEach(tile => {
+            const label = tile.querySelector('.tile-content p');
+            if (!label) return;
+            if (!catalogueLoaded) { label.textContent = catalogueError ? '—' : '…'; return; }
+            const count = counts[tile.dataset.category] || 0;
+            label.textContent = count === 0 ? 'No resources yet' : count + (count === 1 ? ' resource' : ' resources');
+        });
+    }
     function updateCategoryUI() {
+        syncTileCounts();
         document.querySelectorAll('.category-tile[data-category]').forEach(tile => {
             const name = tile.dataset.category;
             const countText = tile.querySelector('.tile-content p')?.textContent.trim();
@@ -575,6 +594,10 @@
         setPremiumQuery('');
         renderPremiumResults();
         if (reveal) revealPremium();
+    }
+    function showAllPremium() {
+        groupPremiumResources(premiumRows).forEach(day => day.groups.forEach(group => expandedGroups.add(group.key)));
+        selectCategory('all');
     }
     function searchFromHub(term) {
         selectedCategory = 'all';

@@ -62,7 +62,8 @@ test('all four pages retain Free/Premium top-level sections, unchanged free reso
             }
             const freeHeader = doc.querySelector('.resource-free-section .resource-section-header');
             assert.equal(freeHeader.children.length, 2, 'free section header has copy and actions');
-            assert.ok(freeHeader.querySelector('.resource-section-actions .hub-view-link'));
+            assert.equal(freeHeader.querySelector('.resource-section-actions .hub-view-link'), null, 'Free lists everything already, so it has no "View all"');
+            assert.ok(doc.querySelector('.resource-premium-section .resource-section-actions .hub-view-link'), 'Premium has a real "View all"');
 
             const premiumHeader = doc.querySelector('.resource-premium-section .resource-section-header');
             assert.equal(premiumHeader.children.length, 2, 'premium section header has copy and actions');
@@ -379,16 +380,84 @@ const mixedRows = program => [
     {program_type:program, title:'Mock Interview Questions', category:'interview-guidance', sort_order:10}
 ];
 
-test('every resource page keeps the same 11 category tiles and counts, whatever the catalogue holds', async () => {
-    const expected = ['62','5','3','12','17','9','2','5','5','21','14'];
-    for (const [slug, program] of [['ca-industrial-training-resources','industrial-training'],['ca-fresher-training-resources','ca-fresher'],['articleship-resources','articleship'],['semi-qualified-ca-resources','industrial-training']]) {
-        const dom = await render(slug, async () => ({data: mixedRows(program)}));
+const PAGE_PROGRAMS = [['ca-industrial-training-resources','industrial-training'],['ca-fresher-training-resources','ca-fresher'],['articleship-resources','articleship'],['semi-qualified-ca-resources','industrial-training']];
+const tileText = (count) => count === 0 ? 'No resources yet' : count + (count === 1 ? ' resource' : ' resources');
+function expectedTileCounts(rows, program) {
+    const library = require('../scripts/resource-library.js');
+    const counts = {};
+    library.sanitizeCatalogue(rows, program).forEach(row => { const name = library.resourceCategory(row); counts[name] = (counts[name] || 0) + 1; });
+    return counts;
+}
+
+test('every resource page shows the same 11 category tiles, each counted from that page\'s own catalogue', async () => {
+    for (const [slug, program] of PAGE_PROGRAMS) {
+        const rows = mixedRows(program);
+        const counts = expectedTileCounts(rows, program);
+        const dom = await render(slug, async () => ({data: rows}));
         try {
             const doc = dom.window.document;
             const tiles = [...doc.querySelectorAll('.category-tile')];
-            assert.deepEqual(tiles.map(tile => tile.querySelector('p').textContent), expected.map(n => n + ' resources'), slug);
+            assert.equal(tiles.length, 11, slug);
+            assert.deepEqual(tiles.map(tile => tile.querySelector('p').textContent), tiles.map(tile => tileText(counts[tile.dataset.category] || 0)), slug);
             assert.ok(tiles.every(tile => !tile.hidden), slug + ' shows every tile');
             assert.equal(doc.querySelector('.hub-badge-pill').textContent, '11 Categories');
+        } finally { dom.window.close(); }
+    }
+});
+
+test('tile counts follow the course: a page with a different catalogue shows different numbers, never another page\'s', async () => {
+    const small = program => [{program_type:program, title:'CV Template 1', category:'cv-prep', sort_order:10}];
+    const industrial = await render('ca-industrial-training-resources', async () => ({data: mixedRows('industrial-training')}));
+    const articleship = await render('articleship-resources', async () => ({data: small('articleship')}));
+    try {
+        const cv = doc => [...doc.querySelectorAll('.category-tile')].find(tile => tile.dataset.category === 'CV Templates').querySelector('p').textContent;
+        assert.equal(cv(industrial.window.document), '4 resources');
+        assert.equal(cv(articleship.window.document), '1 resource');
+        const total = doc => [...doc.querySelectorAll('.category-tile p')].map(p => p.textContent).filter(t => /^\d/.test(t)).reduce((sum, t) => sum + parseInt(t, 10), 0);
+        assert.equal(total(articleship.window.document), 1, 'the counts add up to the premium count, not to 155');
+        assert.equal(articleship.window.document.getElementById('resource-premium-count').textContent, '1');
+    } finally { industrial.window.close(); articleship.window.close(); }
+});
+
+test('tile counts say "…" while the catalogue loads and "—" when it is unavailable, never a number that is not this course\'s', async () => {
+    const pending = await render('articleship-resources', () => new Promise(() => {}));
+    const failed = await render('articleship-resources', async () => ({data: null, error: {message: 'down', code: '500'}}));
+    try {
+        assert.deepEqual([...pending.window.document.querySelectorAll('.category-tile p')].map(p => p.textContent), Array(11).fill('…'));
+        assert.deepEqual([...failed.window.document.querySelectorAll('.category-tile p')].map(p => p.textContent), Array(11).fill('—'));
+    } finally { pending.window.close(); failed.window.close(); }
+});
+
+test('the pages carry no fixed tile numbers', () => {
+    for (const [slug] of PAGE_PROGRAMS) {
+        const html = fs.readFileSync(path.join(root, slug + '.html'), 'utf8');
+        assert.doesNotMatch(html, /<div class="tile-content">\s*<h3>[^<]*<\/h3>\s*<p>\d+ resources<\/p>/, slug);
+    }
+});
+
+test('"View all" on Premium clears every filter and opens every collection; Free has no dead "View all"', async () => {
+    for (const [slug, program] of PAGE_PROGRAMS) {
+        const rows = [
+            ...Array.from({length:6}, (_, i) => ({program_type:program, title:'CV Template '+(i+1), category:'cv-prep', sort_order:10})),
+            {program_type:program, title:'Mock Interview Questions', category:'interview-guidance', sort_order:10}
+        ];
+        const dom = await render(slug, async () => ({data: rows}));
+        try {
+            const doc = dom.window.document;
+            const freeLinks = doc.querySelectorAll('.resource-free-section .hub-view-link');
+            assert.equal(freeLinks.length, 0, slug + ': nothing more to view in Free');
+            const viewAll = doc.querySelector('.resource-premium-section .resource-section-actions .hub-view-link');
+            assert.ok(viewAll, slug + ' has the Premium "View all"');
+            // narrow it down first: a category and a search
+            doc.querySelector('.category-tile[data-category="Interview Preparation"]').click();
+            assert.ok(!doc.getElementById('premium-category-filter').hidden, 'a category filter is on');
+            const collapsedBefore = [...doc.querySelectorAll('.premium-group-toggle')].filter(button => button.getAttribute('aria-expanded') === 'false').length;
+            viewAll.click();
+            assert.ok(doc.getElementById('premium-category-filter').hidden, 'the category filter is cleared');
+            assert.equal(doc.getElementById('premium-resource-search').value, '', 'the search is cleared');
+            assert.equal(doc.querySelectorAll('.premium-group-toggle[aria-expanded="false"]').length, 0, slug + ': every collection is open (was ' + collapsedBefore + ' collapsed before)');
+            const cards = doc.querySelectorAll('#premium-resources-list .premium-resource, #premium-resources-list [data-resource], #premium-resources-list .resource-card');
+            assert.ok(cards.length >= 7 || doc.getElementById('premium-resources-list').textContent.includes('CV Template 6'), slug + ' lists every resource');
         } finally { dom.window.close(); }
     }
 });
@@ -439,7 +508,9 @@ test('the All categories button opens a menu that filters premium resources', as
         assert.equal(items.length, 12, 'All categories + the 11 tiles');
         assert.equal(items[0].firstChild.textContent, 'All categories');
         assert.equal(items[1].firstChild.textContent, 'CV Templates');
-        assert.equal(items[1].querySelector('.hub-category-menu-count').textContent, '62', 'menu count matches the tile');
+        const cvTile = [...doc.querySelectorAll('.category-tile')].find(tile => tile.dataset.category === 'CV Templates');
+        assert.equal(items[1].querySelector('.hub-category-menu-count').textContent, cvTile.querySelector('p').textContent.match(/\d+/)[0], 'menu count matches the tile');
+        assert.equal(items[1].querySelector('.hub-category-menu-count').textContent, '4', "and both are this catalogue's count");
         assert.equal(items[0].getAttribute('aria-checked'), 'true');
         assert.equal(doc.activeElement, items[0]);
         menu.dispatchEvent(new dom.window.KeyboardEvent('keydown', {key:'ArrowDown', bubbles:true}));
