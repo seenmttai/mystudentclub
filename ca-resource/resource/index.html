@@ -504,11 +504,19 @@
                 const bucketFor = (path) => /^articleship-program-v\d+\//.test(String(path === undefined || path === null ? '' : path).trim())
                     ? BUCKET_ARTICLESHIP : BUCKET_DEFAULT;
 
+                // Why a file could not be opened. Shown on the error card, so a report says which step failed:
+                // no-match (not found in the course's resource list, so the name was tried as a file name),
+                // lookup-failed (the resource list could not be read), denied-or-missing (found in the list, but the
+                // storage link was refused: the file is missing or the student is not allowed to read it).
+                let reference = 'no-match';
+                const squash = (value) => String(value === undefined || value === null ? '' : value).toLowerCase().replace(/\s+/g, ' ').trim();
+
                 // 3. Check videos catalog for resource ownership and file path
                 try {
-                    const { data: videos } = await supabaseClient
+                    const { data: videos, error: videosError } = await supabaseClient
                         .from('videos')
                         .select('course, resources');
+                    if (videosError) reference = 'lookup-failed';
 
                     if (videos && Array.isArray(videos)) {
                         let matchedResource = null;
@@ -530,7 +538,7 @@
                                     const rView = String(r.view_storage_path || '').trim().toLowerCase();
                                     const rDl = String(r.download_storage_path || '').trim().toLowerCase();
                                     const target = normalizedName;
-                                    return rTitle === target || rView === target || rDl === target ||
+                                    return rTitle === target || squash(r.title) === squash(resourceName) || rView === target || rDl === target ||
                                            rView.endsWith('/' + target) || rDl.endsWith('/' + target) ||
                                            rTitle === target.replace(/\.[^/.]+$/, '');
                                 });
@@ -547,6 +555,7 @@
                         if (!matchedResource && otherResource) { matchedResource = otherResource; matchedCourse = otherCourse; }
 
                         if (matchedCourse) {
+                            reference = 'matched';
                             const courseProgram = normalizeProgram(matchedCourse);
                             if (courseProgram && !isUserEnrolledIn(courseProgram)) {
                                 if (!(requestedProgram === 'semi-qualified' && hasIndustrialAccess)) {
@@ -566,6 +575,7 @@
                         }
                     }
                 } catch (videoErr) {
+                    reference = 'lookup-failed';
                     console.warn("Catalog lookup failed, continuing with direct access:", videoErr);
                 }
 
@@ -591,7 +601,7 @@
 
                 if (viewError || !viewData || !viewData.signedUrl) {
                     console.error("Storage View Error:", viewError);
-                    showAccessRestricted("Access Restricted: You do not have active permission to view this resource or the file does not exist.", false);
+                    showAccessRestricted("Access Restricted: You do not have active permission to view this resource or the file does not exist. (Ref: " + (reference === 'matched' ? 'denied-or-missing' : reference) + ")", false);
                     return;
                 }
 
