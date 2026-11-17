@@ -118,6 +118,39 @@
         }
     }
 
+    function sameProfileValue(a, b) {
+        const norm = v => (v === null || v === undefined) ? '' : String(v);
+        return norm(a) === norm(b);
+    }
+
+    // The website's save used to replace the whole profile with what this tab's form holds, so anything
+    // the app (or another tab) saved after the page loaded, and every key the web form has no input for,
+    // was lost. Merge instead: start from the latest server profile and overwrite only the keys this tab
+    // actually changed since `baseline` (the tab's own view of the profile when it last loaded or saved).
+    // Keys the server doesn't have yet take the tab's value. With no baseline, every tab key wins, but
+    // server-only keys are still kept.
+    function mergeProfileForSave(serverProfile, tabProfile, baseline) {
+        const server = serverProfile && typeof serverProfile === 'object' && !Array.isArray(serverProfile) ? serverProfile : {};
+        const tab = tabProfile || {};
+        const merged = { ...tab, ...server };
+        Object.keys(tab).forEach(key => {
+            const serverHasKey = Object.prototype.hasOwnProperty.call(server, key);
+            const changedHere = !baseline || !sameProfileValue(tab[key], baseline[key]);
+            if (!serverHasKey || changedHere) merged[key] = tab[key];
+        });
+        return merged;
+    }
+
+    function profilesDiffer(a, b) {
+        const left = a || {};
+        const right = b || {};
+        const keys = new Set([...Object.keys(left), ...Object.keys(right)]);
+        for (const key of keys) {
+            if (!sameProfileValue(left[key], right[key])) return true;
+        }
+        return false;
+    }
+
     async function hydrateProfileFromSupabase(client, user) {
         if (!client || !user?.id) return { data: null, profile: null, seededFields: [], changed: false };
         prepareUserCache(user.id);
@@ -167,6 +200,8 @@
         readCachedProfile,
         setOnboardingDismissed,
         wasOnboardingDismissed,
+        mergeProfileForSave,
+        profilesDiffer,
         hydrateProfileFromSupabase
     };
 })(window);
