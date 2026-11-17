@@ -53,3 +53,11 @@ test('profile "Got placed?" card opens /offer-groups', () => {
   assert.match(card, /href="\/offer-groups"/);
   assert.doesNotMatch(html, /placed-card\.js/);
 });
+
+test('help the next student: HR rows are cleaned, and the WhatsApp share goes to the desk number', () => {
+  const r = core.cleanHr([{}, { name: ' A ', phone: '98765-43210' }, { email: 'x@y' }, { name: 'Only name' }, { email: 'HR@Firm.in' }]);
+  assert.deepEqual(r.rows, [{ name: 'A', company: '', phone: '9876543210', email: '' }, { name: '', company: '', phone: '', email: 'hr@firm.in' }]);
+  assert.deepEqual(Object.keys(r.errors), ['2', '3']);
+  assert.match(decodeURIComponent(core.hrWhatsAppLink('Deloitte')), /^https:\/\/wa\.me\/918104135784\?text=Hi MSC, here are the HR contacts I have \(I am joining Deloitte\)/);
+  assert.match(read('offer-groups.html'), /Help the next student/);
+});
