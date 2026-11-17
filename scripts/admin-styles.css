@@ -237,6 +237,32 @@ body {
   color: var(--danger);
 }
 
+.repost-icon-btn {
+  color: #0f766e;
+}
+
+.repost-icon-btn:hover {
+  background: rgba(15, 118, 110, 0.1);
+}
+
+.repost-icon-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.repost-chip {
+  display: inline-block;
+  background: #ccfbf1;
+  color: #115e59;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  vertical-align: middle;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
 .delete-icon-btn:hover {
   background: rgba(220, 38, 38, 0.1);
 }

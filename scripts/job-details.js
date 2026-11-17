@@ -1,5 +1,5 @@
 
-import { getDaysAgo, isJobExpired } from './date-utils.js';
+import { getDaysAgo, isJobExpired, getPostedLabel } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, showExclusiveLockPopup, showExclusiveAppliedPopup, fetchMyProgramRegistrations, ensureExclusiveStyles } from './exclusive-vacancy.js';
 import { assessmentGate } from './apply-assessment.js';
@@ -278,7 +278,7 @@ function renderJob(job, tableName) {
                 ` : ''}
                 <div class="job-meta-item">
                     <i class="far fa-clock"></i>
-                    <span>${isExpired ? 'Expired' : `Posted ${postedDate}`}</span>
+                    <span>${getPostedLabel(job, 'Recently')}</span>
                 </div>
                 ${isExpired ? `<div class="job-meta-item job-expired-status"><i class="fas fa-hourglass-end"></i><span>Expired</span></div>` : ''}
                 <div class="job-meta-item">
