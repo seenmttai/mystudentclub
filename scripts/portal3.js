@@ -545,7 +545,6 @@ function renderJobCard(job) {
 
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const isExpired = isJobExpired(job.Created_At);
-    const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'N/A');
     const isApplied = appliedJobIds.has(job.id);
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';

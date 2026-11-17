@@ -1,4 +1,4 @@
-import { getDaysAgo, isJobExpired } from './date-utils.js';
+import { getDaysAgo, isJobExpired, getPostedLabel } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 import { ARTICLESHIP_TABLE, isExclusiveLocked, showExclusiveLockPopup } from './exclusive-vacancy.js';
@@ -171,7 +171,6 @@ function renderJobCard(job) {
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const isExpired = isJobExpired(job.Created_At);
-    const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'N/A');
     const isApplied = appliedJobIds.has(job.id);
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';
@@ -205,7 +204,7 @@ function renderJobCard(job) {
             <div class="job-card-logo">${companyInitial}</div>
             <div class="job-card-header">
                 <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
-                <p class="job-card-posted ${postedClass}">${isExpired ? 'Expired' : `Posted ${postedDate}`}</p>
+                <p class="job-card-posted ${postedClass}">${getPostedLabel(job)}</p>
             </div>
             <button class="job-card-bookmark" title="Save job" aria-label="Bookmark job">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
@@ -588,7 +587,7 @@ function showModal(job) {
         <div class="modal-meta-tags">
             ${isExpired ? '<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>' : ''}
             ${isSalaryDisclosed(job.Salary) ? `<span class="job-tag">${((job.source_table || state.portalType) === 'Semi Qualified Jobs' || (job.source_table || state.portalType) === 'Fresher Jobs') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
-            <span class="job-tag">Posted: ${postedDate}</span>
+            <span class="job-tag">${job.reposted_at && !isExpired ? 'Reposted' : 'Posted'}: ${postedDate}</span>
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
         <div class="modal-actions" style="display: flex; flex-direction: column; gap: 0;">${actionsHtml}</div>
@@ -794,7 +793,9 @@ async function fetchJobs() {
                 else if (table === "Industrial Training Job Portal") selectColumns += ', is_exclusive';
                 else if (table === ARTICLESHIP_TABLE) selectColumns += ', is_exclusive';
 
-                let query = supabaseClient.from(table).select(selectColumns);
+                selectColumns += ', reposted_at';
+                const buildQuery = (cols) => {
+                let query = supabaseClient.from(table).select(cols);
 
                 // ONLY EMAILS
                 query = query.ilike('Application ID', '%@%').not('Application ID', 'ilike', 'http%');
@@ -824,8 +825,14 @@ async function fetchJobs() {
                 }
 
                 query = query.order('Created_At', { ascending: false, nullsFirst: false }).limit(300);
+                return query;
+                };
 
-                const { data, error } = await query;
+                let { data, error } = await buildQuery(selectColumns);
+                if (error && /reposted_at/.test(error.message || '')) {
+                    // reposted_at arrives with migration 202611170001; until then, load without it.
+                    ({ data, error } = await buildQuery(selectColumns.replace(', reposted_at', '')));
+                }
                 if (error) throw error;
                 return (data || []).map(job => ({ ...job, source_table: table }));
             });

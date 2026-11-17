@@ -3936,14 +3936,14 @@
           }
           throw error;
         }
-        const row = Array.isArray(data) ? data[0] : data;
-        const updated = { ...job, ...(row || {}), id: job.id };
+        // Reload the list with the current filters: the reposted vacancy now sorts first, and the
+        // offset paging stays right (prepending in place would repeat or skip a card on "Load more").
+        page = 0;
+        hasMoreData = true;
         const jobsContainer = document.getElementById('jobs');
-        const oldCard = jobsContainer && jobsContainer.querySelector(`.job-card[data-job-id='${id}']`);
-        if (oldCard) {
-          oldCard.remove();
-          jobsContainer.prepend(renderJobCard(updated, table));
-        }
+        if (jobsContainer) jobsContainer.innerHTML = '';
+        const val = (elId) => (document.getElementById(elId) || {}).value || '';
+        await fetchJobs(val('searchInput'), val('locationSearchInput'), val('salaryFilter'), val('experienceFilter'));
         alert('Reposted: it is back on top of the portal.');
       } catch (error) {
         alert('Failed to repost: ' + (error.message || error));
@@ -3997,19 +3997,17 @@
         let query = buildQuery(selectColumns);
         let { data, error } = await query;
 
-        // Failsafe Fallback: the repost columns arrive with migration 202611170001; strip them until then.
-        if (error && error.message && /reposted_at|repost_count/.test(error.message) && selectColumns.includes(', reposted_at')) {
-          selectColumns = selectColumns.replace(', reposted_at, repost_count', '');
-          query = buildQuery(selectColumns);
-          const repostFallback = await query;
-          data = repostFallback.data;
-          error = repostFallback.error;
-        }
-
-        // Failsafe Fallback: If is_exclusive does not exist yet on the table, strip it and retry.
-        if (error && error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
-          console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
-          selectColumns = selectColumns.replace(', is_exclusive', '');
+        // Failsafe Fallbacks for columns the database may not have yet, in whichever order it reports them:
+        // the repost columns (migration 202611170001) and is_exclusive.
+        for (let retry = 0; retry < 2 && error && error.message; retry++) {
+          if (/reposted_at|repost_count/.test(error.message) && selectColumns.includes(', reposted_at')) {
+            selectColumns = selectColumns.replace(', reposted_at, repost_count', '');
+          } else if (error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
+            console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
+            selectColumns = selectColumns.replace(', is_exclusive', '');
+          } else {
+            break;
+          }
           query = buildQuery(selectColumns);
           const fallbackResult = await query;
           data = fallbackResult.data;
