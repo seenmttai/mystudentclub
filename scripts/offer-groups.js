@@ -130,6 +130,18 @@
         return 'https://wa.me/' + DESK_WHATSAPP + '?text=' + encodeURIComponent(text);
     }
 
+    /** An HR phone as WhatsApp digits, same rules as offer_hr_phone() in SQL; '' when it is not a usable number. */
+    function hrPhone(raw) {
+        var text = String(raw || '').trim();
+        var d = text.replace(/\D/g, '');
+        var plus = text.charAt(0) === '+';
+        if (plus && d.slice(0, 2) === '91') { plus = false; d = d.slice(2); }
+        if (plus) return d.length >= 11 && d.length <= 15 ? d : '';
+        if (d.length === 11 && d.charAt(0) === '0') d = d.slice(1);
+        if (d.length === 12 && d.slice(0, 2) === '91') d = d.slice(2);
+        return /^[6-9]\d{9}$/.test(d) ? '91' + d : '';
+    }
+
     /** Checks the HR rows the student typed. → { rows: [{ name, company, phone, email }], errors: { index: message } } */
     function cleanHr(rows) {
         var out = [];
@@ -140,8 +152,8 @@
             var phone = String(r.phone || '').replace(/[^0-9+]/g, '');
             var email = String(r.email || '').trim().toLowerCase();
             if (!name && !company && !phone && !email) return;
-            var digits = phone.replace(/\D/g, '');
-            if (phone && (digits.length < 10 || digits.length > 13)) { errors[i] = 'That phone number looks incomplete.'; return; }
+            var digits = phone ? hrPhone(r.phone) : '';
+            if (phone && !digits) { errors[i] = 'That phone number looks wrong. Use the 10-digit mobile number.'; return; }
             if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { errors[i] = 'That email looks wrong.'; return; }
             if (!digits && !email) { errors[i] = 'Add their phone number or email.'; return; }
             out.push({ name: name, company: company, phone: digits, email: email });
@@ -795,7 +807,7 @@
         return { start: start, state: state };
     }
 
-    var api = { init: init, cleanHr: cleanHr, hrWhatsAppLink: hrWhatsAppLink, successMessage: successMessage, firstName: firstName, snapCompany: snapCompany, snapCity: snapCity, safeGroups: safeGroups, prepareFile: prepareFile, PasswordNeeded: PasswordNeeded, VERIFY_URL: VERIFY_URL };
+    var api = { init: init, cleanHr: cleanHr, hrPhone: hrPhone, hrWhatsAppLink: hrWhatsAppLink, successMessage: successMessage, firstName: firstName, snapCompany: snapCompany, snapCity: snapCity, safeGroups: safeGroups, prepareFile: prepareFile, PasswordNeeded: PasswordNeeded, VERIFY_URL: VERIFY_URL };
     if (typeof module === 'object' && module.exports) module.exports = api;
     global.MSCOfferGroups = api;
     if (typeof document !== 'undefined' && !global.MSC_OFFER_GROUPS_MANUAL) {

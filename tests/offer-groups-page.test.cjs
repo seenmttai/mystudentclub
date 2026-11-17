@@ -318,7 +318,7 @@ test('help the next student: interview answer and the vacancy tick are required;
   await answer(t, { interview: 'Basic questions.', pledge: false, hr: [{ name: 'Priya', phone: '98765' }] });
   assert.match(t.doc.getElementById('og-interview-error').textContent, /a few lines/);
   assert.match(t.doc.getElementById('og-pledge-error').textContent, /tick/);
-  assert.match(t.doc.querySelector('[data-hr-row="0"] .og-field-error').textContent, /incomplete/);
+  assert.match(t.doc.querySelector('[data-hr-row="0"] .og-field-error').textContent, /looks wrong/);
   assert.equal(t.saved.length + t.sent.length, 0);
   // Fixed: two HR contacts (an empty row is ignored), saved before the letter is sent.
   await answer(t, { hr: [{ phone: '+91 98765 43210' }, { name: 'Rahul', company: 'KPMG', email: 'Rahul@KPMG.com' }, {}] });
@@ -354,8 +354,10 @@ test('help the next student: a failed save shows the error and sends nothing; ea
 
 test('cleanHr: empty rows dropped, numbers cleaned, bad rows flagged', () => {
   const r = core.cleanHr([{}, { name: ' A ', phone: '98765-43210' }, { email: 'x@y' }, { name: 'Only name' }, { email: 'HR@Firm.in' }]);
-  assert.deepEqual(r.rows, [{ name: 'A', company: '', phone: '9876543210', email: '' }, { name: '', company: '', phone: '', email: 'hr@firm.in' }]);
+  assert.deepEqual(r.rows, [{ name: 'A', company: '', phone: '919876543210', email: '' }, { name: '', company: '', phone: '', email: 'hr@firm.in' }]);
   assert.deepEqual(Object.keys(r.errors), ['2', '3']);
+  assert.deepEqual(['98765 43210', '09876543210', '+91 98765 43210', '919876543210', '+1 415 555 0100', '98765432101', '12345 67890', '415 555 0100'].map(core.hrPhone),
+    ['919876543210', '919876543210', '919876543210', '919876543210', '14155550100', '', '', '']);
 });
 
 test('admin: interview answers show as text; HR contacts get a WhatsApp intro and can be marked messaged', async () => {

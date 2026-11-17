@@ -197,6 +197,11 @@ test('insights: saved by the signed-in student only; answers checked; HR numbers
  await assert.rejects(saveInsights(db,A,{pledge:false}),/tick the box/);
  const r=await saveInsights(db,A,{hr:[{name:'Priya',phone:'98765 43210'},{name:'Dup',phone:'+91-9876543210'},{email:'HR@Firm.in',company:'KPMG'},{name:'No contact'},{phone:'123'},{email:'bad@'}]});
  assert.equal(r.hr_saved,2);
+ const phones=(await db.query("select public.offer_hr_phone(x) p from unnest(array['98765 43210','09876543210','+91 98765 43210','+1 415 555 0100','98765432101','415 555 0100']) x")).rows.map(x=>x.p);
+ assert.deepEqual(phones,['919876543210','919876543210','919876543210','14155550100',null,null]);
+ await as(db,'authenticated',A);
+ await assert.rejects(db.query("select public.save_offer_insights('a','b','c','d',$1,'{}'::jsonb,true)",[INTERVIEW]),/Up to 10/);
+ await db.exec('reset role');
  await as(db,'service_role');
  const rows=(await db.query('select name,company,phone,email,intro_status from public.offer_hr_contacts order by created_at, phone nulls last')).rows;
  assert.deepEqual(rows.map(x=>[x.name,x.company,x.phone,x.email]).sort(),[['Priya','Deloitte','919876543210',null],[null,'KPMG',null,'hr@firm.in']].sort());

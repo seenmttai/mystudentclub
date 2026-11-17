@@ -9,7 +9,7 @@
 -- Needs 202610310001_offer_groups.sql first (account_bans, is_super_admin()).
 --
 -- Reversible: yes. To undo, run:
---   drop function if exists public.save_offer_insights(text, text, text, text, text, jsonb, boolean),
+--   drop function if exists public.offer_hr_phone(text), public.save_offer_insights(text, text, text, text, text, jsonb, boolean),
 --     public.my_offer_insights(), public.admin_offer_insights(text, integer), public.admin_offer_hr_contacts(text, text, integer),
 --     public.admin_offer_hr_mark(uuid, text);
 --   drop table if exists public.offer_hr_contacts, public.offer_insights;
@@ -66,6 +66,22 @@ begin
 end;
 $$;
 
+-- An HR phone as WhatsApp digits: Indian numbers become 91XXXXXXXXXX (from 10 digits, 0XXXXXXXXXX or 91XXXXXXXXXX);
+-- other countries need a leading + (11-15 digits). Anything else is null.
+create or replace function public.offer_hr_phone(p text)
+returns text language plpgsql immutable set search_path = public, pg_temp as $$
+declare
+  v_plus boolean := btrim(coalesce(p, '')) like '+%';
+  v_d text := regexp_replace(coalesce(p, ''), '[^0-9]', '', 'g');
+begin
+  if v_plus and left(v_d, 2) = '91' then v_plus := false; v_d := substr(v_d, 3); end if;
+  if v_plus then return case when char_length(v_d) between 11 and 15 then v_d end; end if;
+  if char_length(v_d) = 11 and left(v_d, 1) = '0' then v_d := substr(v_d, 2); end if;
+  if char_length(v_d) = 12 and left(v_d, 2) = '91' then v_d := substr(v_d, 3); end if;
+  return case when v_d ~ '^[6-9][0-9]{9}$' then '91' || v_d end;
+end;
+$$;
+
 -- The student's answers. Called right before the letter goes to the offer-verify Worker, and again on a retry:
 -- the answers are replaced, and HR contacts the team has not messaged yet are replaced; sent ones stay.
 -- p_hr: [{ name, company, phone, email }], at most 10; rows with neither a phone nor an email are dropped.
@@ -88,7 +104,8 @@ begin
   end if;
   if char_length(v_interview) < 30 then raise exception 'Please write a little more about your interview questions'; end if;
   if char_length(v_interview) > 8000 then raise exception 'Your interview answer is too long (8,000 characters at most)'; end if;
-  if jsonb_typeof(v_hr) <> 'array' or jsonb_array_length(v_hr) > 10 then raise exception 'Up to 10 HR contacts, please'; end if;
+  if jsonb_typeof(v_hr) <> 'array' then raise exception 'Up to 10 HR contacts, please'; end if;
+  if jsonb_array_length(v_hr) > 10 then raise exception 'Up to 10 HR contacts, please'; end if;
   if not coalesce(p_pledge, false) then raise exception 'Please tick the box about sharing vacancies'; end if;
 
   select u.email into v_email from auth.users u where u.id = v_uid;
@@ -104,10 +121,7 @@ begin
   delete from public.offer_hr_contacts where user_id = v_uid and intro_status = 'new';
   for v_item in select value from jsonb_array_elements(v_hr) loop
     if jsonb_typeof(v_item) <> 'object' then continue; end if;
-    v_phone := nullif(regexp_replace(coalesce(v_item->>'phone', ''), '[^0-9]', '', 'g'), '');
-    if v_phone is not null and char_length(v_phone) = 10 then v_phone := '91' || v_phone; end if;
-    if v_phone is not null and char_length(v_phone) = 11 and left(v_phone, 1) = '0' then v_phone := '91' || substr(v_phone, 2); end if;
-    if v_phone is not null and char_length(v_phone) not between 10 and 15 then v_phone := null; end if;
+    v_phone := public.offer_hr_phone(v_item->>'phone');
     v_mail := nullif(lower(btrim(coalesce(v_item->>'email', ''))), '');
     if v_mail is not null and v_mail !~* '^[^@\s]+@[^@\s]+\.[^@\s]+$' then v_mail := null; end if;
     if v_phone is null and v_mail is null then continue; end if;
