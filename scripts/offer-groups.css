@@ -192,4 +192,5 @@ html[data-theme=dark] body.og-page {
   .og-row-end .og-btn { flex: 1; }
   .og-hr-row { grid-template-columns: 1fr; }
   .og-wa-share .og-btn { width: 100%; }
+  .og-questions .og-row-end { flex-direction: column-reverse; align-items: stretch; }
 }
