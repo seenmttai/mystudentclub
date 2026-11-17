@@ -69,3 +69,20 @@ test('dismissed signup onboarding changes the dashboard reminder copy', () => {
   assert.match(read('scripts/portal-email.js'), /wasOnboardingDismissed\(currentSession\?\.user\?\.email\)/);
   assert.match(read('sign-up.html'), /setOnboardingDismissed\(lastSignupEmail\)/);
 });
+
+test('profile saves merge over the latest server row and a resume from the app counts', () => {
+  const source = read('scripts/profile.js');
+  assert.match(source, /mergeProfileForSave\(serverProfile, profileData, profileSaveBaseline\)/);
+  assert.match(source, /if \(!hasResumeOnFile\(\)\) \{\s*showToast\('Please upload your resume/);
+  assert.match(source, /localStorage\.getItem\('userCVText'\) \|\| ''\)\.trim\(\)/);
+  // Every profile write goes through the merged save.
+  assert.equal((source.match(/from\('profiles'\)\.upsert\(/g) || []).length, 1);
+});
+
+test('handleSave defines the consent checkbox it reads', () => {
+  const source = read('scripts/profile.js');
+  const start = source.indexOf('async function handleSave(');
+  const firstUse = source.indexOf('consentCheckbox && consentCheckbox.checked', start);
+  const declared = source.indexOf("const consentCheckbox = document.getElementById('cvSharingConsent')", start);
+  assert.ok(declared > start && declared < firstUse);
+});

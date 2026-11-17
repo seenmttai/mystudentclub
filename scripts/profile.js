@@ -15,6 +15,13 @@ const saveBtn = document.getElementById('saveBtn');
 let currentUser = null;
 let lastUpdatedISO = null;
 let currentLookingFor = null;
+// This tab's view of the profile when it last loaded or saved it. Saves overwrite only the keys
+// that changed since then, so edits made in the app or another tab meanwhile are kept.
+let profileSaveBaseline = null;
+// ocr_cv as last loaded or saved; a save sends ocr_cv only when this tab changed the resume.
+let loadedOcrText = '';
+// Set when the student removes the resume here, so the next save clears it on the server too.
+let resumeRemovedInTab = false;
 
 // Intake fields without editor controls must survive ordinary profile saves.
 // Browser drafts are read only when they are explicitly owned by this account.
@@ -49,6 +56,29 @@ function preserveCareerProfileFields(values) {
         if (Object.prototype.hasOwnProperty.call(saved, key)) result[key] = saved[key];
     }
     return Object.assign(result, values);
+}
+
+// The profile object exactly as this tab's saves build it (form values + career fields + resume flags).
+function buildTabProfile() {
+    const profileData = preserveCareerProfileFields(normalizeSchoolEducationProfile(Object.fromEntries(new FormData(profileForm).entries())));
+    delete profileData.resume;
+    delete profileData.cover_letter;
+    const cvFileName = localStorage.getItem('userCVFileName');
+    if (cvFileName) profileData.cv_filename = cvFileName;
+    profileData.cv_cloud_synced = isCloudSynced();
+    if (currentUser?.email) profileData.email = currentUser.email;
+    return profileData;
+}
+
+function takeProfileSaveBaseline() {
+    if (!profileForm) return;
+    try { profileSaveBaseline = buildTabProfile(); } catch (_) { profileSaveBaseline = null; }
+}
+
+// A resume this account already has on file: uploaded in this browser, synced to the cloud,
+// or uploaded from the app (its text arrives with the profile as ocr_cv).
+function hasResumeOnFile() {
+    return !!(localStorage.getItem('userCVImages') || isCloudSynced() || (localStorage.getItem('userCVText') || '').trim());
 }
 
 // =================== TOAST NOTIFICATIONS ===================
@@ -579,6 +609,10 @@ function applyPortalSections(type) {
         const portals = el.dataset.portal.split(',').map(s => s.trim());
         el.style.display = portals.includes(type) ? '' : 'none';
     });
+    // The app lets every student add a current organization. Never hide one that is saved.
+    const employment = document.getElementById('sec-employment');
+    const savedOrg = ['emp_company_name', 'emp_job_title'].some(name => (profileForm?.elements[name]?.value || '').trim());
+    if (employment && savedOrg) employment.style.display = '';
 }
 
 // =================== CHIP MULTI-SELECT HELPERS ===================
@@ -2249,16 +2283,8 @@ const WZ = (() => {
 
             const lookingForVal = typeToLookingFor(st.programType);
 
-            const { error } = await supabaseClient.from('profiles').upsert({
-                uuid: currentUser.id,
-                profile: profileData,
-                ocr_cv: localStorage.getItem('userCVText') || '',
-                looking_for: lookingForVal,
-                updated_at: new Date().toISOString()
-            });
-            if (error) throw error;
+            await persistProfileRecord(profileData, localStorage.getItem('userCVText') || '', { looking_for: lookingForVal });
             currentLookingFor = lookingForVal;
-            localStorage.setItem('userProfileData', JSON.stringify(profileData));
         } catch (e) {
             console.error(e);
             showToast('Could not save profile. Please try again.', 'error');
@@ -2453,13 +2479,8 @@ const WZ = (() => {
 
         const lookingForVal = st.programType ? typeToLookingFor(st.programType) : undefined;
 
-        const upsertData = { uuid: currentUser.id, profile: profileData, updated_at: new Date().toISOString() };
-        if (lookingForVal) upsertData.looking_for = lookingForVal;
-
-        supabaseClient.from('profiles').upsert(upsertData).then(({ error }) => {
-            if (error) console.warn('Progress save failed:', error.message);
-            else localStorage.setItem('userProfileData', JSON.stringify(profileData));
-        });
+        persistProfileRecord(profileData, '', lookingForVal ? { looking_for: lookingForVal } : {})
+            .catch(error => console.warn('Progress save failed:', error?.message || error));
     }
 
     // ------ Helpers ------
@@ -2548,6 +2569,7 @@ async function loadProfile() {
 
         if (data) {
             lastUpdatedISO = data.updated_at;
+            loadedOcrText = data.ocr_cv || '';
             if (data.looking_for) currentLookingFor = data.looking_for;
             if (hydrated?.profile || data.profile) {
                 profileObj = hydrated?.profile || data.profile;
@@ -2596,6 +2618,7 @@ async function loadProfile() {
         const clName = localStorage.getItem(clConfig.storageKeyName);
         if (clName) showFileDisplay('cover_letter', clName);
 
+        takeProfileSaveBaseline();
         setTimeout(() => refreshHeader(), 150);
         return profileObj;
 
@@ -2611,6 +2634,9 @@ async function loadProfile() {
             populateForm(profileObj);
             window.MSCProfileState?.cacheProfile(profileObj, currentUser.id);
         }
+        // Loaded from this browser's copy because the server read failed: saves still merge
+        // over the server row, so only what the student changes here is written.
+        takeProfileSaveBaseline();
         setTimeout(() => refreshHeader(), 150);
         return profileObj;
     } finally {
@@ -3109,6 +3135,7 @@ async function handleFile(file, type) {
         localStorage.setItem(config.storageKeyName, file.name);
         showFileDisplay(type, file.name);
         if (type === 'resume') {
+            resumeRemovedInTab = false;
             try {
                 // Persist the autofilled form immediately so navigation/reload
                 // cannot restore the previous profile snapshot.
@@ -3386,15 +3413,97 @@ async function askCvConsentAfterUpload() {
 }
 
 // =================== SAVE ===================
-async function persistProfileRecord(profileData, ocrText) {
-    const { error } = await supabaseClient.from('profiles').upsert({
-        uuid: currentUser.id,
-        profile: profileData,
-        ocr_cv: ocrText,
-        updated_at: new Date().toISOString()
-    });
+async function persistProfileRecord(profileData, ocrText, extraColumns = {}) {
+    // Read the latest row first and merge (see mergeProfileForSave): never write a stale tab's whole
+    // form over newer app edits or over keys this form has no input for.
+    const { data: row, error: readError } = await supabaseClient
+        .from('profiles')
+        .select('profile, ocr_cv')
+        .eq('uuid', currentUser.id)
+        .maybeSingle();
+    if (readError) throw readError;
+
+    const state = window.MSCProfileState;
+    const serverProfile = (row && row.profile && typeof row.profile === 'object') ? row.profile : {};
+    const merged = state
+        ? state.mergeProfileForSave(serverProfile, profileData, profileSaveBaseline)
+        : { ...serverProfile, ...profileData };
+
+    const record = { uuid: currentUser.id, profile: merged, updated_at: new Date().toISOString(), ...extraColumns };
+    const removingResume = resumeRemovedInTab;
+    if (removingResume) {
+        delete merged.cv_filename;
+        delete merged.cv_cloud_synced;
+        record.ocr_cv = '';
+    } else if ((ocrText || '').trim() && ocrText !== loadedOcrText) {
+        record.ocr_cv = ocrText;
+    }
+
+    const { error } = await supabaseClient.from('profiles').upsert(record);
     if (error) throw error;
+
+    loadedOcrText = record.ocr_cv !== undefined ? record.ocr_cv : ((row && row.ocr_cv) || '');
+    if (removingResume) resumeRemovedInTab = false;
+    cacheOwnProfile(merged);
+
+    // The server had newer values for fields this tab didn't touch: show them now. The new baseline
+    // is what was written, not the live form, so anything typed while the save ran still counts as
+    // an edit next time.
+    const serverWasNewer = Object.keys(profileData).some(key =>
+        String(merged[key] ?? '') !== String(profileData[key] ?? ''));
+    if (serverWasNewer) {
+        populateForm(merged);
+        refreshHeader();
+        takeProfileSaveBaseline();
+    } else {
+        profileSaveBaseline = { ...profileData };
+    }
+    return merged;
 }
+
+// Back on this tab after editing in the app (or another tab): show the newer profile, unless the
+// student has unsaved edits here or the first-time wizard is open.
+async function refreshProfileFromServerIfIdle() {
+    const state = window.MSCProfileState;
+    if (!currentUser || !profileForm || !state || !profileSaveBaseline) return;
+    const wizard = document.getElementById('profile-wizard');
+    if (wizard && wizard.style.display !== 'none' && wizard.offsetParent !== null) return;
+    if (state.profilesDiffer(buildTabProfile(), profileSaveBaseline)) return;
+
+    const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('profile, ocr_cv, updated_at, looking_for')
+        .eq('uuid', currentUser.id)
+        .maybeSingle();
+    if (error || !data || !data.profile || typeof data.profile !== 'object') return;
+    if (state.profilesDiffer(buildTabProfile(), profileSaveBaseline)) return; // edited while we waited
+    if (!state.profilesDiffer(data.profile, cachedServerProfile())) return; // nothing new
+
+    populateForm(data.profile);
+    cacheOwnProfile(data.profile);
+    lastUpdatedISO = data.updated_at || lastUpdatedISO;
+    if (data.looking_for) currentLookingFor = data.looking_for;
+    if (data.ocr_cv) {
+        loadedOcrText = data.ocr_cv;
+        localStorage.setItem('userCVText', data.ocr_cv);
+        if (!localStorage.getItem('userCVImages')) {
+            const name = data.profile.cv_filename || 'Your Resume.pdf';
+            localStorage.setItem('userCVFileName', name);
+            showFileDisplay('resume', name);
+        }
+    }
+    takeProfileSaveBaseline();
+    refreshHeader();
+}
+
+function cachedServerProfile() {
+    return readOwnProfileCache() || {};
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    refreshProfileFromServerIfIdle().catch(error => console.warn('Profile refresh skipped:', error?.message || error));
+});
 
 function normalizeSchoolEducationProfile(profileData) {
     ['class10', 'class12'].forEach(prefix => {
@@ -3454,7 +3563,6 @@ async function persistCurrentProfileSnapshot() {
 
     const ocrText = localStorage.getItem('userCVText') || '';
     await persistProfileRecord(profileData, ocrText);
-    localStorage.setItem('userProfileData', JSON.stringify(profileData));
     lastUpdatedISO = new Date().toISOString();
     refreshHeader();
 }
@@ -3471,7 +3579,7 @@ async function handleSave(e) {
         }
     }
 
-    if (!localStorage.getItem('userCVImages') && !isCloudSynced()) {
+    if (!hasResumeOnFile()) {
         showToast('Please upload your resume. It is required to use the AI features.', 'warning');
         return;
     }
@@ -3526,6 +3634,8 @@ async function handleSave(e) {
 
     let syncSuccess = false;
     let hasImagesToSync = false;
+    // Removed by mistake on 8 Nov (4649d538a); without it every Save threw here, after the first write.
+    const consentCheckbox = document.getElementById('cvSharingConsent');
 
     // storer CV background sync if consent is given and CV matches profile form values even somewhat
     if (consentCheckbox && consentCheckbox.checked && localStorage.getItem('userCVImages')) {
@@ -4799,6 +4909,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.addEventListener('click', (e) => {
         const btn = e.target.closest('.p2-remove-file');
         if (btn && btn.getAttribute('data-target')) {
+            if (btn.getAttribute('data-target') === 'resume') resumeRemovedInTab = true;
             hideFileDisplay(btn.getAttribute('data-target'));
             refreshHeader();
         }
