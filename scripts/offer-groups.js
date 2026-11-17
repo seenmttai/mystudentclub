@@ -12,8 +12,9 @@
  *   → { ok: false, error, message, field? }
  * PDFs are drawn to JPEG pages here (pdf.js), so locked PDFs and scans work the same as screenshots.
  *
- * After the one-time warning and before the letter is sent, the student answers "help the next student": the interview
- * questions they were asked, any HR contacts they can share, and a tick to pass on vacancies. Those go to the RPC
+ * After the one-time warning and before the letter is sent, the student answers "help the next student", one question
+ * per screen: the interview questions they were asked, HR contacts (forwarded as WhatsApp contact cards to the desk),
+ * and a tick to pass on vacancies. Those go to the RPC
  * save_offer_insights() (migration 202611170001_offer_insights.sql) first; only then is the letter checked.
  */
 (function (global) {
@@ -122,43 +123,11 @@
     var DESK_WHATSAPP = '918104135784';
     var DESK_DISPLAY = '81041 35784';
     var HIRE_URL = 'https://hire.mystudentclub.com';
-    var MAX_HR = 5;
     var MIN_INTERVIEW = 60;
 
     function hrWhatsAppLink(company) {
-        var text = 'Hi MSC, here are the HR contacts I have' + (company ? ' (I am joining ' + company + ')' : '') + ':\n\n';
+        var text = 'Hi MSC, sharing HR contacts' + (company ? ' (I am joining ' + company + ')' : '') + '. Contact cards below 👇';
         return 'https://wa.me/' + DESK_WHATSAPP + '?text=' + encodeURIComponent(text);
-    }
-
-    /** An HR phone as WhatsApp digits, same rules as offer_hr_phone() in SQL; '' when it is not a usable number. */
-    function hrPhone(raw) {
-        var text = String(raw || '').trim();
-        var d = text.replace(/\D/g, '');
-        var plus = text.charAt(0) === '+';
-        if (plus && d.slice(0, 2) === '91') { plus = false; d = d.slice(2); }
-        if (plus) return d.length >= 11 && d.length <= 15 ? d : '';
-        if (d.length === 11 && d.charAt(0) === '0') d = d.slice(1);
-        if (d.length === 12 && d.slice(0, 2) === '91') d = d.slice(2);
-        return /^[6-9]\d{9}$/.test(d) ? '91' + d : '';
-    }
-
-    /** Checks the HR rows the student typed. → { rows: [{ name, company, phone, email }], errors: { index: message } } */
-    function cleanHr(rows) {
-        var out = [];
-        var errors = {};
-        (rows || []).forEach(function (r, i) {
-            var name = String(r.name || '').replace(/\s+/g, ' ').trim();
-            var company = String(r.company || '').replace(/\s+/g, ' ').trim();
-            var phone = String(r.phone || '').replace(/[^0-9+]/g, '');
-            var email = String(r.email || '').trim().toLowerCase();
-            if (!name && !company && !phone && !email) return;
-            var digits = phone ? hrPhone(r.phone) : '';
-            if (phone && !digits) { errors[i] = 'That phone number looks wrong. Use the 10-digit mobile number.'; return; }
-            if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { errors[i] = 'That email looks wrong.'; return; }
-            if (!digits && !email) { errors[i] = 'Add their phone number or email.'; return; }
-            out.push({ name: name, company: company, phone: digits, email: email });
-        });
-        return { rows: out, errors: errors };
     }
 
     // ---- reading the file in the browser ----
@@ -527,149 +496,117 @@
             return card('og-form-card', [form]);
         }
 
-        // ---- "help the next student": asked once the warning is accepted, before the letter is checked ----
+        // ---- "help the next student": asked once the warning is accepted, before the letter is checked. One question
+        // per screen: interview questions → HR contacts (forwarded on WhatsApp) → the vacancy tick. ----
 
-        function questionsView() {
+        function questionsView(step) {
             var v = state.values;
-            var a = state.answers || (state.answers = { interview: '', hr: [], pledge: false });
-            if (!a.hr.length) a.hr.push({});
-
-            var interview = el('textarea', { id: 'og-interview', name: 'interview_questions', rows: '8', maxlength: '8000', required: '',
-                'aria-describedby': 'og-interview-hint',
-                placeholder: v.company + ', Round 1 (technical): Explain Ind AS 115. What is deferred tax?…\nRound 2 (HR): Why ' + v.company + '? Where do you see yourself in 3 years?…\n\nOther companies, e.g. KPMG, Round 1: …' });
-            interview.value = a.interview || '';
-            var count = el('span', { class: 'og-count', 'aria-live': 'polite' });
-            var updateCount = function () {
-                var n = interview.value.trim().length;
-                count.textContent = n < MIN_INTERVIEW ? (MIN_INTERVIEW - n) + ' more characters, please' : 'Thank you! Add anything else you remember.';
-            };
-            interview.addEventListener('input', function () { a.interview = interview.value; updateCount(); });
-            updateCount();
-
-            var hrList = el('div', { class: 'og-hr-list' });
-            var addHr = el('button', { type: 'button', class: 'og-link', text: '+ Add another HR contact' });
-            function hrRow(r, i) {
-                var input = function (key, label, attrs) {
-                    var id = 'og-hr-' + key + '-' + i;
-                    var box = el('input', Object.assign({ id: id, type: 'text', 'data-hr': key }, attrs));
-                    box.value = r[key] || '';
-                    box.addEventListener('input', function () { r[key] = box.value; });
-                    return el('div', { class: 'og-hr-cell' }, [el('label', { for: id, text: label }), box]);
-                };
-                return el('fieldset', { class: 'og-hr-row', 'data-hr-row': String(i) }, [
-                    el('legend', { class: 'og-sr', text: 'HR contact ' + (i + 1) }),
-                    input('name', 'HR name', { autocomplete: 'off', maxlength: '100', placeholder: 'e.g. Priya Sharma' }),
-                    input('company', 'Company', { autocomplete: 'off', maxlength: '120', placeholder: v.company }),
-                    input('phone', 'Phone / WhatsApp', { type: 'tel', inputmode: 'tel', autocomplete: 'off', maxlength: '20', placeholder: '98xxxxxxxx' }),
-                    input('email', 'Email', { type: 'email', inputmode: 'email', autocomplete: 'off', maxlength: '120', placeholder: 'hr@company.com' }),
-                    el('p', { class: 'og-field-error', role: 'alert' })
-                ]);
-            }
-            function drawHr() {
-                hrList.replaceChildren.apply(hrList, a.hr.map(hrRow));
-                addHr.hidden = a.hr.length >= MAX_HR;
-            }
-            addHr.addEventListener('click', function () {
-                a.hr.push({});
-                drawHr();
-                var last = hrList.querySelector('[data-hr-row="' + (a.hr.length - 1) + '"] input');
-                if (last) last.focus();
-            });
-            drawHr();
-
-            var pledge = el('input', { type: 'checkbox', id: 'og-pledge' });
-            pledge.checked = !!a.pledge;
-            pledge.addEventListener('change', function () { a.pledge = pledge.checked; });
+            var a = state.answers || (state.answers = { interview: '', sharedHr: false, pledge: false });
+            step = step || 0;
+            var go = function (n) { show(questionsView(n)); };
 
             var error = el('div', { class: 'og-alert', role: 'alert', hidden: '' });
-            var back = el('button', { type: 'button', class: 'og-btn og-btn-ghost', text: 'Go back' });
-            var go = el('button', { type: 'submit', class: 'og-btn og-btn-primary', text: 'Submit and get my groups' });
-            back.addEventListener('click', function () { show(formView()); });
+            var back = el('button', { type: 'button', class: 'og-btn og-btn-ghost', text: 'Back' });
+            back.addEventListener('click', function () { if (step === 0) show(formView()); else go(step - 1); });
+            var head = [
+                el('p', { class: 'og-eyebrow', text: 'Help the next student 🙏 · ' + (step + 1) + ' of 3' }),
+                el('div', { class: 'og-progress', 'aria-hidden': 'true' }, [0, 1, 2].map(function (i) { return el('span', { class: i <= step ? 'og-progress-on' : '' }); }))
+            ];
+            var form;
 
-            var form = el('form', { class: 'og-form og-questions', novalidate: '' }, [
-                el('p', { class: 'og-eyebrow', text: 'Last step' }),
-                el('h2', { 'data-autofocus': '', text: 'Help the next student 🙏' }),
-                el('p', { class: 'og-muted', text: 'Someone is preparing for the same interview you just cleared. Answer these and your groups open right after your letter is checked.' }),
-                error,
-
-                el('div', { class: 'og-field og-q', 'data-field': 'interview' }, [
-                    el('label', { class: 'og-q-title', for: 'og-interview', text: '1. What were you asked in your interviews?' }),
-                    el('p', { class: 'og-hint', id: 'og-interview-hint', text: 'Please be detailed: every question you remember, round by round, technical and HR. Add the other companies you interviewed with too, with their names. Your answer can shape someone\'s next interview. We share questions with students without your name.' }),
-                    interview, count,
-                    el('p', { class: 'og-field-error', id: 'og-interview-error', role: 'alert' })
-                ]),
-
-                el('div', { class: 'og-field og-q', 'data-field': 'hr' }, [
-                    el('span', { class: 'og-q-title og-label', text: '2. Share the HR contacts you have' }),
-                    el('p', { class: 'og-hint', text: 'The HR or recruiter you spoke to here, or at any company you interviewed with. It would be really helpful for someone in need. We only message them to help with their hiring, and we never mention you.' }),
-                    hrList, addHr,
-                    el('div', { class: 'og-wa-share' }, [
-                        el('span', { class: 'og-muted', text: 'Easier to forward the contact cards? Send them on WhatsApp to ' + DESK_DISPLAY + '.' }),
-                        el('a', { class: 'og-btn og-btn-wa og-btn-sm', href: hrWhatsAppLink(v.company), target: '_blank', rel: 'noopener noreferrer', text: 'Share on WhatsApp' })
-                    ])
-                ]),
-
-                el('div', { class: 'og-field og-q og-pledge', 'data-field': 'pledge' }, [
-                    el('span', { class: 'og-q-title og-label', text: '3. Pass on vacancies' }),
-                    el('p', { class: 'og-hint' }, [
-                        document.createTextNode('Whenever you hear of a vacancy, in your organisation or any other, share it with us: WhatsApp '),
+            if (step === 0) {
+                var interview = el('textarea', { id: 'og-interview', name: 'interview_questions', rows: '9', maxlength: '8000', required: '', 'aria-describedby': 'og-interview-hint',
+                    placeholder: v.company + ', Round 1 (technical): Explain Ind AS 115. What is deferred tax?…\nRound 2 (HR): Why ' + v.company + '? Where do you see yourself in 3 years?…\n\nOther companies, e.g. KPMG, Round 1: …' });
+                interview.value = a.interview || '';
+                var count = el('span', { class: 'og-count', 'aria-live': 'polite' });
+                var updateCount = function () {
+                    var n = interview.value.trim().length;
+                    count.textContent = n < MIN_INTERVIEW ? (MIN_INTERVIEW - n) + ' more characters, please' : 'Thank you! Add anything else you remember.';
+                };
+                interview.addEventListener('input', function () { a.interview = interview.value; updateCount(); });
+                updateCount();
+                form = el('form', { class: 'og-form og-questions', novalidate: '', 'data-step': '0' }, head.concat([
+                    el('h2', { 'data-autofocus': '' }, [el('label', { for: 'og-interview', text: 'What were you asked in your interviews?' })]),
+                    el('p', { class: 'og-muted', id: 'og-interview-hint', text: 'Someone is preparing for the same interview you just cleared. Please be detailed: every question you remember, round by round, technical and HR. Add the other companies you interviewed with too, with their names. We share questions with students without your name.' }),
+                    el('div', { class: 'og-field', 'data-field': 'interview' }, [interview, count, el('p', { class: 'og-field-error', id: 'og-interview-error', role: 'alert' })]),
+                    el('div', { class: 'og-row og-row-end' }, [back, el('button', { type: 'submit', class: 'og-btn og-btn-primary', text: 'Next' })])
+                ]));
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    a.interview = interview.value;
+                    if (interview.value.trim().length < MIN_INTERVIEW) {
+                        form.querySelector('#og-interview-error').textContent = 'Please write the questions you remember, a few lines at least.';
+                        interview.setAttribute('aria-invalid', 'true');
+                        interview.focus();
+                        return;
+                    }
+                    go(1);
+                });
+            } else if (step === 1) {
+                var share = el('a', { class: 'og-btn og-btn-wa og-btn-block og-btn-big', href: hrWhatsAppLink(v.company), target: '_blank', rel: 'noopener noreferrer', text: 'Share HR contacts on WhatsApp' });
+                var next = el('button', { type: 'submit', class: 'og-btn og-btn-primary', text: a.sharedHr ? 'Done, next' : 'I don\'t have any, next' });
+                share.addEventListener('click', function () { a.sharedHr = true; next.textContent = 'Done, next'; });
+                form = el('form', { class: 'og-form og-questions', novalidate: '', 'data-step': '1' }, head.concat([
+                    el('h2', { 'data-autofocus': '', text: 'Have an HR\'s number? Share it with us' }),
+                    el('p', { class: 'og-muted', text: 'The HR or recruiter you spoke to here, or at any company you interviewed with. It would be really, really helpful for someone in need. We only message them to help with their hiring, and we never mention you.' }),
+                    share,
+                    el('ol', { class: 'og-howto' }, [
+                        el('li', { text: 'Tap the button. WhatsApp opens a chat with MSC (' + DESK_DISPLAY + ').' }),
+                        el('li', { text: 'Tap 📎 (or +), then Contact, and pick the HR. Send as many as you have.' })
+                    ]),
+                    el('div', { class: 'og-row og-row-end' }, [back, next])
+                ]));
+                form.addEventListener('submit', function (e) { e.preventDefault(); go(2); });
+            } else {
+                var pledge = el('input', { type: 'checkbox', id: 'og-pledge' });
+                pledge.checked = !!a.pledge;
+                pledge.addEventListener('change', function () { a.pledge = pledge.checked; });
+                var submitBtn = el('button', { type: 'submit', class: 'og-btn og-btn-primary', text: 'Submit and get my groups' });
+                form = el('form', { class: 'og-form og-questions', novalidate: '', 'data-step': '2' }, head.concat([
+                    el('h2', { 'data-autofocus': '', text: 'One last thing: pass on vacancies' }),
+                    el('p', { class: 'og-muted' }, [
+                        document.createTextNode('Whenever you hear of a vacancy, in your organisation or any other, please share it with us: just WhatsApp '),
                         el('a', { href: 'https://wa.me/' + DESK_WHATSAPP, target: '_blank', rel: 'noopener noreferrer', text: DESK_DISPLAY }),
                         document.createTextNode(' or post it on '),
                         el('a', { href: HIRE_URL, target: '_blank', rel: 'noopener noreferrer', text: 'hire.mystudentclub.com' }),
-                        document.createTextNode('. One vacancy you pass on can shape someone\'s future, and recruiters can use our AI tools to find the right talent quickly.')
+                        document.createTextNode('. It would be a great help for every one of us. One vacancy you pass on can shape someone\'s future, and recruiters can use our AI tools to find the right talent.')
                     ]),
-                    el('label', { class: 'og-check', for: 'og-pledge' }, [pledge, el('span', { text: 'Yes, I will share the vacancies I come to know of with MSC.' })]),
-                    el('p', { class: 'og-field-error', id: 'og-pledge-error', role: 'alert' })
-                ]),
-
-                el('div', { class: 'og-row og-row-end' }, [back, go])
-            ]);
-
-            form.addEventListener('submit', async function (e) {
-                e.preventDefault();
-                if (state.busy) return;
-                var errors = {};
-                var text = interview.value.trim();
-                if (text.length < MIN_INTERVIEW) errors.interview = 'Please write the questions you remember, a few lines at least.';
-                var hr = cleanHr(a.hr);
-                Array.prototype.forEach.call(hrList.querySelectorAll('[data-hr-row]'), function (row) {
-                    row.querySelector('.og-field-error').textContent = hr.errors[row.getAttribute('data-hr-row')] || '';
+                    el('div', { class: 'og-field', 'data-field': 'pledge' }, [
+                        el('label', { class: 'og-check', for: 'og-pledge' }, [pledge, el('span', { text: 'Yes, I will share the vacancies I come to know of with MSC.' })]),
+                        el('p', { class: 'og-field-error', id: 'og-pledge-error', role: 'alert' })
+                    ]),
+                    error,
+                    el('div', { class: 'og-row og-row-end' }, [back, submitBtn])
+                ]));
+                form.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    if (state.busy) return;
+                    if (!pledge.checked) { form.querySelector('#og-pledge-error').textContent = 'Please tick this to continue.'; pledge.focus(); return; }
+                    form.querySelector('#og-pledge-error').textContent = '';
+                    error.hidden = true;
+                    submitBtn.disabled = true;
+                    back.disabled = true;
+                    submitBtn.textContent = 'Saving…';
+                    try {
+                        var r = await client().rpc('save_offer_insights', {
+                            p_name: v.name, p_category: v.category, p_company: v.company, p_city: v.city,
+                            p_interview: String(a.interview || '').trim(), p_hr: [], p_pledge: true, p_hr_whatsapp: !!a.sharedHr
+                        });
+                        if (r.error) throw new Error(r.error.message);
+                    } catch (err) {
+                        submitBtn.disabled = false;
+                        back.disabled = false;
+                        submitBtn.textContent = 'Submit and get my groups';
+                        var msg = err && err.message && !/fetch|network|JWT|function/i.test(err.message) ? err.message : 'We could not save your answers. Please check your connection and try again.';
+                        error.textContent = msg + (/[.!?]$/.test(msg) ? '' : '.');
+                        error.hidden = false;
+                        error.setAttribute('tabindex', '-1');
+                        error.focus();
+                        return;
+                    }
+                    send();
                 });
-                if (Object.keys(hr.errors).length) errors.hr = true;
-                if (!pledge.checked) errors.pledge = 'Please tick this to continue.';
-                form.querySelector('#og-interview-error').textContent = errors.interview || '';
-                form.querySelector('#og-pledge-error').textContent = errors.pledge || '';
-                if (errors.interview) interview.setAttribute('aria-invalid', 'true'); else interview.removeAttribute('aria-invalid');
-                var first = errors.interview ? interview : errors.hr ? hrList.querySelector('.og-field-error:not(:empty)') : errors.pledge ? pledge : null;
-                if (first) {
-                    var target = first.tagName === 'P' ? first.closest('fieldset').querySelector('input') : first;
-                    if (target && target.focus) target.focus();
-                    return;
-                }
-                error.hidden = true;
-                go.disabled = true;
-                back.disabled = true;
-                go.textContent = 'Saving…';
-                try {
-                    var r = await client().rpc('save_offer_insights', {
-                        p_name: v.name, p_category: v.category, p_company: v.company, p_city: v.city,
-                        p_interview: text, p_hr: hr.rows, p_pledge: true
-                    });
-                    if (r.error) throw new Error(r.error.message);
-                } catch (err) {
-                    go.disabled = false;
-                    back.disabled = false;
-                    go.textContent = 'Submit and get my groups';
-                    var msg = err && err.message && !/fetch|network|JWT|function/i.test(err.message) ? err.message : 'We could not save your answers. Please check your connection and try again.';
-                    error.textContent = msg + (/[.!?]$/.test(msg) ? '' : '.');
-                    error.hidden = false;
-                    error.setAttribute('tabindex', '-1');
-                    error.focus();
-                    return;
-                }
-                send();
-            });
-
+            }
             return card('og-form-card', [form]);
         }
 
@@ -778,11 +715,7 @@
             var s = status.data;
             var earlier = results[1] && results[1].data;
             if (earlier && !state.answers) {
-                state.answers = {
-                    interview: earlier.interview_questions || '',
-                    pledge: !!earlier.vacancy_pledge,
-                    hr: (earlier.hr || []).map(function (h) { return { name: h.name || '', company: h.company || '', phone: h.phone || '', email: h.email || '' }; })
-                };
+                state.answers = { interview: earlier.interview_questions || '', sharedHr: !!earlier.hr_shared_whatsapp, pledge: !!earlier.vacancy_pledge };
             }
             var profile = results[2] && results[2].data && results[2].data.profile;
             var meta = state.session.user.user_metadata || {};
@@ -807,7 +740,7 @@
         return { start: start, state: state };
     }
 
-    var api = { init: init, cleanHr: cleanHr, hrPhone: hrPhone, hrWhatsAppLink: hrWhatsAppLink, successMessage: successMessage, firstName: firstName, snapCompany: snapCompany, snapCity: snapCity, safeGroups: safeGroups, prepareFile: prepareFile, PasswordNeeded: PasswordNeeded, VERIFY_URL: VERIFY_URL };
+    var api = { init: init, hrWhatsAppLink: hrWhatsAppLink, successMessage: successMessage, firstName: firstName, snapCompany: snapCompany, snapCity: snapCity, safeGroups: safeGroups, prepareFile: prepareFile, PasswordNeeded: PasswordNeeded, VERIFY_URL: VERIFY_URL };
     if (typeof module === 'object' && module.exports) module.exports = api;
     global.MSCOfferGroups = api;
     if (typeof document !== 'undefined' && !global.MSC_OFFER_GROUPS_MANUAL) {
