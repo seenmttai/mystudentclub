@@ -75,8 +75,16 @@ test('profile saves merge over the latest server row and a resume from the app c
   assert.match(source, /mergeProfileForSave\(serverProfile, profileData, profileSaveBaseline\)/);
   assert.match(source, /if \(!hasResumeOnFile\(\)\) \{\s*showToast\('Please upload your resume/);
   assert.match(source, /localStorage\.getItem\('userCVText'\) \|\| ''\)\.trim\(\)/);
-  // Every profile write goes through the merged save.
-  assert.equal((source.match(/from\('profiles'\)\.upsert\(/g) || []).length, 1);
+  // Every profile write goes through the merged save (writeProfileRecord).
+  const writer = source.slice(source.indexOf('async function writeProfileRecord('), source.indexOf('// Back on this tab after editing in the app'));
+  const all = (source.match(/from\('profiles'\)\s*\.(upsert|update)\(/g) || []).length;
+  const inWriter = (writer.match(/from\('profiles'\)\s*\.(upsert|update)\(/g) || []).length;
+  assert.ok(inWriter >= 2);
+  assert.equal(all, inWriter);
+  // ocr_cv is sent only when this tab produced new resume text.
+  assert.match(writer, /const sendingOcr = !removingResume && ocrChangedInTab/);
+  // Conditional on the updated_at just read, like the app's PATCH.
+  assert.match(writer, /\.eq\('updated_at', row\.updated_at\)/);
 });
 
 test('handleSave defines the consent checkbox it reads', () => {

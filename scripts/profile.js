@@ -18,8 +18,11 @@ let currentLookingFor = null;
 // This tab's view of the profile when it last loaded or saved it. Saves overwrite only the keys
 // that changed since then, so edits made in the app or another tab meanwhile are kept.
 let profileSaveBaseline = null;
-// ocr_cv as last loaded or saved; a save sends ocr_cv only when this tab changed the resume.
-let loadedOcrText = '';
+// True once this tab has new resume text (an upload or a Storer sync here). Only then does a save
+// send ocr_cv, so a stale or cached copy never overwrites a resume uploaded from the app.
+let ocrChangedInTab = false;
+// Profile writes run one at a time, so each merges over the previous one's result.
+let profileWriteChain = Promise.resolve();
 // Set when the student removes the resume here, so the next save clears it on the server too.
 let resumeRemovedInTab = false;
 
@@ -2069,7 +2072,7 @@ const WZ = (() => {
             .then(r => r.json())
             .then(d => {
                 if (!d.ok) return;
-                if (d.ocr_text) localStorage.setItem('userCVText', d.ocr_text);
+                if (d.ocr_text) { localStorage.setItem('userCVText', d.ocr_text); ocrChangedInTab = true; }
                 if (d.uploaded) {
                     st.storerDone = true;
                     setCloudSyncFlag();
@@ -2569,7 +2572,6 @@ async function loadProfile() {
 
         if (data) {
             lastUpdatedISO = data.updated_at;
-            loadedOcrText = data.ocr_cv || '';
             if (data.looking_for) currentLookingFor = data.looking_for;
             if (hydrated?.profile || data.profile) {
                 profileObj = hydrated?.profile || data.profile;
@@ -3136,6 +3138,7 @@ async function handleFile(file, type) {
         showFileDisplay(type, file.name);
         if (type === 'resume') {
             resumeRemovedInTab = false;
+            ocrChangedInTab = true;
             try {
                 // Persist the autofilled form immediately so navigation/reload
                 // cannot restore the previous profile snapshot.
@@ -3413,50 +3416,79 @@ async function askCvConsentAfterUpload() {
 }
 
 // =================== SAVE ===================
-async function persistProfileRecord(profileData, ocrText, extraColumns = {}) {
-    // Read the latest row first and merge (see mergeProfileForSave): never write a stale tab's whole
-    // form over newer app edits or over keys this form has no input for.
-    const { data: row, error: readError } = await supabaseClient
-        .from('profiles')
-        .select('profile, ocr_cv')
-        .eq('uuid', currentUser.id)
-        .maybeSingle();
-    if (readError) throw readError;
+function persistProfileRecord(profileData, ocrText, extraColumns = {}) {
+    const run = profileWriteChain.then(() => writeProfileRecord(profileData, ocrText, extraColumns));
+    profileWriteChain = run.catch(() => {});
+    return run;
+}
 
+async function writeProfileRecord(profileData, ocrText, extraColumns) {
+    // Read the latest row and merge (see mergeProfileForSave): never write a stale tab's whole form
+    // over newer app edits or over keys this form has no input for. The write is conditioned on the
+    // updated_at just read (as the app does), so an app save landing in between is merged, not lost.
     const state = window.MSCProfileState;
-    const serverProfile = (row && row.profile && typeof row.profile === 'object') ? row.profile : {};
-    const merged = state
-        ? state.mergeProfileForSave(serverProfile, profileData, profileSaveBaseline)
-        : { ...serverProfile, ...profileData };
-
-    const record = { uuid: currentUser.id, profile: merged, updated_at: new Date().toISOString(), ...extraColumns };
     const removingResume = resumeRemovedInTab;
-    if (removingResume) {
-        delete merged.cv_filename;
-        delete merged.cv_cloud_synced;
-        record.ocr_cv = '';
-    } else if ((ocrText || '').trim() && ocrText !== loadedOcrText) {
-        record.ocr_cv = ocrText;
+    const sendingOcr = !removingResume && ocrChangedInTab && !!(ocrText || '').trim();
+    let merged = null;
+    let written = false;
+    let lastRecord = null;
+
+    for (let attempt = 0; attempt < 3 && !written; attempt++) {
+        const { data: row, error: readError } = await supabaseClient
+            .from('profiles')
+            .select('profile, updated_at')
+            .eq('uuid', currentUser.id)
+            .maybeSingle();
+        if (readError) throw readError;
+
+        const serverProfile = (row && row.profile && typeof row.profile === 'object') ? row.profile : {};
+        merged = state
+            ? state.mergeProfileForSave(serverProfile, profileData, profileSaveBaseline)
+            : { ...serverProfile, ...profileData };
+        if (removingResume) {
+            delete merged.cv_filename;
+            delete merged.cv_cloud_synced;
+        }
+        const record = { profile: merged, updated_at: new Date().toISOString(), ...extraColumns };
+        if (removingResume) record.ocr_cv = '';
+        else if (sendingOcr) record.ocr_cv = ocrText;
+        lastRecord = record;
+
+        if (!row) {
+            const { error } = await supabaseClient.from('profiles').upsert({ uuid: currentUser.id, ...record });
+            if (error) throw error;
+            written = true;
+            break;
+        }
+        const { data: updated, error } = await supabaseClient
+            .from('profiles')
+            .update(record)
+            .eq('uuid', currentUser.id)
+            .eq('updated_at', row.updated_at)
+            .select('uuid');
+        if (error) throw error;
+        written = Array.isArray(updated) && updated.length > 0;
+    }
+    if (!written) {
+        // Kept changing under us (or the conditional update matched nothing): the old plain upsert,
+        // still with the merged profile.
+        const { error } = await supabaseClient.from('profiles').upsert({ uuid: currentUser.id, ...lastRecord });
+        if (error) throw error;
     }
 
-    const { error } = await supabaseClient.from('profiles').upsert(record);
-    if (error) throw error;
-
-    loadedOcrText = record.ocr_cv !== undefined ? record.ocr_cv : ((row && row.ocr_cv) || '');
     if (removingResume) resumeRemovedInTab = false;
+    if (sendingOcr) ocrChangedInTab = false;
     cacheOwnProfile(merged);
 
-    // The server had newer values for fields this tab didn't touch: show them now. The new baseline
-    // is what was written, not the live form, so anything typed while the save ran still counts as
-    // an edit next time.
+    // The new baseline is what was written for this tab's keys, not the live form, so anything typed
+    // while the save ran still counts as an edit next time.
+    profileSaveBaseline = Object.fromEntries(Object.keys(profileData).map(key => [key, merged[key] ?? '']));
+    // The server had newer values for fields this tab didn't touch: show them now.
     const serverWasNewer = Object.keys(profileData).some(key =>
         String(merged[key] ?? '') !== String(profileData[key] ?? ''));
     if (serverWasNewer) {
         populateForm(merged);
         refreshHeader();
-        takeProfileSaveBaseline();
-    } else {
-        profileSaveBaseline = { ...profileData };
     }
     return merged;
 }
@@ -3483,8 +3515,7 @@ async function refreshProfileFromServerIfIdle() {
     cacheOwnProfile(data.profile);
     lastUpdatedISO = data.updated_at || lastUpdatedISO;
     if (data.looking_for) currentLookingFor = data.looking_for;
-    if (data.ocr_cv) {
-        loadedOcrText = data.ocr_cv;
+    if (data.ocr_cv && !ocrChangedInTab) {
         localStorage.setItem('userCVText', data.ocr_cv);
         if (!localStorage.getItem('userCVImages')) {
             const name = data.profile.cv_filename || 'Your Resume.pdf';
@@ -3617,7 +3648,6 @@ async function handleSave(e) {
     // Otherwise navigating away while the upload is in progress cancels this
     // whole handler and the next page reloads the previous profile name.
     profileData.cv_cloud_synced = isCloudSynced();
-    localStorage.setItem('userProfileData', JSON.stringify(profileData));
 
     try {
         await persistProfileRecord(profileData, ocrText);
@@ -3685,6 +3715,7 @@ async function handleSave(e) {
                         if (syncData.ocr_text) {
                             ocrText = syncData.ocr_text;
                             localStorage.setItem('userCVText', ocrText);
+                            ocrChangedInTab = true;
                         }
                         if (syncData.uploaded) {
                             syncSuccess = true;
@@ -3711,7 +3742,6 @@ async function handleSave(e) {
         currentlySynced = syncSuccess;
     }
     profileData.cv_cloud_synced = currentlySynced;
-    localStorage.setItem('userProfileData', JSON.stringify(profileData));
 
     try {
         await persistProfileRecord(profileData, ocrText);
