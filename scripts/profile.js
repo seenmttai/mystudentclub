@@ -6,6 +6,17 @@ const supabaseClient = window.supabaseClient || (typeof supabase !== 'undefined'
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/scripts/vendor/pdf.worker.min.js';
 const WORKER_URL = 'https://profile.mystudentclub.com';
 const PHOTO_WORKER_URL = 'https://hire.mystudentclub.com';
+
+// Calls to the CV services must never leave a student waiting forever (17 Nov 2026: a CV backup that never answered
+// left the Save button on "Saving" for minutes). After the limit the request is cancelled and the caller shows a message.
+const CV_BACKUP_TIMEOUT_MS = 60000;
+const CV_READ_TIMEOUT_MS = 90000;
+function fetchWithTimeout(url, options = {}, ms = CV_BACKUP_TIMEOUT_MS) {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), ms); // also covers reading the reply; a late abort after it is harmless
+    return fetch(url, { ...options, signal: controller.signal });
+}
+const isTimeout = (error) => Boolean(error && error.name === 'AbortError');
 let userPhotoBlobUrl = null;
 
 // DOM refs
@@ -3160,11 +3171,11 @@ async function extractProfileData(images, text, pdfBase64 = null) {
         if (pdf) {
             payload.pdf = pdf;
         }
-        const response = await fetch(WORKER_URL, {
+        const response = await fetchWithTimeout(WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
-        });
+        }, CV_READ_TIMEOUT_MS);
         if (!response.ok) return null;
         const data = await response.json();
         if (data.ok && data.is_cv === false) {
@@ -3179,6 +3190,7 @@ async function extractProfileData(images, text, pdfBase64 = null) {
         }
     } catch (e) {
         console.error(e);
+        if (isTimeout(e)) showToast('Reading your resume took too long, so we stopped waiting. Your CV is kept: fill in the details yourself or try again later.', 'warning', 9000);
     }
     return null;
 }
@@ -3563,7 +3575,7 @@ async function handleSave(e) {
                     payload.pdf = cachedPdf;
                 }
 
-                const syncResponse = await fetch('https://storer.bhansalimanan55.workers.dev', {
+                const syncResponse = await fetchWithTimeout('https://storer.bhansalimanan55.workers.dev', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -3591,7 +3603,11 @@ async function handleSave(e) {
                 }
             } catch (syncErr) {
                 console.error('Error syncing CV to cloud during save:', syncErr);
-                showToast('Network error while backup syncing resume.', 'warning', 8000);
+                if (isTimeout(syncErr)) {
+                    showToast('Your profile is saved. The CV backup took too long, so we stopped waiting. Refresh the page and try Save again later.', 'warning', 10000);
+                } else {
+                    showToast('Network error while backup syncing resume.', 'warning', 8000);
+                }
             }
         }
     }
