@@ -5,6 +5,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const {PGlite}=require('@electric-sql/pglite');
 const migration=fs.readFileSync(path.join(__dirname,'../supabase/migrations/202610310001_offer_groups.sql'),'utf8');
+const insightsMigration=fs.readFileSync(path.join(__dirname,'../supabase/migrations/202611170001_offer_insights.sql'),'utf8');
 const A='20000000-0000-4000-8000-00000000000a',B='20000000-0000-4000-8000-00000000000b',ADMIN='20000000-0000-4000-8000-0000000000ad';
 const WA=code=>`https://chat.whatsapp.com/${code}`;
 let shared;
@@ -25,6 +26,8 @@ async function createDB({withPlacements=true}={}){
  if(withPlacements) await db.exec(`create table public.placements(id uuid primary key default gen_random_uuid(),user_id uuid,email text not null,name text,company text,role text,location text,joining_date date,status text not null default 'offer',offer_letter_path text,program text,source text,verified boolean not null default false);`);
  await db.exec(migration);
  await db.exec(migration); // idempotent
+ await db.exec(insightsMigration);
+ await db.exec(insightsMigration); // idempotent
  return db;
 }
 async function as(db,role,user=''){await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[user]);await db.exec(`set role ${role}`);}
@@ -177,4 +180,76 @@ test('migration refuses to run without is_super_admin()',async()=>{
   await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key,email text,banned_until timestamptz);`);
   await assert.rejects(db.exec(migration),/is_super_admin\(\) is missing/);
  }finally{await db.close();}
+});
+
+const INTERVIEW='Round 1: Ind AS 115, deferred tax, vouching. Round 2 HR: why Deloitte, notice period.';
+const saveInsights=async(db,user,{interview=INTERVIEW,hr=[],pledge=true}={})=>{
+ await as(db,'authenticated',user);
+ try{return (await db.query('select public.save_offer_insights($1,$2,$3,$4,$5,$6::jsonb,$7) r',['Asha Verma','industrial-training','Deloitte','Gurugram',interview,JSON.stringify(hr),pledge])).rows[0].r;}
+ finally{await db.exec('reset role');}
+};
+
+test('insights: saved by the signed-in student only; answers checked; HR numbers cleaned and de-duplicated',async()=>{
+ const db=await createDB();
+ await as(db,'anon');
+ await assert.rejects(db.query("select public.save_offer_insights('a','b','c','d','e','[]',true)"),/permission denied/);
+ await assert.rejects(saveInsights(db,A,{interview:'too short'}),/a little more/);
+ await assert.rejects(saveInsights(db,A,{pledge:false}),/tick the box/);
+ const r=await saveInsights(db,A,{hr:[{name:'Priya',phone:'98765 43210'},{name:'Dup',phone:'+91-9876543210'},{email:'HR@Firm.in',company:'KPMG'},{name:'No contact'},{phone:'123'},{email:'bad@'}]});
+ assert.equal(r.hr_saved,2);
+ await as(db,'service_role');
+ const rows=(await db.query('select name,company,phone,email,intro_status from public.offer_hr_contacts order by created_at, phone nulls last')).rows;
+ assert.deepEqual(rows.map(x=>[x.name,x.company,x.phone,x.email]).sort(),[['Priya','Deloitte','919876543210',null],[null,'KPMG',null,'hr@firm.in']].sort());
+ const ins=(await db.query('select name,company,city,interview_questions,vacancy_pledge from public.offer_insights')).rows;
+ assert.deepEqual(ins,[{name:'Asha Verma',company:'Deloitte',city:'Gurugram',interview_questions:INTERVIEW,vacancy_pledge:true}]);
+ // Students cannot read the tables directly; they only see their own answers through my_offer_insights().
+ await as(db,'authenticated',A);
+ await assert.rejects(db.query('select * from public.offer_hr_contacts'),/permission denied/);
+ await assert.rejects(db.query('select * from public.offer_insights'),/permission denied/);
+ const mine=(await db.query('select public.my_offer_insights() m')).rows[0].m;
+ assert.equal(mine.interview_questions,INTERVIEW);
+ assert.equal(mine.hr.length,2);
+ await as(db,'authenticated',B);
+ assert.equal((await db.query('select public.my_offer_insights() m')).rows[0].m,null);
+ await db.exec('reset role');
+});
+
+test('insights: a retry replaces answers and unsent HR contacts, keeps messaged ones; banned accounts cannot save',async()=>{
+ const db=await createDB();
+ await saveInsights(db,A,{hr:[{name:'Priya',phone:'9876543210'},{name:'Rahul',phone:'9123456789'}]});
+ await as(db,'service_role');
+ await db.exec("update public.offer_hr_contacts set intro_status='sent' where name='Priya'");
+ await db.exec('reset role');
+ await saveInsights(db,A,{interview:INTERVIEW+' Also KPMG: consolidation.',hr:[{name:'Priya again',phone:'9876543210'},{name:'Neha',email:'neha@ey.com'}]});
+ await as(db,'service_role');
+ const rows=(await db.query('select name,intro_status from public.offer_hr_contacts order by name')).rows;
+ assert.deepEqual(rows,[{name:'Neha',intro_status:'new'},{name:'Priya',intro_status:'sent'}]);
+ assert.match((await db.query('select interview_questions from public.offer_insights')).rows[0].interview_questions,/KPMG/);
+ await db.query("insert into public.account_bans(user_id,email,reason) values($1,'b@example.test','fake')",[B]);
+ await db.exec('reset role');
+ await assert.rejects(saveInsights(db,B),/cannot share/);
+});
+
+test('insights admin: super admins only; HR list flags contacts already messaged via another student; mark sent',async()=>{
+ const db=await createDB();
+ await saveInsights(db,A,{hr:[{name:'Priya',phone:'9876543210'}]});
+ await saveInsights(db,B,{hr:[{name:'Priya S',phone:'09876543210'}]});
+ await as(db,'authenticated',A);
+ await assert.rejects(db.query("select public.admin_offer_hr_contacts('all',null,10)"),/super admins/);
+ await assert.rejects(db.query("select public.admin_offer_insights(null,10)"),/super admins/);
+ await as(db,'authenticated',ADMIN);
+ const answers=(await db.query("select public.admin_offer_insights('deloitte',10) a")).rows[0].a;
+ assert.equal(answers.length,2);
+ let hr=(await db.query("select public.admin_offer_hr_contacts('new',null,10) h")).rows[0].h;
+ assert.equal(hr.length,2);
+ assert.ok(hr.every(h=>h.phone==='919876543210'&&h.shared_by_others===1&&!h.already_messaged));
+ await db.query("select public.admin_offer_hr_mark($1,'sent')",[hr[0].id]);
+ await assert.rejects(db.query("select public.admin_offer_hr_mark($1,'later')",[hr[0].id]),/Unknown status/);
+ hr=(await db.query("select public.admin_offer_hr_contacts('new',null,10) h")).rows[0].h;
+ assert.equal(hr.length,1);
+ assert.equal(hr[0].already_messaged,true);
+ const sent=(await db.query("select public.admin_offer_hr_contacts('sent',null,10) h")).rows[0].h;
+ assert.equal(sent.length,1);
+ assert.ok(sent[0].intro_sent_at);
+ await db.exec('reset role');
 });

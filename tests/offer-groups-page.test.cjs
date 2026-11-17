@@ -23,15 +23,21 @@ const GROUPS = [
   { kind: 'general', title: 'MSCIT <b>students</b>', url: 'https://chat.whatsapp.com/Zyxwvu0987654321?mode=gi_t' },
 ];
 
-function page({ session = { access_token: 'tok', user: USER }, status = OPEN, verify, profileName = 'Asha Verma' } = {}) {
+function page({ session = { access_token: 'tok', user: USER }, status = OPEN, verify, profileName = 'Asha Verma', insights = null, saveError = null } = {}) {
   const dom = new JSDOM(fs.readFileSync(path.join(root, 'offer-groups.html'), 'utf8'), { url: 'https://www.mystudentclub.com/offer-groups', runScripts: 'outside-only', pretendToBeVisual: true });
   const w = dom.window;
   const sent = [];
+  const saved = [];
   w.MSC_OFFER_GROUPS_MANUAL = true;
   w.eval(pageJs);
   const client = {
     auth: { getSession: async () => ({ data: { session } }) },
-    rpc: async (fn) => (fn === 'my_offer_status' ? { data: status, error: null } : { data: null, error: { message: 'nope' } }),
+    rpc: async (fn, args) => {
+      if (fn === 'my_offer_status') return { data: status, error: null };
+      if (fn === 'my_offer_insights') return { data: insights, error: null };
+      if (fn === 'save_offer_insights') { saved.push(args); return saveError ? { data: null, error: { message: saveError } } : { data: { ok: true }, error: null }; }
+      return { data: null, error: { message: 'nope' } };
+    },
     from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { profile: { name: profileName } } }) }) }) }),
   };
   const fetch = async (url, init) => {
@@ -46,7 +52,7 @@ function page({ session = { access_token: 'tok', user: USER }, status = OPEN, ve
     return { pages: ['QUFB'.repeat(400)], text: 'Dear Asha', totalPages: 2, encrypted: !!password, original: { name: file.name, type: 'application/pdf', data: 'JVBERg==' } };
   };
   const app = w.MSCOfferGroups.init({ root: w.document.getElementById('offer-app'), client, fetch, prepareFile, verifyUrl: 'https://offer.test/verify', now: () => new Date('2026-10-31T10:00:00Z'), focus: false });
-  return { dom, w, doc: w.document, sent, app };
+  return { dom, w, doc: w.document, sent, saved, app };
 }
 
 function pick(t, name = 'offer.pdf') {
@@ -66,6 +72,21 @@ function fill(t, v = {}) {
   set('og-date', v.date ?? '2026-12-01');
 }
 const submit = (t) => t.doc.querySelector('.og-form button[type=submit]').click();
+const INTERVIEW = 'Deloitte round 1: Ind AS 115 five steps, deferred tax, how to vouch expenses. HR round: why Deloitte, notice period.';
+// The "help the next student" step: fill it and submit.
+async function answer(t, { interview = INTERVIEW, pledge = true, hr } = {}) {
+  await until(() => t.doc.getElementById('og-interview'));
+  const d = t.doc;
+  const ta = d.getElementById('og-interview');
+  ta.value = interview; ta.dispatchEvent(new t.w.Event('input', { bubbles: true }));
+  (hr || []).forEach((row, i) => {
+    if (i > 0 && !d.getElementById(`og-hr-name-${i}`)) [...d.querySelectorAll('.og-questions .og-link')].find((b) => /Add another/.test(b.textContent)).click();
+    Object.entries(row).forEach(([k, v]) => { const e = d.getElementById(`og-hr-${k}-${i}`); e.value = v; e.dispatchEvent(new t.w.Event('input', { bubbles: true })); });
+  });
+  if (pledge && !d.getElementById('og-pledge').checked) d.getElementById('og-pledge').click();
+  d.querySelector('.og-questions button[type=submit]').click();
+}
+const confirmAndAnswer = async (t, opts) => { submit(t); t.doc.getElementById('og-confirm').click(); t.doc.querySelector('.og-modal .og-btn-primary').click(); await answer(t, opts); };
 
 test('signed out → sign in link back to the page', async () => {
   const t = page({ session: null });
@@ -153,7 +174,11 @@ test('the one-time warning must be ticked before anything is sent; the request c
   submit(t);
   t.doc.getElementById('og-confirm').click();
   t.doc.querySelector('.og-modal .og-btn-primary').click();
+  await until(() => t.doc.getElementById('og-interview'));
+  assert.equal(t.sent.length, 0, 'nothing is sent before the questions are answered');
+  await answer(t);
   await until(() => t.doc.querySelector('.og-hogaya'));
+  assert.equal(t.saved.length, 1);
   assert.equal(t.sent.length, 1);
   const { url, init, body } = t.sent[0];
   assert.equal(url, 'https://offer.test/verify');
@@ -189,9 +214,10 @@ test('rejections show the reason and tries left; a wrong company keeps the file,
   fill(t);
   pick(t);
   await until(() => t.app.state.prepared);
-  const send = async () => { submit(t); t.doc.getElementById('og-confirm').click(); t.doc.querySelector('.og-modal .og-btn-primary').click(); await until(() => t.doc.querySelector('.og-alert')); };
+  const send = async () => { await confirmAndAnswer(t); await until(() => t.doc.querySelector('.og-form:not(.og-questions) .og-alert')); };
   await send();
   assert.equal(t.doc.querySelector('.og-alert').textContent, 'This letter is from KPMG, not Deloitte. (4 more tries today.)');
+  assert.equal(t.saved.length, 1);
   assert.ok(t.app.state.prepared, 'file kept');
   assert.equal(t.doc.getElementById('og-company').value, 'Deloitte');
   reply = { ok: true, status: 'rejected', code: 'not_offer_letter', message: 'Not an offer letter.', tries_left_today: 0 };
@@ -206,8 +232,8 @@ test('worker errors: busy keeps the form and the file', async () => {
   fill(t);
   pick(t);
   await until(() => t.app.state.prepared);
-  submit(t); t.doc.getElementById('og-confirm').click(); t.doc.querySelector('.og-modal .og-btn-primary').click();
-  await until(() => t.doc.querySelector('.og-alert'));
+  await confirmAndAnswer(t);
+  await until(() => t.doc.querySelector('.og-form:not(.og-questions) .og-alert'));
   assert.match(t.doc.querySelector('.og-alert').textContent, /busy/);
   assert.ok(t.app.state.prepared);
 });
@@ -271,4 +297,93 @@ test('profile "Got placed?" card opens /offer-groups', () => {
   const card = html.slice(html.indexOf('id="sec-placed"'), html.indexOf('<form id="profile-form"'));
   assert.match(card, /href="\/offer-groups"/);
   assert.doesNotMatch(html, /placed-card\.js/);
+});
+
+test('help the next student: interview answer and the vacancy tick are required; HR rows are checked and saved', async () => {
+  const t = page({ verify: { ok: true, status: 'verified', name: 'Asha Verma', category: 'industrial-training', company: 'Deloitte', city: 'Gurgaon', groups: GROUPS, has_company_group: true } });
+  await until(() => t.doc.getElementById('og-company'));
+  fill(t);
+  pick(t);
+  await until(() => t.app.state.prepared);
+  submit(t); t.doc.getElementById('og-confirm').click(); t.doc.querySelector('.og-modal .og-btn-primary').click();
+  await until(() => t.doc.getElementById('og-interview'));
+  const q = t.doc.querySelector('.og-questions');
+  assert.match(q.textContent, /What were you asked in your interviews\?/);
+  assert.match(q.textContent, /be detailed/);
+  assert.match(q.textContent, /81041 35784/);
+  const wa = [...q.querySelectorAll('a')].find((a) => a.textContent === 'Share on WhatsApp');
+  assert.match(decodeURIComponent(wa.href), /^https:\/\/wa\.me\/918104135784\?text=.*Deloitte/);
+  assert.ok([...q.querySelectorAll('a')].some((a) => a.href === 'https://hire.mystudentclub.com/'));
+  // Too short, no tick, a broken HR row: nothing is saved or sent.
+  await answer(t, { interview: 'Basic questions.', pledge: false, hr: [{ name: 'Priya', phone: '98765' }] });
+  assert.match(t.doc.getElementById('og-interview-error').textContent, /a few lines/);
+  assert.match(t.doc.getElementById('og-pledge-error').textContent, /tick/);
+  assert.match(t.doc.querySelector('[data-hr-row="0"] .og-field-error').textContent, /incomplete/);
+  assert.equal(t.saved.length + t.sent.length, 0);
+  // Fixed: two HR contacts (an empty row is ignored), saved before the letter is sent.
+  await answer(t, { hr: [{ phone: '+91 98765 43210' }, { name: 'Rahul', company: 'KPMG', email: 'Rahul@KPMG.com' }, {}] });
+  await until(() => t.doc.querySelector('.og-hogaya'));
+  assert.equal(t.saved.length, 1);
+  assert.deepEqual(JSON.parse(JSON.stringify(t.saved[0])), {
+    p_name: 'Asha Verma', p_category: 'industrial-training', p_company: 'Deloitte', p_city: 'Gurgaon', p_interview: INTERVIEW,
+    p_hr: [{ name: 'Priya', company: '', phone: '919876543210', email: '' }, { name: 'Rahul', company: 'KPMG', phone: '', email: 'rahul@kpmg.com' }], p_pledge: true,
+  });
+  assert.equal(t.sent.length, 1);
+});
+
+test('help the next student: a failed save shows the error and sends nothing; earlier answers are filled in', async () => {
+  const t = page({ saveError: 'Please tick the box about sharing vacancies', insights: { interview_questions: 'Earlier: ' + INTERVIEW, vacancy_pledge: true, hr: [{ name: 'Priya', company: 'Deloitte', phone: '919876543210', email: null }] } });
+  await until(() => t.doc.getElementById('og-company'));
+  fill(t);
+  pick(t);
+  await until(() => t.app.state.prepared);
+  submit(t); t.doc.getElementById('og-confirm').click(); t.doc.querySelector('.og-modal .og-btn-primary').click();
+  await until(() => t.doc.getElementById('og-interview'));
+  assert.match(t.doc.getElementById('og-interview').value, /^Earlier: /);
+  assert.equal(t.doc.getElementById('og-hr-phone-0').value, '919876543210');
+  assert.equal(t.doc.getElementById('og-pledge').checked, true);
+  t.doc.querySelector('.og-questions button[type=submit]').click();
+  await until(() => !t.doc.querySelector('.og-questions .og-alert').hidden);
+  assert.equal(t.doc.querySelector('.og-questions .og-alert').textContent, 'Please tick the box about sharing vacancies.');
+  assert.equal(t.sent.length, 0);
+  // Go back keeps the form and the file.
+  t.doc.querySelector('.og-questions .og-btn-ghost').click();
+  assert.ok(t.doc.getElementById('og-company'));
+  assert.ok(t.app.state.prepared);
+});
+
+test('cleanHr: empty rows dropped, numbers cleaned, bad rows flagged', () => {
+  const r = core.cleanHr([{}, { name: ' A ', phone: '98765-43210' }, { email: 'x@y' }, { name: 'Only name' }, { email: 'HR@Firm.in' }]);
+  assert.deepEqual(r.rows, [{ name: 'A', company: '', phone: '9876543210', email: '' }, { name: '', company: '', phone: '', email: 'hr@firm.in' }]);
+  assert.deepEqual(Object.keys(r.errors), ['2', '3']);
+});
+
+test('admin: interview answers show as text; HR contacts get a WhatsApp intro and can be marked messaged', async () => {
+  const dom = new JSDOM(fs.readFileSync(path.join(root, 'admin-offer-groups.html'), 'utf8'), { url: 'https://www.mystudentclub.com/admin-offer-groups', runScripts: 'outside-only' });
+  const w = dom.window;
+  w.MSC_ADMIN_OFFER_GROUPS_MANUAL = true;
+  w.eval(adminJs);
+  const calls = [];
+  const answers = [{ user_id: 'u2', name: 'Rohan', email: 'r@example.test', category: 'industrial-training', company: 'Deloitte', city: 'Gurgaon', interview_questions: 'Round 1 <img src=x onerror=alert(1)>\nRound 2', vacancy_pledge: true, claim_status: 'verified', hr_count: 1, updated_at: '2026-11-17T10:00:00Z' }];
+  const hr = [{ id: 'h1', name: 'Priya Sharma', company: 'Deloitte', phone: '919876543210', email: 'priya@deloitte.com', intro_status: 'new', created_at: '2026-11-17T10:00:00Z', student_name: 'Rohan', shared_by_others: 0, already_messaged: false }];
+  const client = {
+    auth: { getSession: async () => ({ data: { session: { user: { id: 'a' } } } }) },
+    rpc: async (fn, args) => { calls.push([fn, args]); return { data: { is_super_admin: true, admin_offer_claims: [], admin_offer_missing_groups: [], admin_offer_insights: answers, admin_offer_hr_contacts: hr }[fn] ?? null, error: null }; },
+  };
+  const rootEl = w.document.getElementById('aog-app');
+  w.MSCAdminOfferGroups.init({ root: rootEl, client, prompt: () => '', confirm: () => true });
+  await until(() => rootEl.querySelector('.aog-tab'));
+  [...rootEl.querySelectorAll('.aog-tab')].find((b) => b.textContent.startsWith('Interview answers')).click();
+  await until(() => rootEl.querySelector('.aog-pre'));
+  assert.equal(rootEl.querySelector('img'), null);
+  assert.match(rootEl.querySelector('.aog-pre').textContent, /Round 1 <img/);
+  [...rootEl.querySelectorAll('.aog-tab')].find((b) => b.textContent.startsWith('HR contacts')).click();
+  await until(() => [...rootEl.querySelectorAll('a')].some((a) => a.textContent === 'WhatsApp intro'));
+  const wa = [...rootEl.querySelectorAll('a')].find((a) => a.textContent === 'WhatsApp intro');
+  assert.match(wa.href, /^https:\/\/wa\.me\/919876543210\?text=Hi%20Priya%2C%20this%20is%20Team%20My%20Student%20Club/);
+  assert.ok(!/Rohan/.test(decodeURIComponent(wa.href)), 'intro never names the student');
+  [...rootEl.querySelectorAll('.aog-btn')].find((b) => b.textContent === 'Mark messaged').click();
+  await until(() => calls.some((c) => c[0] === 'admin_offer_hr_mark'));
+  assert.deepEqual(JSON.parse(JSON.stringify(calls.find((c) => c[0] === 'admin_offer_hr_mark')[1])), { p_id: 'h1', p_status: 'sent' });
+  assert.match(w.MSCAdminOfferGroups.hrIntro('Priya Sharma'), /industrial training anytime soon/);
 });

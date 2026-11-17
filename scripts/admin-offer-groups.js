@@ -3,6 +3,8 @@
  * letters (approve / reject / ban), verified students still waiting for a company group, and every claim.
  * Everything goes through the admin_offer_* RPCs (migration 202610310001_offer_groups.sql), each gated by
  * is_super_admin(). Letters open through short-lived signed URLs from the private offer-letters bucket.
+ * "Interview answers" and "HR contacts" come from the "help the next student" step (migration
+ * 202611170001_offer_insights.sql): read the answers, message each HR once with the intro below, mark it sent.
  */
 (function (global) {
     'use strict';
@@ -31,6 +33,14 @@
     var dateTime = function (s) { return s ? new Date(s).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : ''; };
     var chip = function (text, kind) { return el('span', { class: 'aog-chip aog-chip-' + (kind || 'grey'), text: text }); };
 
+    /** The intro the team sends an HR a student shared (WhatsApp or email). */
+    function hrIntro(name) {
+        var first = String(name || '').trim().split(/\s+/)[0];
+        return 'Hi' + (first ? ' ' + first : '') + ', this is Team My Student Club (MSC). We help companies hire CA students for Industrial Training and Articleship, and CA Freshers.\n\n'
+            + 'If you are going to hire for industrial training anytime soon, please let us know. We will be really glad to help you with the right talent who can join immediately, as per your specific criteria.\n\n'
+            + 'You can also post the role on hire.mystudentclub.com and use our AI tools to shortlist. Thank you!';
+    }
+
     function csv(rows) {
         var cols = ['created_at', 'status', 'name', 'email', 'category', 'company', 'city', 'domain', 'joining_date', 'reasons', 'notes'];
         var esc = function (v) { var s = Array.isArray(v) ? v.join('; ') : String(v == null ? '' : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
@@ -57,7 +67,7 @@
         }
 
         function renderTabs() {
-            var items = [['review', 'To review'], ['groups', 'Group links'], ['missing', 'Missing groups'], ['claims', 'All claims']];
+            var items = [['review', 'To review'], ['groups', 'Group links'], ['missing', 'Missing groups'], ['claims', 'All claims'], ['answers', 'Interview answers'], ['hr', 'HR contacts']];
             tabs.replaceChildren.apply(tabs, items.map(function (t) {
                 var n = state.counts[t[0]];
                 return el('button', { type: 'button', class: 'aog-tab' + (state.tab === t[0] ? ' aog-tab-on' : ''), 'aria-pressed': String(state.tab === t[0]), onclick: function () { state.tab = t[0]; show(); } },
@@ -73,6 +83,8 @@
                 if (state.tab === 'review') await showClaims('review');
                 else if (state.tab === 'groups') await showGroups();
                 else if (state.tab === 'missing') await showMissing();
+                else if (state.tab === 'answers') await showAnswers();
+                else if (state.tab === 'hr') await showHr();
                 else await showClaims('all');
                 say('');
             } catch (e) { say(e.message, true); }
@@ -268,6 +280,83 @@
                 ]));
         }
 
+        // ---- "help the next student" answers ----
+
+        async function showAnswers() {
+            var search = el('input', { type: 'search', placeholder: 'Search company, city, name or a question', 'aria-label': 'Search answers' });
+            var list = el('div', { class: 'aog-list' });
+            async function load() {
+                var rows = await rpc('admin_offer_insights', { p_search: search.value || null, p_limit: 300 });
+                list.replaceChildren.apply(list, rows.length ? rows.map(function (r) {
+                    return el('article', { class: 'aog-card' }, [
+                        el('div', { class: 'aog-card-head' }, [
+                            el('strong', { text: (r.company || '?') + (r.city ? ' · ' + r.city : '') }),
+                            el('span', { class: 'aog-muted aog-small', text: dateTime(r.updated_at) })
+                        ]),
+                        el('div', { class: 'aog-chips' }, [
+                            chip(CATEGORY_LABELS[r.category] || r.category || 'No category'),
+                            r.claim_status ? chip('Letter: ' + r.claim_status, r.claim_status === 'verified' ? 'green' : r.claim_status === 'review' ? 'amber' : 'grey') : null,
+                            r.hr_count ? chip(r.hr_count + ' HR contact' + (r.hr_count === 1 ? '' : 's'), 'green') : null
+                        ]),
+                        el('p', { class: 'aog-muted aog-small', text: [r.name, r.email].filter(Boolean).join(' · ') }),
+                        el('div', { class: 'aog-summary aog-pre', text: r.interview_questions })
+                    ]);
+                }) : [el('p', { class: 'aog-muted', text: 'No answers yet.' })]);
+            }
+            var t;
+            search.addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { load().catch(function (e) { say(e.message, true); }); }, 300); });
+            body.append(el('p', { class: 'aog-muted', text: 'What students were asked in their interviews, for the interview-prep material. Share questions without the student\'s name.' }),
+                el('div', { class: 'aog-toolbar' }, [search]), list);
+            await load();
+        }
+
+        async function showHr() {
+            var filter = el('select', { 'aria-label': 'Status' }, [['new', 'Not messaged yet'], ['sent', 'Messaged'], ['skip', 'Skipped'], ['all', 'All']].map(function (x) { return el('option', { value: x[0], text: x[1] }); }));
+            var search = el('input', { type: 'search', placeholder: 'Search company, name, phone or email', 'aria-label': 'Search HR contacts' });
+            var list = el('div', { class: 'aog-list' });
+            async function mark(h, to) {
+                try { await rpc('admin_offer_hr_mark', { p_id: h.id, p_status: to }); say(to === 'sent' ? 'Marked as messaged: ' + (h.name || h.phone || h.email) + '.' : 'Done.'); await load(); }
+                catch (e) { say(e.message, true); }
+            }
+            function hrCard(h) {
+                var intro = hrIntro(h.name);
+                var actions = [];
+                if (h.phone) actions.push(el('a', { class: 'aog-btn aog-btn-ok aog-btn-link', href: 'https://wa.me/' + h.phone + '?text=' + encodeURIComponent(intro), target: '_blank', rel: 'noopener noreferrer', text: 'WhatsApp intro' }));
+                if (h.email) actions.push(el('a', { class: 'aog-btn aog-btn-link', href: 'mailto:' + h.email + '?subject=' + encodeURIComponent('Hiring CA students? My Student Club can help') + '&body=' + encodeURIComponent(intro), text: 'Email intro' }));
+                actions.push(el('button', { type: 'button', class: 'aog-btn', text: 'Copy intro', onclick: function () {
+                    if (global.navigator && navigator.clipboard) navigator.clipboard.writeText(intro).then(function () { say('Intro copied.'); }, function () { say('Copy failed: select the text instead.', true); });
+                } }));
+                if (h.intro_status !== 'sent') actions.push(el('button', { type: 'button', class: 'aog-btn', text: 'Mark messaged', onclick: function () { mark(h, 'sent'); } }));
+                if (h.intro_status === 'new') actions.push(el('button', { type: 'button', class: 'aog-btn aog-btn-bad', text: 'Skip', onclick: function () { mark(h, 'skip'); } }));
+                if (h.intro_status !== 'new') actions.push(el('button', { type: 'button', class: 'aog-btn', text: 'Move back to not messaged', onclick: function () { mark(h, 'new'); } }));
+                return el('article', { class: 'aog-card' }, [
+                    el('div', { class: 'aog-card-head' }, [
+                        el('strong', { text: (h.name || 'HR') + (h.company ? ' · ' + h.company : '') }),
+                        el('span', { class: 'aog-muted aog-small', text: dateTime(h.created_at) })
+                    ]),
+                    el('p', { text: [h.phone ? '+' + h.phone : null, h.email].filter(Boolean).join(' · ') }),
+                    el('div', { class: 'aog-chips' }, [
+                        h.intro_status === 'sent' ? chip('Messaged ' + date(h.intro_sent_at), 'green') : h.intro_status === 'skip' ? chip('Skipped') : chip('Not messaged yet', 'amber'),
+                        h.already_messaged ? chip('Already messaged via another student', 'red') : null,
+                        h.shared_by_others ? chip('Shared by ' + h.shared_by_others + ' other student' + (h.shared_by_others === 1 ? '' : 's')) : null
+                    ]),
+                    el('p', { class: 'aog-muted aog-small', text: 'Shared by ' + ([h.student_name, h.student_email].filter(Boolean).join(' · ') || 'a student') + (h.city ? ' (' + h.city + ')' : '') }),
+                    el('div', { class: 'aog-actions' }, actions)
+                ]);
+            }
+            async function load() {
+                var rows = await rpc('admin_offer_hr_contacts', { p_status: filter.value, p_search: search.value || null, p_limit: 500 });
+                if (filter.value === 'new') { state.counts.hr = rows.length; renderTabs(); }
+                list.replaceChildren.apply(list, rows.length ? rows.map(hrCard) : [el('p', { class: 'aog-muted', text: filter.value === 'new' ? 'Every HR contact has been messaged. 🎉' : 'No HR contacts match.' })]);
+            }
+            var t;
+            filter.addEventListener('change', function () { load().catch(function (e) { say(e.message, true); }); });
+            search.addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { load().catch(function (e) { say(e.message, true); }); }, 300); });
+            body.append(el('p', { class: 'aog-muted', text: 'HR contacts students shared. Message each one once with the intro (it never mentions the student), then mark it messaged. Contacts students send on WhatsApp to 81041 35784 arrive in the desk inbox instead.' }),
+                el('div', { class: 'aog-toolbar' }, [filter, search]), list);
+            await load();
+        }
+
         async function start() {
             root.replaceChildren(el('p', { class: 'aog-muted', text: 'Checking access…' }));
             if (!client) { root.replaceChildren(el('p', { class: 'aog-bad', text: 'Could not load. Refresh the page.' })); return; }
@@ -289,7 +378,7 @@
         return { state: state, show: show };
     }
 
-    var api = { init: init, csv: csv };
+    var api = { init: init, csv: csv, hrIntro: hrIntro };
     if (typeof module === 'object' && module.exports) module.exports = api;
     global.MSCAdminOfferGroups = api;
     if (typeof document !== 'undefined' && !global.MSC_ADMIN_OFFER_GROUPS_MANUAL) {

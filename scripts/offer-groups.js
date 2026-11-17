@@ -11,6 +11,10 @@
  *   → { ok: true, status: 'review', message } | { ok: true, status: 'rejected', code, message, tries_left_today }
  *   → { ok: false, error, message, field? }
  * PDFs are drawn to JPEG pages here (pdf.js), so locked PDFs and scans work the same as screenshots.
+ *
+ * After the one-time warning and before the letter is sent, the student answers "help the next student": the interview
+ * questions they were asked, any HR contacts they can share, and a tick to pass on vacancies. Those go to the RPC
+ * save_offer_insights() (migration 202611170001_offer_insights.sql) first; only then is the letter checked.
  */
 (function (global) {
     'use strict';
@@ -113,6 +117,38 @@
         return canvas.toDataURL('image/jpeg', 0.82).split(',')[1];
     }
 
+    // ---- "help the next student" ----
+
+    var DESK_WHATSAPP = '918104135784';
+    var DESK_DISPLAY = '81041 35784';
+    var HIRE_URL = 'https://hire.mystudentclub.com';
+    var MAX_HR = 5;
+    var MIN_INTERVIEW = 60;
+
+    function hrWhatsAppLink(company) {
+        var text = 'Hi MSC, here are the HR contacts I have' + (company ? ' (I am joining ' + company + ')' : '') + ':\n\n';
+        return 'https://wa.me/' + DESK_WHATSAPP + '?text=' + encodeURIComponent(text);
+    }
+
+    /** Checks the HR rows the student typed. → { rows: [{ name, company, phone, email }], errors: { index: message } } */
+    function cleanHr(rows) {
+        var out = [];
+        var errors = {};
+        (rows || []).forEach(function (r, i) {
+            var name = String(r.name || '').replace(/\s+/g, ' ').trim();
+            var company = String(r.company || '').replace(/\s+/g, ' ').trim();
+            var phone = String(r.phone || '').replace(/[^0-9+]/g, '');
+            var email = String(r.email || '').trim().toLowerCase();
+            if (!name && !company && !phone && !email) return;
+            var digits = phone.replace(/\D/g, '');
+            if (phone && (digits.length < 10 || digits.length > 13)) { errors[i] = 'That phone number looks incomplete.'; return; }
+            if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { errors[i] = 'That email looks wrong.'; return; }
+            if (!digits && !email) { errors[i] = 'Add their phone number or email.'; return; }
+            out.push({ name: name, company: company, phone: digits, email: email });
+        });
+        return { rows: out, errors: errors };
+    }
+
     // ---- reading the file in the browser ----
 
     var PasswordNeeded = function (wrong) { this.wrong = wrong; };
@@ -206,7 +242,7 @@
         var verifyUrl = o.verifyUrl || global.MSC_OFFER_VERIFY_URL || VERIFY_URL;
         var prepare = o.prepareFile || prepareFile;
         var now = o.now || function () { return new Date(); };
-        var state = { session: null, data: null, domains: {}, prepared: null, file: null, password: '', busy: false, values: {} };
+        var state = { session: null, data: null, domains: {}, prepared: null, file: null, password: '', busy: false, values: {}, answers: null };
 
         function client() {
             if (o.client) return o.client;
@@ -470,11 +506,157 @@
                 var onKey = function (e) { if (e.key === 'Escape') close(); };
                 tick.addEventListener('change', function () { yes.disabled = !tick.checked; });
                 back.addEventListener('click', close);
-                yes.addEventListener('click', function () { dialog.remove(); document.removeEventListener('keydown', onKey); send(); });
+                yes.addEventListener('click', function () { dialog.remove(); document.removeEventListener('keydown', onKey); show(questionsView()); });
                 document.addEventListener('keydown', onKey);
                 document.body.append(dialog);
                 tick.focus();
             }
+
+            return card('og-form-card', [form]);
+        }
+
+        // ---- "help the next student": asked once the warning is accepted, before the letter is checked ----
+
+        function questionsView() {
+            var v = state.values;
+            var a = state.answers || (state.answers = { interview: '', hr: [], pledge: false });
+            if (!a.hr.length) a.hr.push({});
+
+            var interview = el('textarea', { id: 'og-interview', name: 'interview_questions', rows: '8', maxlength: '8000', required: '',
+                'aria-describedby': 'og-interview-hint',
+                placeholder: v.company + ', Round 1 (technical): Explain Ind AS 115. What is deferred tax?…\nRound 2 (HR): Why ' + v.company + '? Where do you see yourself in 3 years?…\n\nOther companies, e.g. KPMG, Round 1: …' });
+            interview.value = a.interview || '';
+            var count = el('span', { class: 'og-count', 'aria-live': 'polite' });
+            var updateCount = function () {
+                var n = interview.value.trim().length;
+                count.textContent = n < MIN_INTERVIEW ? (MIN_INTERVIEW - n) + ' more characters, please' : 'Thank you! Add anything else you remember.';
+            };
+            interview.addEventListener('input', function () { a.interview = interview.value; updateCount(); });
+            updateCount();
+
+            var hrList = el('div', { class: 'og-hr-list' });
+            var addHr = el('button', { type: 'button', class: 'og-link', text: '+ Add another HR contact' });
+            function hrRow(r, i) {
+                var input = function (key, label, attrs) {
+                    var id = 'og-hr-' + key + '-' + i;
+                    var box = el('input', Object.assign({ id: id, type: 'text', 'data-hr': key }, attrs));
+                    box.value = r[key] || '';
+                    box.addEventListener('input', function () { r[key] = box.value; });
+                    return el('div', { class: 'og-hr-cell' }, [el('label', { for: id, text: label }), box]);
+                };
+                return el('fieldset', { class: 'og-hr-row', 'data-hr-row': String(i) }, [
+                    el('legend', { class: 'og-sr', text: 'HR contact ' + (i + 1) }),
+                    input('name', 'HR name', { autocomplete: 'off', maxlength: '100', placeholder: 'e.g. Priya Sharma' }),
+                    input('company', 'Company', { autocomplete: 'off', maxlength: '120', placeholder: v.company }),
+                    input('phone', 'Phone / WhatsApp', { type: 'tel', inputmode: 'tel', autocomplete: 'off', maxlength: '20', placeholder: '98xxxxxxxx' }),
+                    input('email', 'Email', { type: 'email', inputmode: 'email', autocomplete: 'off', maxlength: '120', placeholder: 'hr@company.com' }),
+                    el('p', { class: 'og-field-error', role: 'alert' })
+                ]);
+            }
+            function drawHr() {
+                hrList.replaceChildren.apply(hrList, a.hr.map(hrRow));
+                addHr.hidden = a.hr.length >= MAX_HR;
+            }
+            addHr.addEventListener('click', function () {
+                a.hr.push({});
+                drawHr();
+                var last = hrList.querySelector('[data-hr-row="' + (a.hr.length - 1) + '"] input');
+                if (last) last.focus();
+            });
+            drawHr();
+
+            var pledge = el('input', { type: 'checkbox', id: 'og-pledge' });
+            pledge.checked = !!a.pledge;
+            pledge.addEventListener('change', function () { a.pledge = pledge.checked; });
+
+            var error = el('div', { class: 'og-alert', role: 'alert', hidden: '' });
+            var back = el('button', { type: 'button', class: 'og-btn og-btn-ghost', text: 'Go back' });
+            var go = el('button', { type: 'submit', class: 'og-btn og-btn-primary', text: 'Submit and get my groups' });
+            back.addEventListener('click', function () { show(formView()); });
+
+            var form = el('form', { class: 'og-form og-questions', novalidate: '' }, [
+                el('p', { class: 'og-eyebrow', text: 'Last step' }),
+                el('h2', { 'data-autofocus': '', text: 'Help the next student 🙏' }),
+                el('p', { class: 'og-muted', text: 'Someone is preparing for the same interview you just cleared. Answer these and your groups open right after your letter is checked.' }),
+                error,
+
+                el('div', { class: 'og-field og-q', 'data-field': 'interview' }, [
+                    el('label', { class: 'og-q-title', for: 'og-interview', text: '1. What were you asked in your interviews?' }),
+                    el('p', { class: 'og-hint', id: 'og-interview-hint', text: 'Please be detailed: every question you remember, round by round, technical and HR. Add the other companies you interviewed with too, with their names. Your answer can shape someone\'s next interview. We share questions with students without your name.' }),
+                    interview, count,
+                    el('p', { class: 'og-field-error', id: 'og-interview-error', role: 'alert' })
+                ]),
+
+                el('div', { class: 'og-field og-q', 'data-field': 'hr' }, [
+                    el('span', { class: 'og-q-title og-label', text: '2. Share the HR contacts you have' }),
+                    el('p', { class: 'og-hint', text: 'The HR or recruiter you spoke to here, or at any company you interviewed with. It would be really helpful for someone in need. We only message them to help with their hiring, and we never mention you.' }),
+                    hrList, addHr,
+                    el('div', { class: 'og-wa-share' }, [
+                        el('span', { class: 'og-muted', text: 'Easier to forward the contact cards? Send them on WhatsApp to ' + DESK_DISPLAY + '.' }),
+                        el('a', { class: 'og-btn og-btn-wa og-btn-sm', href: hrWhatsAppLink(v.company), target: '_blank', rel: 'noopener noreferrer', text: 'Share on WhatsApp' })
+                    ])
+                ]),
+
+                el('div', { class: 'og-field og-q og-pledge', 'data-field': 'pledge' }, [
+                    el('span', { class: 'og-q-title og-label', text: '3. Pass on vacancies' }),
+                    el('p', { class: 'og-hint' }, [
+                        document.createTextNode('Whenever you hear of a vacancy, in your organisation or any other, share it with us: WhatsApp '),
+                        el('a', { href: 'https://wa.me/' + DESK_WHATSAPP, target: '_blank', rel: 'noopener noreferrer', text: DESK_DISPLAY }),
+                        document.createTextNode(' or post it on '),
+                        el('a', { href: HIRE_URL, target: '_blank', rel: 'noopener noreferrer', text: 'hire.mystudentclub.com' }),
+                        document.createTextNode('. One vacancy you pass on can shape someone\'s future, and recruiters can use our AI tools to find the right talent quickly.')
+                    ]),
+                    el('label', { class: 'og-check', for: 'og-pledge' }, [pledge, el('span', { text: 'Yes, I will share the vacancies I come to know of with MSC.' })]),
+                    el('p', { class: 'og-field-error', id: 'og-pledge-error', role: 'alert' })
+                ]),
+
+                el('div', { class: 'og-row og-row-end' }, [back, go])
+            ]);
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                if (state.busy) return;
+                var errors = {};
+                var text = interview.value.trim();
+                if (text.length < MIN_INTERVIEW) errors.interview = 'Please write the questions you remember, a few lines at least.';
+                var hr = cleanHr(a.hr);
+                Array.prototype.forEach.call(hrList.querySelectorAll('[data-hr-row]'), function (row) {
+                    row.querySelector('.og-field-error').textContent = hr.errors[row.getAttribute('data-hr-row')] || '';
+                });
+                if (Object.keys(hr.errors).length) errors.hr = true;
+                if (!pledge.checked) errors.pledge = 'Please tick this to continue.';
+                form.querySelector('#og-interview-error').textContent = errors.interview || '';
+                form.querySelector('#og-pledge-error').textContent = errors.pledge || '';
+                if (errors.interview) interview.setAttribute('aria-invalid', 'true'); else interview.removeAttribute('aria-invalid');
+                var first = errors.interview ? interview : errors.hr ? hrList.querySelector('.og-field-error:not(:empty)') : errors.pledge ? pledge : null;
+                if (first) {
+                    var target = first.tagName === 'P' ? first.closest('fieldset').querySelector('input') : first;
+                    if (target && target.focus) target.focus();
+                    return;
+                }
+                error.hidden = true;
+                go.disabled = true;
+                back.disabled = true;
+                go.textContent = 'Saving…';
+                try {
+                    var r = await client().rpc('save_offer_insights', {
+                        p_name: v.name, p_category: v.category, p_company: v.company, p_city: v.city,
+                        p_interview: text, p_hr: hr.rows, p_pledge: true
+                    });
+                    if (r.error) throw new Error(r.error.message);
+                } catch (err) {
+                    go.disabled = false;
+                    back.disabled = false;
+                    go.textContent = 'Submit and get my groups';
+                    var msg = err && err.message && !/fetch|network|JWT|function/i.test(err.message) ? err.message : 'We could not save your answers. Please check your connection and try again.';
+                    error.textContent = msg + (/[.!?]$/.test(msg) ? '' : '.');
+                    error.hidden = false;
+                    error.setAttribute('tabindex', '-1');
+                    error.focus();
+                    return;
+                }
+                send();
+            });
 
             return card('og-form-card', [form]);
         }
@@ -572,6 +754,7 @@
             if (!state.session) { show(signInView()); return; }
             var results = await Promise.all([
                 c.rpc('my_offer_status'),
+                state.answers ? null : Promise.resolve(c.rpc('my_offer_insights')).then(function (r) { return r; }, function () { return {}; }),
                 c.from('profiles').select('profile').eq('uuid', state.session.user.id).maybeSingle().then(function (r) { return r; }, function () { return {}; }),
                 state.data ? null : loadData()
             ]);
@@ -581,7 +764,15 @@
                 return;
             }
             var s = status.data;
-            var profile = results[1] && results[1].data && results[1].data.profile;
+            var earlier = results[1] && results[1].data;
+            if (earlier && !state.answers) {
+                state.answers = {
+                    interview: earlier.interview_questions || '',
+                    pledge: !!earlier.vacancy_pledge,
+                    hr: (earlier.hr || []).map(function (h) { return { name: h.name || '', company: h.company || '', phone: h.phone || '', email: h.email || '' }; })
+                };
+            }
+            var profile = results[2] && results[2].data && results[2].data.profile;
             var meta = state.session.user.user_metadata || {};
             if (!state.values.name) state.values.name = (profile && (profile.name || profile.full_name)) || meta.full_name || meta.name || '';
             if (s.banned) {
@@ -604,7 +795,7 @@
         return { start: start, state: state };
     }
 
-    var api = { init: init, successMessage: successMessage, firstName: firstName, snapCompany: snapCompany, snapCity: snapCity, safeGroups: safeGroups, prepareFile: prepareFile, PasswordNeeded: PasswordNeeded, VERIFY_URL: VERIFY_URL };
+    var api = { init: init, cleanHr: cleanHr, hrWhatsAppLink: hrWhatsAppLink, successMessage: successMessage, firstName: firstName, snapCompany: snapCompany, snapCity: snapCity, safeGroups: safeGroups, prepareFile: prepareFile, PasswordNeeded: PasswordNeeded, VERIFY_URL: VERIFY_URL };
     if (typeof module === 'object' && module.exports) module.exports = api;
     global.MSCOfferGroups = api;
     if (typeof document !== 'undefined' && !global.MSC_OFFER_GROUPS_MANUAL) {
