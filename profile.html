@@ -439,20 +439,18 @@
           </nav>
         </aside>
 
-        <!-- ===== GOT PLACED (scripts/placed-card.js) ===== -->
+        <!-- ===== GOT PLACED: opens /offer-groups (offer letter → company WhatsApp groups) ===== -->
         <section class="p2-card p2-placed-card" id="sec-placed" aria-labelledby="placedTitle">
           <div class="p2-placed-row">
             <div class="p2-placed-icon" aria-hidden="true"><i class="fas fa-trophy"></i></div>
             <div class="p2-placed-text">
-              <h2 id="placedTitle">Got placed? Share your offer letter</h2>
-              <p class="p2-card-sub">Tell us the company, your role and joining date, and upload the offer letter. It takes a minute.</p>
+              <h2 id="placedTitle">Got placed? Get your company groups</h2>
+              <p class="p2-card-sub">Share your offer letter once. When it is verified, you get the WhatsApp groups for your company and city.</p>
             </div>
-            <button type="button" class="p2-placed-btn" id="placedStartBtn">
+            <a class="p2-placed-btn" href="/offer-groups" style="text-decoration: none;">
               <span>I got placed</span>
-              <i class="fas fa-spinner fa-spin" aria-hidden="true" hidden></i>
-            </button>
+            </a>
           </div>
-          <p class="p2-placed-status" id="placedStatus" role="status" aria-live="polite"></p>
         </section>
 
         <form id="profile-form" autocomplete="off">
@@ -2737,7 +2735,6 @@
 
     <script src="/scripts/profile-wizard.js"></script>
     <script type="module" src="scripts/profile.js"></script>
-    <script src="/scripts/placed-card.js" defer></script>
     <script src="scripts/custom-select-enhance.js" defer></script>
   </body>
 </html>

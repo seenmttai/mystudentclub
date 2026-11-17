@@ -32,6 +32,8 @@ const ROUTES = [
   // Ported from master 129251eab on 2026-10-17 with the Airy Flow chrome (side-menu "Career Guides" / "Events & Live Sessions").
   { route: '/blog/', file: 'blog/index.html', title: 'Career Guides' },
   { route: '/sessions/', file: 'sessions/index.html', title: 'Live Sessions' },
+  // Added 2026-10-31: share your offer letter → company / city WhatsApp groups (opened from the profile's "Got placed?" card).
+  { route: '/offer-groups', file: 'offer-groups.html', title: 'Got Placed' },
 ];
 
 const REMOVED_ROUTES = [{ route: '/domain-wise-hiring-companies.html', file: 'domain-wise-hiring-companies.html' }];
