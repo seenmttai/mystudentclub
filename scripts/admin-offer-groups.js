@@ -296,6 +296,7 @@
                         el('div', { class: 'aog-chips' }, [
                             chip(CATEGORY_LABELS[r.category] || r.category || 'No category'),
                             r.claim_status ? chip('Letter: ' + r.claim_status, r.claim_status === 'verified' ? 'green' : r.claim_status === 'review' ? 'amber' : 'grey') : null,
+                            r.hr_shared_whatsapp ? chip('Opened WhatsApp to share HR contacts', 'green') : null,
                             r.hr_count ? chip(r.hr_count + ' HR contact' + (r.hr_count === 1 ? '' : 's'), 'green') : null
                         ]),
                         el('p', { class: 'aog-muted aog-small', text: [r.name, r.email].filter(Boolean).join(' · ') }),
@@ -352,7 +353,7 @@
             var t;
             filter.addEventListener('change', function () { load().catch(function (e) { say(e.message, true); }); });
             search.addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { load().catch(function (e) { say(e.message, true); }); }, 300); });
-            body.append(el('p', { class: 'aog-muted', text: 'HR contacts students shared. Message each one once with the intro (it never mentions the student), then mark it messaged. Contacts students send on WhatsApp to 81041 35784 arrive in the desk inbox instead.' }),
+            body.append(el('p', { class: 'aog-muted', text: 'Students forward HR contact cards on WhatsApp to 81041 35784, so most arrive in the desk inbox. Contacts saved here: message each one once with the intro (it never mentions the student), then mark it messaged.' }),
                 el('div', { class: 'aog-toolbar' }, [filter, search]), list);
             await load();
         }

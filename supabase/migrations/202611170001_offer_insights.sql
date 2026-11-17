@@ -2,14 +2,15 @@
 --
 -- Before a student's offer letter is checked (and so before the group links show), /offer-groups asks:
 --   1. What were you asked in your interviews (this company and others)?  → offer_insights.interview_questions
---   2. HR contacts they can share (optional)                             → offer_hr_contacts, one row per contact
+--   2. HR contacts: forwarded as WhatsApp contact cards to the desk (81041 35784); the tap is recorded in
+--      offer_insights.hr_shared_whatsapp. offer_hr_contacts holds typed contacts (p_hr), for the desk to fill later.
 --   3. A tick: "I will share vacancies I hear of with MSC"               → offer_insights.vacancy_pledge
 -- The team sends each HR contact a short intro from /admin-offer-groups → "HR contacts" and marks it sent.
 --
 -- Needs 202610310001_offer_groups.sql first (account_bans, is_super_admin()).
 --
 -- Reversible: yes. To undo, run:
---   drop function if exists public.offer_hr_phone(text), public.save_offer_insights(text, text, text, text, text, jsonb, boolean),
+--   drop function if exists public.offer_hr_phone(text), public.save_offer_insights(text, text, text, text, text, jsonb, boolean, boolean),
 --     public.my_offer_insights(), public.admin_offer_insights(text, integer), public.admin_offer_hr_contacts(text, text, integer),
 --     public.admin_offer_hr_mark(uuid, text);
 --   drop table if exists public.offer_hr_contacts, public.offer_insights;
@@ -34,6 +35,7 @@ create table if not exists public.offer_insights (
   city                text,
   interview_questions text not null check (char_length(interview_questions) between 30 and 8000),
   vacancy_pledge      boolean not null default false,
+  hr_shared_whatsapp  boolean not null default false,
   created_at          timestamptz not null default now(),
   updated_at          timestamptz not null default now()
 );
@@ -86,7 +88,8 @@ $$;
 -- the answers are replaced, and HR contacts the team has not messaged yet are replaced; sent ones stay.
 -- p_hr: [{ name, company, phone, email }], at most 10; rows with neither a phone nor an email are dropped.
 create or replace function public.save_offer_insights(p_name text, p_category text, p_company text, p_city text,
-                                                      p_interview text, p_hr jsonb, p_pledge boolean)
+                                                      p_interview text, p_hr jsonb, p_pledge boolean,
+                                                      p_hr_whatsapp boolean default false)
 returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
 declare
   v_uid uuid := auth.uid();
@@ -110,13 +113,14 @@ begin
 
   select u.email into v_email from auth.users u where u.id = v_uid;
 
-  insert into public.offer_insights as i (user_id, email, name, category, company, city, interview_questions, vacancy_pledge)
+  insert into public.offer_insights as i (user_id, email, name, category, company, city, interview_questions, vacancy_pledge, hr_shared_whatsapp)
   values (v_uid, v_email,
           nullif(left(btrim(coalesce(p_name, '')), 100), ''),
-          left(btrim(p_category), 40), left(btrim(p_company), 120), left(btrim(p_city), 80), v_interview, true)
+          left(btrim(p_category), 40), left(btrim(p_company), 120), left(btrim(p_city), 80), v_interview, true, coalesce(p_hr_whatsapp, false))
   on conflict (user_id) do update set
     email = excluded.email, name = excluded.name, category = excluded.category, company = excluded.company, city = excluded.city,
-    interview_questions = excluded.interview_questions, vacancy_pledge = true, updated_at = now();
+    interview_questions = excluded.interview_questions, vacancy_pledge = true,
+    hr_shared_whatsapp = i.hr_shared_whatsapp or excluded.hr_shared_whatsapp, updated_at = now();
 
   delete from public.offer_hr_contacts where user_id = v_uid and intro_status = 'new';
   for v_item in select value from jsonb_array_elements(v_hr) loop
@@ -145,6 +149,7 @@ returns jsonb language sql stable security definer set search_path = public, pg_
     select jsonb_build_object(
       'interview_questions', i.interview_questions,
       'vacancy_pledge', i.vacancy_pledge,
+      'hr_shared_whatsapp', i.hr_shared_whatsapp,
       'hr', coalesce((select jsonb_agg(jsonb_build_object('name', h.name, 'company', h.company, 'phone', h.phone, 'email', h.email) order by h.created_at)
                       from public.offer_hr_contacts h where h.user_id = i.user_id), '[]'::jsonb))
     from public.offer_insights i where i.user_id = auth.uid()) end;
@@ -159,7 +164,7 @@ begin
   return coalesce((
     select jsonb_agg(row_to_json(x)::jsonb order by x.updated_at desc) from (
       select i.user_id, i.email, i.name, i.category, i.company, i.city, i.interview_questions, i.vacancy_pledge,
-             i.created_at, i.updated_at,
+             i.hr_shared_whatsapp, i.created_at, i.updated_at,
              (select c.status from public.offer_claims c where c.user_id = i.user_id order by (c.status in ('verified', 'review')) desc, c.created_at desc limit 1) as claim_status,
              (select count(*) from public.offer_hr_contacts h where h.user_id = i.user_id) as hr_count
       from public.offer_insights i
@@ -209,10 +214,10 @@ begin
 end;
 $$;
 
-revoke all on function public.save_offer_insights(text, text, text, text, text, jsonb, boolean), public.my_offer_insights(),
+revoke all on function public.save_offer_insights(text, text, text, text, text, jsonb, boolean, boolean), public.my_offer_insights(),
   public.admin_offer_insights(text, integer), public.admin_offer_hr_contacts(text, text, integer),
   public.admin_offer_hr_mark(uuid, text) from public, anon;
-grant execute on function public.save_offer_insights(text, text, text, text, text, jsonb, boolean), public.my_offer_insights(),
+grant execute on function public.save_offer_insights(text, text, text, text, text, jsonb, boolean, boolean), public.my_offer_insights(),
   public.admin_offer_insights(text, integer), public.admin_offer_hr_contacts(text, text, integer),
   public.admin_offer_hr_mark(uuid, text) to authenticated;
 

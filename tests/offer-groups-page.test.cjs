@@ -73,18 +73,20 @@ function fill(t, v = {}) {
 }
 const submit = (t) => t.doc.querySelector('.og-form button[type=submit]').click();
 const INTERVIEW = 'Deloitte round 1: Ind AS 115 five steps, deferred tax, how to vouch expenses. HR round: why Deloitte, notice period.';
-// The "help the next student" step: fill it and submit.
-async function answer(t, { interview = INTERVIEW, pledge = true, hr } = {}) {
-  await until(() => t.doc.getElementById('og-interview'));
+// The "help the next student" steps, one screen each: interview → HR on WhatsApp → vacancy tick.
+const next = (t) => t.doc.querySelector('.og-questions button[type=submit]').click();
+async function answer(t, { interview = INTERVIEW, pledge = true, shareHr = false } = {}) {
   const d = t.doc;
+  await until(() => d.getElementById('og-interview'));
   const ta = d.getElementById('og-interview');
   ta.value = interview; ta.dispatchEvent(new t.w.Event('input', { bubbles: true }));
-  (hr || []).forEach((row, i) => {
-    if (i > 0 && !d.getElementById(`og-hr-name-${i}`)) [...d.querySelectorAll('.og-questions .og-link')].find((b) => /Add another/.test(b.textContent)).click();
-    Object.entries(row).forEach(([k, v]) => { const e = d.getElementById(`og-hr-${k}-${i}`); e.value = v; e.dispatchEvent(new t.w.Event('input', { bubbles: true })); });
-  });
+  next(t);
+  if (!d.querySelector('.og-questions[data-step="1"]')) return;
+  if (shareHr) d.querySelector('.og-questions .og-btn-wa').addEventListener('click', (e) => e.preventDefault(), { once: true }), d.querySelector('.og-questions .og-btn-wa').click();
+  next(t);
+  await until(() => d.getElementById('og-pledge'));
   if (pledge && !d.getElementById('og-pledge').checked) d.getElementById('og-pledge').click();
-  d.querySelector('.og-questions button[type=submit]').click();
+  next(t);
 }
 const confirmAndAnswer = async (t, opts) => { submit(t); t.doc.getElementById('og-confirm').click(); t.doc.querySelector('.og-modal .og-btn-primary').click(); await answer(t, opts); };
 
@@ -299,40 +301,59 @@ test('profile "Got placed?" card opens /offer-groups', () => {
   assert.doesNotMatch(html, /placed-card\.js/);
 });
 
-test('help the next student: interview answer and the vacancy tick are required; HR rows are checked and saved', async () => {
+test('help the next student: one question per screen; interview and tick required; HR goes over WhatsApp', async () => {
   const t = page({ verify: { ok: true, status: 'verified', name: 'Asha Verma', category: 'industrial-training', company: 'Deloitte', city: 'Gurgaon', groups: GROUPS, has_company_group: true } });
   await until(() => t.doc.getElementById('og-company'));
   fill(t);
   pick(t);
   await until(() => t.app.state.prepared);
   submit(t); t.doc.getElementById('og-confirm').click(); t.doc.querySelector('.og-modal .og-btn-primary').click();
-  await until(() => t.doc.getElementById('og-interview'));
-  const q = t.doc.querySelector('.og-questions');
-  assert.match(q.textContent, /What were you asked in your interviews\?/);
-  assert.match(q.textContent, /be detailed/);
-  assert.match(q.textContent, /81041 35784/);
-  const wa = [...q.querySelectorAll('a')].find((a) => a.textContent === 'Share on WhatsApp');
-  assert.match(decodeURIComponent(wa.href), /^https:\/\/wa\.me\/918104135784\?text=.*Deloitte/);
-  assert.ok([...q.querySelectorAll('a')].some((a) => a.href === 'https://hire.mystudentclub.com/'));
-  // Too short, no tick, a broken HR row: nothing is saved or sent.
-  await answer(t, { interview: 'Basic questions.', pledge: false, hr: [{ name: 'Priya', phone: '98765' }] });
-  assert.match(t.doc.getElementById('og-interview-error').textContent, /a few lines/);
-  assert.match(t.doc.getElementById('og-pledge-error').textContent, /tick/);
-  assert.match(t.doc.querySelector('[data-hr-row="0"] .og-field-error').textContent, /looks wrong/);
+  const d = t.doc;
+  // 1 of 3: interview questions only.
+  await until(() => d.getElementById('og-interview'));
+  assert.match(d.querySelector('.og-questions').textContent, /1 of 3.*What were you asked in your interviews\?/s);
+  assert.match(d.querySelector('.og-questions').textContent, /be detailed/);
+  assert.equal(d.getElementById('og-pledge'), null);
+  d.getElementById('og-interview').value = 'Basic.'; next(t);
+  assert.match(d.getElementById('og-interview-error').textContent, /a few lines/);
+  d.getElementById('og-interview').value = INTERVIEW; d.getElementById('og-interview').dispatchEvent(new t.w.Event('input')); next(t);
+  // 2 of 3: one WhatsApp button, no fields to fill.
+  await until(() => d.querySelector('.og-questions[data-step="1"]'));
+  const q2 = d.querySelector('.og-questions');
+  assert.equal(q2.querySelectorAll('input, textarea').length, 0);
+  const wa = q2.querySelector('.og-btn-wa');
+  assert.equal(wa.textContent, 'Share HR contacts on WhatsApp');
+  assert.match(decodeURIComponent(wa.href), /^https:\/\/wa\.me\/918104135784\?text=Hi MSC, sharing HR contacts \(I am joining Deloitte\)/);
+  assert.match(q2.textContent, /Contact, and pick the HR/);
+  assert.match(q2.querySelector('button[type=submit]').textContent, /don't have any/);
+  wa.addEventListener('click', (e) => e.preventDefault(), { once: true });
+  wa.click();
+  assert.equal(q2.querySelector('button[type=submit]').textContent, 'Done, next');
+  // Back keeps the answer.
+  q2.querySelector('.og-btn-ghost').click();
+  assert.equal(d.getElementById('og-interview').value, INTERVIEW);
+  next(t);
+  await until(() => d.querySelector('.og-questions[data-step="1"]'));
+  next(t);
+  // 3 of 3: the vacancy tick.
+  await until(() => d.getElementById('og-pledge'));
+  const q3 = d.querySelector('.og-questions');
+  assert.match(q3.textContent, /81041 35784/);
+  assert.ok([...q3.querySelectorAll('a')].some((a) => a.href === 'https://hire.mystudentclub.com/'));
+  next(t);
+  assert.match(d.getElementById('og-pledge-error').textContent, /tick/);
   assert.equal(t.saved.length + t.sent.length, 0);
-  // Fixed: two HR contacts (an empty row is ignored), saved before the letter is sent.
-  await answer(t, { hr: [{ phone: '+91 98765 43210' }, { name: 'Rahul', company: 'KPMG', email: 'Rahul@KPMG.com' }, {}] });
-  await until(() => t.doc.querySelector('.og-hogaya'));
-  assert.equal(t.saved.length, 1);
+  d.getElementById('og-pledge').click();
+  next(t);
+  await until(() => d.querySelector('.og-hogaya'));
   assert.deepEqual(JSON.parse(JSON.stringify(t.saved[0])), {
-    p_name: 'Asha Verma', p_category: 'industrial-training', p_company: 'Deloitte', p_city: 'Gurgaon', p_interview: INTERVIEW,
-    p_hr: [{ name: 'Priya', company: '', phone: '919876543210', email: '' }, { name: 'Rahul', company: 'KPMG', phone: '', email: 'rahul@kpmg.com' }], p_pledge: true,
+    p_name: 'Asha Verma', p_category: 'industrial-training', p_company: 'Deloitte', p_city: 'Gurgaon', p_interview: INTERVIEW, p_hr: [], p_pledge: true, p_hr_whatsapp: true,
   });
   assert.equal(t.sent.length, 1);
 });
 
 test('help the next student: a failed save shows the error and sends nothing; earlier answers are filled in', async () => {
-  const t = page({ saveError: 'Please tick the box about sharing vacancies', insights: { interview_questions: 'Earlier: ' + INTERVIEW, vacancy_pledge: true, hr: [{ name: 'Priya', company: 'Deloitte', phone: '919876543210', email: null }] } });
+  const t = page({ saveError: 'Please tick the box about sharing vacancies', insights: { interview_questions: 'Earlier: ' + INTERVIEW, vacancy_pledge: true, hr_shared_whatsapp: true } });
   await until(() => t.doc.getElementById('og-company'));
   fill(t);
   pick(t);
@@ -340,24 +361,16 @@ test('help the next student: a failed save shows the error and sends nothing; ea
   submit(t); t.doc.getElementById('og-confirm').click(); t.doc.querySelector('.og-modal .og-btn-primary').click();
   await until(() => t.doc.getElementById('og-interview'));
   assert.match(t.doc.getElementById('og-interview').value, /^Earlier: /);
-  assert.equal(t.doc.getElementById('og-hr-phone-0').value, '919876543210');
+  next(t);
+  await until(() => t.doc.querySelector('.og-questions[data-step="1"]'));
+  assert.equal(t.doc.querySelector('.og-questions button[type=submit]').textContent, 'Done, next');
+  next(t);
+  await until(() => t.doc.getElementById('og-pledge'));
   assert.equal(t.doc.getElementById('og-pledge').checked, true);
-  t.doc.querySelector('.og-questions button[type=submit]').click();
+  next(t);
   await until(() => !t.doc.querySelector('.og-questions .og-alert').hidden);
   assert.equal(t.doc.querySelector('.og-questions .og-alert').textContent, 'Please tick the box about sharing vacancies.');
   assert.equal(t.sent.length, 0);
-  // Go back keeps the form and the file.
-  t.doc.querySelector('.og-questions .og-btn-ghost').click();
-  assert.ok(t.doc.getElementById('og-company'));
-  assert.ok(t.app.state.prepared);
-});
-
-test('cleanHr: empty rows dropped, numbers cleaned, bad rows flagged', () => {
-  const r = core.cleanHr([{}, { name: ' A ', phone: '98765-43210' }, { email: 'x@y' }, { name: 'Only name' }, { email: 'HR@Firm.in' }]);
-  assert.deepEqual(r.rows, [{ name: 'A', company: '', phone: '919876543210', email: '' }, { name: '', company: '', phone: '', email: 'hr@firm.in' }]);
-  assert.deepEqual(Object.keys(r.errors), ['2', '3']);
-  assert.deepEqual(['98765 43210', '09876543210', '+91 98765 43210', '919876543210', '+1 415 555 0100', '98765432101', '12345 67890', '415 555 0100'].map(core.hrPhone),
-    ['919876543210', '919876543210', '919876543210', '919876543210', '14155550100', '', '', '']);
 });
 
 test('admin: interview answers show as text; HR contacts get a WhatsApp intro and can be marked messaged', async () => {
