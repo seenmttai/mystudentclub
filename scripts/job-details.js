@@ -1,5 +1,5 @@
 
-import { getDaysAgo, isJobExpired, getPostedLabel } from './date-utils.js';
+import { getDaysAgo, isJobExpired, getPostedLabel } from './date-utils.js?v=20261118_1';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, showExclusiveLockPopup, showExclusiveAppliedPopup, fetchMyProgramRegistrations, ensureExclusiveStyles } from './exclusive-vacancy.js';
 import { assessmentGate } from './apply-assessment.js';

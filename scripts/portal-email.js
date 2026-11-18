@@ -1,4 +1,4 @@
-import { getDaysAgo, isJobExpired, getPostedLabel } from './date-utils.js';
+import { getDaysAgo, isJobExpired, getPostedLabel } from './date-utils.js?v=20261118_1';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 import { ARTICLESHIP_TABLE, isExclusiveLocked, showExclusiveLockPopup } from './exclusive-vacancy.js';
