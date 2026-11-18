@@ -1,4 +1,4 @@
-import { getDaysAgo, getPostedLabel } from "./date-utils.js";
+import { getDaysAgo, getPostedLabel } from "./date-utils.js?v=20261118_1";
 import {
   ensureCvAvailable,
   generateEmailBody,
