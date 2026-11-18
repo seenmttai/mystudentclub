@@ -1,5 +1,5 @@
 
-import { getDaysAgo } from './date-utils.js';
+import { getDaysAgo, getPostedLabel } from './date-utils.js?v=20261118_1';
 import { ensureCvAvailable, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 const supabaseUrl = 'https://auth.mystudentclub.com';
@@ -112,11 +112,11 @@ function getPublicJobSelectColumns(tableName) {
 }
 
 async function fetchJobDetails(id, tableName) {
-    const { data, error } = await supabaseClient
-        .from(tableName)
-        .select(getPublicJobSelectColumns(tableName))
-        .eq('id', id)
-        .single();
+    const cols = getPublicJobSelectColumns(tableName);
+    const run = (c) => supabaseClient.from(tableName).select(c).eq('id', id).single();
+    let { data, error } = await run(`${cols}, reposted_at`);
+    // reposted_at arrives with migration 202611170001; until then, load without it.
+    if (error && /reposted_at/.test(error.message || '')) ({ data, error } = await run(cols));
 
     if (error) throw error;
     if (!data) throw new Error('Job not found');
@@ -132,7 +132,6 @@ function renderJob(job, tableName) {
 
     const companyName = (job.Company || 'Company Name').trim();
     const companyInitial = companyName.charAt(0).toUpperCase();
-    const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'Recently';
     const salary = job.Salary ? `₹${job.Salary}` : '';
     const location = job.Location || 'Remote / Unspecified';
     const category = job.Category || 'General';
@@ -167,7 +166,7 @@ function renderJob(job, tableName) {
                 ` : ''}
                 <div class="job-meta-item">
                     <i class="far fa-clock"></i>
-                    <span>Posted ${postedDate}</span>
+                    <span>${getPostedLabel(job, 'Recently')}</span>
                 </div>
                 <div class="job-meta-item">
                     <i class="fas fa-tag"></i>

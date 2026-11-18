@@ -1,4 +1,4 @@
-import { getDaysAgo } from "./date-utils.js";
+import { getDaysAgo, getPostedLabel } from "./date-utils.js?v=20261118_1";
 import {
   ensureCvAvailable,
   generateEmailBody,
@@ -366,7 +366,7 @@ function expandLocationTerms(locations) {
 
 function getPublicJobSelectColumns(tableName) {
   let columns =
-    'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain"';
+    'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain", reposted_at';
   if (tableName === "Fresher Jobs") {
     columns += ', Experience, yoe, "Secondary Domain", Tags, "CTC Range", "Company Type", "Industry Type"';
   } else if (tableName === "Semi Qualified Jobs") {
@@ -380,10 +380,12 @@ function getPublicJobSelectColumns(tableName) {
 }
 
 // If is_exclusive isn't in the database yet (before its migration runs), drop it from a select.
+// Same for reposted_at (migration 202611170001, run from master).
 function withoutMissingExclusive(cols, error) {
-  return error && /is_exclusive/.test(error.message || "") && cols.includes(", is_exclusive")
-    ? cols.replace(", is_exclusive", "")
-    : null;
+  const message = (error && error.message) || "";
+  if (/reposted_at/.test(message) && cols.includes(", reposted_at")) return cols.replace(", reposted_at", "");
+  if (/is_exclusive/.test(message) && cols.includes(", is_exclusive")) return cols.replace(", is_exclusive", "");
+  return null;
 }
 
 // Articleship exclusives are free to apply (ICAI Regulation 47: nothing may be charged to an articled
@@ -597,7 +599,6 @@ function renderJobCard(job) {
   const colors = getCompanyColors(job.Company || "");
   const initials = getInitials(job.Company || "");
   const isApplied = appliedJobIds.has(job.id);
-  const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : "";
   const portalLabel =
     PORTALS.find((p) => p.id === currentPortalId)?.label || "";
 
@@ -607,7 +608,7 @@ function renderJobCard(job) {
   const companyType = job['Company Type'];
   const firmType = job['Firm Type'] || (job.firm_size && job.firm_size !== 'Other' ? job.firm_size : '');
   const industryType = job['Industry Type'];
-  const postedText = postedDate ? `Posted ${postedDate}` : "";
+  const postedText = getPostedLabel(job);
 
   const isExclusive = !!job.is_exclusive;
   const isLocked = isExclusiveLocked(job);
@@ -769,8 +770,11 @@ async function fetchJobs() {
     let { data, error } = await buildQuery(selectCols, jobFilterColumnsAvailable);
     // Failsafes for columns the database does not have yet (filter columns, is_exclusive).
     // Either can come first, so retry until neither applies.
-    for (let retry = 0; retry < 2 && error; retry++) {
-      if (jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
+    for (let retry = 0; retry < 3 && error; retry++) {
+      const missingColumnFallback = withoutMissingExclusive(selectCols, error);
+      if (missingColumnFallback) {
+        selectCols = missingColumnFallback;
+      } else if (jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
         console.warn("Structured filter columns are not available yet; using the basic filters.", error.message);
         jobFilterColumnsAvailable = false;
         state.extra = {};
@@ -2906,8 +2910,9 @@ async function fetchSharedJob(jobId, targetTable) {
       .select(sharedCols)
       .eq("id", jobId)
       .single();
-    const sharedFallback = withoutMissingExclusive(sharedCols, error);
-    if (sharedFallback) {
+    for (let retry = 0; retry < 2; retry++) {
+      const sharedFallback = withoutMissingExclusive(sharedCols, error);
+      if (!sharedFallback) break;
       sharedCols = sharedFallback;
       ({ data, error } = await supabaseClient.from(table).select(sharedCols).eq("id", jobId).single());
     }
