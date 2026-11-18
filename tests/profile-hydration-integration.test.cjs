@@ -69,3 +69,28 @@ test('dismissed signup onboarding changes the dashboard reminder copy', () => {
   assert.match(read('scripts/portal-email.js'), /wasOnboardingDismissed\(currentSession\?\.user\?\.email\)/);
   assert.match(read('sign-up.html'), /setOnboardingDismissed\(lastSignupEmail\)/);
 });
+
+test('profile saves merge over the latest server row and a resume from the app counts', () => {
+  const source = read('scripts/profile.js');
+  assert.match(source, /mergeProfileForSave\(serverProfile, profileData, profileSaveBaseline\)/);
+  assert.match(source, /if \(!hasResumeOnFile\(\)\) \{\s*showToast\('Please upload your resume/);
+  assert.match(source, /localStorage\.getItem\('userCVText'\) \|\| ''\)\.trim\(\)/);
+  // Every profile write goes through the merged save (writeProfileRecord).
+  const writer = source.slice(source.indexOf('async function writeProfileRecord('), source.indexOf('// Back on this tab after editing in the app'));
+  const all = (source.match(/from\('profiles'\)\s*\.(upsert|update)\(/g) || []).length;
+  const inWriter = (writer.match(/from\('profiles'\)\s*\.(upsert|update)\(/g) || []).length;
+  assert.ok(inWriter >= 2);
+  assert.equal(all, inWriter);
+  // ocr_cv is sent only when this tab produced new resume text.
+  assert.match(writer, /const sendingOcr = !removingResume && ocrChangedInTab/);
+  // Conditional on the updated_at just read, like the app's PATCH.
+  assert.match(writer, /\.eq\('updated_at', row\.updated_at\)/);
+});
+
+test('handleSave defines the consent checkbox it reads', () => {
+  const source = read('scripts/profile.js');
+  const start = source.indexOf('async function handleSave(');
+  const firstUse = source.indexOf('consentCheckbox && consentCheckbox.checked', start);
+  const declared = source.indexOf("const consentCheckbox = document.getElementById('cvSharingConsent')", start);
+  assert.ok(declared > start && declared < firstUse);
+});
