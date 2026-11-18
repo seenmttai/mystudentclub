@@ -2535,6 +2535,14 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
   gap: 0.5rem;
 }
 
+/* Featured vacancy chip (Vacancy Boost on hire.msc): a tag only, never a lock */
+.jc-chip.jc-chip-featured {
+  background: #eef2ff;
+  color: #3730a3;
+  border-color: #c7d2fe;
+  font-weight: 700;
+}
+
 /* ── Exclusive Job Card & Badge Styling ── */
 .job-tag.tag-exclusive,
 .jc-chip-exclusive {
