@@ -50,6 +50,7 @@ const JOB_TYPES_NOTIF = [
   { value: "semi", label: "Semi Qualified" },
   { value: "fresher", label: "Fresher" },
   { value: "articleship", label: "Articleship" },
+  { value: "experienced", label: "Experienced CA" },
 ];
 
 // Type-wide ("All India") topic name for each job type, exactly as formatTopicForDisplay
@@ -60,6 +61,7 @@ function getTypeWideTopicForJobType(jobType) {
   if (jobType === "fresher") return "fresher-all";
   if (jobType === "semi") return "semi-all";
   if (jobType === "articleship") return "articleship-all";
+  if (jobType === "experienced") return "experienced-all";
   return null;
 }
 const LOCATIONS_NOTIF = [
@@ -2496,6 +2498,8 @@ function formatTopicForDisplay(topic) {
     return { location: "All India", jobType: "Semi Qualified" };
   if (topic === "articleship-all")
     return { location: "All India", jobType: "Articleship" };
+  if (topic === "experienced-all")
+    return { location: "All India", jobType: "Experienced CA" };
   const parts = topic.split("-");
   if (parts.length < 2) return { location: topic, jobType: "" };
   const jobTypeVal = parts.pop();
@@ -2658,15 +2662,23 @@ function updatePermissionStatusUI() {
   dom.permissionStatusDiv.style.display = "block";
 }
 
+// The bell's location / job-type pickers are the custom picker (value in data-value) on most pages, but a plain
+// <select> on /experienced-ca-jobs, /experienced-ca, /semi-qualified and /jobs-by-email. Read either.
+function notifSelectValue(el) {
+  if (!el) return "";
+  return el.dataset.value || (el.tagName === "SELECT" ? el.value : "") || "";
+}
+
 function updateSubBtn() {
   if (dom.subscribeBtnEl)
     dom.subscribeBtnEl.disabled = !(
-      dom.locationSelectEl?.dataset.value && dom.jobTypeSelectEl?.dataset.value
+      notifSelectValue(dom.locationSelectEl) && notifSelectValue(dom.jobTypeSelectEl)
     );
 }
 
 function resetCustomSelect(el, placeholder) {
   if (!el) return;
+  if (el.tagName === "SELECT") el.value = "";
   el.dataset.value = "";
   el.classList.remove("has-value");
   const label = el.querySelector(".cs-label");
@@ -3360,8 +3372,8 @@ function setupEventListeners() {
     }
   });
   dom.subscribeBtnEl?.addEventListener("click", async () => {
-    const location = dom.locationSelectEl?.dataset.value;
-    const jobType = dom.jobTypeSelectEl?.dataset.value;
+    const location = notifSelectValue(dom.locationSelectEl);
+    const jobType = notifSelectValue(dom.jobTypeSelectEl);
     if (!location || !jobType) return;
     let topicName;
     if (location === "all") topicName = getTypeWideTopicForJobType(jobType);
