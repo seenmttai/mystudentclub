@@ -384,6 +384,8 @@ function getPublicJobSelectColumns(tableName) {
 function withoutMissingExclusive(cols, error) {
   const message = (error && error.message) || "";
   if (/reposted_at/.test(message) && cols.includes(", reposted_at")) return cols.replace(", reposted_at", "");
+  // joining_label (migration 202611060002) missing or not readable: list without the joining pill.
+  if (/joining_label/.test(message) && cols.includes(", joining_label")) return cols.replace(", joining_label", "");
   if (/is_exclusive/.test(message) && cols.includes(", is_exclusive")) return cols.replace(", is_exclusive", "");
   return null;
 }
