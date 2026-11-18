@@ -1,4 +1,4 @@
-import { getDaysAgo, isJobExpired, JOB_EXPIRATION_DAYS } from './date-utils.js';
+import { getDaysAgo, isJobExpired, getPostedLabel, JOB_EXPIRATION_DAYS } from './date-utils.js?v=20261118_1';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
@@ -136,7 +136,7 @@ function getPublicJobSelectColumns(tableName) {
     // Keep recruiter metadata available for shared /job.html links.  The
     // Application ID remains protected, but without these fields a shared
     // Easy Apply vacancy is incorrectly rendered as an ordinary vacancy.
-    let columns = 'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain", posted_by, hirer_email';
+    let columns = 'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain", posted_by, hirer_email, reposted_at';
     if (tableName === 'Fresher Jobs') {
         columns += ', Experience, yoe, "Secondary Domain", Tags, "Company Type", "Industry Type", "CTC Range"';
     } else if (tableName === 'Semi Qualified Jobs') {
@@ -152,10 +152,19 @@ function getPublicJobSelectColumns(tableName) {
 // Runs a public job select. If is_exclusive isn't in the database yet (before its migration runs),
 // retries without it, so shared links and lists keep working.
 async function runPublicJobSelect(build) {
-    const cols = getPublicJobSelectColumns(currentTable);
+    let cols = getPublicJobSelectColumns(currentTable);
     let result = await build(cols);
-    if (result && result.error && /is_exclusive/.test(result.error.message || '') && cols.includes(', is_exclusive')) {
-        result = await build(cols.replace(', is_exclusive', ''));
+    // reposted_at arrives with migration 202611170001; until then, drop it like is_exclusive.
+    for (let retry = 0; retry < 2 && result && result.error; retry++) {
+        const message = result.error.message || '';
+        if (/reposted_at/.test(message) && cols.includes(', reposted_at')) {
+            cols = cols.replace(', reposted_at', '');
+        } else if (/is_exclusive/.test(message) && cols.includes(', is_exclusive')) {
+            cols = cols.replace(', is_exclusive', '');
+        } else {
+            break;
+        }
+        result = await build(cols);
     }
     return result;
 }
@@ -536,7 +545,6 @@ function renderJobCard(job) {
 
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const isExpired = isJobExpired(job.Created_At);
-    const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'N/A');
     const isApplied = appliedJobIds.has(job.id);
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';
@@ -613,9 +621,9 @@ function renderJobCard(job) {
         <div class="job-card-top-row">
             <div class="job-card-logo">${companyInitial}</div>
             <div class="job-card-header">
-                <h3 class="job-card-role-title">${roleLabel} <span class="job-card-role-posted ${postedClass}" style="color: var(--text-muted); font-weight: 400; margin-left: 4px;">| ${isExpired ? 'Expired' : `Posted ${postedDate}`}</span></h3>
+                <h3 class="job-card-role-title">${roleLabel} <span class="job-card-role-posted ${postedClass}" style="color: var(--text-muted); font-weight: 400; margin-left: 4px;">| ${getPostedLabel(job)}</span></h3>
                 <h3 class="job-card-company" style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;"><span>${job.Company || "N/A"}</span>${ratingHtml}</h3>
-                <p class="job-card-posted ${postedClass}">${isExpired ? 'Expired' : `Posted ${postedDate}`}</p>
+                <p class="job-card-posted ${postedClass}">${getPostedLabel(job)}</p>
             </div>
             <button class="job-card-bookmark" title="Save job" aria-label="Bookmark job">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
@@ -1227,7 +1235,7 @@ function showModal(job) {
         <div class="modal-meta-tags" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
             ${isExpired ? '<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>' : ''}
             ${isSalaryDisclosed(compDisplay) ? `<span class="job-tag">${compLabel}: ${compDisplay}</span>` : ''}
-            <span class="job-tag">Posted: ${postedDate}</span>
+            <span class="job-tag">${job.reposted_at && !isExpired ? 'Reposted' : 'Posted'}: ${postedDate}</span>
             <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">Category: ${primaryDomain}</span>
             ${job['Secondary Domain'] ? `<span class="job-tag" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Secondary: ${job['Secondary Domain']}</span>` : ''}
             ${job['Company Type'] ? `<span class="job-tag"><i class="fas fa-building" style="margin-right: 4px;"></i>${job['Company Type']}</span>` : ''}
@@ -1675,7 +1683,7 @@ async function fetchJobs() {
     }
 
     try {
-        let selectColumns = 'id, Company, Location, Salary, Created_At, Category, application_count, posts_link, "Primary Domain", posted_by, hirer_email';
+        let selectColumns = 'id, Company, Location, Salary, Created_At, Category, application_count, posts_link, "Primary Domain", posted_by, hirer_email, reposted_at';
         if (currentTable === "Fresher Jobs") {
             selectColumns += ', Experience, yoe, "Secondary Domain", Tags, "Company Type", "Industry Type", "CTC Range"';
         } else if (currentTable === "Semi Qualified Jobs") {
@@ -1843,8 +1851,11 @@ async function fetchJobs() {
 
         // Failsafes for columns the database does not have yet. Either can come first, so retry
         // until neither applies.
-        for (let retry = 0; retry < 2 && error; retry++) {
-            if (jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
+        for (let retry = 0; retry < 3 && error; retry++) {
+            if (error.message && error.message.includes('reposted_at') && selectColumns.includes(', reposted_at')) {
+                // The repost column is not in the database yet (migration 202611170001).
+                selectColumns = selectColumns.replace(', reposted_at', '');
+            } else if (jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
                 // The filter columns are not in the database yet (migration 202611060003): use the older filters.
                 console.warn('Structured filter columns are not available yet; using the basic filters.', error.message);
                 disableStructuredFilters();

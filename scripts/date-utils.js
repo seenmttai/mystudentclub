@@ -29,5 +29,14 @@ function getDaysAgo(timestampStr) {
   }
 }
 
-export { getDaysAgo, isJobExpired, JOB_EXPIRATION_DAYS };
+// "Posted 3 days ago", "Reposted today" (the team reposted an older vacancy: Created_At was bumped and
+// reposted_at set, migration 202611170001), or "Expired". `fallback` is shown when there is no date.
+function getPostedLabel(job, fallback = 'N/A') {
+  const createdAt = job && job.Created_At;
+  if (isJobExpired(createdAt)) return 'Expired';
+  const verb = job && job.reposted_at ? 'Reposted' : 'Posted';
+  return `${verb} ${createdAt ? getDaysAgo(createdAt) : fallback}`;
+}
+
+export { getDaysAgo, isJobExpired, getPostedLabel, JOB_EXPIRATION_DAYS };
 
