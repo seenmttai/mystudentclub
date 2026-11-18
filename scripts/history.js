@@ -535,14 +535,6 @@ function renderApplyLoading() {
         </div>`;
 }
 
-function renderRevealButton() {
-    return `
-        <button type="button" class="history-reveal-btn" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #fff; color: #1d4ed8; border: 1.5px solid #bfdbfe; border-radius: 10px; font-size: 0.88rem; font-weight: 600; cursor: pointer;">
-            <i class="fas fa-eye" style="font-size: 0.85rem;"></i>
-            View Application Details &amp; Link to Apply
-        </button>`;
-}
-
 function renderApplyError(error) {
     const message = error?.message || 'Could not load the application details.';
     return `
@@ -713,18 +705,9 @@ function showJobModal(application) {
         if (linksContainer) linksContainer.innerHTML = '<p class="modal-description">This job post may have been removed, so its application details are no longer available.</p>';
     } else if (cached) {
         showUnlocked(cached);
-    } else if (application.isSaved) {
-        // Not applied yet: reveal on request, exactly like the portal's
-        // "View Application Details" button, but without leaving this page.
-        if (linksContainer) {
-            linksContainer.innerHTML = renderRevealButton();
-            linksContainer.querySelector('.history-reveal-btn')?.addEventListener('click', (e) => {
-                e.stopPropagation();
-                unlockHere();
-            });
-        }
     } else {
-        // Already applied: this is the student's own application, show it straight away.
+        // Applied or saved: the student picked this job, so run the BrowserGuard check straight away
+        // and show the details when it passes (same check as the portal; no extra tap needed).
         unlockHere();
     }
 

@@ -138,20 +138,23 @@ test('an unlock that finishes after the popup closed does not paint into the nex
   assert.doesNotMatch(text, /slow\.example/);
 });
 
-test('saved job: details reveal in place, and Apply Now records the application and opens the link', async () => {
+test('saved job: details unlock as soon as it opens, and Apply Now records the application and opens the link', async () => {
   const { window, calls, tracker } = loadTracker({ unlock: async () => ({ applicationId: 'https://acme.example/apply' }) });
   window.localStorage.setItem('msc_saved_jobs', JSON.stringify([{ id: 901, table: 'Industrial Training Job Portal' }]));
   const saved = { ...appliedJob, id: undefined, isSaved: true };
 
   tracker.showJobModal(saved);
   const modal = window.document.getElementById('modal-body-content');
-  assert.equal(calls.unlock.length, 0, 'saved jobs reveal only when asked');
+  assert.equal(calls.unlock.length, 1, 'saved jobs run the BrowserGuard check on open');
+  assert.equal(modal.querySelector('.history-reveal-btn'), null, 'no extra "View Application Details" tap');
+  await flush();
+  assert.match(window.document.getElementById('historyAppLinks').textContent, /acme\.example\/apply/, 'details show without a tap');
   assert.equal(modal.querySelector('#modalApplyNowBtn').tagName, 'BUTTON', 'Apply Now no longer links to the portal');
 
   modal.querySelector('#modalApplyNowBtn').click();
   await flush();
   await flush();
-  assert.equal(calls.unlock.length, 1);
+  assert.equal(calls.unlock.length, 1, 'Apply Now reuses the unlock from opening');
   assert.deepEqual(calls.inserts.map((r) => [r.job_id, r.job_table]), [[901, 'Industrial Training Job Portal']]);
   assert.equal(calls.opened.length, 1);
   assert.equal(calls.opened[0].location.href, 'https://acme.example/apply');
@@ -176,7 +179,7 @@ test('removed jobs say so instead of trying to unlock', async () => {
   assert.match(window.document.getElementById('historyAppLinks').textContent, /may have been removed/);
 });
 
-test('reveal then Apply Now while it runs shares one unlock', async () => {
+test('Apply Now while the on-open check is still running shares one unlock', async () => {
   let release;
   const { window, calls, tracker } = loadTracker({
     unlock: () => new Promise((resolve) => { release = () => resolve({ applicationId: 'https://acme.example/apply' }); }),
@@ -184,7 +187,6 @@ test('reveal then Apply Now while it runs shares one unlock', async () => {
   const saved = { ...appliedJob, id: undefined, isSaved: true };
   tracker.showJobModal(saved);
   const modal = window.document.getElementById('modal-body-content');
-  modal.querySelector('.history-reveal-btn').click();
   modal.querySelector('#modalApplyNowBtn').click();
   await flush();
   release();
