@@ -1,6 +1,8 @@
-import { getDaysAgo, isJobExpired } from './date-utils.js';
+import { getDaysAgo, isJobExpired, getPostedLabel } from './date-utils.js?v=20261118_1';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
+import { ARTICLESHIP_TABLE, isExclusiveLocked, showExclusiveLockPopup } from './exclusive-vacancy.js';
+import { assessmentGate } from './apply-assessment.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -169,7 +171,6 @@ function renderJobCard(job) {
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const isExpired = isJobExpired(job.Created_At);
-    const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'N/A');
     const isApplied = appliedJobIds.has(job.id);
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';
@@ -185,6 +186,7 @@ function renderJobCard(job) {
     let compText = '';
     let compLabel = 'Stipend';
     const table = job.source_table || state.portalType || '';
+    const isLocked = isExclusiveLocked(job, table, isEnrolledSync(table));
     if (table === 'Fresher Jobs') {
         compText = job['CTC Range'] || (job.Salary ? `₹${job.Salary}` : '');
         compLabel = 'Salary';
@@ -202,7 +204,7 @@ function renderJobCard(job) {
             <div class="job-card-logo">${companyInitial}</div>
             <div class="job-card-header">
                 <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
-                <p class="job-card-posted ${postedClass}">${isExpired ? 'Expired' : `Posted ${postedDate}`}</p>
+                <p class="job-card-posted ${postedClass}">${getPostedLabel(job)}</p>
             </div>
             <button class="job-card-bookmark" title="Save job" aria-label="Bookmark job">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
@@ -237,7 +239,7 @@ function renderJobCard(job) {
         </div>
         ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? '…' : ''}</p>` : ''}
         <div class="job-card-actions">
-            <a href="${isExclusive && !isEnrolledSync(table) ? '#' : applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}">
+            <a href="${isLocked ? '#' : applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}">
                 <svg fill="currentColor" viewBox="0 0 24 24" width="13" height="13"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg>
                 Apply Now
             </a>
@@ -249,9 +251,9 @@ function renderJobCard(job) {
     if (applyBtn) {
         applyBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (isExclusive && !isEnrolledSync(table)) {
+            if (isLocked) {
                 e.preventDefault();
-                showEnrollmentRequiredPopup();
+                showLockedForTable(table);
                 return;
             }
             if (recruiterPosted) {
@@ -329,6 +331,27 @@ function generateApplicationLinks(applicationId) {
 }
 
 // Share job using Web Share API or fallback to copy link
+// Locations are stored with one name per city (migration 202611060004: Bangalore = Bengaluru, Gurgaon = Gurugram...).
+// A student typing the other name still finds them, and older rows that kept the other name still match.
+const CITY_ALIASES = [
+    ['bengaluru', 'bangalore'], ['gurugram', 'gurgaon'], ['mumbai', 'bombay'], ['kolkata', 'calcutta'],
+    ['chennai', 'madras'], ['vadodara', 'baroda'], ['kochi', 'cochin'], ['mysuru', 'mysore'],
+    ['mangaluru', 'mangalore'], ['thiruvananthapuram', 'trivandrum'], ['delhi', 'new delhi'],
+];
+
+function expandLocationTerms(locations) {
+    const terms = [];
+    const add = (t) => { if (t && !terms.some(x => x.toLowerCase() === t.toLowerCase())) terms.push(t); };
+    for (const loc of locations) {
+        add(loc);
+        const low = String(loc).trim().toLowerCase();
+        for (const group of CITY_ALIASES) {
+            if (group.includes(low)) group.forEach(add);
+        }
+    }
+    return terms;
+}
+
 function shareJob(job, btnElement) {
     const table = job.source_table || state.portalType;
     const jobType = table === 'Industrial Training Job Portal' ? 'industrial' :
@@ -342,10 +365,10 @@ URL - ${jobUrl}
 Do turn on notifications to stay updated with all such opportunites and ensure joining the whatsapp group below
 mystudentclub.com/links`;
 
+    // No separate url: the link is already in the text, and WhatsApp & co. would add it again at the end.
     const shareData = {
         title: `Job at ${job.Company}`,
-        text: shareText,
-        url: jobUrl
+        text: shareText
     };
 
     // Simple mobile detection
@@ -410,6 +433,16 @@ async function recordApplication(job, btnElement) {
     }
     btnElement.innerHTML = '<div class="loader-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
 
+    // The recruiter's mandatory assessment, when the vacancy has one: taken before the application is saved.
+    if (recruiterPosted && !(await assessmentGate({ table: job.source_table || state.portalType, job, supabaseClient, session: currentSession }))) {
+        pendingRecruiterApplications.delete(applicationKey);
+        btnElement.style.pointerEvents = '';
+        if ('disabled' in btnElement) btnElement.disabled = false;
+        btnElement.innerHTML = originalText;
+        showToast('Your application is not sent yet. Complete the assessment to apply.', 'info');
+        return false;
+    }
+
     try {
         const { error } = await supabaseClient
             .from('job_applications')
@@ -463,8 +496,8 @@ function showModal(job) {
     const recruiterPosted = isRecruiterPostedJob(job);
     const table = job.source_table || state.portalType;
     const isExclusive = Boolean(job.is_exclusive);
-    if (isExclusive && !isEnrolledSync(table)) {
-        showEnrollmentRequiredPopup();
+    if (isExclusiveLocked(job, table, isEnrolledSync(table))) {
+        showLockedForTable(table);
         return;
     }
     const applyLink = getApplicationLink(job['Application ID'], job.Company);
@@ -554,7 +587,7 @@ function showModal(job) {
         <div class="modal-meta-tags">
             ${isExpired ? '<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>' : ''}
             ${isSalaryDisclosed(job.Salary) ? `<span class="job-tag">${((job.source_table || state.portalType) === 'Semi Qualified Jobs' || (job.source_table || state.portalType) === 'Fresher Jobs') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
-            <span class="job-tag">Posted: ${postedDate}</span>
+            <span class="job-tag">${job.reposted_at && !isExpired ? 'Reposted' : 'Posted'}: ${postedDate}</span>
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
         <div class="modal-actions" style="display: flex; flex-direction: column; gap: 0;">${actionsHtml}</div>
@@ -758,8 +791,11 @@ async function fetchJobs() {
                 if (table === "Fresher Jobs") selectColumns = selectColumnsFresher;
                 else if (table === "Semi Qualified Jobs") selectColumns = selectColumnsSemi;
                 else if (table === "Industrial Training Job Portal") selectColumns += ', is_exclusive';
+                else if (table === ARTICLESHIP_TABLE) selectColumns += ', is_exclusive';
 
-                let query = supabaseClient.from(table).select(selectColumns);
+                selectColumns += ', reposted_at';
+                const buildQuery = (cols) => {
+                let query = supabaseClient.from(table).select(cols);
 
                 // ONLY EMAILS
                 query = query.ilike('Application ID', '%@%').not('Application ID', 'ilike', 'http%');
@@ -774,7 +810,7 @@ async function fetchJobs() {
                 }
 
                 if (state.locations && state.locations.length > 0) {
-                    const locationOr = state.locations.map(loc => `Location.ilike."%${loc}%"`);
+                    const locationOr = expandLocationTerms(state.locations).map(loc => `Location.ilike."%${loc}%"`);
                     query = query.or(locationOr.join(','));
                 }
 
@@ -789,8 +825,14 @@ async function fetchJobs() {
                 }
 
                 query = query.order('Created_At', { ascending: false, nullsFirst: false }).limit(300);
+                return query;
+                };
 
-                const { data, error } = await query;
+                let { data, error } = await buildQuery(selectColumns);
+                if (error && /reposted_at/.test(error.message || '')) {
+                    // reposted_at arrives with migration 202611170001; until then, load without it.
+                    ({ data, error } = await buildQuery(selectColumns.replace(', reposted_at', '')));
+                }
                 if (error) throw error;
                 return (data || []).map(job => ({ ...job, source_table: table }));
             });
@@ -1302,6 +1344,12 @@ function isEnrolledSync(tableName) {
     return enrollmentStatusCache.any;
 }
 
+// Articleship: only MSC-posted exclusives lock, with the Articleship lock screen (exclusive-vacancy.js).
+function showLockedForTable(table) {
+    if (table === ARTICLESHIP_TABLE) showExclusiveLockPopup({ signedIn: Boolean(currentSession) });
+    else showEnrollmentRequiredPopup();
+}
+
 function showEnrollmentRequiredPopup() {
     const existing = document.querySelector('.cv-popup-overlay');
     if (existing) existing.remove();
@@ -1755,6 +1803,72 @@ function formatTopicForDisplay(topic) {
 }
 
 function updateSpecificTopicAreaVisibility() { if (dom.specificSubscriptionForm) dom.specificSubscriptionForm.style.display = dom.topicAllCheckbox.checked ? 'none' : 'block'; }
+// ---- Per-browser topic sync ------------------------------------------------------------------------------------
+// Firebase subscribes a device token, not a person. The header list ('subscribedTopics') is the account's list: it is
+// saved on the profile and shared by every browser and the app. So this browser also remembers which topics ITS OWN
+// token is really subscribed to ('mscDeviceTopics'), and reconciles the two: a topic turned off on another device is
+// unsubscribed here too, and one turned on elsewhere is subscribed. Without this, a browser could keep receiving a
+// topic its header no longer shows, with no way to turn it off.
+const MSC_TOPIC_URL = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription';
+const MSC_DEVICE_TOPICS_KEY = 'mscDeviceTopics';
+const MSC_TYPE_WIDE_TOPICS = { industrial: 'Industrial-all', fresher: 'fresher-all', semi: 'semi-all', articleship: 'articleship-all' };
+// Every job topic a browser can hold: used once per browser token to clear subscriptions made before this sync existed.
+const MSC_ALL_JOB_TOPICS = ['all']
+    .concat(JOB_TYPES_NOTIF.map(type => MSC_TYPE_WIDE_TOPICS[type.value]).filter(Boolean))
+    .concat(LOCATIONS_NOTIF.flatMap(location => JOB_TYPES_NOTIF.map(type => `${location}-${type.value}`)));
+
+function mscReadDeviceTopics() {
+    try { return JSON.parse(localStorage.getItem(MSC_DEVICE_TOPICS_KEY) || 'null'); } catch (_) { return null; }
+}
+function mscWriteDeviceTopics(token, topics) {
+    try { localStorage.setItem(MSC_DEVICE_TOPICS_KEY, JSON.stringify({ token, topics })); } catch (_) {}
+}
+async function mscFcmTopicCall(token, topic, action) {
+    const response = await fetch(MSC_TOPIC_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, topic, action }),
+    });
+    if (!response.ok) throw new Error(await response.text());
+}
+// One subscribe/unsubscribe for this browser's token; keeps this browser's own list in step. Throws on failure.
+async function mscTopicRequest(token, topic, action) {
+    await mscFcmTopicCall(token, topic, action);
+    const saved = mscReadDeviceTopics();
+    let topics = saved && saved.token === token ? saved.topics : [];
+    topics = action === 'subscribe' ? Array.from(new Set(topics.concat(topic))) : topics.filter(t => t !== topic);
+    mscWriteDeviceTopics(token, topics);
+}
+// Make this browser's token hold exactly the account's topics ([wanted]). resubscribeAll repeats every subscribe
+// (the old once-a-day refresh). Returns how many calls failed; failures are retried on the next page load.
+async function mscReconcileTopics(token, wanted, resubscribeAll) {
+    wanted = Array.isArray(wanted) ? wanted : [];
+    const saved = mscReadDeviceTopics();
+    let failures = 0;
+    const run = async (list, action, call) => {
+        for (let i = 0; i < list.length; i += 8) {
+            await Promise.all(list.slice(i, i + 8).map(topic => call(topic, action).catch(() => { failures++; })));
+        }
+    };
+    // The browser got a new token: the old one keeps its topics until told otherwise, so release them.
+    if (saved && saved.token && saved.token !== token && Array.isArray(saved.topics) && saved.topics.length) {
+        await run(saved.topics, 'unsubscribe', (topic, action) => mscFcmTopicCall(saved.token, topic, action));
+        failures = 0; // an expired old token cannot be released; never retry that forever
+    }
+    const known = saved && saved.token === token && Array.isArray(saved.topics) ? saved.topics : null;
+    // First time with this token: clear every job topic it might hold from before; afterwards only what it added.
+    const toRemove = (known === null ? MSC_ALL_JOB_TOPICS : known).filter(topic => !wanted.includes(topic));
+    const toAdd = resubscribeAll || known === null ? wanted : wanted.filter(topic => !known.includes(topic));
+    if (known === null) mscWriteDeviceTopics(token, []);
+    const call = (topic, action) => mscTopicRequest(token, topic, action);
+    await run(toRemove, 'unsubscribe', call);
+    await run(toAdd, 'subscribe', call);
+    // A first clean-up that did not fully succeed runs again next time.
+    if (known === null && failures > 0) { try { localStorage.removeItem(MSC_DEVICE_TOPICS_KEY); } catch (_) {} }
+    return failures;
+}
+// ---- end per-browser topic sync --------------------------------------------------------------------------------
+
 async function manageTopicSubscription(topic, action) {
     // Actively try to get token if missing
     if (!currentFcmToken) {
@@ -1781,15 +1895,7 @@ async function manageTopicSubscription(topic, action) {
         return false;
     }
     try {
-        const response = await fetch(
-            'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription',
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token: currentFcmToken, topic, action }),
-            }
-        );
-        if (!response.ok) throw new Error(await response.text());
+        await mscTopicRequest(currentFcmToken, topic, action);
         let topics = getSubscribedTopics();
         if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic);
         else if (action === 'unsubscribe')
@@ -1862,10 +1968,13 @@ async function requestTokenAndSync() {
 }
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
 async function syncNotificationTopics() {
-    currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
-    if (!currentFcmToken || !shouldSync()) return;
-    await Promise.all(getSubscribedTopics().map(topic => manageTopicSubscription(topic, 'subscribe')));
-    localStorage.setItem('notificationSyncTimestamp', Date.now().toString());
+    // Inside the MSC app the app manages its own topics natively.
+    if (window.flutter_app && window.flutter_app.isReady) return;
+    currentFcmToken = currentFcmToken || (window.flutter_app && window.flutter_app.fcmToken);
+    if (!currentFcmToken) return;
+    const daily = shouldSync();
+    await mscReconcileTopics(currentFcmToken, getSubscribedTopics(), daily);
+    if (daily) localStorage.setItem('notificationSyncTimestamp', Date.now().toString());
 }
 
 async function initializeUserFeatures() {
@@ -2591,6 +2700,9 @@ async function fetchAndCacheProfileData() {
 
                 if (profileObj.notification_subscriptions && Array.isArray(profileObj.notification_subscriptions)) {
                     localStorage.setItem('subscribedTopics', JSON.stringify(profileObj.notification_subscriptions));
+                if (currentFcmToken && !(window.flutter_app && window.flutter_app.isReady)) {
+                    mscReconcileTopics(currentFcmToken, profileObj.notification_subscriptions, false).catch(() => {});
+                }
                     updateNotificationBadge();
                 }
 

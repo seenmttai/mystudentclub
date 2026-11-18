@@ -1,0 +1,1626 @@
+{
+ "paper": "May 2025",
+ "id": "may25",
+ "takeaways": [
+  "Read dates as hard as numbers: s.164(2) bar starts 31.10.2023, customs exchange rate follows the warehousing BoE but duty rate the ex-bond BoE, and 23.07.2024 / 01.10.2024 change capital gains and buyback tax.",
+  "Marks were lost on case-based numbers, not theory: EVA, make-or-buy sensitivity (Rs 618.45) and the s.92CE tax figure (Rs 25,15,968) were where most students scored poorly.",
+  "Expect bait data: CII in a s.47(vib) demerger, fixed cost per unit in a throughput ranking, 'reasons other than supply' for an e-way bill - ask whether a figure matters before using it.",
+  "Two MCQs had two accepted keys (2.4, 3.4) and one had none (4.1): if no option fits fully, tick the closest within 3 minutes and move on.",
+  "Theory scores only with case headings and facts: write 2.6 as inbound vs outbound with figures, and name Christensen & Kagermann's components in 5.6(ii)."
+ ],
+ "cases": [
+  {
+   "no": 1,
+   "title": "Life Education Ltd.",
+   "industry": "EdTech - online exam coaching plus tablet manufacturing",
+   "story": "Mumbai start-up (May 2019) selling online exam coaching and making tabs for its students. The case mixes an ESOP to a director, a CGU impairment, a GST special audit, a director's disqualification, a JV asset transfer and an incentive approved after the audit report.",
+   "marks_by_subject": {
+    "FR": 7,
+    "AFM": 5,
+    "Law": 5,
+    "Audit": 2,
+    "IDT": 2,
+    "DT": 2,
+    "Costing": 2
+   },
+   "difficulty": "Moderate",
+   "first15": "Attempt if FR and Law are strong: 1.8 impairment and 1.6 disqualification are 10 near-standard marks; 1.7 EVA is the time sink because the case P&L does not add up.",
+   "questions": [
+    {
+     "q": "1.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCMPE (SPOM Set B) Ch 5 - business models: Freemium Model (SM 5.31)",
+     "topic": "Freemium model",
+     "ask": "Name the business model where the basic online service is free and higher service levels need an upgrade fee.",
+     "options": {
+      "a": "Promotion",
+      "b": "Premium",
+      "c": "Freemium",
+      "d": "Subscription"
+     },
+     "clue": "'basic information without involvement of money... a separate upgradation fee would be charged'",
+     "chapter_clear": false,
+     "think": [
+      "Free basic tier + paid upgrade = freemium (free + premium)",
+      "Business-model words -> Costing (SPOM Set B), not obvious which chapter -> A-Z index -> \"freemium\" -> SCMPE SM 5.31",
+      "Subscription charges a recurring fee from day one; here the basic tier is free -> reject (d)",
+      "Known without the book -> answer in a minute and bank the time"
+     ],
+     "look_up": {
+      "where": "ICAI SM SPOM Set B (SCMPE) - Ch 5, Freemium Model (5.31)",
+      "index_keywords": [
+       "freemium model",
+       "business model",
+       "subscription model"
+      ]
+     },
+     "solve": "Freemium = basic product or service given free to build a large user base; revenue comes from users who upgrade to paid premium features. LEL gives basic services against just user information and charges an upgrade fee by level of service -> freemium.",
+     "answer": "(c) Freemium",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Picking (d) Subscription because the fee rises with service level; a subscription model has no free tier.",
+     "minutes": 3
+    },
+    {
+     "q": "1.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "Completion and Review - SA 560 Subsequent Events",
+     "topic": "Facts known after FS are issued - amended FS and new auditor's report",
+     "ask": "After the audit report (04.05.2025) the Board amends the FS to book a Rs 58 crore incentive and asks for a fresh report. Can the auditor issue one, and with what disclosure?",
+     "options": {
+      "a": "Yes - new report dated not earlier than 01.06.2025; disclose it in the 'other reporting responsibilities' paragraph",
+      "b": "No - report already issued and money received next year; only an amendment of the original report is allowed",
+      "c": "Yes - new report dated the same as the original report, with an Emphasis of Matter / Other Matter paragraph",
+      "d": "Yes - new report dated not earlier than 01.06.2025, with an Emphasis of Matter / Other Matter paragraph"
+     },
+     "clue": "'the Board amended the accounts... requested the Auditor... issue a fresh audit report'",
+     "chapter_clear": true,
+     "think": [
+      "Event after the report date + management amends the FS = SA 560 'facts that become known after the FS have been issued'",
+      "Chapter clear -> Audit SM -> SA 560 -> 'management amends the financial statements'",
+      "SA 560: audit the amendment, extend subsequent-event procedures to the new date, issue a NEW report dated not earlier than approval of the amended FS",
+      "The new report must carry an EOM/OM paragraph pointing to the note on the amendment and to the earlier report -> (d)"
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - SA 560 Subsequent Events",
+      "index_keywords": [
+       "SA 560",
+       "facts which become known after the financial statements have been issued",
+       "new auditor's report",
+       "amendment of financial statements"
+      ]
+     },
+     "solve": "SA 560: if management amends issued FS, the auditor (i) performs the procedures needed on the amendment, (ii) extends subsequent-event procedures up to the new report date, (iii) issues a new report dated not earlier than the date of approval of the amended FS, and (iv) adds an Emphasis of Matter or Other Matter paragraph referring to the note that explains the amendment and to the earlier report. Amended FS approved on 01.06.2025 -> new report dated 01.06.2025 or later, with EOM/OM.",
+     "answer": "(d) Yes - new audit report dated not earlier than 01.06.2025, with an Emphasis of Matter / Other Matter paragraph.",
+     "icai": "(D)",
+     "flag": null,
+     "trap": "Picking (c): a new report can never carry the old date because it covers procedures up to approval of the amended FS.",
+     "minutes": 3
+    },
+    {
+     "q": "1.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "GST - Assessment and Audit (special audit u/s 66)",
+     "topic": "Grounds for special audit; 90 + 90 days",
+     "ask": "The department alleges a wrong GST rate and orders a special audit of FY 2021-22 by ABC LLP. Is the special audit valid, and what is the time limit?",
+     "options": {
+      "a": "Valid; maximum 180 days from commencement of audit",
+      "b": "Valid; to be completed on or before 31.03.2025",
+      "c": "Valid; 90 days, extendable by another 90 days",
+      "d": "Special audit cannot be carried out in these circumstances"
+     },
+     "clue": "'GST paid by the company is incorrect due to wrong GST rate selection'",
+     "chapter_clear": true,
+     "think": [
+      "'Special audit' + 'Commissioner nominated' = s.66 CGST - but test the GROUNDS before the time limit",
+      "IDT SM -> Assessment and Audit -> special audit u/s 66(1)",
+      "s.66 allows it only if (i) value is not correctly declared or (ii) ITC availed is not within normal limits; a wrong-rate (classification) dispute is neither",
+      "Ground fails -> special audit cannot be ordered -> (d); the 90 + 90 days in (c) is a distractor"
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - Assessment and Audit (s.66 special audit)",
+      "index_keywords": [
+       "special audit",
+       "section 66",
+       "value not correctly declared",
+       "credit availed not within normal limits"
+      ]
+     },
+     "solve": "s.66(1): during scrutiny, inquiry, investigation or other proceedings, an officer not below Assistant Commissioner may, with the Commissioner's prior approval, direct a special audit by a CA/CMA nominated by the Commissioner - only if, considering the nature and complexity of the case and the interest of revenue, he believes (a) the value has not been correctly declared, or (b) the credit availed is not within normal limits. Report is due in 90 days, extendable by 90 days. Here the only allegation is a wrong GST rate - a rate/classification issue, not value or ITC. The pre-condition for special audit is not met.",
+     "answer": "(d) Special audit cannot be carried out under the given circumstances.",
+     "icai": "(D)",
+     "flag": "ICAI gives no reasoning; (d) holds on a strict reading that a rate dispute is not 'value not correctly declared' - read wrong rate as wrong value and (c) looks right.",
+     "trap": "Jumping to the 90 + 90 day rule (c) without checking whether a s.66 ground exists.",
+     "minutes": 3
+    },
+    {
+     "q": "1.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "DT",
+     "also": null,
+     "chapter": "Deduction, Collection and Recovery of Tax - TDS on salary (s.192(1C))",
+     "topic": "Deferred TDS on ESOP perquisite of an eligible start-up",
+     "ask": "LEL, an eligible start-up, allotted 50,000 ESOP shares to Dr Bhalla at Rs 10 when FMV was Rs 50. How is TDS handled for AY 2025-26?",
+     "options": {
+      "a": "TDS @30% on Rs 20 lakh ESOP benefit plus normal TDS u/s 192 on Rs 60 lakh salary",
+      "b": "TDS on Rs 80 lakh (ESOP benefit + salary) at normal rates u/s 192",
+      "c": "LEL may defer TDS on the ESOP; it is deducted after expiry of certain timelines / happening of certain events",
+      "d": "No TDS at all - ESOP allotment by an eligible start-up is exempt from withholding"
+     },
+     "clue": "'eligible start-up incorporated in May 2019... ESOP... issued at face value of Rs 10'",
+     "chapter_clear": true,
+     "think": [
+      "'Eligible start-up' + 'ESOP' together = s.192(1C) deferred TDS",
+      "Perquisite = (50 - 10) x 50,000 = Rs 20 lakh, taxable as salary u/s 17(2)(vi) in AY 2025-26",
+      "DT SM -> TDS on salary -> s.192(1C): TDS on the ESOP perquisite within 14 days of the earliest of 48 months from end of the AY / sale of the shares / leaving the employer",
+      "So a deferral, not an exemption -> (c)"
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - TDS on salary, s.192(1C)",
+      "index_keywords": [
+       "section 192(1C)",
+       "eligible start-up",
+       "ESOP perquisite",
+       "specified security"
+      ]
+     },
+     "solve": "Perquisite = 50,000 x (50 - 10) = Rs 20,00,000, taxable in AY 2025-26 (exercised and allotted in October 2024). For an eligible start-up u/s 80-IAC, s.192(1C) lets the employer deduct TDS on this perquisite within 14 days of the earliest of: (i) expiry of 48 months from the end of AY 2025-26, (ii) sale of the shares by Dr Bhalla, (iii) his ceasing to be in employment. TDS on the Rs 60 lakh salary continues normally. He still holds the shares and still serves -> TDS on the ESOP part is deferred.",
+     "answer": "(c) LEL can defer TDS on the Rs 20 lakh ESOP perquisite; it is deducted only after the specified timelines/events u/s 192(1C).",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Picking (d): the start-up relief only defers TDS and tax payment; it never exempts the perquisite.",
+     "minutes": 3
+    },
+    {
+     "q": "1.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 28 Investments in Associates and Joint Ventures (with Ind AS 111)",
+     "topic": "Downstream transaction with a JV that shows impairment - loss recognised in full",
+     "ask": "LEL transfers equipment (carrying amount Rs 9 crore) to its 50% JV OEL at market value Rs 8 crore. How is the Rs 1 crore loss treated?",
+     "options": {
+      "a": "Recognise the Rs 1 crore loss in two instalments of Rs 50 lakh over two years",
+      "b": "Recognise impairment loss of Rs 1 crore immediately",
+      "c": "Recognise it in five instalments of Rs 20 lakh as the project is reviewed after 5 years",
+      "d": "No loss - the transfer is an investment in the JV"
+     },
+     "clue": "'equipment to OEL for Rs 8 crores being its Market value... carrying value... 9 crores'",
+     "chapter_clear": true,
+     "think": [
+      "Asset passed by the investor to its JV = downstream transaction; OEL is a jointly controlled company -> JV (Ind AS 111), equity method (Ind AS 28)",
+      "FR index -> Ind AS 28 -> 'downstream transactions' / 'reduction in net realisable value'",
+      "Gains are eliminated to the investor's share, but a loss that evidences impairment is recognised IN FULL",
+      "Market value 8 < carrying 9 -> Rs 1 crore impairment, recognised now -> (b)"
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 28 (downstream transactions)",
+      "index_keywords": [
+       "downstream transaction",
+       "joint venture",
+       "reduction in net realisable value",
+       "impairment loss"
+      ]
+     },
+     "solve": "OEL is jointly controlled through a separate entity -> joint venture, equity method. In a downstream sale or contribution, unrealised gains are eliminated to the extent of the investor's interest; but where the transaction shows a reduction in NRV or an impairment of the asset, the investor recognises that loss in full. Carrying Rs 9 crore vs market value Rs 8 crore -> Rs 1 crore loss to P&L immediately; no spreading over the project life or review period.",
+     "answer": "(b) Recognise impairment loss of Rs 1 crore immediately.",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Eliminating 50% of the loss like an unrealised gain; a loss that evidences impairment is not eliminated.",
+     "minutes": 3
+    },
+    {
+     "q": "1.6",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Companies Act, 2013 - Appointment and Qualifications of Directors (s.164, s.167; Rule 11 DIN)",
+     "topic": "Disqualification u/s 164(2)(a) for 3 years' non-filing; vacation u/s 167(1)(a); DIN not deactivated",
+     "ask": "From when is Radhika disqualified, is her September 2024 re-appointment valid, and will her DIN be deactivated?",
+     "options": null,
+     "clue": "'PQR Ltd. did not file its financial statements for... 31.03.2021, 31.03.2022 and 31.03.2023'",
+     "chapter_clear": true,
+     "think": [
+      "3 continuous years of non-filing by another company = s.164(2)(a); the marks are in the EXACT date (examiners said most missed it)",
+      "Corporate Laws SM -> Appointment and Qualifications of Directors -> s.164(2), s.167(1)(a) proviso; DIN -> Rule 11",
+      "Date: FY 2022-23 AGM by 30.09.2023 (s.96) + FS filing within 30 days (s.137) = 30.10.2023 -> disqualified from 31.10.2023 to 30.10.2028",
+      "Apply each date: 25.09.2023 re-appointment valid (not yet disqualified) -> vacates on 31.10.2023 -> 15.09.2024 appointment void (later filing does not cure) -> DIN stays (not a Rule 11 ground)"
+     ],
+     "look_up": {
+      "where": "ICAI SM Corporate Laws (SPOM Set A) - Appointment and Qualifications of Directors",
+      "index_keywords": [
+       "section 164(2)",
+       "disqualification of director",
+       "section 167 vacation of office",
+       "Rule 11 DIN deactivation"
+      ]
+     },
+     "solve": "s.164(2)(a): a person who is or has been a director of a company that has not filed FS or annual returns for any continuous 3 FYs cannot be re-appointed in that company or appointed in any other company for 5 years from the date the company fails to file. s.167(1)(a) proviso: such a director vacates office in all companies other than the defaulting one. FY 2022-23: AGM due by 30.09.2023, FS due with ROC within 30 days of AGM = 30.10.2023. Third continuous default occurs on 31.10.2023 -> disqualified 31.10.2023 to 30.10.2028. 25.09.2023 re-appointment at LEL was valid when made, but she vacates office on 31.10.2023; the 10.04.2024 resignation is academic. 15.09.2024 appointment falls inside the 5-year bar; PQR's filing on 08.05.2024 does not lift it -> invalid. Rule 11 of the Companies (Appointment and Qualifications of Directors) Rules, 2014 lists the grounds for cancelling/deactivating DIN (death, unsound mind, insolvency, duplicate DIN, DIN obtained wrongfully, etc.); s.164(2) disqualification is not one and is temporary -> DIN not deactivated.",
+     "answer": "Provision: s.164(2)(a) - a director of a company that has not filed FS/annual returns for 3 continuous FYs cannot be re-appointed there or appointed in any other company for 5 years from the date of default. s.167(1)(a) proviso - she vacates office in every company except the defaulting one.\n\nDate of disqualification: PQR's third default (FY 2022-23) = FS not filed by 30.10.2023 (AGM by 30.09.2023 u/s 96 + 30 days u/s 137). Radhika is disqualified from 31.10.2023 till 30.10.2028.\n\nAnalysis:\n- 25.09.2023 re-appointment at LEL: valid on that date, but she vacates office u/s 167(1)(a) on 31.10.2023.\n- 15.09.2024 re-appointment: not valid - she is within the 5-year bar; PQR filing its FS on 08.05.2024 does not remove the disqualification.\n\nDIN: Not deactivated. Rule 11 of the Companies (Appointment and Qualifications of Directors) Rules, 2014 does not make s.164(2) disqualification a ground to cancel or deactivate DIN; the disqualification is only temporary.\n\nConclusion: Disqualified from 31.10.2023; the September 2024 appointment is void; DIN continues.",
+     "icai": "Same conclusion as ICAI.",
+     "flag": null,
+     "trap": "Counting the 5 years from March 2024 (when the Board learnt of it), or treating PQR's late filing as curing the bar.",
+     "minutes": 15
+    },
+    {
+     "q": "1.7",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "AFM",
+     "also": "Costing",
+     "chapter": "AFM - Business/Corporate Valuation: Economic Value Added (also SCMPE - Performance Measurement)",
+     "topic": "EVA = NOPAT - WACC x invested capital, with provision add-back",
+     "ask": "As management, show from the summary financial statements that management is efficient.",
+     "options": null,
+     "clue": "'how will you indicate the efficiency of the management... summary of financial statements'",
+     "chapter_clear": false,
+     "think": [
+      "'Efficiency of management' + Ke 9%, Kd 15%, a tax rate and a provision to add back = value-creation test -> EVA (examiners: most wrote theory and scored poorly)",
+      "Unsure where -> A-Z index -> 'Economic Value Added' -> AFM valuation / SCMPE performance measurement",
+      "NOPAT = EBIT x (1 - 17.16%) + bad-debt provision 50; invested capital = total assets - non-interest-bearing liabilities + 50; WACC on book weights",
+      "EVA Rs 445.96 lakh, positive -> management is creating value; say so in 2-3 lines with the ROIC vs WACC spread"
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - Business Valuation (EVA); SCMPE - Performance Measurement",
+      "index_keywords": [
+       "Economic Value Added",
+       "NOPAT",
+       "capital charge",
+       "WACC"
+      ]
+     },
+     "solve": "Tax u/s 115BAB = 15% x 1.10 x 1.04 = 17.16%.\nNOPAT = 724.29 x (1 - 0.1716) = 600.00; add back non-cash bad-debt provision 50 -> 650.00 lakh.\nCapital employed = 2,500 - 400 = 2,100 (= equity 1,500 + reserves 300 + debt 300); add provision 50 -> invested capital 2,150.\nKd after tax = 15% x 0.8284 = 12.426%.\nWACC = 1,800/2,100 x 9% + 300/2,100 x 12.426% = 7.714% + 1.775% = 9.49%.\nCapital charge = 2,150 x 9.49% = 204.04.\nEVA = 650.00 - 204.04 = 445.96 lakh. ROIC = 650/2,150 = 30.2% vs WACC 9.49%.",
+     "answer": "Measure: Economic Value Added - profit left after charging the cost of ALL capital (debt and equity).\n\nWorking (Rs lakh):\nTax rate u/s 115BAB = 15% + SC 10% + HEC 4% = 17.16%\nEBIT 724.29 less tax @17.16% (124.29) = 600.00\nAdd: bad-debt provision (non-cash) = 50.00\nNOPAT = 650.00\n\nTotal assets 2,500 less non-interest-bearing liabilities 400 = capital employed 2,100\nAdd: provision 50 -> invested capital 2,150\n\nWACC = 1,800/2,100 x 9% + 300/2,100 x 15% x (1 - 0.1716) = 7.71% + 1.78% = 9.49%\nCapital charge = 2,150 x 9.49% = 204.04\nEVA = 650.00 - 204.04 = 445.96\n\nInterpretation:\n- EVA is large and positive: return on invested capital about 30% against a 9.49% cost of capital.\n- Costs are under control (EBIT margin about 29%), debt is a small, cheap part of capital (post-tax 12.4%), and the concessional 115BAB rate lifts post-tax returns.\n- Conclusion: management's decisions have created shareholder value; management is efficient.\n\n(If NOPAT is built from the given EBT of 600: NOPAT 629.88, EVA 425.84 - ICAI accepts this too.)",
+     "icai": "Same as ICAI (EVA Rs 445.96 lakh); ICAI's alternative from EBT 600 gives Rs 425.84 lakh.",
+     "flag": "Case P&L doesn't add up (EBIT 724.29 - interest 100 = 624.29, not 600), hence two accepted EVAs; 115BAB normally needs incorporation on/after 01.10.2019, but use the case fact.",
+     "trap": "Deducting interest again inside NOPAT, or adding the Rs 50 lakh provision to NOPAT but not to capital (stay consistent).",
+     "minutes": 15
+    },
+    {
+     "q": "1.8",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 36 Impairment of Assets",
+     "topic": "Impairment of a CGU with goodwill - loss to goodwill first, then other assets",
+     "ask": "LEL carries CGU 'Wing W' at Rs 1,200 lakh on 31.03.2025. Is that right?",
+     "options": null,
+     "clue": "'recoverable amount of Rs 1,100 lakhs... goodwill of Rs 400 lakhs was allocated to it'",
+     "chapter_clear": true,
+     "think": [
+      "Recoverable amount + CGU + allocated goodwill = Ind AS 36 impairment of a CGU",
+      "FR index -> Ind AS 36 -> 'allocating an impairment loss to a CGU'; use the SM illustration and replace figures",
+      "Goodwill is never amortised under Ind AS - keep it at 400; depreciate only the identifiable assets: 2,000/20 x 8 years = 800",
+      "Carrying 1,600 vs recoverable 1,100 -> loss 500 -> goodwill 400 first, then 100 to other assets -> correct carrying amount 1,100"
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 36 (CGU and goodwill)",
+      "index_keywords": [
+       "cash-generating unit",
+       "allocation of impairment loss",
+       "goodwill",
+       "recoverable amount"
+      ]
+     },
+     "solve": "Identifiable assets: cost 2,000, life 20 years -> 100 a year x 8 years (2017-18 to 2024-25) = 800 -> carrying 1,200. Goodwill 400 (not amortised under Ind AS 103/36). CGU carrying amount = 1,200 + 400 = 1,600. Recoverable 1,100 -> impairment 500. Allocate: goodwill 400 (to nil), balance 100 to other assets -> 1,100. Books at 1,200 ignore both goodwill and impairment - wrong.",
+     "answer": "Ind AS 36: when a CGU's carrying amount (including allocated goodwill) exceeds its recoverable amount, the impairment loss is charged to P&L and allocated first to goodwill, then to the other assets pro rata.\n\n(Rs lakh) | Goodwill | Other assets | Total\nCost on 01.04.2017 | 400 | 2,000 | 2,400\nDepreciation for 8 years (2,000/20 x 8) | - | (800) | (800)\nCarrying amount 31.03.2025 | 400 | 1,200 | 1,600\nImpairment loss | (400) | (100) | (500)\nCarrying amount after impairment | Nil | 1,100 | 1,100\n\nConclusion: Do not agree. Recoverable amount is Rs 1,100 lakh, so an impairment loss of Rs 500 lakh goes to P&L (Rs 400 lakh goodwill written off, Rs 100 lakh against Wing W's assets). Wing W should be carried at Rs 1,100 lakh, not Rs 1,200 lakh.",
+     "icai": "Same conclusion as ICAI.",
+     "flag": null,
+     "trap": "Amortising goodwill, or comparing only 1,200 with 1,100 and calling the loss Rs 100 lakh.",
+     "minutes": 15
+    }
+   ]
+  },
+  {
+   "no": 2,
+   "title": "Emm Vee Motors Limited (EVML)",
+   "industry": "Commercial vehicle manufacturing",
+   "story": "A large truck maker hit by a freight recession (sales down 14.29%, inventories piling up) rebuilds its supply chain with JIT, tiered suppliers and 3S dealerships. The case adds warranties, an MD appointment, guarantees, a Euro payable and a transfer-pricing addition.",
+   "marks_by_subject": {
+    "Costing": 8,
+    "AFM": 5,
+    "DT": 4,
+    "IDT": 4,
+    "FR": 2,
+    "Law": 2
+   },
+   "difficulty": "Moderate",
+   "first15": "Pick if AFM/DT are strong: the forex borrowing choice (5) and s.92CE (4) are formula marks; 2.6 is a 6-mark essay written straight from the case paragraphs.",
+   "questions": [
+    {
+     "q": "2.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCMPE - Lean System and Innovation (Just-in-Time)",
+     "topic": "Net saving from JIT; tiered supplier system",
+     "ask": "Which statements explain the success of EVML's supply chain change? (i) pull/JIT gave net saving Rs 25.80 crore; (ii) pull/JIT gave net saving Rs 18.30 crore; (iii) flexible, responsive chain - tiering improved supplier relations and quality; (iv) tiering centralised all supplier functions and removed local suppliers.",
+     "options": {
+      "a": "(i) and (iv)",
+      "b": "(i) and (iii)",
+      "c": "(ii) and (iii)",
+      "d": "(i), (iii) and (iv)"
+     },
+     "clue": "'JIT system reduced the annual average inventory of materials by 75%'",
+     "chapter_clear": true,
+     "think": [
+      "Two statements differ only in the figure -> compute the JIT net saving first",
+      "SCMPE -> Lean System and Innovation -> JIT cost-benefit (replace figures in the SM illustration)",
+      "Carrying cost 10% x 180 = 18; insurance/warehousing 60% x 5 = 3; payroll reduced TO 60% -> saving 40% x 12 = 4.8; total 25.8 - JIT cost 7.5 = 18.3",
+      "(iv) false - local suppliers were kept with warehouses 35-40 minutes away -> (ii) + (iii)"
+     ],
+     "look_up": {
+      "where": "ICAI SCMPE - Lean System and Innovation (JIT)",
+      "index_keywords": [
+       "just-in-time",
+       "inventory carrying cost",
+       "pull system"
+      ]
+     },
+     "solve": "Inventory cut = 75% x 240 = 180 crore -> return saved at 10% = 18.00\nInsurance & warehousing saved = 60% x 5 = 3.00\nPayroll now 60% of 12 = 7.20 -> saving 4.80\nGross saving 25.80 - additional JIT cost 7.50 = net saving 18.30 crore.\n(i) quotes the gross figure - wrong. (ii) right. (iii) right - tier-1 suppliers backed by tier-2/3 improved coordination and quality. (iv) wrong - local suppliers were retained near the plants.",
+     "answer": "(c) (ii) and (iii)",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Reading payroll 'reduced to 60%' as 'reduced by 60%', or forgetting the Rs 7.5 crore JIT running cost.",
+     "minutes": 3
+    },
+    {
+     "q": "2.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 37 Provisions, Contingent Liabilities and Contingent Assets; Ind AS 115 (warranties)",
+     "topic": "Constructive obligation needs communication; service-type extended warranty",
+     "ask": "Which are correct? (i) the 01.11.2024 board resolution creates a constructive obligation; (ii) not announced, so no constructive obligation and no provision; (iii) Rs 15,000 extended warranty is a contract liability recognised over the 2-year extended period, costs as incurred; (iv) the resolution must still be disclosed.",
+     "options": {
+      "a": "(i), (iii)",
+      "b": "(ii), (iii)",
+      "c": "(i), (iii), (iv)",
+      "d": "(ii), (iii) and (iv)"
+     },
+     "clue": "'this matter was neither announced to the public nor intimated to affected parties'",
+     "chapter_clear": true,
+     "think": [
+      "Board decision + 'not announced' = Ind AS 37 constructive obligation test",
+      "FR index -> Ind AS 37 -> 'constructive obligation' (valid expectation in others); extended warranty -> Ind AS 115 'warranties'",
+      "An uncommunicated board decision creates no valid expectation -> no provision, nothing to disclose -> (i) and (iv) out",
+      "Extended warranty bought separately = service-type -> separate PO -> deferred and recognised over the 2 years -> (iii) in -> (b)"
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 37; Ind AS 115 (warranties)",
+      "index_keywords": [
+       "constructive obligation",
+       "board decision",
+       "service-type warranty",
+       "assurance-type warranty"
+      ]
+     },
+     "solve": "A constructive obligation arises only when past practice, published policy or a specific current statement has created a valid expectation in others. A board decision not communicated before the reporting date creates none -> no provision ((ii) true, (i) false) and no disclosure ((iv) false). The optional, separately priced extended warranty is a service-type warranty -> separate performance obligation; Rs 15,000 is a contract liability recognised as revenue over the 2-year extended cover, with repair costs expensed as incurred ((iii) true). The 1-year assurance warranty stays under Ind AS 37 (provision for the expected Rs 7,500).",
+     "answer": "(b) (ii), (iii)",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Treating the board resolution as an obligation because it was 'decided' - Ind AS 37 needs communication that creates a valid expectation.",
+     "minutes": 3
+    },
+    {
+     "q": "2.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Companies Act, 2013 - Appointment of Directors (s.161) and Appointment and Remuneration of Managerial Personnel (s.203(3) proviso)",
+     "topic": "Additional director by circulation; MD who is already MD of another company",
+     "ask": "Which are INCORRECT? (i) additional director only by members at AGM; (ii) only at a Board meeting, not by circulation; (iii) additional-director appointment valid and he can be made MD; (iv) MD appointment needs unanimous consent of all ten directors in India plus specific notice.",
+     "options": {
+      "a": "(i), (ii)",
+      "b": "(ii), (iii), (iv)",
+      "c": "(i), (ii), (iv)",
+      "d": "(i), (iii), (iv)"
+     },
+     "clue": "'Mr. Nilesh is also a managing Director of PQR Limited... consent of eight directors present'",
+     "chapter_clear": true,
+     "think": [
+      "The question asks for INCORRECT statements - mark each T/F before reading the options",
+      "Corporate Laws SM -> s.161(1) additional director (Board, if articles allow); s.175 circulation; s.179(3) meeting-only matters",
+      "MD already MD of one other company -> s.203(3) proviso: Board meeting, consent of all directors PRESENT, specific notice to all directors in India",
+      "(i) F, (ii) F (not a meeting-only matter), (iii) T, (iv) F (all present, not all ten) -> incorrect = (i), (ii), (iv)"
+     ],
+     "look_up": {
+      "where": "ICAI SM Corporate Laws - Appointment of Directors; Appointment and Remuneration of Managerial Personnel",
+      "index_keywords": [
+       "additional director",
+       "section 161",
+       "resolution by circulation",
+       "managing director of more than one company"
+      ]
+     },
+     "solve": "(i) Incorrect - s.161(1): articles may empower the Board to appoint an additional director, who holds office till the next AGM. (ii) Incorrect - appointing an additional director is not among the matters that must be passed only at a Board meeting (s.179(3) / Rule 8), so a circular resolution u/s 175 is valid. (iii) Correct. (iv) Incorrect - s.203(3) proviso needs a resolution at a Board meeting with the consent of all directors present, after specific notice of the meeting and the resolution to all directors then in India. All eight present consented and all ten in India got notice -> valid; Mr Vinod's objection fails.",
+     "answer": "(c) (i), (ii), (iv)",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Reading 'incorrect' as 'correct', or thinking all directors in India must consent.",
+     "minutes": 3
+    },
+    {
+     "q": "2.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "GST - Value of Supply (rule 28(2) CGST Rules)",
+     "topic": "Corporate guarantee for a related person; directors' personal guarantee",
+     "ask": "Value and GST on EVML's Rs 12 crore, 4-year corporate guarantee for associate DEF Ltd (fee Rs 10 lakh), and on directors' personal guarantee for EVML's own loan.",
+     "options": {
+      "a": "Corporate guarantee value Rs 10,00,000, GST Rs 1,80,000; personal guarantee value nil, no GST",
+      "b": "Corporate guarantee value Rs 12,00,000, GST Rs 2,16,000; personal guarantee value nil, no GST",
+      "c": "Corporate guarantee value Rs 48,00,000, GST Rs 8,64,000; personal guarantee value nil, no GST",
+      "d": "Corporate guarantee value Rs 48,00,000, GST Rs 8,64,000; personal guarantee at open market value, GST payable"
+     },
+     "clue": "'corporate guarantee of Rs 12 crores for four years... associate Indian company DEF Ltd.'",
+     "chapter_clear": true,
+     "think": [
+      "Guarantee for a related company = rule 28(2) deemed value; directors' guarantee = Circular 204/16/2023-GST",
+      "IDT SM -> Value of Supply -> rule 28(2)",
+      "Higher of 1% a year (12 crore x 1% x 4 = 48 lakh) and actual fee 10 lakh -> 48 lakh, GST 8.64 lakh; but if DEF is eligible for full ITC, the invoice value of 10 lakh stands",
+      "Directors take no consideration -> value nil -> (c), or (a) under the full-ITC proviso"
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - Value of Supply (rule 28(2))",
+      "index_keywords": [
+       "corporate guarantee",
+       "rule 28(2)",
+       "related person",
+       "personal guarantee by director"
+      ]
+     },
+     "solve": "Rule 28(2): value of a corporate guarantee to a bank/FI on behalf of a related person = 1% of the guarantee amount for each year (or part) or the actual consideration, whichever is higher. 1% x 12 crore x 4 years = Rs 48,00,000 > fee Rs 10,00,000 -> value Rs 48 lakh, GST @18% = Rs 8,64,000. Proviso: if the recipient is eligible for full ITC, the invoice value (Rs 10 lakh; GST Rs 1,80,000) is the value. Directors' personal guarantee for EVML's loan without consideration: Circular 204/16/2023-GST - value treated as zero, no GST.",
+     "answer": "(c) Rs 48,00,000, GST Rs 8,64,000; personal guarantee value nil (or (a) if DEF Ltd is eligible for full ITC) - ICAI accepts both.",
+     "icai": "(A) or (C) - both accepted.",
+     "flag": "Two keys because the case doesn't say whether DEF Ltd gets full ITC (rule 28(2) proviso); state the assumption whenever you use either value.",
+     "trap": "(b): taking 1% only once - the 1% applies for each year of the guarantee.",
+     "minutes": 3
+    },
+    {
+     "q": "2.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "GST - Supply / Input Tax Credit (Circular 195/07/2023-GST on warranty replacements)",
+     "topic": "Warranty replacement: no GST, no ITC reversal; extended warranty",
+     "ask": "Which are INCORRECT? (i) an extended warranty of goods + services sold separately is a mixed supply; (ii) an extended warranty bought with the vehicle forms a mixed supply with the vehicle as principal supply; (iii) GST applies on a warranty sold and charged separately; (iv) no GST on free replacement but ITC on those parts must be reversed.",
+     "options": {
+      "a": "(i), (ii), (iii)",
+      "b": "(i), (iii), (iv)",
+      "c": "(ii), (iii), (iv)",
+      "d": "(i), (ii), (iv)"
+     },
+     "clue": "'liability to reverse Input Tax Credit (ITC) for supplies related to the replacement of parts'",
+     "chapter_clear": true,
+     "think": [
+      "Warranty + ITC reversal = Circular 195/07/2023-GST - one circular answers all four",
+      "IDT SM -> A-Z index 'warranty' (the circular sits under supply/ITC)",
+      "Free warranty replacement: no GST and NO ITC reversal (cost is in the original price) -> (iv) incorrect",
+      "Extended warranty with the original sale = COMPOSITE supply, vehicle principal -> (ii) wrong ('mixed' and 'principal' cannot go together); bought later = separate supply taxed by its nature, not always mixed -> (i) wrong; (iii) right"
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - Supply / ITC (Circular 195/07/2023-GST)",
+      "index_keywords": [
+       "warranty",
+       "replacement of parts",
+       "extended warranty",
+       "reversal of ITC"
+      ]
+     },
+     "solve": "Circular 195/07/2023-GST: (1) Replacement of parts or repair under warranty by the manufacturer without consideration - no GST; ITC on those parts need not be reversed, since the warranty cost is built into the original price. (2) Extended warranty taken at the time of the original supply - consideration is part of a composite supply, principal supply being the goods. (3) Extended warranty taken later - a separate contract, taxed as a supply of services or goods/composite/mixed supply depending on its nature. So (i), (ii), (iv) are incorrect; (iii) is correct.",
+     "answer": "(d) (i), (ii), (iv)",
+     "icai": "(D)",
+     "flag": null,
+     "trap": "Accepting (ii) because it sounds right - only a composite supply has a principal supply; a mixed supply does not.",
+     "minutes": 3
+    },
+    {
+     "q": "2.6",
+     "type": "Descriptive",
+     "marks": 6,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCMPE - Supply Chain Management (upstream and downstream)",
+     "topic": "Upstream (inbound) and downstream (outbound) supply chain strategies",
+     "ask": "Discuss how EVML improved its inbound and outbound supply chain to cut costs, cut inventory and raise customer satisfaction.",
+     "options": null,
+     "clue": "'It was decided to revamp its inbound and outbound supply chain'",
+     "chapter_clear": true,
+     "think": [
+      "'Inbound and outbound supply chain' = upstream and downstream SCM - the SM headings ARE the answer structure",
+      "SCMPE -> supply chain management -> upstream: supplier relationship, number of suppliers, cost-quality-speed, make or buy, IT; downstream: relationship marketing, CRM, customer selection-acquisition-retention-extension, IT, brand",
+      "Under each heading put 1-2 case facts with figures (examiners marked down generic text and missing headings)",
+      "Close with the result: inventory down 75%, net saving Rs 18.30 crore, profit up in 2023-24"
+     ],
+     "look_up": {
+      "where": "ICAI SCMPE - Supply Chain Management",
+      "index_keywords": [
+       "supply chain management",
+       "upstream supply chain",
+       "downstream supply chain",
+       "six markets model"
+      ]
+     },
+     "solve": "Map each case paragraph to an SM heading. Inbound: JIT + pull; value engineering; supplier partnership with cost-sharing and technical help; Pareto (25% of suppliers = 80% of business) and cut from 1,500 to 800 via tiering/system buying; supplier warehouses 35-40 minutes away; ABC classification with delivery norms; JIT cards by email; single-window vendor system; maximum bought-out parts with global sourcing; RFID, GPS, EDI, bar codes. Outbound: regional distribution centres, product-wise delivery schedules, 3S dealerships, 24x7 outlets and mobile vans, dealer training twice a year, CRM forecasting, automated feedback on three service targets. Result: inventory 240 -> 60 crore, net saving 18.30 crore.",
+     "answer": "Problem: a 14.29% revenue fall left inventories piling up; EVML re-geared ordering, handling, procurement and inventory control.\n\nA. Inbound (upstream) supply chain\n1. Supplier relationship - suppliers treated as partners in progress: technical help to meet quality and delivery; value-engineering savings shared with them.\n2. Number of suppliers - 18,000+ parts mapped to supplier part numbers; Pareto showed 25% of 1,500 suppliers gave 80% of business and 60% gave 5%; base cut to 800 through tiering and system buying (deal only with tier-1, backed by tier-2 and tier-3).\n3. Cost, quality and speed - value engineering to substitute costly materials and methods; JIT for high-value/low-volume items and low logistics cost for low-value/high-volume items; push replaced by pull; local suppliers' warehouses 35-40 minutes from the plants; ABC classification of parts and suppliers with separate delivery norms; JIT cards by email so parts go straight to the assembly line.\n4. Make or buy - maximise bought-out parts, indigenous and imported; global sourcing on quality, price and delivery.\n5. Information technology - single-window vendor management system (drawings, prices, quality issues); RFID, GPS tracking, EDI and bar coding.\n\nB. Outbound (downstream) supply chain\n1. Distribution - regional distribution centres at strategic points; separate delivery schedules for each product.\n2. Relationship marketing - new 3S (Sales, Services, Spares) dealerships, 24x7 outlets and mobile service vans; dealer training twice a year (customer and dealer markets of the six markets model).\n3. CRM - customer inputs used to track trends and forecast demand; automated post-delivery feedback set three service targets: order-to-delivery time, reliability of deliveries, order-status information.\n4. Customer selection, acquisition, retention and extension - 1-year assurance warranty in the price, optional extended warranty (Rs 15,000), and the Board's resolve to fix technical errors even after warranty.\n5. IT and brand - tracking, EDI and automated feedback in the dealer network; a reliable, service-led brand.\n\nC. Result\nAverage inventory down 75% (Rs 240 crore to Rs 60 crore); net annual saving Rs 18.30 crore after JIT costs; faster delivery to customers and a significant rise in 2023-24 profit.",
+     "icai": "Same as ICAI (same headings; ICAI's answer is longer).",
+     "flag": null,
+     "trap": "Writing generic supply-chain theory without inbound/outbound headings and case figures - examiners marked this below average for exactly that.",
+     "minutes": 18
+    },
+    {
+     "q": "2.7",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "AFM - Foreign Exchange Exposure and Risk Management",
+     "topic": "Borrowing in EUR vs USD with forward cover; swap points; cross rate",
+     "ask": "EVML needs EUR 5,00,000 for 90 days and takes no currency risk. Should it borrow in Euro or in US dollar? (1 year = 360 days)",
+     "options": null,
+     "clue": "'Policy of the company is not to take any currency risk... 90 days swap: 20/25'",
+     "chapter_clear": true,
+     "think": [
+      "'No currency risk' = cover the repayment forward; compare the final rupee outflow of each loan",
+      "AFM -> forex exposure -> forward rate from swap points (ascending = add, descending = subtract) and cross rates",
+      "EUR loan: borrow at 4.25% (offer), repay in EUR, buy EUR forward at 90.35 + 0.25 = 90.60",
+      "USD loan: buy EUR at USD 1.0240 -> borrow USD 5,12,000 at 5%; buy USD forward with rupees at 90.60 / 1.0205 = 88.78; compare"
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - Foreign Exchange Exposure and Risk Management",
+      "index_keywords": [
+       "swap points",
+       "forward rate",
+       "cross rate",
+       "borrowing in foreign currency"
+      ]
+     },
+     "solve": "EUR loan: interest = 5,00,000 x 4.25% x 90/360 = 5,312.50 -> repay EUR 5,05,312.50. Forward Rs/EUR ask = 90.35 + 0.25 = 90.60. Outflow = 5,05,312.50 x 90.60 = Rs 4,57,81,312.50.\nUSD loan: EUR 5,00,000 x 1.0240 = USD 5,12,000; interest 5% x 90/360 = USD 6,400; repay USD 5,18,400. Forward USD/EUR = (1.0220 - 0.0015) / (1.0240 - 0.0010) = 1.0205 / 1.0230. To buy USD with rupees: buy EUR at 90.60 and sell EUR for USD at 1.0205 -> Rs/USD = 90.60 / 1.0205 = 88.78. Outflow = 5,18,400 x 88.78 = Rs 4,60,23,552.\nDifference = Rs 2,42,239.50 in favour of the Euro loan.",
+     "answer": "1. Euro loan\nPrincipal EUR 5,00,000 + interest @4.25% x 90/360 = EUR 5,312.50 -> repay EUR 5,05,312.50\n90-day forward Rs/EUR (ask) = 90.35 + 0.25 = 90.60\nRupee outflow = 5,05,312.50 x 90.60 = Rs 4,57,81,312.50\n\n2. US dollar loan\nUSD needed to buy EUR 5,00,000 = 5,00,000 x 1.0240 = USD 5,12,000\nInterest @5% x 90/360 = USD 6,400 -> repay USD 5,18,400\n90-day forward USD/EUR = 1.0205 / 1.0230 (swap 15/10 is descending, so deducted)\nRs/USD for buying USD = 90.60 / 1.0205 = Rs 88.78\nRupee outflow = 5,18,400 x 88.78 = Rs 4,60,23,552\n\nDecision: the Euro loan costs Rs 2,42,239.50 less. Borrow in Euro and reject the banker's dollar-loan suggestion.",
+     "icai": "Same conclusion as ICAI (Rs 4,57,81,312.50 vs Rs 4,60,23,552).",
+     "flag": null,
+     "trap": "Adding the 15/10 swap points (descending, so subtract) or using bid rates when buying currency.",
+     "minutes": 15
+    },
+    {
+     "q": "2.8",
+     "type": "Descriptive",
+     "marks": 4,
+     "subject": "DT",
+     "also": null,
+     "chapter": "DT - Transfer Pricing (s.92CE secondary adjustment, Rule 10CB)",
+     "topic": "Secondary adjustment: repatriate in 90 days, else deemed advance with interest, or pay 18% additional tax",
+     "ask": "What follows from the Rs 1.20 crore transfer-pricing addition that EVML accepted?",
+     "options": null,
+     "clue": "'TPO determined that the interest rate was excessive by 3%... accepted by EVML'",
+     "chapter_clear": true,
+     "think": [
+      "TPO addition accepted by the assessee = primary adjustment -> s.92CE secondary adjustment",
+      "DT SM -> Transfer Pricing -> s.92CE and Rule 10CB",
+      "Three conditions: accepted, AY 2017-18 or later (2023-24), above Rs 1 crore (1.20 crore) -> applies; the other Rs 1.5 crore addition is not TP - ignore it",
+      "Give the numbers examiners wanted: 90 days from the 30.01.2025 order; else interest at 6-month LIBOR + 3% (USD loan) from 30.01.2025; or tax 20.9664% = Rs 25,15,968"
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - Transfer Pricing (s.92CE)",
+      "index_keywords": [
+       "secondary adjustment",
+       "section 92CE",
+       "excess money",
+       "Rule 10CB"
+      ]
+     },
+     "solve": "s.92CE(1): secondary adjustment is needed where the primary adjustment is made by the AO and accepted by the assessee (among other cases), relates to AY 2017-18 onwards and exceeds Rs 1 crore. All met. Excess money of Rs 1.20 crore with the overseas AE must come back within 90 days of the AO's order. Otherwise it is a deemed advance; interest at 6-month LIBOR as on 30.09.2024 + 3% (foreign-currency transaction) is taxed - 30.01.2025 to 31.03.2025 in AY 2025-26 and yearly thereafter till repatriated. Option u/s 92CE(2A): additional tax @18% + SC 12% + cess 4% = 20.9664% x 1,20,00,000 = Rs 25,15,968; then no further interest is imputed and no deduction/credit is allowed for this tax.",
+     "answer": "Primary adjustment: Rs 1.20 crore excess interest (3% on USD 45 lakh) added for AY 2023-24 and accepted by EVML.\n\nSecondary adjustment u/s 92CE applies because:\n(i) EVML has accepted the AO's primary adjustment;\n(ii) it relates to AY 2023-24 (AY 2017-18 onwards); and\n(iii) it exceeds Rs 1 crore.\n\nConsequences:\n1. EVML must repatriate the excess money of Rs 1.20 crore from its AE to India within 90 days of the AO's order (received 30.01.2025).\n2. If not repatriated: it is treated as an advance by EVML to the AE; interest at 6-month LIBOR as on 30.09.2024 + 3% (transaction in foreign currency) is added to income - from 30.01.2025 to 31.03.2025 in AY 2025-26, and every later year till repatriation.\n3. Alternatively, EVML may pay one-time additional income-tax u/s 92CE(2A) @18% + SC 12% + cess 4% = 20.9664% on Rs 1.20 crore = Rs 25,15,968; no interest is then imputed, and no deduction or credit is allowed for this tax.\n\nThe other additions of Rs 1.5 crore are not transfer-pricing adjustments and do not attract s.92CE.",
+     "icai": "Same conclusion as ICAI.",
+     "flag": null,
+     "trap": "Stopping at theory - examiners wanted the interest period (from 30.01.2025) and the Rs 25,15,968 additional tax.",
+     "minutes": 12
+    }
+   ]
+  },
+  {
+   "no": 3,
+   "title": "ABC Electronics Limited",
+   "industry": "Electrical appliances (ceiling fans)",
+   "story": "A fan maker weighs making blades in-house against buying them, expands capacity, imports a machine through a customs warehouse and digitises its accounts; its finance director asks about gifts and land sale plans of his UK-settled brother.",
+   "marks_by_subject": {
+    "IDT": 7,
+    "Audit": 5,
+    "Costing": 5,
+    "Law": 4,
+    "DT": 2,
+    "FR": 2
+   },
+   "difficulty": "Moderate",
+   "first15": "Pick if customs valuation is your strength: 3.7 is 7 marks of standard working; budget 20 minutes for 3.6 make-or-buy, where most students scored poorly.",
+   "questions": [
+    {
+     "q": "3.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "DT",
+     "also": null,
+     "chapter": "DT - Profits and Gains of Business or Profession (s.32 depreciation; s.115BAA)",
+     "topic": "Block depreciation, half rate under 180 days, no additional depreciation under 115BAA/115BAB",
+     "ask": "Depreciation (including additional depreciation) on plant and machinery for AY 2025-26 when the company has opted for s.115BAA/115BAB.",
+     "options": {
+      "a": "Rs 2,09,25,000",
+      "b": "Rs 2,44,95,000",
+      "c": "Rs 2,42,25,000",
+      "d": "Rs 2,51,25,000"
+     },
+     "clue": "'The company has opted for section 115BAA/115BAB'",
+     "chapter_clear": true,
+     "think": [
+      "Opted 115BAA/115BAB = no additional depreciation u/s 32(1)(iia)",
+      "DT SM -> PGBP -> depreciation; the 180-day test runs from the PUT-TO-USE date, not purchase",
+      "Rs 1.50 crore used from 30.09.2024 (183 days) -> 15%; Rs 1.20 crore used from 05.10.2024 (< 180 days) -> 7.5%",
+      "(12.60 + 1.50 - 0.75) crore x 15% + 1.20 crore x 7.5% = 2,00,25,000 + 9,00,000 = 2,09,25,000"
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - PGBP (s.32; s.115BAA conditions)",
+      "index_keywords": [
+       "depreciation",
+       "put to use for less than 180 days",
+       "additional depreciation",
+       "section 115BAA"
+      ]
+     },
+     "solve": "No additional depreciation under 115BAA/115BAB. IGST is excluded from cost (ITC available).\nWDV 12,60,00,000 + 1,50,00,000 (used 183 days) - 75,00,000 sale = 13,35,00,000 x 15% = 2,00,25,000\n1,20,00,000 (used from 05.10.2024, < 180 days) x 7.5% = 9,00,000\nTotal = 2,09,25,000",
+     "answer": "(a) Rs 2,09,25,000",
+     "icai": "(A)",
+     "flag": null,
+     "trap": "Testing 180 days from the purchase date, or adding additional depreciation despite the 115BAA option.",
+     "minutes": 3
+    },
+    {
+     "q": "3.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 19 Employee Benefits",
+     "topic": "PF trust with employer-guaranteed return = defined benefit plan",
+     "ask": "The company's private PF trust guarantees principal plus a specified return; the accountant treats it as defined contribution. Which statement is right?",
+     "options": {
+      "a": "Correctly a DC plan; expense only the contributions for the period",
+      "b": "Should be DB; guaranteed return accounted as periodic service cost, not as part of the DBO",
+      "c": "Should be DB; measure net defined benefit liability/asset considering the guaranteed return and the varying investment return",
+      "d": "Classified DC but accounted as DB; net liability = future value of obligation less fair value of plan assets"
+     },
+     "clue": "'responsible for providing principal amount along with a specified rate of return'",
+     "chapter_clear": true,
+     "think": [
+      "Employer guarantees a return = employer bears investment risk -> Ind AS 19 defined benefit",
+      "FR index -> Ind AS 19 -> 'defined contribution vs defined benefit' -> 'guarantees a specified return'",
+      "DB accounting: net defined benefit liability/asset = PV of obligation - FV of plan assets; trust returns vary",
+      "(d) uses FUTURE value - wrong; (b) keeps the guarantee out of the DBO - wrong -> (c)"
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 19 Employee Benefits",
+      "index_keywords": [
+       "defined benefit plan",
+       "guaranteed return",
+       "provident fund trust",
+       "net defined benefit liability"
+      ]
+     },
+     "solve": "In a DC plan the employer's duty ends with the contribution and employees bear investment risk. Here the company must make good principal plus a specified return through its own trust, so the risk stays with the employer -> defined benefit plan. Measure net defined benefit liability (asset) = present value of DBO (including the guaranteed interest) less fair value of trust assets, whose returns vary; any shortfall of trust earnings against the guaranteed rate is a liability.",
+     "answer": "(c) Should be a Defined Benefit Plan; compute net defined benefit liability/asset considering both the guaranteed return and the variable investment return.",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "(d): the obligation is measured at PRESENT value, not future value.",
+     "minutes": 3
+    },
+    {
+     "q": "3.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "Audit - SA 315 risk assessment in an IT environment (IT general controls; Digital Auditing & Assurance)",
+     "topic": "Controls to test before relying on a new IT system",
+     "ask": "Which controls should the auditor most likely test to assess technology risk in the new digital system? (i) encryption during transmission; (ii) physical access not specifically linked to system operation; (iii) employee training programmes; (iv) backup and recovery.",
+     "options": {
+      "a": "(i), (ii)",
+      "b": "(i), (iii)",
+      "c": "(i), (iv)",
+      "d": "(i), (iii), (iv)"
+     },
+     "clue": "'full digitization of both the Accounting and Production processes'",
+     "chapter_clear": true,
+     "think": [
+      "Relying on a new system = test IT controls that protect integrity and availability of its data",
+      "Audit SM -> SA 315 IT environment / IT general controls",
+      "Keep controls tied to the system's data: encryption (integrity in transit) and backup/recovery (no data loss)",
+      "(ii) says itself 'not specifically linked'; (iii) training is an HR practice, not a control you rely on -> (c)"
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - SA 315 (IT general controls)",
+      "index_keywords": [
+       "IT general controls",
+       "backup and recovery",
+       "data integrity",
+       "risks arising from IT"
+      ]
+     },
+     "solve": "Before relying on an automated system the auditor tests controls over data integrity and availability: (i) encryption protects confidentiality and integrity of data in transmission; (iv) backup and recovery prevents loss of data on failure. (ii) is general security not tied to system operation (the option says so). (iii) reduces user error but is not a system control the auditor tests for reliance.",
+     "answer": "(c) (i), (iv)",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Picking (d) because training sounds sensible - test controls, not HR practices.",
+     "minutes": 3
+    },
+    {
+     "q": "3.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Economic Laws - Foreign Contribution (Regulation) Act, 2010",
+     "topic": "Foreign contribution from a relative: Rs 10 lakh a year limit, Form FC-1 within 3 months; gift articles above Rs 1 lakh",
+     "ask": "Kushal got an iPhone (Rs 1.2 lakh) on 31.12.2024 and Rs 9 lakh on 31.01.2025 from his brother, a British national. Which statement is correct under FCRA?",
+     "options": {
+      "a": "No intimation - the iPhone is a personal gift from a relative and cash is within the threshold",
+      "b": "FC-1 within three months from 31.12.2024 for the iPhone, as its market value exceeds the threshold",
+      "c": "FC-1 within three months from 31.01.2025 for total foreign contribution from the brother, as it exceeds the threshold",
+      "d": "FC-1 within three months from 31.01.2025 for the cash only, not the iPhone"
+     },
+     "clue": "'brother Suresh, who is a British national... i-Phone worth Rs 1,20,000'",
+     "chapter_clear": true,
+     "think": [
+      "Gift from a foreign citizen = 'foreign source' -> FCRA, not FEMA",
+      "Law SM -> FCRA -> 'foreign contribution' (personal-gift article exception) + Rule 6 (receipts from relatives)",
+      "iPhone Rs 1.2 lakh is above the Rs 1 lakh personal-gift limit -> counts as FC; total from relative in FY 2024-25 = 1.2 + 9 = 10.2 lakh > Rs 10 lakh",
+      "Limit crossed with the 31.01.2025 receipt -> FC-1 within 3 months of that date -> (c); ICAI also accepts (b)"
+     ],
+     "look_up": {
+      "where": "ICAI SM Economic Laws - FCRA, 2010",
+      "index_keywords": [
+       "foreign contribution",
+       "relative",
+       "Form FC-1",
+       "gift for personal use"
+      ]
+     },
+     "solve": "Suresh, a citizen of a foreign country, is a foreign source. An article gifted for personal use is outside 'foreign contribution' only up to the notified market value (Rs 1 lakh); the Rs 1.2 lakh iPhone therefore counts. A person receiving FC above Rs 10 lakh in a FY from relatives must inform the Central Government in Form FC-1 within 3 months of receipt. FY 2024-25 total = 1,20,000 + 9,00,000 = 10,20,000 > 10 lakh, crossed on 31.01.2025 -> FC-1 within 3 months from 31.01.2025 for the total.",
+     "answer": "(c) FC-1 within three months from 31.01.2025 for the total foreign contribution from his brother (Rs 10.2 lakh exceeds Rs 10 lakh).",
+     "icai": "(B) or (C) - both accepted.",
+     "flag": "ICAI accepts (b) too; (c) is cleaner because FC-1 for relatives is triggered only when the year's total crosses Rs 10 lakh, which happens on 31.01.2025.",
+     "trap": "(a): forgetting that a gift article above Rs 1 lakh counts towards the Rs 10 lakh limit.",
+     "minutes": 3
+    },
+    {
+     "q": "3.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Economic Laws - FEMA, 1999 (NDI Rules 2019: immovable property of NRI/OCI; remittance of assets)",
+     "topic": "NRI/OCI may sell inherited agricultural land to a resident citizen, cannot buy agricultural land, can buy a flat, may remit up to USD 1 million",
+     "ask": "Which are correct for Suresh (UK-settled, inherited agricultural land)? (i) sell and buy another agricultural land; (ii) sell and buy a flat in Jaipur; (iii) sell and remit proceeds abroad within limits; (iv) sell but cannot remit.",
+     "options": {
+      "a": "(i), (iii)",
+      "b": "(ii), (iii)",
+      "c": "(i), (iv)",
+      "d": "(ii), (iv)"
+     },
+     "clue": "'agricultural land inherited from his parents... repatriate the entire proceeds out of India'",
+     "chapter_clear": true,
+     "think": [
+      "Person resident outside India + immovable property in India = FEMA NDI Rules (NRI/OCI) + remittance-of-assets rules",
+      "Law SM -> FEMA -> acquisition and transfer of immovable property by NRI/OCI",
+      "NRI/OCI may transfer agricultural land only to a resident Indian citizen and may NOT acquire agricultural land/plantation/farm house -> (i) out; a flat is allowed -> (ii) in",
+      "Proceeds of inherited property can be remitted up to USD 1 million per FY with documents -> (iii) in, (iv) out -> (b)"
+     ],
+     "look_up": {
+      "where": "ICAI SM Economic Laws - FEMA (NDI Rules; remittance of assets)",
+      "index_keywords": [
+       "NRI OCI immovable property",
+       "agricultural land",
+       "inherited property",
+       "USD 1 million remittance"
+      ]
+     },
+     "solve": "Suresh is a person resident outside India of Indian origin (NRI/OCI). Under the FEMA (Non-debt Instruments) Rules, 2019 he may acquire immovable property other than agricultural land/farm house/plantation, and may transfer agricultural land only to a person resident in India who is an Indian citizen. So he can sell the inherited land; he cannot buy another agricultural land ((i) false) but can buy a residential flat ((ii) true). Sale proceeds of inherited assets can be remitted abroad up to USD 1 million per FY on proof of inheritance ((iii) true, (iv) false).",
+     "answer": "(b) (ii), (iii)",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "(i): an NRI/OCI cannot acquire agricultural land even by reinvesting the proceeds of agricultural land.",
+     "minutes": 3
+    },
+    {
+     "q": "3.6",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCMPE - Decision Making (make or buy; sensitivity analysis)",
+     "topic": "Make vs buy with extra volume, price cut and marketing cost; indifference purchase price",
+     "ask": "Is making blades in-house (and selling 1.5 lakh more fans) more profitable than buying? How sensitive is the decision to the supplier's price?",
+     "options": null,
+     "clue": "'purchasing 12,00,000 sets of blades from an outside supplier at Rs 615 per set'",
+     "chapter_clear": true,
+     "think": [
+      "'Make or buy' + 'sensitivity to purchase price' = relevant-cost comparison + indifference price (examiners: most skipped both)",
+      "SCMPE -> Decision Making -> make or buy; use only VARIABLE overhead (65% of 180 = 117) -> make cost Rs 557",
+      "Blade sets per fan = 12/15 = 0.8; other VC per fan = 3,200 - 0.8 x 615 = 2,708; buy contribution 45.00 crore vs make 44.5860 crore",
+      "Indifference: 1,18,80,00,000 - 12,00,000X = 44,58,60,000 -> X = 618.45, only Rs 3.45 above 615 -> highly sensitive"
+     ],
+     "look_up": {
+      "where": "ICAI SCMPE - Decision Making (make or buy)",
+      "index_keywords": [
+       "make or buy",
+       "relevant cost",
+       "sensitivity analysis",
+       "indifference point"
+      ]
+     },
+     "solve": "Make cost/set = 380 + 60 + 65% x 180 = 557 (fixed Rs 63 not incremental). Blade sets per fan = 0.8. Other VC per fan = 3,200 - 492 = 2,708.\nBuy: 15,00,000 x (3,500 - 3,200) = 45,00,00,000.\nMake: SP 3,500 x 98% = 3,430; VC per fan = 2,708 + 0.8 x 557 + 4 = 3,157.60; contribution 272.40 x 16,50,000 = 44,94,60,000 - advertisement 36,00,000 = 44,58,60,000. Make is lower by 41,40,000.\nIncremental check: blade saving 12,00,000 x 58 = +6,96,00,000; price cut 15,00,000 x 70 = -10,50,00,000; extra marketing 15,00,000 x 4 = -60,00,000; extra 1,50,000 fans x 272.40 = +4,08,60,000; advertisement -36,00,000 -> net -41,40,000.\nIndifference: 15,00,000 x 3,500 - 12,00,000X - 15,00,000 x 2,708 = 44,58,60,000 -> X = 74,21,40,000 / 12,00,000 = 618.45.",
+     "answer": "Relevant make cost per blade set = DM 380 + DL 60 + variable OH 117 (65% of 180) = Rs 557 (fixed OH is not incremental).\nBlade sets per fan = 12,00,000 / 15,00,000 = 0.8; other VC per fan = 3,200 - (0.8 x 615) = Rs 2,708.\n\nA. Buy (present) | Rs\nSales 15,00,000 x 3,500 | 5,25,00,00,000\nBlades bought 12,00,000 x 615 | (73,80,00,000)\nOther VC 15,00,000 x 2,708 | (4,06,20,00,000)\nContribution | 45,00,00,000\n\nB. Make (proposed) | Rs\nSales 16,50,000 x 3,430 (2% lower) | 5,65,95,00,000\nBlades made 13,20,000 x 557 | (73,52,40,000)\nOther VC 16,50,000 x 2,708 | (4,46,82,00,000)\nExtra marketing 16,50,000 x 4 | (66,00,000)\nAdvertisement | (36,00,000)\nNet benefit | 44,58,60,000\n\nMaking is worse by Rs 41,40,000 -> continue buying blades.\n\nSensitivity: let supplier price = X. Buy benefit = 1,18,80,00,000 - 12,00,000X. Equate with 44,58,60,000 -> X = Rs 618.45.\nThe decision flips if the supplier charges more than Rs 618.45 - just Rs 3.45 (0.56%) above Rs 615. It is highly sensitive: lock a long-term price with the supplier and keep the make option (better quality, flexibility) ready if prices rise.",
+     "icai": "Same conclusion as ICAI (making loses Rs 41,40,000; indifference price Rs 618.45).",
+     "flag": null,
+     "trap": "Including fixed overhead (Rs 63) in the make cost, or applying the 2% price cut only to the 1.5 lakh extra fans.",
+     "minutes": 15
+    },
+    {
+     "q": "3.7",
+     "type": "Descriptive",
+     "marks": 7,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "Customs - Valuation (Customs Valuation Rules, 2007); Levy (s.14, s.15 dates); Warehousing",
+     "topic": "Assessable value of a warehoused import; exchange-rate date vs duty-rate date; SWS and IGST",
+     "ask": "Find the assessable value of the imported machine and the total customs duty and IGST payable.",
+     "options": null,
+     "clue": "'Bill of entry filed for warehousing of goods... Bill of entry presented for home consumption'",
+     "chapter_clear": true,
+     "think": [
+      "Import through a warehouse with four dates = two date rules: exchange rate on the into-bond BoE (s.14), duty rate on the ex-bond BoE (s.15(1)(b))",
+      "IDT SM -> Customs Valuation -> rule 10 additions; follow the SM illustration and replace figures",
+      "Add: transport to export port, licence fee as condition of sale, non-buying commission, freight, lighterage, insurance 1.125% of FOB; exclude unloading at the Indian port and warehouse charges",
+      "Rate Rs 82 (22.01.2025); BCD 15% (30.03.2025); SWS 10% of BCD; IGST 18% on AV + BCD + SWS"
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT (Customs) - Valuation; Levy of customs duty; Warehousing",
+      "index_keywords": [
+       "assessable value",
+       "rule 10 additions",
+       "rate of exchange",
+       "section 15 warehoused goods",
+       "lighterage"
+      ]
+     },
+     "solve": "USD 40,000 + 1,000 + 4,000 = 45,000 x 82 = 36,90,000; + commission 1,50,000 = FOB 38,40,000; insurance 1.125% = 43,200; freight 4,000 x 82 = 3,28,000; lighterage 28,800; unloading at Indian port and warehouse charges nil. AV = 42,40,000. BCD 15% = 6,36,000; SWS 10% = 63,600; IGST 18% x 49,39,600 = 8,89,128. Total = 15,88,728.",
+     "answer": "Assessable value | Amount\nCost of machine | USD 40,000\nAdd: transport to export port + loading on ship (part of FOB) | USD 1,000\nAdd: licence fee payable as a condition of sale (10% of 40,000) | USD 4,000\nTotal | USD 45,000\nIn Rs @ 82 (rate on date of presenting BoE for warehousing u/s 46 - 22.01.2025) | Rs 36,90,000\nAdd: commission to exporter's local agent (not buying commission) | Rs 1,50,000\nFOB value | Rs 38,40,000\nAdd: insurance @1.125% of FOB (actual not ascertainable) | Rs 43,200\nAdd: freight USD 4,000 x 82 | Rs 3,28,000\nAdd: lighterage at Indian port (part of cost of transport) | Rs 28,800\nUnloading and handling at Indian port (after arrival) | Nil\nWarehouse charges in India | Nil\nAssessable value | Rs 42,40,000\n\nDuty and tax | Amount\nBCD @15% (rate on date of ex-bond BoE for home consumption, 30.03.2025 - s.15(1)(b)) | Rs 6,36,000\nSWS @10% of BCD | Rs 63,600\nIGST @18% on Rs 49,39,600 (AV + BCD + SWS) | Rs 8,89,128\nTotal customs duty + IGST payable | Rs 15,88,728",
+     "icai": "Same as ICAI (AV Rs 42,40,000; total Rs 15,88,728).",
+     "flag": null,
+     "trap": "Using Rs 84/85 as the exchange rate or 25% BCD - exchange rate follows the warehousing BoE, duty rate follows the ex-bond BoE.",
+     "minutes": 21
+    },
+    {
+     "q": "3.8",
+     "type": "Descriptive",
+     "marks": 3,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "Audit - SA 315 risks arising from IT (Digital Auditing & Assurance)",
+     "topic": "Technology risks of digitising accounting",
+     "ask": "List the technological risks Mr Amit would have considered while digitising the accounting process.",
+     "options": null,
+     "clue": "'After carefully assessing the technological risks associated with the implementation of the new system'",
+     "chapter_clear": true,
+     "think": [
+      "'Technological risks' of digitised accounts = SA 315 list of risks from IT (examiners penalised virus types, job losses, the auditor's role)",
+      "Audit SM -> SA 315 / digital auditing -> 'risks arising from the use of IT'",
+      "3 marks = 8-10 crisp one-line risks, no essays",
+      "Tie one point to the case: accounting and production on one shared system"
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - SA 315 (risks from IT)",
+      "index_keywords": [
+       "risks arising from IT",
+       "unauthorised access",
+       "changes to master files",
+       "cybersecurity risk"
+      ]
+     },
+     "solve": "Write the SA 315 IT-risk list in your own words, linked to the integrated accounting-production system.",
+     "answer": "Technology risks Mr Amit would have assessed:\n1. The system processing data wrongly, or processing wrong data, or both.\n2. Unauthorised access that destroys or wrongly changes data, or records fake or unauthorised transactions - higher when accounts and production share one database.\n3. IT staff getting access beyond their duties - weak segregation of duties.\n4. Unauthorised or wrong changes to master-file data (rates, prices, vendor details).\n5. Unauthorised changes to systems or programs.\n6. Failure to make necessary changes to systems or programs.\n7. Inappropriate manual intervention or overrides.\n8. Loss of data or inability to access data when needed.\n9. Risks from third-party service providers.\n10. Cybersecurity risks such as hacking, ransomware and data leakage.",
+     "icai": "Same as ICAI.",
+     "flag": null,
+     "trap": "Writing about virus types, job losses or the auditor's role - out of scope, no marks.",
+     "minutes": 9
+    }
+   ]
+  },
+  {
+   "no": 4,
+   "title": "Latest Fashions Limited",
+   "industry": "Textiles and garments (listed)",
+   "story": "A Chennai listed textile group with 6 subsidiaries (2 abroad) demerges its loss-making men's garments segment. The case adds segment reporting, share valuation, GST ITC, a ransomware attack and a director's personal tax and FEMA queries.",
+   "marks_by_subject": {
+    "DT": 7,
+    "Audit": 7,
+    "IDT": 5,
+    "FR": 2,
+    "AFM": 2,
+    "Law": 2
+   },
+   "difficulty": "Moderate",
+   "first15": "Strong pick for DT/IDT students: 4.6 ITC (5), 4.2 and 4.3 are quick, and 4.8 rewards knowing the 23.07.2024 and 01.10.2024 changes; 4.1 has no correct option, so don't burn time on it.",
+   "questions": [
+    {
+     "q": "4.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 108 Operating Segments",
+     "topic": "75% external revenue test; major customer (10%) disclosure",
+     "ask": "Is Latest Fashions' segment reporting as per Ind AS 108?",
+     "options": {
+      "a": "Yes, but revenue from a single customer of Rs 1,200 crore or more is not disclosed",
+      "b": "Yes, but revenue from a single customer of Rs 800 crore or more is not disclosed",
+      "c": "No - revenue of Rs 6,400 crore or more not reported separately; single-customer Rs 800 crore disclosure missing",
+      "d": "No - revenue of Rs 6,000 crore or more not reported separately; single-customer Rs 800 crore disclosure missing"
+     },
+     "clue": "'Others 2,300... Besides this, no other information related to customers has been reported'",
+     "chapter_clear": true,
+     "think": [
+      "Segment table with a big 'Others' line = Ind AS 108 thresholds: the 10% tests and the 75% external-revenue test",
+      "FR index -> Ind AS 108 -> 'quantitative thresholds' / '75 per cent' / 'information about major customers'",
+      "Reported segments: 2,500 + 2,300 + 900 = 5,700 < 75% x 8,000 = 6,000 -> more segments needed (first half of (d) is right)",
+      "Major-customer disclosure (10% = Rs 800 crore) is needed only if such a customer exists - the case never says so -> no option fully right; in the hall tick (d) as closest and move on"
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 108 Operating Segments",
+      "index_keywords": [
+       "75% of entity's revenue",
+       "quantitative thresholds",
+       "reportable segment",
+       "major customers 10%"
+      ]
+     },
+     "solve": "Total external revenue 8,000; 75% = 6,000. Segments reported cover 5,700 (71.25%) -> more operating segments from 'Others' (e.g., female garments, customer-specific products) must be reported until 6,000 is reached. Male garments (revenue 900 >= 10% of 8,000; assets 200 >= 170) is rightly reportable despite its loss. Ind AS 108 requires disclosing revenue from any single external customer that is 10% or more of revenue (Rs 800 crore) - only if such a customer exists; the case gives no customer data. So the customer half of (d) is an assumption; no option is fully correct.",
+     "answer": "No option is fully correct. Segment reporting is NOT as per Ind AS 108: reported segments cover only Rs 5,700 crore, below 75% (Rs 6,000 crore) of external revenue. A major-customer disclosure would be needed only if one customer gives Rs 800 crore (10%) or more, which the case does not state. Closest option: (d).",
+     "icai": "No correct option (ICAI).",
+     "flag": "ICAI declared no correct option: (d)'s 75% part is right, but its customer part assumes a 10% customer the case never mentions.",
+     "trap": "Using 80% (Rs 6,400 crore) instead of 75%, or saying 'Yes' because each reported segment passes the 10% test.",
+     "minutes": 3
+    },
+    {
+     "q": "4.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "AFM - Security Valuation (dividend growth model)",
+     "topic": "g = b x r; P = D1 / (Ke - g)",
+     "ask": "Price per equity share using the constant dividend growth model.",
+     "options": {
+      "a": "Rs 60",
+      "b": "Rs 120",
+      "c": "Rs 100",
+      "d": "Rs 154.50"
+     },
+     "clue": "'book value was Rs 150... return on equity is 15%... retained 60%'",
+     "chapter_clear": true,
+     "think": [
+      "BV, ROE, retention and Ke given = Gordon growth with g = b x r",
+      "Known without the book - no lookup",
+      "EPS = 150 x 15% = 22.50; DPS = 40% x 22.50 = 9; g = 0.60 x 15% = 9%",
+      "P = 9 / (0.18 - 0.09) = Rs 100 -> (c)"
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - Security Valuation (equity shares)",
+      "index_keywords": [
+       "Gordon growth model",
+       "dividend growth",
+       "retention ratio",
+       "g = b x r"
+      ]
+     },
+     "solve": "EPS = BV 150 x ROE 15% = 22.50 (earnings on the current book value). Dividend = 22.50 x (1 - 0.60) = 9.00. g = b x r = 0.60 x 15% = 9%. P0 = D1 / (Ke - g) = 9 / (0.18 - 0.09) = Rs 100.",
+     "answer": "(c) Rs 100",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Growing the Rs 9 by another 9% (Rs 109, not an option) - Rs 9 is already the next dividend from current book value.",
+     "minutes": 3
+    },
+    {
+     "q": "4.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "DT",
+     "also": null,
+     "chapter": "DT - Capital Gains (s.47(vib) demerger; definition u/s 2(19AA))",
+     "topic": "Transfer in a demerger is not a transfer for the demerged company",
+     "ask": "Taxable capital gain for Latest Fashions on demerging the men's garments segment (net book value Rs 20 crore; Rs 50 crore paid in shares to its shareholders)?",
+     "options": {
+      "a": "Short-term capital gain Rs 25 crore",
+      "b": "Long-term capital gain Rs 19 crore",
+      "c": "Long-term capital gain Rs 24 crore",
+      "d": "NIL"
+     },
+     "clue": "'Necessary legal formalities were carried out... under the Income-tax Act, 1961'",
+     "chapter_clear": true,
+     "think": [
+      "Demerger to an Indian resulting company with shares issued to shareholders = s.47(vib); the CII is bait",
+      "DT SM -> Capital Gains -> transactions not regarded as transfer -> s.47(vib); s.2(19AA)",
+      "Shares issued by the resulting company to the demerged company's shareholders proportionately, formalities done -> valid demerger",
+      "Not a transfer for the demerged company -> capital gain NIL -> (d)"
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - Capital Gains (s.47 exemptions)",
+      "index_keywords": [
+       "demerger",
+       "section 47(vib)",
+       "demerged company",
+       "resulting company"
+      ]
+     },
+     "solve": "s.47(vib): transfer of a capital asset by the demerged company to the resulting company in a demerger is not a 'transfer' if the resulting company is Indian. Men's Fashion Ltd is an Indian company; it allotted shares to Latest Fashions' shareholders in proportion to their holdings; formalities under both laws are complete -> demerger u/s 2(19AA). Capital gain in Latest Fashions' hands = NIL. CII 280/363 and the Rs 5 crore goodwill are distractors.",
+     "answer": "(d) NIL",
+     "icai": "(D)",
+     "flag": null,
+     "trap": "Computing LTCG with CII 280/363 (50 - 20 x 363/280 = about 24, option c) - the CII is bait.",
+     "minutes": 3
+    },
+    {
+     "q": "4.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Economic Laws - FEMA, 1999 (s.3 dealings in foreign exchange; LRS)",
+     "topic": "Resident paying for the credit of a non-resident",
+     "ask": "Can Rohit (resident) pay insurance premiums in India on behalf of his NRI brother Mohit?",
+     "options": {
+      "a": "Not permitted",
+      "b": "Permitted since Mohit is his real brother",
+      "c": "Permitted as it is within the USD 2,50,000 a year limit",
+      "d": "Not permitted unless he gets Central Government permission"
+     },
+     "clue": "'Mohit requested his brother Rohit, a resident Indian, to make payment... on his behalf'",
+     "chapter_clear": true,
+     "think": [
+      "Resident paying for the credit of a non-resident = FEMA s.3(b) prohibition unless RBI permits",
+      "Law SM -> FEMA -> s.3 'dealing in foreign exchange'; LRS permitted purposes",
+      "No general permission lets a resident pay an NRI's premium on his behalf; the LRS limit (c) and 'relative' (b) do not override s.3",
+      "(d) names the wrong authority - permission under s.3 is the RBI's -> (a)"
+     ],
+     "look_up": {
+      "where": "ICAI SM Economic Laws - FEMA (s.3, LRS)",
+      "index_keywords": [
+       "section 3 FEMA",
+       "payment for the credit of person resident outside India",
+       "Liberalised Remittance Scheme",
+       "close relative"
+      ]
+     },
+     "solve": "s.3(b) FEMA: save as provided, or with RBI's general or special permission, no person shall make any payment to or for the credit of a person resident outside India in any manner. Paying Mohit's premium is a payment for his credit and no rule permits it, whatever the amount or relationship. Lawful route: Rohit may make a rupee gift to Mohit's NRO account (allowed to an NRI close relative under LRS) and Mohit pays the premium himself.",
+     "answer": "(a) Rohit is not permitted to make premium payment on behalf of his brother.",
+     "icai": "(A)",
+     "flag": null,
+     "trap": "(c): the LRS limit covers a resident's own permitted remittances; it does not allow payments on behalf of a non-resident.",
+     "minutes": 3
+    },
+    {
+     "q": "4.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "Audit - Digital Auditing & Assurance (cybersecurity risks)",
+     "topic": "Ransomware; control to identify such attacks",
+     "ask": "Which cyber attack happened and which control should be implemented to identify such risks?",
+     "options": {
+      "a": "Trojan; formal training to make teams aware of cybersecurity risks",
+      "b": "Ransomware; monitoring of firewall logs",
+      "c": "Ransomware; prioritise protection of information assets by sensitivity and business value, and periodically review systems connected to the network",
+      "d": "Ransomware; align cybersecurity and IT transformation with strategic objectives"
+     },
+     "clue": "'files were encrypted... demanded booty for decryption... paid in bitcoins'",
+     "chapter_clear": true,
+     "think": [
+      "Files encrypted + ransom in bitcoin = ransomware -> (a) out",
+      "Audit SM -> digital auditing -> cybersecurity risks and controls",
+      "The control must IDENTIFY (detect) the attack -> monitoring firewall logs flags malicious links and traffic",
+      "(c) and (d) are governance/protection practices, not detection -> (b)"
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - Digital Auditing & Assurance (cybersecurity)",
+      "index_keywords": [
+       "ransomware",
+       "cybersecurity risk",
+       "firewall logs",
+       "penetration testing"
+      ]
+     },
+     "solve": "Malicious email link -> files encrypted -> systems locked -> ransom demanded in bitcoin = ransomware. To identify such attacks the entity needs detective monitoring: firewall log reviews flag suspicious inbound links and outbound traffic to attacker servers. (c) and (d) are broader governance and asset-prioritisation steps, not procedures that identify the attack.",
+     "answer": "(b) Ransomware and monitoring of firewall logs.",
+     "icai": "(B)",
+     "flag": "(c) mirrors the 'Identify' function of cybersecurity frameworks, so it is arguable; ICAI's key reads 'identify' as detect.",
+     "trap": "Calling it a Trojan because it came through an email link - the ransom demand decides it.",
+     "minutes": 3
+    },
+    {
+     "q": "4.6",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "GST - Input Tax Credit (s.16, s.17(5))",
+     "topic": "Invoice condition, goods in lots, obligatory employee benefit, depreciation on tax, repairs not capitalised",
+     "ask": "ITC available for January 2025, with the reason for each item.",
+     "options": null,
+     "clue": "'out of 6 items, invoice for 1 item was missing'",
+     "chapter_clear": true,
+     "think": [
+      "Five-line ITC list = s.16 conditions + s.17(5) blocked credits - standard SM table",
+      "IDT SM -> Input Tax Credit -> eligibility (s.16(2), 16(3)) and blocked credits (s.17(5))",
+      "Line by line: missing invoice, lots, statutory travel benefit, depreciation on GST, repairs expensed",
+      "Total 80,000 + 1,10,000 + 70,000 = 2,60,000"
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - Input Tax Credit",
+      "index_keywords": [
+       "section 16(2)",
+       "goods received in lots",
+       "section 17(5) blocked credit",
+       "depreciation on tax component",
+       "to the extent of capitalisation"
+      ]
+     },
+     "solve": "(i) 90,000 - 10,000 (no invoice) = 80,000. (ii) Lots: ITC only on receipt of the last lot -> nil in January. (iii) Travel benefits to employees on vacation are blocked u/s 17(5)(b) but allowed where obligatory under law -> 1,10,000. (iv) Depreciation claimed on the GST component -> no ITC (s.16(3)) -> nil. (v) Factory repairs charged to P&L - repairs are blocked only to the extent capitalised -> 70,000. Total 2,60,000.",
+     "answer": "Item | ITC (Rs) | Reason\n(i) Capital goods | 80,000 | ITC needs a tax invoice (s.16(2)(a)); Rs 10,000 on the item without invoice is not allowed.\n(ii) Inputs in 5 lots, 3 received | Nil | Where goods under one invoice arrive in lots, ITC is taken on receipt of the last lot.\n(iii) Travel benefit to employees on vacation | 1,10,000 | Blocked u/s 17(5)(b), but allowed as the employer must provide it under law.\n(iv) Machinery - depreciation claimed on the GST | Nil | s.16(3): no ITC on the tax component on which depreciation is claimed.\n(v) Repairs to factory building charged to P&L | 70,000 | Repairs are blocked only to the extent capitalised (s.17(5)(c)/(d)); expensed here, so allowed.\nTotal ITC for January 2025 | 2,60,000 |",
+     "icai": "Same as ICAI (Rs 2,60,000).",
+     "flag": null,
+     "trap": "Blocking the repairs as 'construction of immovable property' - the block applies only to capitalised repairs.",
+     "minutes": 15
+    },
+    {
+     "q": "4.7",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "Audit - Group Audits (audit of consolidated financial statements); SA 706 Other Matter paragraph",
+     "topic": "Reference to other auditors and GAAP conversion in the CFS audit report",
+     "ask": "Where and what should the statutory auditor write about subsidiaries audited by other auditors (2 abroad under local GAAP)?",
+     "options": null,
+     "clue": "'financial information of 6 subsidiaries audited by other auditors'",
+     "chapter_clear": true,
+     "think": [
+      "Components audited by others in a CFS = Other Matter paragraph (SA 706) stating the magnitude",
+      "Audit SM -> Group audits / CFS -> 'reference to other auditors'; copy the illustrative OM format and replace figures",
+      "Cover: assets Rs 2,500 crore, revenue Rs 1,500 crore, net cash outflow Rs 15 crore; reliance on others' reports; foreign GAAP conversion audited by us; opinion not modified",
+      "Draft the paragraph - examiners cut marks for missing the conversion and GAAP points"
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - Group Audits / Audit of Consolidated Financial Statements; SA 706",
+      "index_keywords": [
+       "other matter paragraph",
+       "consolidated financial statements",
+       "other auditors",
+       "conversion adjustments"
+      ]
+     },
+     "solve": "When the parent's auditor does not audit all components and refers to other auditors, the CFS report states the magnitude of the portion audited by others (amounts or % of total assets, revenues and cash flows) in an Other Matter paragraph (SA 706), and says the opinion is not modified for this reliance. For foreign subsidiaries under local GAAP, state that management converted them to Indian GAAP and that the conversion adjustments were audited by the parent's auditor.",
+     "answer": "Where: a separate 'Other Matter' paragraph (SA 706) in the independent auditor's report on the consolidated financial statements.\n\nWhat: magnitude of components audited by others (total assets, total revenues, net cash flows), reliance on their reports, GAAP conversion of the foreign subsidiaries, and that the opinion is not modified.\n\nDraft - Other Matter:\n(a) We did not audit the financial statements and other financial information of six subsidiaries, whose financial statements reflect total assets of Rs 2,500 crore as at 31 March 2025, total revenues of Rs 1,500 crore and net cash outflows of Rs 15 crore for the year then ended. These have been audited by other auditors, whose reports have been furnished to us by the Management. Our opinion on the consolidated financial statements, so far as it relates to the amounts and disclosures of these subsidiaries, and our report u/s 143(3) so far as it relates to them, is based solely on the reports of the other auditors.\n(b) Two of these subsidiaries are located outside India; their financial statements were prepared under accounting principles generally accepted in their countries and audited under auditing standards applicable there. The Holding Company's management has converted them to accounting principles generally accepted in India. We have audited these conversion adjustments. Our opinion, so far as it relates to these subsidiaries, is based on the other auditors' reports and the conversion adjustments audited by us.\n(c) Our opinion on the consolidated financial statements, and our report on Other Legal and Regulatory Requirements, is not modified in respect of these matters.",
+     "icai": "Same as ICAI.",
+     "flag": null,
+     "trap": "Using an Emphasis of Matter paragraph, or leaving out the GAAP conversion and 'opinion not modified' lines.",
+     "minutes": 15
+    },
+    {
+     "q": "4.8",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "DT",
+     "also": null,
+     "chapter": "DT - Capital Gains (s.2(14), s.54B, s.112, s.46A) and Income from Other Sources (buyback as dividend u/s 2(22)(f))",
+     "topic": "LTCG without indexation after 23.07.2024; s.54B; buyback after 01.10.2024 = dividend + capital loss",
+     "ask": "Compute Rohit's capital gain on the two agricultural land sales and the tax effect of the Rs 9 lakh received on buyback.",
+     "options": null,
+     "clue": "'within the city limits of Chandigarh... remote village having population of 9,000 people'",
+     "chapter_clear": true,
+     "think": [
+      "Two dates decide everything: transfer on/after 23.07.2024 (no indexation, 12.5%) and buyback on/after 01.10.2024 (dividend + capital loss)",
+      "DT SM -> Capital Gains (s.2(14) rural land, s.54B, s.112, s.46A) and IFOS (s.2(22)(f))",
+      "Urban land: 1,90,00,000 - 36,60,000 = 1,53,40,000; s.54B for rural land bought 31.08.2024 = 80 lakh -> LTCG 73,40,000; rural land later sold is not a capital asset -> no gain, nothing to claw back",
+      "'Received' Rs 9 lakh = net of 10% TDS -> dividend Rs 10 lakh, no deduction; consideration nil -> LTCL Rs 1,50,000 set off against LTCG"
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - Capital Gains; Income from Other Sources",
+      "index_keywords": [
+       "section 54B",
+       "rural agricultural land",
+       "buy-back of shares",
+       "section 2(22)(f)",
+       "section 46A"
+      ]
+     },
+     "solve": "Urban agricultural land is a capital asset; held over 24 months -> LTCG. Transferred 20.08.2024 (on/after 23.07.2024) -> no indexation: 1,90,00,000 - 36,60,000 = 1,53,40,000. s.54B (assuming agricultural use by Rohit/parents for 2 years before transfer): new agricultural land bought within 2 years for 80,00,000 -> LTCG 73,40,000. New land: population 9,000 and 30 km from the nearest town -> rural, not a capital asset; its sale for Rs 90 lakh gives no capital gain, so the s.54B withdrawal has nothing to reduce. Alternative view (accepted): new land not held when the return is filed -> no s.54B -> LTCG 1,53,40,000. Buyback 01.12.2024: deemed dividend u/s 2(22)(f) = 9,00,000 / 90% = 10,00,000 under IFOS, no deduction; s.46A consideration nil -> LTCL = 6,000 x 25 = 1,50,000, set off against the LTCG. Grandfathering: indexed cost 36,60,000 x 363/109 = 1,21,88,807; indexed LTCG 68,11,193 is fully covered by the Rs 80 lakh s.54B investment.",
+     "answer": "A. Urban agricultural land (capital asset; held over 24 months -> long-term) | Rs\nSale consideration (20.08.2024) | 1,90,00,000\nLess: cost - no indexation (transfer on/after 23.07.2024) | (36,60,000)\nLTCG before exemption | 1,53,40,000\nLess: s.54B - rural agricultural land bought 31.08.2024, within 2 years (assuming agricultural use for 2 years before sale) | (80,00,000)\nLTCG | 73,40,000\n(Alternative view: new land sold in the same year, so no s.54B -> LTCG Rs 1,53,40,000.)\n\nB. Rural agricultural land sold 28.02.2025 for Rs 90,00,000\nVillage population 9,000 and nearest town 30 km away -> not a capital asset u/s 2(14). No capital gain; the s.54B withdrawal (cost reduced by the exempted gain on sale within 3 years) has no effect since no capital gain arises.\n\nC. Buyback by X Ltd (01.12.2024)\n- Buyback on/after 01.10.2024: the amount paid is deemed dividend u/s 2(22)(f), taxed under Income from Other Sources; no deduction for any expense.\n- Rs 9,00,000 is the amount received after 10% TDS -> dividend = 9,00,000 / 90% = Rs 10,00,000; TDS Rs 1,00,000 is creditable.\n- s.46A: consideration deemed nil -> long-term capital loss = cost 6,000 x Rs 25 = Rs 1,50,000.\n- This LTCL is set off against the LTCG on land (73,40,000 - 1,50,000 = Rs 71,90,000), taxable @12.5% u/s 112.\n\nNote: Rohit is a resident individual and bought the land before 23.07.2024, so his tax on it cannot exceed the old-law tax (20% with indexation): indexed cost 36,60,000 x 363/109 = Rs 1,21,88,807; indexed LTCG Rs 68,11,193 is fully covered by the Rs 80 lakh s.54B investment, so the old-law limb gives nil tax on this gain.",
+     "icai": "Same as ICAI (LTCG Rs 73,40,000, or Rs 1,53,40,000 on the alternative view; dividend Rs 10 lakh; LTCL Rs 1.5 lakh set off); ICAI does not apply the s.112 grandfathering comparison.",
+     "flag": "ICAI skips the s.112 grandfathering limb (resident individual, land bought before 23.07.2024: 20% with indexation) that the given CII enables - it makes the tax on the land gain nil here.",
+     "trap": "Indexing the cost in the main capital-gain working, or not grossing up the Rs 9 lakh 'received' for TDS (examiners flagged this).",
+     "minutes": 15
+    }
+   ]
+  },
+  {
+   "no": 5,
+   "title": "Surgical Equipments Limited",
+   "industry": "Medical and surgical instruments manufacturing",
+   "story": "A Delhi maker of surgical instruments buys Medicines Ltd with a bank loan, ranks products on a machine bottleneck, plans an ODI in UK financial services and faces a hostile bid from HVB; the MD's wife trades shares.",
+   "marks_by_subject": {
+    "AFM": 7,
+    "IDT": 5,
+    "FR": 4,
+    "Law": 3,
+    "Costing": 4,
+    "DT": 2
+   },
+   "difficulty": "Easy",
+   "first15": "Pick it first: 5.8 takeover defences (5) is writable without the book, 5.1-5.3 are 2-minute numericals, and 5.7 is two direct provisions.",
+   "questions": [
+    {
+     "q": "5.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCMPE - Theory of Constraints / Throughput Accounting",
+     "topic": "Rank by throughput per bottleneck minute",
+     "ask": "Rank products X, Y, Z by the rate at which they make money on the shared machines.",
+     "options": {
+      "a": "1 Y, 2 Z, 3 X",
+      "b": "1 Z, 2 X, 3 Y",
+      "c": "1 X, 2 Y, 3 Z",
+      "d": "1 X, 2 Z, 3 Y"
+     },
+     "clue": "'rank the products based on the rate at which company is making money'",
+     "chapter_clear": true,
+     "think": [
+      "'Rate of making money' + 'bottleneck' = throughput per minute of the constraint (TOC)",
+      "SCMPE -> throughput accounting ratio -> rank by return per bottleneck minute",
+      "Throughput = SP - material & variable cost: X 20, Y 20, Z 30; per minute: X 1.00, Y 0.67, Z 0.75",
+      "Fixed cost per unit and factory cost do not change the order -> X, Z, Y -> (d)"
+     ],
+     "look_up": {
+      "where": "ICAI SCMPE - Theory of Constraints / Throughput Accounting",
+      "index_keywords": [
+       "throughput accounting ratio",
+       "return per bottleneck minute",
+       "bottleneck",
+       "theory of constraints"
+      ]
+     },
+     "solve": "Throughput per unit: X 50 - 30 = 20; Y 60 - 40 = 20; Z 80 - 50 = 30. Per bottleneck minute: X 20/20 = 1.00; Y 20/30 = 0.67; Z 30/40 = 0.75. TA ratio (/ factory cost 0.50 a minute): X 2.00, Z 1.50, Y 1.33. Rank X > Z > Y.",
+     "answer": "(d) Rank 1 - Product X, Rank 2 - Product Z, Rank 3 - Product Y",
+     "icai": "(D)",
+     "flag": null,
+     "trap": "Ranking by throughput per unit (Z first) instead of per bottleneck minute.",
+     "minutes": 3
+    },
+    {
+     "q": "5.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "AFM - Mergers, Acquisitions and Corporate Restructuring",
+     "topic": "Post-merger EPS x PE x shares = market capitalisation",
+     "ask": "Total market capitalisation of Surgical Equipments after merging Medicines Ltd, assuming its PE of 14 continues.",
+     "options": {
+      "a": "Rs 601.44 lakh",
+      "b": "Rs 316.96 lakh",
+      "c": "Rs 420.54 lakh",
+      "d": "Rs 456.96 lakh"
+     },
+     "clue": "'shares will be issued on one-to-one basis... Assume its PE ratio would be the same'",
+     "chapter_clear": true,
+     "think": [
+      "Merger + PE given = combined PAT x PE (or post-merger EPS x PE x shares)",
+      "Known without the book; take tax at 25% first",
+      "PAT: 25,00,000 x 0.75 = 18,75,000; 18,50,000 x 0.75 = 13,87,500; total 32,62,500; shares 8 + 4 = 12 lakh",
+      "EPS 2.72 x 14 = 38.08 x 12 lakh = 456.96 lakh (unrounded 456.75) -> (d)"
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - Mergers, Acquisitions and Corporate Restructuring",
+      "index_keywords": [
+       "post-merger EPS",
+       "market value after merger",
+       "PE ratio",
+       "exchange ratio"
+      ]
+     },
+     "solve": "Combined PAT = (25,00,000 + 18,50,000) x 75% = 32,62,500. Shares after merger = 8,00,000 + 4,00,000 (1:1) = 12,00,000. EPS = 2.71875 (about 2.72). MPS = 2.72 x 14 = 38.08. Market capitalisation = 38.08 x 12,00,000 = Rs 4,56,96,000 = Rs 456.96 lakh (unrounded: 32,62,500 x 14 = Rs 456.75 lakh).",
+     "answer": "(d) Rs 456.96 lakh",
+     "icai": "(D)",
+     "flag": "Exact value is Rs 456.75 lakh; the key's 456.96 comes from rounding EPS to Rs 2.72 - pick the nearest option.",
+     "trap": "Using EBT instead of PAT, or applying Medicines' PE of 10.",
+     "minutes": 3
+    },
+    {
+     "q": "5.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "DT",
+     "also": null,
+     "chapter": "DT - Profits and Gains of Business or Profession (s.44AD; s.44AB tax audit)",
+     "topic": "Presumptive turnover limit; Rs 10 crore audit limit when cash is within 5%",
+     "ask": "Which is correct for Kavita (share trader, sales Rs 8.90 crore, all receipts online, staff and consultants paid in cash) for AY 2025-26?",
+     "options": {
+      "a": "Admit income at 8% u/s 44AD",
+      "b": "Admit loss as per books; no audit u/s 44AB is required",
+      "c": "Admit income as per books; audit u/s 44AB is mandatory",
+      "d": "Admit income at 6% u/s 44AD"
+     },
+     "clue": "'total purchase of shares was Rs 8.80 crores and total sales was Rs 8.90 crores'",
+     "chapter_clear": true,
+     "think": [
+      "Turnover Rs 8.90 crore = above the 44AD limit (Rs 2 crore / Rs 3 crore) -> no presumptive income; (a), (d) out",
+      "DT SM -> PGBP -> s.44AB(a) proviso: audit limit Rs 10 crore if cash receipts and cash payments are each within 5%",
+      "Books: 8.90 - (0.20 + 8.80 - 0.10) = nil gross profit; less salary 4.50 lakh and consultants 0.80 lakh -> loss Rs 5.30 lakh",
+      "Cash payments 5.30 lakh of 8.85 crore = 0.6%, receipts all online -> limit Rs 10 crore -> no audit -> (b)"
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - PGBP (s.44AD, s.44AB)",
+      "index_keywords": [
+       "section 44AB",
+       "Rs 10 crore",
+       "cash receipts 5%",
+       "section 44AD turnover limit"
+      ]
+     },
+     "solve": "Trading result: Sales 8,90,00,000 - (Opening 20,00,000 + Purchases 8,80,00,000 - Closing 10,00,000) = nil gross profit; less salary 4,50,000 and consultancy 80,000 -> loss Rs 5,30,000. s.44AD not available - turnover above Rs 3 crore. s.44AB(a): limit is Rs 10 crore where cash receipts <= 5% of total receipts and cash payments <= 5% of total payments; receipts all online, cash payments 5,30,000 of 8,85,30,000 = 0.6%. Turnover 8.90 crore < 10 crore -> no audit; s.44AB(e) not triggered since 44AD does not apply.",
+     "answer": "(b) Admit loss as per books of account; no audit u/s 44AB is required.",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Applying the Rs 1 crore audit limit and missing the Rs 10 crore limit for near-cashless businesses.",
+     "minutes": 3
+    },
+    {
+     "q": "5.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 1 Presentation of Financial Statements",
+     "topic": "Additional comparative information; covenant breach makes the loan current",
+     "ask": "Can the company present an extra FY 2022-23 P&L, and is the non-current classification of the term loan right?",
+     "options": {
+      "a": "Cannot present FY 2022-23 information; loan should be current",
+      "b": "Can present FY 2022-23 information only in notes; classification of loan is correct",
+      "c": "Can present FY 2022-23 information if Ind AS-compliant, without related notes; loan should be current",
+      "d": "Can present FY 2022-23 information if Ind AS-compliant, along with related notes; loan should be current"
+     },
+     "clue": "'condition... was not fulfilled... no waiver has been given by the banker'",
+     "chapter_clear": true,
+     "think": [
+      "Two issues, both in Ind AS 1: extra comparative period + breach of a loan condition",
+      "FR index -> Ind AS 1 -> 'additional comparative information' and 'breach of a material provision of a long-term loan arrangement'",
+      "Extra comparatives allowed if Ind AS-compliant, WITH related notes -> (d) over (c)",
+      "Breach at year end, no waiver even before approval -> payable on demand -> current -> (d)"
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 1 Presentation of Financial Statements",
+      "index_keywords": [
+       "additional comparative information",
+       "breach of loan covenant",
+       "current liability",
+       "payable on demand"
+      ]
+     },
+     "solve": "Ind AS 1: an entity may present comparative information beyond the minimum, if prepared under Ind AS; it may be one or more statements, but related note information must be given for them. A breach of a loan condition on or before the reporting date makes the loan payable on demand -> current. Under Ind AS 1 it can stay non-current only if the lender agrees, after the reporting date but before approval of the FS, not to demand payment - no waiver here, so current.",
+     "answer": "(d) Can present FY 2022-23 information if prepared under Ind AS along with related notes; the term loan should be classified as current.",
+     "icai": "(D)",
+     "flag": null,
+     "trap": "(c): extra comparative statements must carry their related notes.",
+     "minutes": 3
+    },
+    {
+     "q": "5.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": "Audit",
+     "chapter": "Ind AS 16 Property, Plant and Equipment (derecognition); IFCoFR",
+     "topic": "Gain on disposal of PPE goes to profit or loss",
+     "ask": "Which are true for machine 'Treble', whose disposal gain was put in OCI? (i) gain correctly recorded; (ii) apply cost or revaluation model to calculate the gain; (iii) gain should be in P&L; (iv) no IFCoFR needed for assets under disposal.",
+     "options": {
+      "a": "(i), (ii) and (iv)",
+      "b": "(i) and (iv)",
+      "c": "Only (iii)",
+      "d": "(ii), (iii) and (iv)"
+     },
+     "clue": "'Gain arising on disposal has been included in Other Comprehensive Income'",
+     "chapter_clear": true,
+     "think": [
+      "Disposal gain in OCI = Ind AS 16 derecognition error",
+      "FR index -> Ind AS 16 -> 'derecognition' -> gain/loss in profit or loss (not revenue)",
+      "Gain = net proceeds - carrying amount; the cost/revaluation choice is about subsequent measurement, not this calculation -> (ii) false",
+      "IFCoFR covers disposals too -> (iv) false -> only (iii)"
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 16 (derecognition); Audit - IFCoFR",
+      "index_keywords": [
+       "derecognition of PPE",
+       "gain on disposal",
+       "profit or loss",
+       "internal financial controls over financial reporting"
+      ]
+     },
+     "solve": "Ind AS 16: gain or loss on derecognition = net disposal proceeds - carrying amount, recognised in profit or loss (not as revenue). OCI is wrong -> (i) false, (iii) true. The gain is computed on the carrying amount whatever the model -> (ii) false. IFCoFR must cover asset disposals too (authorisation, recording) -> (iv) false.",
+     "answer": "(c) Only (iii)",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Thinking a revalued asset's disposal gain goes through OCI - only the revaluation surplus moves directly to retained earnings; the gain still hits P&L.",
+     "minutes": 3
+    },
+    {
+     "q": "5.6(i)",
+     "type": "Descriptive",
+     "marks": 3,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Economic Laws - FEMA: Overseas Investment Rules, 2022 (Schedule I - ODI by an Indian entity)",
+     "topic": "ODI by a non-financial Indian entity in a foreign financial-services entity; 400% of net worth limit",
+     "ask": "Explain the FEMA rules for the proposed ODI in a UK financial-services activity: how it can invest and the limits linked to its profits.",
+     "options": null,
+     "clue": "'Overseas Direct Investment (ODI) in financial services activity in UK'",
+     "chapter_clear": true,
+     "think": [
+      "ODI + 'financial services' = OI Rules 2022, Schedule I - special condition for an Indian entity NOT in financial services",
+      "Law SM -> FEMA -> Overseas Investment -> Schedule I (modes, financial-services condition, financial commitment limit)",
+      "Surgical is not in financial services in India -> needs net profits in the preceding 3 FYs; no banking/insurance",
+      "Limit: total financial commitment <= 400% of net worth per last audited balance sheet (paid-up alone is Rs 40 crore -> at least Rs 160 crore)"
+     ],
+     "look_up": {
+      "where": "ICAI SM Economic Laws - FEMA (Overseas Investment)",
+      "index_keywords": [
+       "overseas direct investment",
+       "Schedule I",
+       "financial services activity",
+       "400 per cent of net worth"
+      ]
+     },
+     "solve": "OI Rules 2022, Schedule I: an Indian entity may make ODI in equity capital for bona fide business by subscription as part of the MoA or purchase of equity (listed/unlisted), acquisition through bidding/tender, or rights/bonus shares. An Indian entity not engaged in financial services in India may invest in a foreign entity engaged (directly or indirectly) in financial services, except banking or insurance, only if it has posted net profits in the preceding three FYs. Total financial commitment in all foreign entities <= 400% of net worth as per the last audited balance sheet, or as RBI directs.",
+     "answer": "Law: FEMA - Overseas Investment Rules, 2022, Schedule I (ODI by an Indian entity).\n1. Mode: ODI in equity capital for bona fide business - subscription as part of the MoA or purchase of equity (listed/unlisted), acquisition through bidding/tender, or rights/bonus shares.\n2. Financial-services condition: Surgical Equipments is not engaged in financial services in India; it may invest in a UK entity engaged in financial services (other than banking or insurance) only if it has posted net profits in each of the preceding three financial years.\n3. Limit: total financial commitment in all foreign entities together must not exceed 400% of its net worth as per the last audited balance sheet (with paid-up capital of Rs 40 crore, at least Rs 160 crore), or as directed by RBI.\nConclusion: The UK ODI is permitted if the 3-year profit test and the 400% limit are met.",
+     "icai": "Same as ICAI.",
+     "flag": null,
+     "trap": "Writing the conditions for Indian entities that ARE in financial services (regulator approvals etc.) - examiners marked that wrong here.",
+     "minutes": 9
+    },
+    {
+     "q": "5.6(ii)",
+     "type": "Descriptive",
+     "marks": 2,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCMPE (SPOM Set B) Ch 1 - Business Model (SM 1.24) and Business Model Canvas (1.25)",
+     "topic": "Meaning of business model and its components",
+     "ask": "Define a business model and state the components of the Christensen & Kagermann model for the UK venture.",
+     "options": null,
+     "clue": "'implement a business model as suggested by Christensen & Kaggerman'",
+     "chapter_clear": false,
+     "think": [
+      "Named authors on business models -> Costing (SPOM Set B) Ch 1, not AFM",
+      "Unsure of the chapter -> A-Z index -> 'business model' -> Margretta (make + sell) and Johnson, Christensen & Kagermann (2008)",
+      "Components: customer value proposition, profit formula, key resources, key processes",
+      "Apply each to a UK financial-services venture (examiners marked down generic lists)"
+     ],
+     "look_up": {
+      "where": "ICAI SM SPOM Set B (SCMPE) - Ch 1, Business Model (1.24)",
+      "index_keywords": [
+       "business model",
+       "customer value proposition",
+       "profit formula",
+       "key resources and processes"
+      ]
+     },
+     "solve": "Business model = how a business creates and delivers value to customers and makes money from it. Margretta: making something + selling something. Johnson, Christensen & Kagermann (2008) add the value proposition: customer value proposition, profit formula, key resources and processes. Apply to the UK venture.",
+     "answer": "Business model: how an organisation works and makes money - how it creates value for customers and captures value for itself.\n\nJohnson, Christensen & Kagermann (2008) components, applied to the UK financial-services ODI:\n1. Customer value proposition - e.g., affordable, quick finance for healthcare SMEs and clinics buying medical equipment.\n2. Profit formula - interest income and service fees, against a lean cost structure and controlled credit losses.\n3. Key resources - capital, a digital lending platform, skilled credit and compliance staff, and the parent's knowledge of the medical market.\n4. Key processes - credit appraisal and risk profiling, collections, and UK regulatory compliance.",
+     "icai": "Same as ICAI.",
+     "flag": null,
+     "trap": "Giving only Margretta's two components - the case names Christensen & Kagermann.",
+     "minutes": 6
+    },
+    {
+     "q": "5.7",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "GST - E-way Bill (rule 138); Accounts and Records (s.36)",
+     "topic": "E-way bill for movement other than supply; retention 72 months or 1 year after appeal",
+     "ask": "Is an e-way bill needed for Rs 3 lakh of warranty replacement parts sent from Delhi to Mumbai? Till when must FY 2018-19 records be kept, with an appeal pending?",
+     "options": null,
+     "clue": "'since the movement of goods is caused due to reasons other than supply'",
+     "chapter_clear": true,
+     "think": [
+      "Management's own words 'reasons other than supply' are the trap - rule 138(1) covers that too",
+      "IDT SM -> E-way Bill (rule 138) and Accounts and Records (s.36 retention)",
+      "Consignment Rs 3 lakh > Rs 50,000, inter-State -> e-way bill required (goods move on a delivery challan, no invoice)",
+      "Retention: 72 months from the due date of the FY 2018-19 annual return (31.12.2019 -> 31.12.2025; extended 31.12.2020 -> 31.12.2026) or 1 year after the appeal is disposed of, whichever is later"
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - E-way Bill; Accounts and Records",
+      "index_keywords": [
+       "rule 138",
+       "reasons other than supply",
+       "consignment value Rs 50,000",
+       "section 36 retention",
+       "party to an appeal"
+      ]
+     },
+     "solve": "Rule 138(1): an e-way bill must be generated before moving goods of consignment value above Rs 50,000 (i) in relation to a supply, (ii) for reasons other than supply, or (iii) due to inward supply from an unregistered person. Free warranty replacement is not a supply, but the movement is for reasons other than supply and the value is Rs 3 lakh -> e-way bill mandatory; goods move under a delivery challan. s.36: keep books till 72 months from the due date of the annual return for the year; a party to an appeal keeps records on its subject matter till 1 year after final disposal, or the 72 months, whichever is later. FY 2018-19 annual return due 31.12.2019 (extended to 31.12.2020) -> 31.12.2025 (or 31.12.2026).",
+     "answer": "E-way bill:\n- Replacement of parts under warranty without consideration is not a supply.\n- But rule 138(1) of the CGST Rules requires an e-way bill for movement of goods of consignment value above Rs 50,000 even for reasons other than supply.\n- Value Rs 3,00,000 > Rs 50,000 (inter-State, Delhi to Mumbai) -> e-way bill must be generated; goods move with a delivery challan. Management's view is wrong.\n\nRetention of FY 2018-19 records (s.36, CGST Act):\n- General rule: till the expiry of 72 months from the due date of the annual return for the year. Due date for FY 2018-19 = 31.12.2019 (extended to 31.12.2020) -> keep till 31.12.2025 (or 31.12.2026 on the extended date).\n- Party to an appeal: records relating to the subject matter of the appeal must be kept for 1 year after its final disposal or the above period, whichever is later.\n- The appeal is pending, so the records must be kept till 31.12.2025 / 31.12.2026 or 1 year after the appeal is finally decided, whichever is later.",
+     "icai": "Same conclusion as ICAI.",
+     "flag": null,
+     "trap": "Accepting management's 'not a supply, so no e-way bill' - rule 138 expressly covers movement for reasons other than supply.",
+     "minutes": 15
+    },
+    {
+     "q": "5.8",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "AFM - Mergers, Acquisitions and Corporate Restructuring (defence against hostile takeover)",
+     "topic": "Takeover defence tactics",
+     "ask": "As strategic consultant, suggest measures to defend against HVB's hostile takeover.",
+     "options": null,
+     "clue": "'HVB... approached the shareholders of Surgical Equipments Limited through a public announcement'",
+     "chapter_clear": true,
+     "think": [
+      "Board rejected, bidder went straight to shareholders = hostile takeover -> defence tactics",
+      "Known without the book (if needed: AFM M&A chapter -> 'defending a company in a takeover bid')",
+      "Each tactic = name + one line on how it stops HVB (examiners marked down bare headings)",
+      "Add a case line: HVB built stakes through many non-individual holders - check takeover-regulation disclosures/open-offer triggers"
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - Mergers, Acquisitions and Corporate Restructuring",
+      "index_keywords": [
+       "hostile takeover",
+       "takeover defence",
+       "poison pill",
+       "white knight",
+       "pac-man defence"
+      ]
+     },
+     "solve": "List the defence tactics with a line of explanation each and fit them to the HVB bid; add the regulatory check on HVB's creeping stake.",
+     "answer": "Measures to defend against HVB's hostile bid:\n1. Divestiture - spin off some businesses into a separate subsidiary so the company becomes less attractive to HVB.\n2. Crown jewels - sell or hive off the most valuable assets or divisions HVB is really after (not allowed in some countries once a bid is known).\n3. Poison pill - make the company unattractive, e.g., issue convertible debentures to existing shareholders that convert when a takeover threat arises, diluting HVB's voting power.\n4. Poison put - issue bonds that holders can encash at a premium on a takeover; the cash drain deters the bidder.\n5. Greenmail - buy back HVB's shares at a premium in return for dropping the bid.\n6. White knight - invite a friendly acquirer to buy the company on better terms and keep management.\n7. White squire - sell a significant block to a friendly party with no intention to take over, blocking HVB's control.\n8. Golden parachutes - large compensation to managers ousted after a takeover, raising HVB's cost.\n9. Pac-man defence - make a counter-bid for HVB itself, forcing it to defend and withdraw.\nCase-specific: HVB has built stakes through many non-individual shareholders - if the company is listed, check whether HVB crossed SEBI takeover-code disclosure or open-offer thresholds without complying; any breach is a legal defence.",
+     "icai": "Same as ICAI (plus a case-specific regulatory point).",
+     "flag": null,
+     "trap": "Listing tactic names without a one-line explanation each - examiners marked these down.",
+     "minutes": 15
+    }
+   ]
+  }
+ ]
+}

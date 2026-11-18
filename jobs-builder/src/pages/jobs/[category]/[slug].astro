@@ -44,6 +44,12 @@ export async function getStaticPaths() {
       .order('Created_At', { ascending: false })
       .limit(FETCH_LIMIT);
 
+    // MSC's own exclusive articleship cards (applications collected by MSC) get no public job page,
+    // so Google for Jobs never lists them as postings by the named firm.
+    if (tableName === 'Articleship Jobs') {
+      query = query.or('hirer_email.is.null,hirer_email.neq.recruit@mystudentclub.com');
+    }
+
     // If we have a sync state for this table, only fetch newer jobs
     if (!isFirstRun && syncState[tableName]) {
       query = query.gt('Created_At', syncState[tableName]);
@@ -161,6 +167,8 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-itunes-app" content="app-id=6756720522">
+    <script is:inline src="/scripts/app-banner.js?v=20261110" defer></script>
     <title>{`${roleLabel} at ${companyName}, ${location} | My Student Club`}</title>
     <meta name="description" content={`${escapeHtml(roleLabel)} opening at ${escapeHtml(companyName)} in ${escapeHtml(location)}. Apply now on My Student Club – India's CA job portal for fresher, industrial training and articleship opportunities.`}>
     <meta name="robots" content="index, follow">

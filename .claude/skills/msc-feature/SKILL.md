@@ -1,23 +1,27 @@
 ---
 name: msc-feature
-description: Use for any build, change, fix or ship in an MSC repo (mystudentclub, hiremsc, msc-app), including SQL on the MSC Supabase project and MSC Cloudflare Workers. Walks the 10-step flow in which Claude builds the change, checks it and makes it live.
+description: Use for any build, change, fix or ship in an MSC repo (mystudentclub, hiremsc, msc-app), including SQL on the MSC Supabase project and MSC Cloudflare Workers. Walks the flow in which Claude builds the change and gets it ready, Aniket (or Padam) gives the go for anything live, and only then it goes live.
 ---
 
 # MSC feature flow
 
-MSC's tech is Padam plus Claude, so Claude builds each change and makes it live. These steps replace the reviewer that used to sit in between. Every change can be read in its PR and undone in minutes.
+MSC's tech is Padam, Aniket and Claude. Claude builds each change and gets it ready. **A change that can touch the live site, app, data or a Worker goes live only after Aniket's go** (or Padam's). Claude sends it to Aniket on WhatsApp with a deadline and follows up; Aniket reviews it and ships it, or says go and Claude ships it. A change that cannot touch anything live (docs, rule files, tests, tooling, read-only checks) Claude merges itself once tests pass. A go for one change never covers another. Every change can be read in its PR and undone in minutes.
 
 Background: `AGENTS.md` at the repo root, loaded through CLAUDE.md. Its repo note gives the live branch, the test command, where the preview is, and what merging does.
 
 ## Steps
 
-1. **Understand and slice.** Say in two sentences what will change and who it is for. Ask Padam only if his answer would change what gets built. Split a big ask into slices, and ship the first useful one before building the next. Check `gh pr list` and `git branch -r` for open work on the same pages.
+1. **Understand and slice.** Say in two sentences what will change and who it is for. Ask Padam only if his answer would change what gets built. Split a big ask into slices, and get the first useful one ready before building the next. Check `gh pr list` and `git branch -r` for open work on the same pages.
 2. **Worktree.** `git fetch origin <live>`, then `git worktree add ~/development/<repo>-<slug> -b feature/<slug> origin/<live>`. Work only there.
 3. **Build and test.** Make small commits that say what changed and why. Run the repo's test command. Never ship with a failing test: fix it, or stop and report.
 4. **Pull request.** Run `git push -u origin feature/<slug>`, then `gh pr create --base <live>` with the body from `PR-template.md` in this folder. mystudentclub also has `mobile`: port the logic on `feature/<slug>-mobile` from `origin/mobile`, test it, and open its own PR.
-5. **Preview.** Open the preview at desktop and phone width and click through the change. Fix whatever is off. If the preview needs new tables, run the additive SQL from step 7 first.
+5. **Preview.** Open the preview at desktop and phone width and click through the change. Fix whatever is off. If the preview needs new tables or a new Worker, say so in the PR and on the card. The SQL and the Worker only go in after the go.
 6. **Review.** Run `/code-review` on the diff. Fix the real findings and say in the PR what was fixed.
-7. **SQL** (if any).
+7. **Hand it over and stop.** Nothing live touched? Merge it (step 10). Otherwise it joins Aniket's ship queue (`~/development/msc-boss`), which sends it to him with a deadline. If there is a Notion Tasks card, set it to **Review** with the PR and preview links. Then stop. Don't merge, run write SQL, deploy a Worker or set a secret before the go.
+
+**Steps 8–11 run only after the go for this change** (Aniket's or Padam's). First re-check that the PR still merges cleanly and its tests pass on the latest live branch.
+
+8. **SQL** (if any).
    - The migration file goes on the branch, where the repo note says.
    - Back up the tables it touches to `~/development/msc-backups/<date>-<slug>/`: the schema, plus the affected rows as JSON.
    - Run it in one transaction:
@@ -28,20 +32,22 @@ Background: `AGENTS.md` at the repo root, loaded through CLAUDE.md. Its repo not
        -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' --data @-
      ```
    - Do the additive part first (new tables, columns, functions, policies), so the old code keeps working.
-   - SQL that drops, deletes, truncates, removes a column or loosens RLS: stop and ask Padam.
+   - SQL that drops, deletes, truncates, removes a column or loosens RLS must be named in the card comment before the go.
    - If the Keychain has no token, stop. Tell Padam "the SQL is waiting for the Supabase key" and leave the PR open.
-8. **Workers** (if any).
+9. **Workers** (if any).
    - Run `npx wrangler deploy --dry-run --outdir <tmp>` and compare it with the live bundle.
    - Then run `npx wrangler deploy` and write the version id in the PR.
    - Secrets: `security find-generic-password -s <item> -w | npx wrangler secret put <NAME>`.
-9. **Merge and check live.**
+10. **Merge and check live.**
    - Order: SQL, then Workers, then merge.
    - Merge with `gh pr merge <n> --squash`. If that is denied, use `gh api -X PUT repos/seenmttai/<repo>/pulls/<n>/merge -f merge_method=squash`.
    - Within 10 minutes, run the main flow on the live site and check the console.
    - If it's broken, undo at once: `git revert` the squash commit and push it to the live branch, run `npx wrangler rollback`, and run the reverse SQL from the PR. Then tell Padam.
-10. **Close the loop.** Set the Notion Tasks card to Done, with the PR and the live link. Tell Padam in one line: "Live: <what> · <link>".
+11. **Close the loop.** Set the Notion Tasks card to Done, with the PR and the live link. Tell whoever gave the go in one line: "Live: <what> · <link>".
 
-## Ask Padam first
+## Flag these on the card
+
+When a change touches one of these, say so in the first line of the card comment and the PR:
 
 - Money: prices, payments, PayU, the `checkpayment` Worker.
 - Destructive SQL, or anything that exposes student data.
@@ -51,6 +57,7 @@ Background: `AGENTS.md` at the repo root, loaded through CLAUDE.md. Its repo not
 
 ## Red flags: stop and go back to the steps
 
+- You're about to merge, run write SQL, deploy a Worker or set a secret, and neither Aniket nor Padam has said go for this change (and it can touch something live).
 - A test is failing and you are about to merge.
 - You haven't opened the preview.
 - You're about to run SQL with no backup folder, or SQL that drops or deletes.

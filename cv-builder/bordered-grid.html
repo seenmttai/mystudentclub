@@ -541,9 +541,17 @@
             Array.from(group.querySelectorAll(':scope > .custom-section-injected[data-custom-section-root]')).forEach(section => {
                 section.classList.add('extra-block');
                 section.classList.remove('section');
-                if (section.getAttribute('data-corporate-custom-normalized') === 'true') return;
+                if (section.getAttribute('data-corporate-custom-normalized') === 'true') {
+                    const label = section.querySelector('.extra-sub-label');
+                    const id = section.getAttribute('data-custom-section-root');
+                    const title = window.__currentCVData?.customSections?.find(item => item.id === id)?.title;
+                    if (label && title && label.textContent !== title) label.textContent = title;
+                    return;
+                }
 
-                const title = section.querySelector('.section-header')?.textContent?.trim() ||
+                const customId = section.getAttribute('data-custom-section-root') || section.getAttribute('data-section-id');
+                const title = window.__currentCVData?.customSections?.find(item => item.id === customId)?.title ||
+                    section.querySelector('.section-header')?.textContent?.trim() ||
                     section.querySelector('.extra-sub-label')?.textContent?.trim() ||
                     'Custom Section';
                 const list = section.querySelector('[data-list="custom-items"], .bullet-list, ul');

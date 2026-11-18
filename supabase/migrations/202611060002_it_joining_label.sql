@@ -58,6 +58,9 @@ end;
 $$;
 
 alter table public."Industrial Training Job Portal" add column if not exists joining_label text;
+-- anon reads this table through column grants (no table-level SELECT), so the new column needs its own grant,
+-- or every logged-out Industrial Training list that selects it is refused.
+grant select (joining_label) on public."Industrial Training Job Portal" to anon, authenticated;
 
 create or replace function public.it_joining_label_trg()
 returns trigger

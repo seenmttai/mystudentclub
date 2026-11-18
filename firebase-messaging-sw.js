@@ -23,7 +23,7 @@ try {
         event.waitUntil(self.clients.claim());
     });
 
-    messaging.onBackgroundMessage((payload) => {
+    messaging.onBackgroundMessage(async (payload) => {
         const notificationTitle = payload.notification?.title || 'New Job Alert';
         const notificationOptions = {
             body: payload.notification?.body || 'A new job matching your preferences was posted.',
@@ -32,6 +32,20 @@ try {
                 click_action: payload.data?.link || payload.fcmOptions?.link || '/'
             }
         };
+
+        // When the message has a `notification` part, the Firebase library has already shown it by the time this runs.
+        // Showing it again here made every background push appear twice (reported 9 Nov 2026). Close the library's copy
+        // (it carries data.FCM_MSG) so the push shows once, with our link and icon.
+        if (payload.notification) {
+            try {
+                const shown = await self.registration.getNotifications();
+                shown
+                    .filter((n) => n.data && n.data.FCM_MSG && n.title === notificationTitle && n.body === notificationOptions.body)
+                    .forEach((n) => n.close());
+            } catch (error) {
+                console.error('[firebase-messaging-sw.js] Could not remove the duplicate notification:', error);
+            }
+        }
 
         return self.registration.showNotification(notificationTitle, notificationOptions);
     });
