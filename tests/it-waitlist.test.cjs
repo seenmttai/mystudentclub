@@ -8,13 +8,16 @@ const root = path.resolve(__dirname, '..');
 const pageDir = path.join(root, 'ca-industrial-training-program');
 const html = fs.readFileSync(path.join(pageDir, 'index.html'), 'utf8');
 const waitlistSrc = fs.readFileSync(path.join(pageDir, 'waitlist.js'), 'utf8');
+const registrationOpen = !/js-notify-btn/.test(html);
 
 // 05e8cdcaa shipped the page without waitlist.js; Cloudflare Pages served the home page
 // in its place, so every Notify Me button was dead.
 test('every local script the IT page loads exists in the repo', () => {
   const srcs = [...html.matchAll(/<script[^>]*\ssrc="([^"]+)"/g)].map((m) => m[1])
     .filter((src) => !/^(https?:)?\/\//.test(src) && !src.startsWith('/cdn-cgi/'));
-  assert.ok(srcs.some((src) => src.startsWith('waitlist.js')), 'page should load waitlist.js');
+  if (!registrationOpen) {
+    assert.ok(srcs.some((src) => src.startsWith('waitlist.js')), 'page with Notify Me buttons should load waitlist.js');
+  }
   for (const src of srcs) {
     const file = src.split('?')[0];
     const full = file.startsWith('/') ? path.join(root, file) : path.join(pageDir, file);
@@ -22,9 +25,35 @@ test('every local script the IT page loads exists in the repo', () => {
   }
 });
 
+// Registration open (14 Nov 2026): every Register button goes to the PayU page, and nothing on the page
+// still says registration is closed.
+test('while registration is open, every Register button goes to PayU and nothing says closed', { skip: !registrationOpen }, () => {
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  for (const id of ['heroPrimaryCta', 'registerButtonWorkshop', 'registerFooterBtn']) {
+    const el = doc.getElementById(id);
+    assert.ok(el, `#${id} should exist`);
+    assert.match(el.getAttribute('href'), /^https:\/\/payu\.in\/web\//, `#${id} should go to PayU`);
+  }
+  assert.doesNotMatch(doc.body.textContent, /registration closed|notify me/i);
+  assert.equal(doc.querySelector('script[src^="waitlist.js"]'), null, 'waitlist.js should not load with no Notify Me buttons');
+});
+
+// The waitlist buttons as the closed page has them (05e8cdcaa). When the page is open, the
+// waitlist code is still tested here so it works the next time registrations close.
+const waitlistMarkup = `<!doctype html><html><body>
+  <button type="button" class="header-enroll-btn js-notify-btn"><span>Notify Me</span></button>
+  <button type="button" class="btn-blue-primary js-notify-btn" id="heroPrimaryCta"><span>Notify Me When Open</span></button>
+  <button type="button" id="notifyMeBtn" class="btn-blue-primary btn-split-cta js-notify-btn"><span>Notify Me When Open</span></button>
+  <p id="notifyStatus" class="waitlist-status" role="status" aria-live="polite">Join the waitlist to hear when the next batch opens.</p>
+  <button type="button" id="notifyMeFooterBtn" class="fixed-cta-btn js-notify-btn"><span>Notify Me</span></button>
+  <div id="notifyStatusToast" class="notify-status" role="status" aria-live="polite"></div>
+</body></html>`;
+const waitlistHtml = registrationOpen ? waitlistMarkup : html;
+
 // rpc: 'missing' = SQL not run yet (PostgREST PGRST202), 'ok' = functions installed.
 function loadPage({ fetchOk = true, permission = 'granted', rpc = 'missing', onWaitlist = false } = {}) {
-  const dom = new JSDOM(html, { url: 'https://www.mystudentclub.com/ca-industrial-training-program/', runScripts: 'outside-only' });
+  const dom = new JSDOM(waitlistHtml, { url: 'https://www.mystudentclub.com/ca-industrial-training-program/', runScripts: 'outside-only' });
   const { window } = dom;
   const calls = { fetch: [], inserts: [], rpcs: [] };
   window.Notification = { requestPermission: async () => permission };

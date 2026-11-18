@@ -1,0 +1,2991 @@
+{
+ "id": "sa-2",
+ "domain": "statutory-audit",
+ "number": 2,
+ "title": "Physical verification of stock",
+ "minutes": 35,
+ "learn": [
+  "How to count a bin: packs × what one holds, plus loose",
+  "Why a count difference is not the same as damaged stock",
+  "What CARO asks about inventory, and how its 10% works"
+ ],
+ "do": [
+  "Test-count 12 store locations against the register",
+  "Value the results class by class",
+  "Close the count file and the CARO check"
+ ],
+ "case": {
+  "role": "First-year article assistant on the statutory audit, at the year-end stock count",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
+  "team": "Aarti Rane (senior) on site; Rehan Siddiqui (manager) reviews; at Tamhini, Dattatray More (stores in-charge) runs the count on instructions from Mahesh Kadam (GM Finance and Accounts)",
+  "goal": "Test-count the locations Aarti picked, note what is damaged, slow or kept out of the count, and check what CARO asks about inventory.",
+  "period": "Year ended 31 March 2027",
+  "where": "Main stores, packing store and FG store, Chakan plant · Wednesday 31 March 2027, from 8 pm"
+ },
+ "brief": {
+  "from": "aarti",
+  "time": "5:50 pm",
+  "messages": [
+   "Count starts at 8 in Bay A. Datta’s teams count and tag; you test-count the 12 locations on my list against the register.",
+   "Open one carton in every bin that has them, and note anything damaged, slow or kept out. I need your sheet before you leave tonight: Rehan reads it first thing tomorrow."
+  ]
+ },
+ "documents": [
+  {
+   "id": "memo-count",
+   "type": "letter",
+   "style": "memo",
+   "title": "Count instructions · 31 March",
+   "letterhead": "Tamhini Drivetech Private Limited",
+   "to": [
+    "Stores, accounts, QC and plant staff on the count"
+   ],
+   "from": "Mahesh Kadam, GM Finance and Accounts",
+   "date": "26-03-2027",
+   "ref": "FIN/2027/11",
+   "subject": "Year-end stock count, Wednesday 31 March 2027",
+   "body": [
+    "## Cut-off",
+    "- 6:00 pm: production stops. The GRN desk and dispatch close. Stores write down the last GRN and the last gate pass out.",
+    "- Goods that arrive after the last GRN are counted where they lie and listed for accounts.",
+    "## Teams and tags",
+    "- Every location at Chakan is counted: main stores, packing store, FG store, RM yard, tool crib, oil store, scrap yard and the shop floor.",
+    "- Two to a team: a counter from stores and a checker from accounts or QC. Dattatray More supervises; the auditors watch and test-count.",
+    "- Pre-numbered tags 0101 to 0400 come from Pallavi Shinde. One tag per bin, in ink. Spoilt tags are kept, and every tag comes back.",
+    "## Counting",
+    "- Count every carton, crate, pallet and loose piece in the bin. Open at least one carton in each lot and count what is inside, not the label.",
+    "- Count circlips by weight against a checked sample of 100.",
+    "## Set apart and list",
+    "- Damaged, wet or expired goods: count them, tag them yellow and list them.",
+    "- Goods that are not Tamhini’s stock (rejected goods awaiting return, customers’ goods): do not count; list them with the document number.",
+    "- Goods billed and waiting in the dispatch bay: do not count as stock; list them with the invoice number.",
+    "## Away from the plant",
+    "- Hosur depot: counted by the depot team on 31 March; signed sheets to accounts by 2 April.",
+    "- Stock with job workers: confirmed in writing to the auditors as on 31 March.",
+    "## After the count",
+    "- Counter and checker sign each tag. A tag that differs from the auditors’ test count is recounted with Dattatray More before the final sheet.",
+    "- Dattatray More signs the final count summary, and I sign it after him."
+   ],
+   "sign": {
+    "name": "Mahesh Kadam",
+    "role": "GM, Finance and Accounts",
+    "hand": "M. Kadam"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Last GRN: 0459 at 4:10 pm\nLast gate pass out: GP 4471 at 5:20 pm\nD.M. 6:05 pm",
+     "color": "blue",
+     "at": "inline"
+    }
+   ]
+  },
+  {
+   "id": "plan",
+   "type": "bins",
+   "title": "Stores plan · Bays A to E",
+   "room": "Main stores, packing store and FG store",
+   "subtitle": "Chakan plant · count of 31 March 2027",
+   "grid": {
+    "rows": 5,
+    "cols": 4
+   },
+   "bins": [
+    {
+     "id": "a1",
+     "pos": "A1",
+     "item": "Forged gear blank GB-110",
+     "short": "Blank GB-110",
+     "code": "RM-FRG-GB110",
+     "unit": "nos",
+     "pack": [
+      "crate",
+      "crates"
+     ],
+     "tag": {
+      "text": "1,880 nos",
+      "date": "30/03/27"
+     },
+     "lastMoved": "30/03/27",
+     "lots": [
+      {
+       "label": "On the rack",
+       "cartons": 18,
+       "perCarton": 100,
+       "loose": 80
+      },
+      {
+       "label": "On a pallet in front of the rack",
+       "cartons": 6,
+       "perCarton": 20,
+       "remark": "Rankala Forgings’ challan DC 2412 taped on top, gate stamp 31/03/27 19:40. No GRN tag."
+      }
+     ],
+     "listed": true
+    },
+    {
+     "id": "a2",
+     "pos": "A2",
+     "item": "Forged gear blank GB-145",
+     "short": "Blank GB-145",
+     "code": "RM-FRG-GB145",
+     "unit": "nos",
+     "pack": [
+      "crate",
+      "crates"
+     ],
+     "tag": {
+      "text": "3,400 nos",
+      "date": "30/03/27"
+     },
+     "lastMoved": "30/03/27",
+     "cartons": 33,
+     "perCarton": 100,
+     "loose": 100,
+     "listed": true
+    },
+    {
+     "id": "a3",
+     "pos": "A3",
+     "item": "Forged flange blank FL-80",
+     "short": "Flange FL-80",
+     "code": "RM-FRG-FL80",
+     "unit": "nos",
+     "pack": [
+      "crate",
+      "crates"
+     ],
+     "tag": {
+      "text": "6,200 nos",
+      "date": "30/03/27"
+     },
+     "lastMoved": "25/03/27",
+     "cartons": 62,
+     "perCarton": 100
+    },
+    {
+     "id": "a4",
+     "pos": "A4",
+     "item": "QC hold rack: rejected goods awaiting return",
+     "short": "QC hold",
+     "unit": "nos",
+     "lots": [
+      {
+       "label": "Red tray, middle shelf",
+       "loose": 60,
+       "remark": "QC tag: REJECTED · bearing 6306-ZZ · GRN 0443 · return to Vishwamitri Bearings."
+      }
+     ],
+     "card": false,
+     "shelfTitle": "On the rack",
+     "listed": true
+    },
+    {
+     "id": "b1",
+     "pos": "B1",
+     "item": "Ball bearing 6205-2RS",
+     "short": "Bearing 6205",
+     "code": "BOP-BRG-6205",
+     "unit": "nos",
+     "tag": {
+      "text": "2,400 nos",
+      "date": "30/03/27"
+     },
+     "lastMoved": "26/03/27",
+     "cartons": 43,
+     "perCarton": 50,
+     "listed": true
+    },
+    {
+     "id": "b2",
+     "pos": "B2",
+     "item": "Ball bearing 6306-ZZ",
+     "short": "Bearing 6306",
+     "code": "BOP-BRG-6306",
+     "unit": "nos",
+     "tag": {
+      "text": "1,850 nos",
+      "date": "30/03/27"
+     },
+     "lastMoved": "29/03/27",
+     "cartons": 37,
+     "perCarton": 50,
+     "listed": true
+    },
+    {
+     "id": "b3",
+     "pos": "B3",
+     "item": "Circlip, external, 35 mm",
+     "short": "Circlip 35",
+     "code": "BOP-CLP-35",
+     "unit": "nos",
+     "pack": [
+      "box",
+      "boxes"
+     ],
+     "tag": {
+      "text": "48,000 nos",
+      "date": "25/03/27"
+     },
+     "lastMoved": "24/03/27",
+     "cartons": 48,
+     "perCarton": 1000,
+     "remark": "Boxes weighed against a checked sample of 100."
+    },
+    {
+     "id": "b4",
+     "pos": "B4",
+     "item": "Oil seal 45 × 62 × 8",
+     "short": "Seal 4562",
+     "code": "BOP-SL-4562",
+     "unit": "nos",
+     "pack": [
+      "box",
+      "boxes"
+     ],
+     "tag": {
+      "text": "12,600 nos",
+      "date": "30/03/27"
+     },
+     "lastMoved": "27/03/27",
+     "cartons": 126,
+     "perCarton": 100
+    },
+    {
+     "id": "c1",
+     "pos": "C1",
+     "item": "Bearing 6204-2RS (aftermarket)",
+     "short": "Bearing 6204",
+     "code": "TR-BRG-6204",
+     "unit": "nos",
+     "tag": {
+      "text": "14,200 nos",
+      "date": "30/03/27"
+     },
+     "lastMoved": "30/03/27",
+     "cartons": 142,
+     "perCarton": 100
+    },
+    {
+     "id": "c2",
+     "pos": "C2",
+     "item": "Taper roller bearing 30206",
+     "short": "Bearing 30206",
+     "code": "TR-BRG-30206",
+     "unit": "nos",
+     "tag": {
+      "text": "3,900 nos",
+      "date": "31/03/27"
+     },
+     "lastMoved": "31/03/27",
+     "lots": [
+      {
+       "label": "Sealed cartons",
+       "cartons": 77,
+       "remark": "Printed on every carton: “30206 · 60 NOS”."
+      },
+      {
+       "label": "The carton you opened",
+       "cartons": 1,
+       "perCarton": 50,
+       "remark": "Packing slip inside: “30206 · Qty 50 nos”."
+      }
+     ],
+     "listed": true
+    },
+    {
+     "id": "c3",
+     "pos": "C3",
+     "item": "Clutch plate 240 mm (LCV)",
+     "short": "Clutch 240",
+     "code": "TR-CP-240",
+     "unit": "nos",
+     "pack": [
+      "box",
+      "boxes"
+     ],
+     "tag": {
+      "text": "2,600 nos",
+      "date": "31/03/27"
+     },
+     "lastMoved": "31/03/27",
+     "cartons": 128,
+     "perCarton": 20,
+     "loose": 40,
+     "listed": true
+    },
+    {
+     "id": "c4",
+     "pos": "C4",
+     "item": "Oil seal 55 × 75 × 10",
+     "short": "Seal 5575",
+     "code": "TR-SL-5575",
+     "unit": "nos",
+     "pack": [
+      "box",
+      "boxes"
+     ],
+     "tag": {
+      "text": "18,500 nos",
+      "date": "31/03/27"
+     },
+     "lastMoved": "31/03/27",
+     "cartons": 185,
+     "perCarton": 100
+    },
+    {
+     "id": "d1",
+     "pos": "D1",
+     "item": "Corrugated box, 5-ply, 600 × 400 × 300 mm",
+     "short": "Box 5-ply",
+     "code": "PKG-BOX-L",
+     "unit": "nos",
+     "pack": [
+      "bundle",
+      "bundles"
+     ],
+     "tag": {
+      "text": "1,600 nos",
+      "date": "30/03/27"
+     },
+     "lastMoved": "30/03/27",
+     "condition": "wet",
+     "lots": [
+      {
+       "label": "Dry, on the upper pallets",
+       "cartons": 71,
+       "perCarton": 20
+      },
+      {
+       "label": "Bottom pallet",
+       "cartons": 9,
+       "perCarton": 20,
+       "condition": "wet",
+       "remark": "Soaked from the roof leak above D1; the boxes come apart when lifted."
+      }
+     ],
+     "listed": true
+    },
+    {
+     "id": "d2",
+     "pos": "D2",
+     "item": "Corrugated box, 3-ply, 400 × 300 × 200 mm",
+     "short": "Box 3-ply",
+     "code": "PKG-BOX-S",
+     "unit": "nos",
+     "pack": [
+      "bundle",
+      "bundles"
+     ],
+     "tag": {
+      "text": "6,800 nos",
+      "date": "31/03/27"
+     },
+     "lastMoved": "31/03/27",
+     "cartons": 136,
+     "perCarton": 50
+    },
+    {
+     "id": "d3",
+     "pos": "D3",
+     "item": "VCI bag, 24 × 36 inch",
+     "short": "VCI bag",
+     "code": "PKG-VCI-L",
+     "unit": "nos",
+     "pack": [
+      "bundle",
+      "bundles"
+     ],
+     "tag": {
+      "text": "42,000 nos",
+      "date": "29/03/27"
+     },
+     "lastMoved": "27/03/27",
+     "cartons": 84,
+     "perCarton": 500
+    },
+    {
+     "id": "d4",
+     "pos": "D4",
+     "item": "Stretch film roll, 500 mm",
+     "short": "Stretch film",
+     "code": "PKG-FLM",
+     "unit": "nos",
+     "tag": {
+      "text": "260 nos",
+      "date": "29/03/27"
+     },
+     "lastMoved": "25/03/27",
+     "cartons": 65,
+     "perCarton": 4
+    },
+    {
+     "id": "e1",
+     "pos": "E1",
+     "item": "Input shaft 1142",
+     "short": "Shaft 1142",
+     "code": "FG-SH-1142",
+     "unit": "nos",
+     "pack": [
+      "tray",
+      "trays"
+     ],
+     "tag": {
+      "text": "4,200 nos",
+      "date": "31/03/27"
+     },
+     "lastMoved": "30/03/27",
+     "cartons": 105,
+     "perCarton": 40,
+     "listed": true
+    },
+    {
+     "id": "e2",
+     "pos": "E2",
+     "item": "Wheel hub 4410 (LCV)",
+     "short": "Hub 4410",
+     "code": "FG-HB-4410",
+     "unit": "nos",
+     "pack": [
+      "crate",
+      "crates"
+     ],
+     "tag": {
+      "text": "1,650 nos",
+      "date": "27/03/27"
+     },
+     "lastMoved": "27/03/27",
+     "cartons": 82,
+     "perCarton": 20,
+     "loose": 10,
+     "listed": true
+    },
+    {
+     "id": "e3",
+     "pos": "E3",
+     "item": "Dispatch bay: goods packed for dispatch",
+     "short": "Dispatch bay",
+     "unit": "nos",
+     "lots": [
+      {
+       "label": "Pallet 1 · taper roller bearing 30206",
+       "cartons": 48,
+       "perCarton": 50,
+       "remark": "Slip: NAIK AUTO – BILLED 31/3 – TD/TR/26-27/0412"
+      },
+      {
+       "label": "Pallet 2 · oil seal 55 × 75 × 10",
+       "cartons": 96,
+       "perCarton": 100,
+       "pack": [
+        "box",
+        "boxes"
+       ],
+       "remark": "Same slip, same invoice."
+      },
+      {
+       "label": "Pallet 3 · clutch plate 240 mm",
+       "cartons": 90,
+       "perCarton": 20,
+       "pack": [
+        "box",
+        "boxes"
+       ],
+       "remark": "Same slip. Invoice copy in a pouch on this pallet."
+      }
+     ],
+     "card": false,
+     "shelfTitle": "In the bay",
+     "listed": true
+    },
+    {
+     "id": "e4",
+     "pos": "E4",
+     "item": "Input shaft 0907",
+     "short": "Shaft 0907",
+     "code": "FG-SH-0907",
+     "unit": "nos",
+     "pack": [
+      "tray",
+      "trays"
+     ],
+     "tag": {
+      "text": "1,240 nos",
+      "date": "14/02/25"
+     },
+     "lastMoved": "14/02/25",
+     "cartons": 31,
+     "perCarton": 40,
+     "condition": "dusty",
+     "remark": "Back rack, behind the 1142 trays.",
+     "listed": true
+    }
+   ],
+   "door": "Receiving door beside Bay A · dispatch bay beside Bay E",
+   "hint": "Aarti’s pencil tick marks the 12 locations on her list. Tap a bin to open its bin card and see what is on the shelf."
+  },
+  {
+   "id": "register",
+   "type": "table",
+   "style": "tally",
+   "title": "Stock register · Bays A to E",
+   "kindLabel": "Tally print",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Stock Summary",
+   "subtitle": "Main stores, packing store and FG store · quantities in nos",
+   "period": "Closing as on 31-Mar-2027, printed 6:10 pm",
+   "columns": [
+    {
+     "key": "bin",
+     "label": "Bin"
+    },
+    {
+     "key": "item",
+     "label": "Item"
+    },
+    {
+     "key": "qty",
+     "label": "Closing qty",
+     "format": "int"
+    },
+    {
+     "key": "rate",
+     "label": "Rate (₹)",
+     "format": "amount"
+    },
+    {
+     "key": "value",
+     "label": "Value (₹)",
+     "format": "amount"
+    },
+    {
+     "key": "code",
+     "label": "Code",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "_class": "head",
+     "bin": "",
+     "item": "Raw materials"
+    },
+    {
+     "bin": "A1",
+     "item": "Forged gear blank GB-110",
+     "qty": 1880,
+     "rate": 412.0,
+     "value": 774560.0,
+     "code": "RM-FRG-GB110"
+    },
+    {
+     "bin": "A2",
+     "item": "Forged gear blank GB-145",
+     "qty": 3400,
+     "rate": 638.0,
+     "value": 2169200.0,
+     "code": "RM-FRG-GB145"
+    },
+    {
+     "bin": "A3",
+     "item": "Forged flange blank FL-80",
+     "qty": 6200,
+     "rate": 286.0,
+     "value": 1773200.0,
+     "code": "RM-FRG-FL80"
+    },
+    {
+     "_class": "head",
+     "bin": "",
+     "item": "Bought-out parts"
+    },
+    {
+     "bin": "B1",
+     "item": "Ball bearing 6205-2RS",
+     "qty": 2400,
+     "rate": 146.0,
+     "value": 350400.0,
+     "code": "BOP-BRG-6205"
+    },
+    {
+     "bin": "B2",
+     "item": "Ball bearing 6306-ZZ",
+     "qty": 1850,
+     "rate": 268.0,
+     "value": 495800.0,
+     "code": "BOP-BRG-6306"
+    },
+    {
+     "bin": "B3",
+     "item": "Circlip, external, 35 mm",
+     "qty": 48000,
+     "rate": 4.2,
+     "value": 201600.0,
+     "code": "BOP-CLP-35"
+    },
+    {
+     "bin": "B4",
+     "item": "Oil seal 45 × 62 × 8",
+     "qty": 12600,
+     "rate": 38.0,
+     "value": 478800.0,
+     "code": "BOP-SL-4562"
+    },
+    {
+     "_class": "head",
+     "bin": "",
+     "item": "Stock-in-trade"
+    },
+    {
+     "bin": "C1",
+     "item": "Bearing 6204-2RS (aftermarket)",
+     "qty": 14200,
+     "rate": 128.0,
+     "value": 1817600.0,
+     "code": "TR-BRG-6204"
+    },
+    {
+     "bin": "C2",
+     "item": "Taper roller bearing 30206",
+     "qty": 3900,
+     "rate": 412.0,
+     "value": 1606800.0,
+     "code": "TR-BRG-30206"
+    },
+    {
+     "bin": "C3",
+     "item": "Clutch plate 240 mm (LCV)",
+     "qty": 2600,
+     "rate": 1182.0,
+     "value": 3073200.0,
+     "code": "TR-CP-240"
+    },
+    {
+     "bin": "C4",
+     "item": "Oil seal 55 × 75 × 10",
+     "qty": 18500,
+     "rate": 54.0,
+     "value": 999000.0,
+     "code": "TR-SL-5575"
+    },
+    {
+     "_class": "head",
+     "bin": "",
+     "item": "Packing materials"
+    },
+    {
+     "bin": "D1",
+     "item": "Corrugated box, 5-ply, 600 × 400 × 300 mm",
+     "qty": 1600,
+     "rate": 96.0,
+     "value": 153600.0,
+     "code": "PKG-BOX-L"
+    },
+    {
+     "bin": "D2",
+     "item": "Corrugated box, 3-ply, 400 × 300 × 200 mm",
+     "qty": 6800,
+     "rate": 38.0,
+     "value": 258400.0,
+     "code": "PKG-BOX-S"
+    },
+    {
+     "bin": "D3",
+     "item": "VCI bag, 24 × 36 inch",
+     "qty": 42000,
+     "rate": 14.5,
+     "value": 609000.0,
+     "code": "PKG-VCI-L"
+    },
+    {
+     "bin": "D4",
+     "item": "Stretch film roll, 500 mm",
+     "qty": 260,
+     "rate": 640.0,
+     "value": 166400.0,
+     "code": "PKG-FLM"
+    },
+    {
+     "_class": "head",
+     "bin": "",
+     "item": "Finished goods (incl. scrap)"
+    },
+    {
+     "bin": "E1",
+     "item": "Input shaft 1142",
+     "qty": 4200,
+     "rate": 1186.0,
+     "value": 4981200.0,
+     "code": "FG-SH-1142"
+    },
+    {
+     "bin": "E2",
+     "item": "Wheel hub 4410 (LCV)",
+     "qty": 1650,
+     "rate": 1925.0,
+     "value": 3176250.0,
+     "code": "FG-HB-4410"
+    },
+    {
+     "bin": "E4",
+     "item": "Input shaft 0907",
+     "qty": 1240,
+     "rate": 1074.0,
+     "value": 1331760.0,
+     "code": "FG-SH-0907"
+    }
+   ],
+   "notes": [
+    "Rates are cost per unit as kept in the stock records.",
+    "Printed by Pallavi Shinde for the count."
+   ]
+  },
+  {
+   "id": "classes",
+   "type": "table",
+   "style": "tally",
+   "title": "Stock groups · book values, 31 March",
+   "kindLabel": "Tally print",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Stock Group Summary",
+   "subtitle": "All locations, before any count adjustment",
+   "period": "Closing as on 31-Mar-2027",
+   "columns": [
+    {
+     "key": "grp",
+     "label": "Stock group"
+    },
+    {
+     "key": "val",
+     "label": "Closing value (₹)",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "grp": "Raw materials",
+     "val": 60480000.0
+    },
+    {
+     "grp": "Bought-out parts",
+     "val": 8760000.0
+    },
+    {
+     "grp": "Work-in-progress",
+     "val": 24260000.0
+    },
+    {
+     "grp": "Finished goods (incl. scrap)",
+     "val": 53120000.0
+    },
+    {
+     "grp": "Stock-in-trade",
+     "val": 22140000.0
+    },
+    {
+     "grp": "Stores and consumables",
+     "val": 10860000.0
+    },
+    {
+     "grp": "Packing materials",
+     "val": 3480000.0
+    },
+    {
+     "_class": "total",
+     "grp": "Total",
+     "val": 183100000.0
+    }
+   ],
+   "notes": [
+    "The same seven groups are the inventory classes in the notes to the accounts."
+   ]
+  },
+  {
+   "id": "shelf-a1",
+   "type": "bins",
+   "title": "A1 · Bin card and shelf",
+   "tab": "Shelf",
+   "group": "a1",
+   "room": "Main stores, Bay A",
+   "subtitle": "Location A1 · 31 March 2027",
+   "grid": {
+    "rows": 5,
+    "cols": 4
+   },
+   "show": "a1",
+   "bins": [
+    {
+     "id": "a1",
+     "pos": "A1",
+     "item": "Forged gear blank GB-110",
+     "short": "Blank GB-110",
+     "code": "RM-FRG-GB110",
+     "unit": "nos",
+     "pack": [
+      "crate",
+      "crates"
+     ],
+     "tag": {
+      "text": "1,880 nos",
+      "date": "30/03/27"
+     },
+     "lastMoved": "30/03/27",
+     "lots": [
+      {
+       "label": "On the rack",
+       "cartons": 18,
+       "perCarton": 100,
+       "loose": 80
+      },
+      {
+       "label": "On a pallet in front of the rack",
+       "cartons": 6,
+       "perCarton": 20,
+       "remark": "Rankala Forgings’ challan DC 2412 taped on top, gate stamp 31/03/27 19:40. No GRN tag."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tag-a1",
+   "type": "card",
+   "style": "tag",
+   "title": "A1 · Count tag 0115",
+   "tab": "Count tag",
+   "group": "a1",
+   "heading": "Stock count tag",
+   "number": "0115",
+   "fields": [
+    {
+     "label": "Date and time",
+     "value": "31-03-2027, 8:20 pm"
+    },
+    {
+     "label": "Bin",
+     "value": "A1"
+    },
+    {
+     "label": "Item",
+     "value": "RM-FRG-GB110\nForged gear blank GB-110"
+    },
+    {
+     "label": "Quantity",
+     "value": "2,000 nos"
+    },
+    {
+     "label": "Counted by",
+     "value": "A. Thube"
+    },
+    {
+     "label": "Checked by",
+     "value": "P. Shinde"
+    }
+   ],
+   "photoNote": "Tied to the rack upright, written by the count team."
+  },
+  {
+   "id": "dc-a1",
+   "type": "card",
+   "style": "challan",
+   "title": "A1 · Challan on the pallet",
+   "tab": "Challan",
+   "group": "a1",
+   "issuer": "Rankala Forgings Private Limited · Plot D-12, Shiroli MIDC, Kolhapur 416122 · GSTIN 27UJPCR7248B1Z1",
+   "heading": "Delivery challan",
+   "number": "DC 2412",
+   "fields": [
+    {
+     "label": "Date",
+     "value": "31.03.2027"
+    },
+    {
+     "label": "To",
+     "value": "Tamhini Drivetech Private Limited\nPlot B-47, Chakan Industrial Area Phase II, MIDC, Pune 410501"
+    },
+    {
+     "label": "Your PO",
+     "value": "TD/PO/2026-27/1138 dated 24.03.2027"
+    },
+    {
+     "label": "Our invoice",
+     "value": "RF/2412/26-27"
+    },
+    {
+     "label": "Material",
+     "value": "Forged gear blank GB-110 (20MnCr5), normalised"
+    },
+    {
+     "label": "Quantity",
+     "value": "120 nos in 6 crates of 20"
+    },
+    {
+     "label": "Vehicle",
+     "value": "MH 09 GA 6107"
+    },
+    {
+     "label": "Delivery",
+     "value": "FOR your Chakan works"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE IN\n31/03/27 19:40",
+     "color": "red",
+     "at": "top-right",
+     "rotate": -6
+    },
+    {
+     "kind": "hand",
+     "text": "G/3871",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "shelf-a2",
+   "type": "bins",
+   "title": "A2 · Bin card and shelf",
+   "tab": "Shelf",
+   "group": "a2",
+   "room": "Main stores, Bay A",
+   "subtitle": "Location A2 · 31 March 2027",
+   "grid": {
+    "rows": 5,
+    "cols": 4
+   },
+   "show": "a2",
+   "bins": [
+    {
+     "id": "a2",
+     "pos": "A2",
+     "item": "Forged gear blank GB-145",
+     "short": "Blank GB-145",
+     "code": "RM-FRG-GB145",
+     "unit": "nos",
+     "pack": [
+      "crate",
+      "crates"
+     ],
+     "tag": {
+      "text": "3,400 nos",
+      "date": "30/03/27"
+     },
+     "lastMoved": "30/03/27",
+     "cartons": 33,
+     "perCarton": 100,
+     "loose": 100
+    }
+   ]
+  },
+  {
+   "id": "tag-a2",
+   "type": "card",
+   "style": "tag",
+   "title": "A2 · Count tag 0116",
+   "tab": "Count tag",
+   "group": "a2",
+   "heading": "Stock count tag",
+   "number": "0116",
+   "fields": [
+    {
+     "label": "Date and time",
+     "value": "31-03-2027, 8:35 pm"
+    },
+    {
+     "label": "Bin",
+     "value": "A2"
+    },
+    {
+     "label": "Item",
+     "value": "RM-FRG-GB145\nForged gear blank GB-145"
+    },
+    {
+     "label": "Quantity",
+     "value": "3,300 nos"
+    },
+    {
+     "label": "Counted by",
+     "value": "A. Thube"
+    },
+    {
+     "label": "Checked by",
+     "value": "P. Shinde"
+    }
+   ],
+   "photoNote": "Tied to the rack upright, written by the count team."
+  },
+  {
+   "id": "shelf-a4",
+   "type": "bins",
+   "title": "A4 · QC hold rack",
+   "tab": "Rack",
+   "group": "a4",
+   "room": "Main stores, Bay A",
+   "subtitle": "Location A4 · 31 March 2027",
+   "grid": {
+    "rows": 5,
+    "cols": 4
+   },
+   "show": "a4",
+   "bins": [
+    {
+     "id": "a4",
+     "pos": "A4",
+     "item": "QC hold rack: rejected goods awaiting return",
+     "short": "QC hold",
+     "unit": "nos",
+     "lots": [
+      {
+       "label": "Red tray, middle shelf",
+       "loose": 60,
+       "remark": "QC tag: REJECTED · bearing 6306-ZZ · GRN 0443 · return to Vishwamitri Bearings."
+      }
+     ],
+     "card": false,
+     "shelfTitle": "On the rack"
+    }
+   ]
+  },
+  {
+   "id": "qc-a4",
+   "type": "card",
+   "style": "tag",
+   "title": "A4 · QC hold tag",
+   "tab": "QC tag",
+   "group": "a4",
+   "heading": "QC hold · rejected",
+   "number": "QC/R/0331",
+   "fields": [
+    {
+     "label": "Date",
+     "value": "30-03-2027"
+    },
+    {
+     "label": "Item",
+     "value": "Ball bearing 6306-ZZ"
+    },
+    {
+     "label": "Quantity",
+     "value": "60 nos"
+    },
+    {
+     "label": "GRN",
+     "value": "GRN-2027-03-0443 dated 30-03-2027"
+    },
+    {
+     "label": "Supplier",
+     "value": "Vishwamitri Bearings Private Limited"
+    },
+    {
+     "label": "Reason",
+     "value": "Noisy on the spin test"
+    },
+    {
+     "label": "Action",
+     "value": "Return to supplier with a debit note"
+    },
+    {
+     "label": "QC",
+     "value": "N. Bansode"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "REJECTED",
+     "color": "red",
+     "at": "top-right",
+     "rotate": 8
+    }
+   ]
+  },
+  {
+   "id": "shelf-b1",
+   "type": "bins",
+   "title": "B1 · Bin card and shelf",
+   "tab": "Shelf",
+   "group": "b1",
+   "room": "Main stores, Bay B",
+   "subtitle": "Location B1 · 31 March 2027",
+   "grid": {
+    "rows": 5,
+    "cols": 4
+   },
+   "show": "b1",
+   "bins": [
+    {
+     "id": "b1",
+     "pos": "B1",
+     "item": "Ball bearing 6205-2RS",
+     "short": "Bearing 6205",
+     "code": "BOP-BRG-6205",
+     "unit": "nos",
+     "tag": {
+      "text": "2,400 nos",
+      "date": "30/03/27"
+     },
+     "lastMoved": "26/03/27",
+     "cartons": 43,
+     "perCarton": 50
+    }
+   ]
+  },
+  {
+   "id": "tag-b1",
+   "type": "card",
+   "style": "tag",
+   "title": "B1 · Count tag 0121",
+   "tab": "Count tag",
+   "group": "b1",
+   "heading": "Stock count tag",
+   "number": "0121",
+   "fields": [
+    {
+     "label": "Date and time",
+     "value": "31-03-2027, 9:05 pm"
+    },
+    {
+     "label": "Bin",
+     "value": "B1"
+    },
+    {
+     "label": "Item",
+     "value": "BOP-BRG-6205\nBall bearing 6205-2RS"
+    },
+    {
+     "label": "Quantity",
+     "value": "2,150 nos"
+    },
+    {
+     "label": "Counted by",
+     "value": "A. Thube"
+    },
+    {
+     "label": "Checked by",
+     "value": "P. Shinde"
+    }
+   ],
+   "photoNote": "Tied to the rack upright, written by the count team."
+  },
+  {
+   "id": "shelf-b2",
+   "type": "bins",
+   "title": "B2 · Bin card and shelf",
+   "tab": "Shelf",
+   "group": "b2",
+   "room": "Main stores, Bay B",
+   "subtitle": "Location B2 · 31 March 2027",
+   "grid": {
+    "rows": 5,
+    "cols": 4
+   },
+   "show": "b2",
+   "bins": [
+    {
+     "id": "b2",
+     "pos": "B2",
+     "item": "Ball bearing 6306-ZZ",
+     "short": "Bearing 6306",
+     "code": "BOP-BRG-6306",
+     "unit": "nos",
+     "tag": {
+      "text": "1,850 nos",
+      "date": "30/03/27"
+     },
+     "lastMoved": "29/03/27",
+     "cartons": 37,
+     "perCarton": 50
+    }
+   ]
+  },
+  {
+   "id": "tag-b2",
+   "type": "card",
+   "style": "tag",
+   "title": "B2 · Count tag 0122",
+   "tab": "Count tag",
+   "group": "b2",
+   "heading": "Stock count tag",
+   "number": "0122",
+   "fields": [
+    {
+     "label": "Date and time",
+     "value": "31-03-2027, 9:15 pm"
+    },
+    {
+     "label": "Bin",
+     "value": "B2"
+    },
+    {
+     "label": "Item",
+     "value": "BOP-BRG-6306\nBall bearing 6306-ZZ"
+    },
+    {
+     "label": "Quantity",
+     "value": "1,850 nos"
+    },
+    {
+     "label": "Counted by",
+     "value": "A. Thube"
+    },
+    {
+     "label": "Checked by",
+     "value": "P. Shinde"
+    }
+   ],
+   "photoNote": "Tied to the rack upright, written by the count team."
+  },
+  {
+   "id": "shelf-c2",
+   "type": "bins",
+   "title": "C2 · Bin card and shelf",
+   "tab": "Shelf",
+   "group": "c2",
+   "room": "Main stores, Bay C",
+   "subtitle": "Location C2 · 31 March 2027",
+   "grid": {
+    "rows": 5,
+    "cols": 4
+   },
+   "show": "c2",
+   "bins": [
+    {
+     "id": "c2",
+     "pos": "C2",
+     "item": "Taper roller bearing 30206",
+     "short": "Bearing 30206",
+     "code": "TR-BRG-30206",
+     "unit": "nos",
+     "tag": {
+      "text": "3,900 nos",
+      "date": "31/03/27"
+     },
+     "lastMoved": "31/03/27",
+     "lots": [
+      {
+       "label": "Sealed cartons",
+       "cartons": 77,
+       "remark": "Printed on every carton: “30206 · 60 NOS”."
+      },
+      {
+       "label": "The carton you opened",
+       "cartons": 1,
+       "perCarton": 50,
+       "remark": "Packing slip inside: “30206 · Qty 50 nos”."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tag-c2",
+   "type": "card",
+   "style": "tag",
+   "title": "C2 · Count tag 0128",
+   "tab": "Count tag",
+   "group": "c2",
+   "heading": "Stock count tag",
+   "number": "0128",
+   "fields": [
+    {
+     "label": "Date and time",
+     "value": "31-03-2027, 9:40 pm"
+    },
+    {
+     "label": "Bin",
+     "value": "C2"
+    },
+    {
+     "label": "Item",
+     "value": "TR-BRG-30206\nTaper roller bearing 30206"
+    },
+    {
+     "label": "Quantity",
+     "value": "4,680 nos"
+    },
+    {
+     "label": "Counted by",
+     "value": "S. Kale"
+    },
+    {
+     "label": "Checked by",
+     "value": "M. Pawar"
+    }
+   ],
+   "photoNote": "Tied to the rack upright, written by the count team."
+  },
+  {
+   "id": "shelf-c3",
+   "type": "bins",
+   "title": "C3 · Bin card and shelf",
+   "tab": "Shelf",
+   "group": "c3",
+   "room": "Main stores, Bay C",
+   "subtitle": "Location C3 · 31 March 2027",
+   "grid": {
+    "rows": 5,
+    "cols": 4
+   },
+   "show": "c3",
+   "bins": [
+    {
+     "id": "c3",
+     "pos": "C3",
+     "item": "Clutch plate 240 mm (LCV)",
+     "short": "Clutch 240",
+     "code": "TR-CP-240",
+     "unit": "nos",
+     "pack": [
+      "box",
+      "boxes"
+     ],
+     "tag": {
+      "text": "2,600 nos",
+      "date": "31/03/27"
+     },
+     "lastMoved": "31/03/27",
+     "cartons": 128,
+     "perCarton": 20,
+     "loose": 40
+    }
+   ]
+  },
+  {
+   "id": "tag-c3",
+   "type": "card",
+   "style": "tag",
+   "title": "C3 · Count tag 0129",
+   "tab": "Count tag",
+   "group": "c3",
+   "heading": "Stock count tag",
+   "number": "0129",
+   "fields": [
+    {
+     "label": "Date and time",
+     "value": "31-03-2027, 9:55 pm"
+    },
+    {
+     "label": "Bin",
+     "value": "C3"
+    },
+    {
+     "label": "Item",
+     "value": "TR-CP-240\nClutch plate 240 mm (LCV)"
+    },
+    {
+     "label": "Quantity",
+     "value": "2,600 nos"
+    },
+    {
+     "label": "Counted by",
+     "value": "S. Kale"
+    },
+    {
+     "label": "Checked by",
+     "value": "M. Pawar"
+    }
+   ],
+   "photoNote": "Tied to the rack upright, written by the count team."
+  },
+  {
+   "id": "shelf-d1",
+   "type": "bins",
+   "title": "D1 · Bin card and shelf",
+   "tab": "Shelf",
+   "group": "d1",
+   "room": "Packing store, Bay D",
+   "subtitle": "Location D1 · 31 March 2027",
+   "grid": {
+    "rows": 5,
+    "cols": 4
+   },
+   "show": "d1",
+   "bins": [
+    {
+     "id": "d1",
+     "pos": "D1",
+     "item": "Corrugated box, 5-ply, 600 × 400 × 300 mm",
+     "short": "Box 5-ply",
+     "code": "PKG-BOX-L",
+     "unit": "nos",
+     "pack": [
+      "bundle",
+      "bundles"
+     ],
+     "tag": {
+      "text": "1,600 nos",
+      "date": "30/03/27"
+     },
+     "lastMoved": "30/03/27",
+     "condition": "wet",
+     "lots": [
+      {
+       "label": "Dry, on the upper pallets",
+       "cartons": 71,
+       "perCarton": 20
+      },
+      {
+       "label": "Bottom pallet",
+       "cartons": 9,
+       "perCarton": 20,
+       "condition": "wet",
+       "remark": "Soaked from the roof leak above D1; the boxes come apart when lifted."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tag-d1",
+   "type": "card",
+   "style": "tag",
+   "title": "D1 · Count tag 0134",
+   "tab": "Count tag",
+   "group": "d1",
+   "heading": "Stock count tag",
+   "number": "0134",
+   "fields": [
+    {
+     "label": "Date and time",
+     "value": "31-03-2027, 10:15 pm"
+    },
+    {
+     "label": "Bin",
+     "value": "D1"
+    },
+    {
+     "label": "Item",
+     "value": "PKG-BOX-L\nCorrugated box, 5-ply, 600 × 400 × 300 mm"
+    },
+    {
+     "label": "Quantity",
+     "value": "1,600 nos"
+    },
+    {
+     "label": "Counted by",
+     "value": "S. Kale"
+    },
+    {
+     "label": "Checked by",
+     "value": "M. Pawar"
+    }
+   ],
+   "photoNote": "Tied to the rack upright, written by the count team."
+  },
+  {
+   "id": "shelf-e1",
+   "type": "bins",
+   "title": "E1 · Bin card and shelf",
+   "tab": "Shelf",
+   "group": "e1",
+   "room": "FG store, Bay E",
+   "subtitle": "Location E1 · 31 March 2027",
+   "grid": {
+    "rows": 5,
+    "cols": 4
+   },
+   "show": "e1",
+   "bins": [
+    {
+     "id": "e1",
+     "pos": "E1",
+     "item": "Input shaft 1142",
+     "short": "Shaft 1142",
+     "code": "FG-SH-1142",
+     "unit": "nos",
+     "pack": [
+      "tray",
+      "trays"
+     ],
+     "tag": {
+      "text": "4,200 nos",
+      "date": "31/03/27"
+     },
+     "lastMoved": "30/03/27",
+     "cartons": 105,
+     "perCarton": 40
+    }
+   ]
+  },
+  {
+   "id": "tag-e1",
+   "type": "card",
+   "style": "tag",
+   "title": "E1 · Count tag 0141",
+   "tab": "Count tag",
+   "group": "e1",
+   "heading": "Stock count tag",
+   "number": "0141",
+   "fields": [
+    {
+     "label": "Date and time",
+     "value": "31-03-2027, 10:40 pm"
+    },
+    {
+     "label": "Bin",
+     "value": "E1"
+    },
+    {
+     "label": "Item",
+     "value": "FG-SH-1142\nInput shaft 1142"
+    },
+    {
+     "label": "Quantity",
+     "value": "4,200 nos"
+    },
+    {
+     "label": "Counted by",
+     "value": "S. Kale"
+    },
+    {
+     "label": "Checked by",
+     "value": "M. Pawar"
+    }
+   ],
+   "photoNote": "Tied to the rack upright, written by the count team."
+  },
+  {
+   "id": "shelf-e2",
+   "type": "bins",
+   "title": "E2 · Bin card and shelf",
+   "tab": "Shelf",
+   "group": "e2",
+   "room": "FG store, Bay E",
+   "subtitle": "Location E2 · 31 March 2027",
+   "grid": {
+    "rows": 5,
+    "cols": 4
+   },
+   "show": "e2",
+   "bins": [
+    {
+     "id": "e2",
+     "pos": "E2",
+     "item": "Wheel hub 4410 (LCV)",
+     "short": "Hub 4410",
+     "code": "FG-HB-4410",
+     "unit": "nos",
+     "pack": [
+      "crate",
+      "crates"
+     ],
+     "tag": {
+      "text": "1,650 nos",
+      "date": "27/03/27"
+     },
+     "lastMoved": "27/03/27",
+     "cartons": 82,
+     "perCarton": 20,
+     "loose": 10
+    }
+   ]
+  },
+  {
+   "id": "tag-e2",
+   "type": "card",
+   "style": "tag",
+   "title": "E2 · Count tag 0142",
+   "tab": "Count tag",
+   "group": "e2",
+   "heading": "Stock count tag",
+   "number": "0142",
+   "fields": [
+    {
+     "label": "Date and time",
+     "value": "31-03-2027, 10:50 pm"
+    },
+    {
+     "label": "Bin",
+     "value": "E2"
+    },
+    {
+     "label": "Item",
+     "value": "FG-HB-4410\nWheel hub 4410 (LCV)"
+    },
+    {
+     "label": "Quantity",
+     "value": "1,650 nos"
+    },
+    {
+     "label": "Counted by",
+     "value": "S. Kale"
+    },
+    {
+     "label": "Checked by",
+     "value": "M. Pawar"
+    }
+   ],
+   "photoNote": "Tied to the rack upright, written by the count team."
+  },
+  {
+   "id": "shelf-e3",
+   "type": "bins",
+   "title": "E3 · Dispatch bay",
+   "tab": "Bay",
+   "group": "e3",
+   "room": "Dispatch bay, beside the FG store",
+   "subtitle": "Location E3 · 31 March 2027",
+   "grid": {
+    "rows": 5,
+    "cols": 4
+   },
+   "show": "e3",
+   "bins": [
+    {
+     "id": "e3",
+     "pos": "E3",
+     "item": "Dispatch bay: goods packed for dispatch",
+     "short": "Dispatch bay",
+     "unit": "nos",
+     "lots": [
+      {
+       "label": "Pallet 1 · taper roller bearing 30206",
+       "cartons": 48,
+       "perCarton": 50,
+       "remark": "Slip: NAIK AUTO – BILLED 31/3 – TD/TR/26-27/0412"
+      },
+      {
+       "label": "Pallet 2 · oil seal 55 × 75 × 10",
+       "cartons": 96,
+       "perCarton": 100,
+       "pack": [
+        "box",
+        "boxes"
+       ],
+       "remark": "Same slip, same invoice."
+      },
+      {
+       "label": "Pallet 3 · clutch plate 240 mm",
+       "cartons": 90,
+       "perCarton": 20,
+       "pack": [
+        "box",
+        "boxes"
+       ],
+       "remark": "Same slip. Invoice copy in a pouch on this pallet."
+      }
+     ],
+     "card": false,
+     "shelfTitle": "In the bay"
+    }
+   ]
+  },
+  {
+   "id": "inv-naik",
+   "type": "invoice",
+   "title": "E3 · Invoice copy on pallet 3",
+   "tab": "Invoice",
+   "group": "e3",
+   "supplier": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZHDCT5940H"
+   },
+   "buyer": {
+    "name": "Naik Auto Spares Distributors",
+    "address": "Gala 21, Mankoli Naka\nBhiwandi, Thane 421302",
+    "gstin": "27ZYOFN5752Z1ZR",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Naik Auto Spares Distributors (Bhiwandi warehouse)",
+    "address": "Gala 21, Mankoli Naka\nBhiwandi, Thane 421302",
+    "gstin": "27ZYOFN5752Z1ZR",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "TD/TR/26-27/0412",
+   "date": "31-Mar-2027",
+   "copy": "Duplicate for transporter",
+   "paymentTerms": "45 days",
+   "dispatchedThrough": "Road (truck to be booked)",
+   "destination": "Bhiwandi",
+   "placeOfSupply": "27-Maharashtra",
+   "lines": [
+    {
+     "desc": "Taper roller bearing 30206",
+     "hsn": "8482 20",
+     "qty": 2400,
+     "unit": "nos",
+     "rate": 520.0,
+     "taxable": 1248000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Oil seal 55 × 75 × 10, NBR",
+     "hsn": "4016 93",
+     "qty": 9600,
+     "unit": "nos",
+     "rate": 65.0,
+     "taxable": 624000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Clutch plate assembly 240 mm (LCV)",
+     "hsn": "8708 93",
+     "qty": 1800,
+     "unit": "nos",
+     "rate": 1560.0,
+     "taxable": 2808000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 5522400.0,
+   "terms": [
+    "Delivered at the buyer’s Bhiwandi warehouse, freight paid by us. Property in the goods passes on delivery.",
+    "Subject to Pune jurisdiction."
+   ],
+   "irn": "a5af500b2caaecaa0ef56c6fdb373b1e0e1e0f4a1583d29cfe23a540cfffef93",
+   "ackNo": "112735115636819",
+   "ackDate": "31-Mar-2027",
+   "footer": "This is a computer generated invoice.",
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Packed 31/3 · waiting for vehicle. D.M.",
+     "color": "blue",
+     "at": "inline"
+    }
+   ]
+  },
+  {
+   "id": "shelf-e4",
+   "type": "bins",
+   "title": "E4 · Bin card and shelf",
+   "tab": "Shelf",
+   "group": "e4",
+   "room": "FG store, Bay E",
+   "subtitle": "Location E4 · 31 March 2027",
+   "grid": {
+    "rows": 5,
+    "cols": 4
+   },
+   "show": "e4",
+   "bins": [
+    {
+     "id": "e4",
+     "pos": "E4",
+     "item": "Input shaft 0907",
+     "short": "Shaft 0907",
+     "code": "FG-SH-0907",
+     "unit": "nos",
+     "pack": [
+      "tray",
+      "trays"
+     ],
+     "tag": {
+      "text": "1,240 nos",
+      "date": "14/02/25"
+     },
+     "lastMoved": "14/02/25",
+     "cartons": 31,
+     "perCarton": 40,
+     "condition": "dusty",
+     "remark": "Back rack, behind the 1142 trays."
+    }
+   ]
+  },
+  {
+   "id": "tag-e4",
+   "type": "card",
+   "style": "tag",
+   "title": "E4 · Count tag 0144",
+   "tab": "Count tag",
+   "group": "e4",
+   "heading": "Stock count tag",
+   "number": "0144",
+   "fields": [
+    {
+     "label": "Date and time",
+     "value": "31-03-2027, 11:05 pm"
+    },
+    {
+     "label": "Bin",
+     "value": "E4"
+    },
+    {
+     "label": "Item",
+     "value": "FG-SH-0907\nInput shaft 0907"
+    },
+    {
+     "label": "Quantity",
+     "value": "1,240 nos"
+    },
+    {
+     "label": "Counted by",
+     "value": "S. Kale"
+    },
+    {
+     "label": "Checked by",
+     "value": "M. Pawar"
+    }
+   ],
+   "photoNote": "Tied to the rack upright, written by the count team."
+  },
+  {
+   "id": "mail-harshad",
+   "type": "letter",
+   "style": "email",
+   "title": "Mail · Realisable value of the 0907 shafts",
+   "from": {
+    "name": "Harshad Patel",
+    "email": "harshad.patel@email.com"
+   },
+   "to": [
+    {
+     "name": "Aarti Rane",
+     "email": "aarti.rane@email.com"
+    }
+   ],
+   "cc": [
+    {
+     "name": "Mahesh Kadam",
+     "email": "mahesh.kadam@email.com"
+    }
+   ],
+   "date": "Wed, 31 Mar 2027, 4:12 pm",
+   "subject": "Input shaft 0907: what they will fetch",
+   "body": [
+    "Aarti,",
+    "You asked about the 0907 input shafts in the FG store. The customer stopped that gearbox in 2024 and has no open order with us. Two of our distributors looked at them in February and would not take any.",
+    "Bilal Ferrous Traders, who lift our turnings, have offered ₹30 a kg for them as melting scrap, loading and transport at their cost. Each shaft weighs 7.1 kg. Their letter is attached.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Harshad Patel",
+    "role": "Head, Sales (OEM)",
+    "for": "Tamhini Drivetech Private Limited",
+    "hand": false
+   },
+   "attachments": [
+    "Bilal_Ferrous_offer_0907.pdf"
+   ]
+  },
+  {
+   "id": "jw-register",
+   "type": "table",
+   "style": "register",
+   "title": "Job-work register · open challans",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited"
+   },
+   "heading": "Job-work register: goods out for processing",
+   "subtitle": "Open challans as on 31-03-2027",
+   "period": "Kept by stores",
+   "columns": [
+    {
+     "key": "ch",
+     "label": "Challan",
+     "mono": true
+    },
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "jw",
+     "label": "Job worker"
+    },
+    {
+     "key": "item",
+     "label": "Item"
+    },
+    {
+     "key": "sent",
+     "label": "Sent (nos)",
+     "format": "int"
+    },
+    {
+     "key": "back",
+     "label": "Back (nos)",
+     "format": "int"
+    },
+    {
+     "key": "bal",
+     "label": "With job worker (nos)",
+     "format": "int",
+     "check": "sent - back"
+    },
+    {
+     "key": "value",
+     "label": "Value at cost (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "ch": "JW-0616",
+     "date": "26-03-2027",
+     "jw": "Kudalwadi Heat Treaters",
+     "item": "Helical gear 2210, hobbed",
+     "sent": 3000,
+     "back": 0,
+     "bal": 3000,
+     "value": 2340000.0
+    },
+    {
+     "ch": "JW-0619",
+     "date": "29-03-2027",
+     "jw": "Kudalwadi Heat Treaters",
+     "item": "Helical gear 2210, hobbed",
+     "sent": 2400,
+     "back": 0,
+     "bal": 2400,
+     "value": 1872000.0
+    },
+    {
+     "_class": "total",
+     "ch": "Total",
+     "sent": 5400,
+     "back": 0,
+     "bal": 5400,
+     "value": 4212000.0
+    }
+   ],
+   "notes": [
+    "Each challan carries Kudalwadi’s receiving stamp."
+   ]
+  },
+  {
+   "id": "conf-kudalwadi",
+   "type": "letter",
+   "style": "letter",
+   "title": "Kudalwadi’s confirmation · stock held",
+   "letterhead": {
+    "name": "Kudalwadi Heat Treaters",
+    "address": "Survey 112, Kudalwadi, Chikhli, Pimpri-Chinchwad, Pune 412114",
+    "gstin": "27ZPIFK9501Q1Z5",
+    "phone": "98XXXXXXXX"
+   },
+   "ref": "KHT/CONF/26-27/07",
+   "date": "31.03.2027",
+   "to": [
+    "Bapat Venkatesh & Co., Chartered Accountants",
+    "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
+    "Kind attention: Aarti Rane"
+   ],
+   "subject": "Goods of Tamhini Drivetech Private Limited held by us on 31 March 2027",
+   "body": [
+    "Dear Madam,",
+    "As asked in your letter of 24 March 2027, we confirm that at the close of work on 31 March 2027 we held these goods of Tamhini Drivetech Private Limited for case carburising:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "ch",
+        "label": "Their challan"
+       },
+       {
+        "key": "d",
+        "label": "Date"
+       },
+       {
+        "key": "it",
+        "label": "Item"
+       },
+       {
+        "key": "q",
+        "label": "Quantity"
+       }
+      ],
+      "rows": [
+       {
+        "ch": "JW-0616",
+        "d": "26.03.2027",
+        "it": "Helical gear 2210, hobbed",
+        "q": "3,000 nos"
+       },
+       {
+        "ch": "JW-0619",
+        "d": "29.03.2027",
+        "it": "Helical gear 2210, hobbed",
+        "q": "2,400 nos"
+       },
+       {
+        "ch": "Total",
+        "d": "",
+        "it": "",
+        "q": "5,400 nos"
+       }
+      ]
+     }
+    },
+    "None of these had been processed or sent back by 31 March. They are as received, stacked in our bay 3."
+   ],
+   "sign": {
+    "closing": "Yours faithfully,",
+    "for": "Kudalwadi Heat Treaters",
+    "role": "Partner",
+    "hand": "R. Kudale"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Mailed 31/3, 6:48 pm. A.R.",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "sept-report",
+   "type": "letter",
+   "style": "memo",
+   "title": "Half-yearly count report · September 2026",
+   "letterhead": "Tamhini Drivetech Private Limited",
+   "to": [
+    "Mahesh Kadam, GM Finance and Accounts"
+   ],
+   "from": "Dattatray More, Stores in-charge",
+   "date": "28-09-2026",
+   "ref": "STR/PV/2026-27/02",
+   "subject": "Physical verification of inventory, 26–27 September 2026",
+   "body": [
+    "Every location was counted on Saturday 26 and Sunday 27 September, under the instructions of 21 September: main stores, packing store, FG store, RM yard, tool crib, oil store, scrap yard and the shop floor.",
+    "The Hosur depot counted its own stock on 26 September. Kudalwadi and Sakhare, our two job workers, confirmed the stock they held.",
+    "Differences were small, under 1% of book value in every stock group; the list is attached. Accounts will pass the entries by 30 September.",
+    "Next full count: 31 March 2027."
+   ],
+   "sign": {
+    "name": "Dattatray More",
+    "role": "Stores in-charge",
+    "hand": "D. More"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Seen. M.K. 29/9",
+     "color": "blue",
+     "at": "inline"
+    }
+   ]
+  },
+  {
+   "id": "caro-wp",
+   "type": "letter",
+   "style": "policy",
+   "title": "CARO working paper · inventory",
+   "kindLabel": "Working paper",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants\nAudit working paper",
+   "subject": "CARO 2020, paragraph 3(ii)(a): inventory",
+   "meta": [
+    {
+     "label": "Client",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Year",
+     "value": "ended 31 March 2027"
+    },
+    {
+     "label": "Prepared by",
+     "value": "Article on the count"
+    },
+    {
+     "label": "Reviewed by",
+     "value": "Aarti Rane"
+    }
+   ],
+   "body": [
+    "## The clause",
+    "“(ii) (a) whether physical verification of inventory has been conducted at reasonable intervals by the management and whether, in the opinion of the auditor, the coverage and procedure of such verification by the management is appropriate; whether any discrepancies of 10% or more in the aggregate for each class of inventory were noticed and if so, whether they have been properly dealt with in the books of account;”",
+    "## Conclude on",
+    "1. Who verified the inventory, and when in the year?",
+    "2. Coverage: every location, and stock held by others?",
+    "3. Procedure: instructions, tags, cut-off, test counts?",
+    "4. Any class with a discrepancy of 10% or more, by value against the books?",
+    "5. How the differences are dealt with in the books.",
+    "## Conclusion",
+    "To be written when the count file is closed."
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Test-count the 12 locations on Aarti’s list",
+   "prompt": "Walk the floor: open each location on Aarti’s list, count what is on the shelf, compare it with the register and make your call; then note anything else for the count sheet. The register and Mahesh’s count instructions are under Other papers. Your counts go to Aarti when you move on.",
+   "weight": 6,
+   "noun": [
+    "location",
+    "locations"
+   ],
+   "map": "plan",
+   "mapHint": "Tap a location on Aarti’s list to count it. The grey ones are not on it.",
+   "lockOnLeave": {
+    "ask": "Hand your count sheet to Aarti?",
+    "note": "You can’t change your counts after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Aarti. You can read your counts but not change them."
+   },
+   "hints": [
+    "Count the shelf, not the bin card, the tag or the label: packs × what one actually holds, plus loose, plus every lot in the bin.",
+    "Mahesh’s count instructions say what is counted and set apart, and what stays out of the count."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "book"
+    }
+   ],
+   "fields": [
+    {
+     "id": "result",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "neutral": true,
+     "options": [
+      {
+       "id": "agrees",
+       "label": "Agrees"
+      },
+      {
+       "id": "short",
+       "label": "Short"
+      },
+      {
+       "id": "excess",
+       "label": "Excess"
+      },
+      {
+       "id": "keepout",
+       "label": "Keep out"
+      }
+     ]
+    },
+    {
+     "id": "qty",
+     "kind": "number",
+     "label": "You counted",
+     "unit": "nos",
+     "tolerance": 0,
+     "sign": false,
+     "weight": 2,
+     "showIf": {
+      "result": [
+       "agrees",
+       "short",
+       "excess"
+      ]
+     }
+    },
+    {
+     "id": "flag",
+     "kind": "choice",
+     "label": "Also on the count sheet",
+     "weight": 4,
+     "showIf": {
+      "result": [
+       "agrees",
+       "short",
+       "excess"
+      ]
+     },
+     "options": [
+      {
+       "id": "none",
+       "label": "Nothing else",
+       "short": "nothing else",
+       "quiet": true
+      },
+      {
+       "id": "damaged",
+       "label": "Damaged: set apart",
+       "short": "damaged"
+      },
+      {
+       "id": "slow",
+       "label": "Slow-moving",
+       "short": "slow-moving"
+      },
+      {
+       "id": "tag",
+       "label": "Count tag wrong",
+       "short": "wrong tag"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the count sheet",
+     "placeholder": "For example: 40 trays × 25 + 12 loose; tag agrees"
+    }
+   ],
+   "docs": [
+    "memo-count",
+    "plan",
+    "register",
+    "shelf-a1",
+    "tag-a1",
+    "dc-a1",
+    "shelf-a2",
+    "tag-a2",
+    "shelf-a4",
+    "qc-a4",
+    "shelf-b1",
+    "tag-b1",
+    "shelf-b2",
+    "tag-b2",
+    "shelf-c2",
+    "tag-c2",
+    "shelf-c3",
+    "tag-c3",
+    "shelf-d1",
+    "tag-d1",
+    "shelf-e1",
+    "tag-e1",
+    "shelf-e2",
+    "tag-e2",
+    "shelf-e3",
+    "inv-naik",
+    "shelf-e4",
+    "tag-e4"
+   ],
+   "items": [
+    {
+     "id": "a1",
+     "label": "A1 · Forged gear blank GB-110",
+     "book": "Register 1,880 nos",
+     "docs": [
+      "shelf-a1",
+      "tag-a1",
+      "dc-a1"
+     ],
+     "answer": {
+      "result": "excess",
+      "qty": 2000,
+      "flag": "none"
+     },
+     "note": "A1: 18 crates of 100 and 80 loose is 1,880, plus 6 crates of 20 on Rankala’s pallet, in at 7:40 pm. 2,000 against 1,880: excess 120. They became Tamhini’s at the gate, so the receipt and the bill both belong to March."
+    },
+    {
+     "id": "a2",
+     "label": "A2 · Forged gear blank GB-145",
+     "book": "Register 3,400 nos",
+     "docs": [
+      "shelf-a2",
+      "tag-a2"
+     ],
+     "answer": {
+      "result": "agrees",
+      "qty": 3400,
+      "flag": "tag"
+     },
+     "note": "A2: 33 crates of 100 and 100 loose make 3,400, the register’s figure: agrees. The tag says 3,300: the team missed the loose pieces. Call it short and you missed them too. Wrong tag: it gets corrected."
+    },
+    {
+     "id": "a4",
+     "label": "A4 · QC hold rack",
+     "book": "Not in the register",
+     "docs": [
+      "shelf-a4",
+      "qc-a4"
+     ],
+     "answer": {
+      "result": "keepout"
+     },
+     "note": "A4: 60 bearings 6306-ZZ that QC rejected on 30 March, waiting to go back to Vishwamitri. Not Tamhini’s stock: keep them out and list them with GRN 0443. Counted, they would make the 6306-ZZ stock look 60 over."
+    },
+    {
+     "id": "b1",
+     "label": "B1 · Ball bearing 6205-2RS",
+     "book": "Register 2,400 nos",
+     "docs": [
+      "shelf-b1",
+      "tag-b1"
+     ],
+     "answer": {
+      "result": "short",
+      "qty": 2150,
+      "flag": "none"
+     },
+     "note": "B1: 43 cartons of 50 is 2,150; the register and the bin card both say 2,400. Short 250, and no issue slip on file. Datta recounts it with you, then looks for the issue record before anyone writes it off."
+    },
+    {
+     "id": "b2",
+     "label": "B2 · Ball bearing 6306-ZZ",
+     "book": "Register 1,850 nos",
+     "docs": [
+      "shelf-b2",
+      "tag-b2"
+     ],
+     "answer": {
+      "result": "agrees",
+      "qty": 1850,
+      "flag": "none"
+     },
+     "note": "B2: 37 cartons of 50 is 1,850, the register’s figure. Fine. The 60 bearings of this size that QC rejected sit at A4, outside this bin and outside the register."
+    },
+    {
+     "id": "c2",
+     "label": "C2 · Taper roller bearing 30206",
+     "book": "Register 3,900 nos",
+     "docs": [
+      "shelf-c2",
+      "tag-c2"
+     ],
+     "answer": {
+      "result": "agrees",
+      "qty": 3900,
+      "flag": "tag"
+     },
+     "note": "C2: the cartons say 60 but hold 50, as the one you opened showed. 78 × 50 is 3,900: agrees. The tag says 4,680, which is 78 × 60 off the label. Wrong tag: it gets corrected and Bay C recounted."
+    },
+    {
+     "id": "c3",
+     "label": "C3 · Clutch plate 240 mm",
+     "book": "Register 2,600 nos",
+     "docs": [
+      "shelf-c3",
+      "tag-c3"
+     ],
+     "answer": {
+      "result": "agrees",
+      "qty": 2600,
+      "flag": "none"
+     },
+     "note": "C3: 128 boxes of 20 is 2,560, plus 40 loose: 2,600. Fine. The 1,800 plates packed for Naik are in the dispatch bay and already out of the register, so they are not part of this bin."
+    },
+    {
+     "id": "d1",
+     "label": "D1 · Corrugated box, 5-ply",
+     "book": "Register 1,600 nos",
+     "docs": [
+      "shelf-d1",
+      "tag-d1"
+     ],
+     "answer": {
+      "result": "agrees",
+      "qty": 1600,
+      "flag": "damaged"
+     },
+     "note": "D1: 80 bundles of 20 is 1,600, so the count agrees, but the 9 bundles on the bottom pallet are soaked. Count them, then set them apart: 180 boxes are a write-off, not a shortage. Datta’s team still has to tag them yellow."
+    },
+    {
+     "id": "e1",
+     "label": "E1 · Input shaft 1142",
+     "book": "Register 4,200 nos",
+     "docs": [
+      "shelf-e1",
+      "tag-e1"
+     ],
+     "answer": {
+      "result": "agrees",
+      "qty": 4200,
+      "flag": "none"
+     },
+     "note": "E1: 105 trays of 40 is 4,200, as the register says. Fine."
+    },
+    {
+     "id": "e2",
+     "label": "E2 · Wheel hub 4410",
+     "book": "Register 1,650 nos",
+     "docs": [
+      "shelf-e2",
+      "tag-e2"
+     ],
+     "answer": {
+      "result": "agrees",
+      "qty": 1650,
+      "flag": "none"
+     },
+     "note": "E2: 82 crates of 20 and 10 loose: 1,650, as the register says. Fine."
+    },
+    {
+     "id": "e3",
+     "label": "E3 · Dispatch bay",
+     "book": "Not in the register",
+     "docs": [
+      "shelf-e3",
+      "inv-naik"
+     ],
+     "answer": {
+      "result": "keepout"
+     },
+     "note": "E3: three pallets billed to Naik Auto today, waiting for a truck. The register took them out when the invoice was booked. Keep them off the count, list them with the invoice number, and bring the invoice to me."
+    },
+    {
+     "id": "e4",
+     "label": "E4 · Input shaft 0907",
+     "book": "Register 1,240 nos",
+     "docs": [
+      "shelf-e4",
+      "tag-e4"
+     ],
+     "answer": {
+      "result": "agrees",
+      "qty": 1240,
+      "flag": "slow"
+     },
+     "note": "E4: 31 trays of 40 is 1,240, so the count agrees. But nothing has moved since 14 February 2025 and the customer stopped the model. Slow-moving: it is valued at what it will fetch, not at cost."
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Value the results, class by class",
+   "prompt": "Datta’s final sheets after the recount: GB-110 2,000 against 1,880 in the register; 6205-2RS 2,150 against 2,400; 180 wet boxes in D1; 1,240 shafts 0907 that have not moved since February 2025. Everything else agrees. Value it all class by class: minus for a shortage, 0 where nothing applies, % to two decimals.",
+   "weight": 2,
+   "hints": [
+    "Ask of each item on Datta’s sheet: is stock missing or extra, or all there but worth less? The first goes in the difference column, the second in the write-down column.",
+    "% of class = the class’s difference ÷ its book value × 100. For the shafts, the write-down is cost less what Bilal pays for one."
+   ],
+   "columns": [
+    {
+     "key": "cls",
+     "label": "Class"
+    },
+    {
+     "key": "book",
+     "label": "Book value (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "diff",
+     "label": "Count difference (₹)",
+     "format": "inr",
+     "signed": true
+    },
+    {
+     "key": "pct",
+     "label": "Difference, % of class",
+     "format": "pct",
+     "signed": true
+    },
+    {
+     "key": "wd",
+     "label": "Write-down (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "rm",
+     "cells": {
+      "cls": "Raw materials",
+      "book": 60480000.0,
+      "diff": {
+       "input": true,
+       "answer": 49440.0,
+       "tolerance": 0,
+       "format": "inr",
+       "working": "120 × ₹412 = 49,440"
+      },
+      "pct": {
+       "input": true,
+       "answer": 0.08,
+       "tolerance": 0.01,
+       "format": "pct",
+       "working": "49,440 ÷ 6,04,80,000 × 100 = 0.08"
+      },
+      "wd": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0,
+       "format": "inr",
+       "working": "Good stock: nothing to write down",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "bop",
+     "cells": {
+      "cls": "Bought-out parts",
+      "book": 8760000.0,
+      "diff": {
+       "input": true,
+       "answer": -36500.0,
+       "tolerance": 0,
+       "format": "inr",
+       "working": "−250 × ₹146 = −36,500"
+      },
+      "pct": {
+       "input": true,
+       "answer": -0.42,
+       "tolerance": 0.01,
+       "format": "pct",
+       "working": "−36,500 ÷ 87,60,000 × 100 = −0.42"
+      },
+      "wd": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0,
+       "format": "inr",
+       "working": "The shortage is in the difference column; nothing to write down",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "sit",
+     "cells": {
+      "cls": "Stock-in-trade",
+      "book": 22140000.0,
+      "diff": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0,
+       "format": "inr",
+       "working": "The bins agree; the dispatch bay is outside the count"
+      },
+      "pct": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0.01,
+       "format": "pct",
+       "working": "No difference"
+      },
+      "wd": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0,
+       "format": "inr",
+       "working": "Nothing damaged or slow",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "fg",
+     "cells": {
+      "cls": "Finished goods (incl. scrap)",
+      "book": 53120000.0,
+      "diff": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0,
+       "format": "inr",
+       "working": "1,240 counted, 1,240 in the register"
+      },
+      "pct": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0.01,
+       "format": "pct",
+       "working": "No difference"
+      },
+      "wd": {
+       "input": true,
+       "answer": 1067640.0,
+       "tolerance": 0,
+       "format": "inr",
+       "working": "1,240 × (₹1,074 − 7.1 kg × ₹30) = 1,240 × ₹861",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "pkg",
+     "cells": {
+      "cls": "Packing materials",
+      "book": 3480000.0,
+      "diff": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0,
+       "format": "inr",
+       "working": "All 1,600 boxes were there"
+      },
+      "pct": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0.01,
+       "format": "pct",
+       "working": "No difference"
+      },
+      "wd": {
+       "input": true,
+       "answer": 17280.0,
+       "tolerance": 0,
+       "format": "inr",
+       "working": "180 × ₹96 = 17,280",
+       "sign": false
+      }
+     }
+    }
+   ],
+   "notes": {
+    "rm.diff": "The 120 blanks were on the floor but not in the register. They are a March receipt, so stock and purchases both rise.",
+    "bop.pct": "The item alone is 10.4% short, but CARO tests the class, and the class is only 0.42% out.",
+    "sit.diff": "The dispatch bay goods were never part of the count: the register had already taken them out. Added back, they would show a false 16.4% excess; whether the sale is March’s is a cut-off question.",
+    "fg.diff": "Not one is missing; the loss is in what they will fetch.",
+    "fg.wd": "Nobody will buy them as shafts, so they are worth what Bilal pays for scrap: ₹213 each. He loads and carries at his cost, so there is nothing to deduct.",
+    "pkg.diff": "Wet is not missing: the 180 soaked boxes were counted. Their loss goes in the write-down column.",
+    "pkg.wd": "Soaked boxes come apart: nothing to recover, so their full cost is written off."
+   },
+   "note": "No difference in work-in-progress or in stores and consumables, so neither has a row here.",
+   "docs": [
+    "register",
+    "classes",
+    "mail-harshad",
+    "shelf-d1",
+    "shelf-e4",
+    "memo-count"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "choice",
+   "stage": "Report",
+   "title": "Close the count file and the CARO check",
+   "prompt": "Datta corrected the A2 and C2 tags and recounted Bays A and C: no other error. He signed the final sheets at 11:40 pm. Use Naik’s invoice, Kudalwadi’s confirmation, the September report and the CARO working paper to answer the five points Aarti needs for the file.",
+   "weight": 3,
+   "hints": [
+    "Use your task 2 figures: CARO compares each class’s net difference with its book value. Materiality does not come into it.",
+    "Stock held by someone else is confirmed by them in writing. For goods billed but not delivered, read the invoice’s terms."
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "multi": false,
+     "text": "The dispatch bay holds 2,400 taper bearings, 9,600 oil seals and 1,800 clutch plates billed to Naik Auto today. What do you do with them?",
+     "options": [
+      {
+       "id": "b",
+       "text": "Add them back to the three bins they came from, as an excess over the register, and value the excess at cost for stock-in-trade.",
+       "why": "That counts them twice: once in sales, booked today, and once more in closing stock."
+      },
+      {
+       "id": "c",
+       "text": "Leave them out of the count and note nothing: goods billed to a customer are already sold, so they are not stock.",
+       "why": "Read the terms before you call it sold. And with nothing noted, the file has no trace of these goods when I check the last day’s sales."
+      },
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Keep them off the bin counts, list them with invoice TD/TR/26-27/0412, and tell Aarti property passes only on delivery.",
+       "why": "Billed is not delivered. Under these terms the goods are Tamhini’s until they reach Bhiwandi, so the sale may belong to April. That is my cut-off call; your list is my evidence."
+      },
+      {
+       "id": "d",
+       "text": "Ask accounts to cancel Naik’s invoice tonight, so that the goods can be counted back into stock with the rest.",
+       "why": "Not an article’s call, and not tonight. You record what you see; I decide what we propose once the terms and the dispatch date are checked."
+      }
+     ]
+    },
+    {
+     "id": "q2",
+     "multi": false,
+     "text": "The job-work register shows 5,400 hobbed helical gears 2210 with Kudalwadi Heat Treaters for hardening. What evidence goes in the file?",
+     "options": [
+      {
+       "id": "b",
+       "text": "Datta’s signed note that the gears went to Kudalwadi on two challans and have not come back yet.",
+       "why": "Datta sent them, so his note is not independent. Ask the holder."
+      },
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Kudalwadi’s signed confirmation of quantity and condition, matched to the two job-work challans.",
+       "why": "Stock held by someone else is confirmed by the holder in writing and tied to the papers that sent it. The letter says 5,400; JW-0616 and JW-0619 add up to 5,400."
+      },
+      {
+       "id": "c",
+       "text": "Nothing more: stock lying away from the plant on 31 March is outside tonight’s count and its file.",
+       "why": "It is Tamhini’s stock wherever it sits, and coverage has to include it. Leaving it out would drop ₹42,12,000 from work-in-progress."
+      },
+      {
+       "id": "d",
+       "text": "A count of the gears by our own team when they come back from Kudalwadi in April.",
+       "why": "By then some will be hardened, issued or rejected, and the 31 March position is gone. Confirm it as on 31 March."
+      }
+     ]
+    },
+    {
+     "id": "q3",
+     "multi": false,
+     "text": "CARO asks about discrepancies of 10% or more. What do you write for tonight’s count?",
+     "options": [
+      {
+       "id": "b",
+       "text": "Bearings 6205-2RS are 250 short on 2,400, which is 10.4%, so this goes in the report.",
+       "why": "That is one item, by quantity. A single line can be 10% out while its class, in rupees, barely moves."
+      },
+      {
+       "id": "d",
+       "text": "None, because both differences are far below the materiality set for this audit.",
+       "why": "The answer is none, but not for that reason. CARO’s 10% ignores materiality: a class 10% out is reported however small. Here no class comes near 10%."
+      },
+      {
+       "id": "c",
+       "text": "Packing materials: 180 of the 1,600 boxes (11.25%) are wet, so the class is reported.",
+       "why": "The wet boxes were all there, so the class agrees with the register. Their damage goes in the write-down, which CARO’s 10% does not measure."
+      },
+      {
+       "id": "a",
+       "correct": true,
+       "text": "None: the nearest to 10% is bought-out parts, ₹36,500 short on ₹87,60,000 (0.42%).",
+       "why": "The test is per class in the books, by value, net of excesses and shortages. Raw materials are 0.08% over; no other class differs."
+      }
+     ]
+    },
+    {
+     "id": "q4",
+     "multi": false,
+     "text": "CARO aside, what happens in the books to the two count differences?",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Both go in the books: the blanks as a March receipt, the bearings after Datta looks for an issue record.",
+       "why": "Under 10% only means CARO does not report it. The books still have to match the count, so every difference is entered, each on its own."
+      },
+      {
+       "id": "b",
+       "text": "Nothing more unless a class is 10% out: below that, the register can keep its own figures for this year.",
+       "why": "Then the books would carry 120 blanks fewer and 250 bearings more than the shelf."
+      },
+      {
+       "id": "c",
+       "text": "Write off the ₹36,500 tonight and set the ₹49,440 of extra blanks against it, so that only the net goes in.",
+       "why": "Set against each other, the ₹36,500 shortage vanishes and Rankala’s ₹49,440 purchase is never booked. Netting is how CARO measures a class, not how the books are corrected."
+      },
+      {
+       "id": "d",
+       "text": "Leave both for the September count, when the stores will have more time to look for the missing issue slip.",
+       "why": "This year’s closing stock has to be right. A difference left alone just moves into next year’s accounts."
+      }
+     ]
+    },
+    {
+     "id": "q5",
+     "multi": false,
+     "text": "The working paper also asks: did management verify inventory at reasonable intervals, with appropriate coverage and procedure?",
+     "options": [
+      {
+       "id": "b",
+       "text": "No: our test counts found two wrong tags tonight, so management’s count procedure cannot be called appropriate.",
+       "why": "Catching wrong tags is what test counts are for: the checks worked. Note them; they do not make the procedure inappropriate."
+      },
+      {
+       "id": "c",
+       "text": "It does not arise for management this year: we, the auditors, counted the stock ourselves tonight, bay by bay.",
+       "why": "We test-counted. Management counted: physical verification is management’s job, and CARO asks about theirs."
+      },
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Yes: every location counted in September and tonight, under written instructions, with job workers’ stock confirmed.",
+       "why": "Hosur’s team counted its own stock today as well. Tonight’s count at Chakan ran on controlled tags, and the two wrong tags were corrected after clean recounts of their bays."
+      },
+      {
+       "id": "d",
+       "text": "No: CARO wants every location counted in every quarter, and Tamhini counts only twice a year, in September and on 31 March.",
+       "why": "CARO says reasonable intervals and sets no frequency. All material items at least once a year is the usual yardstick, and Tamhini counted twice."
+      }
+     ]
+    }
+   ],
+   "docs": [
+    "inv-naik",
+    "shelf-e3",
+    "jw-register",
+    "conf-kudalwadi",
+    "sept-report",
+    "memo-count",
+    "caro-wp",
+    "classes"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "aarti",
+  "text": "Two differences, one wet pallet, one dead lot of shafts and two tags that did not match the shelf. No class is anywhere near 10%. Datta signed at 11:40, and both differences and both write-downs are on my list for Rehan. Go home; the final audit starts on the 19th."
+ },
+ "wrapPartial": {
+  "from": "aarti",
+  "text": "Rehan sees the file with my corrections beside your answers. A wrong count usually means you counted the label, the tag or the bin card instead of the shelf; a missed note means the shelf showed something you walked past."
+ },
+ "wrapRetry": {
+  "from": "aarti",
+  "text": "The bin card and the carton print can both be wrong, so count the shelf: every lot, and one carton opened wherever there are cartons. Then compare with the register, and read Mahesh’s instructions for what stays out of the count."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.75,
+   "note": "Get more of the 12 locations right to pass: the call, the count and anything else for the sheet."
+  }
+ ],
+ "model": {
+  "intro": "Two count differences: 120 forged blanks over the register, from a late receipt with no GRN, and 250 bearings short with no issue slip. Eight locations agreed, four of them with a note (wet boxes, slow shafts, two wrong tags), and two lots stayed out of the count.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "loc",
+      "label": "Locations with a finding"
+     },
+     {
+      "key": "found",
+      "label": "What we found"
+     },
+     {
+      "key": "next",
+      "label": "What happens next"
+     }
+    ],
+    "rows": [
+     {
+      "loc": "A1 · blanks GB-110",
+      "found": "2,000 on the shelf, 1,880 in the register; 120 came in at 7:40 pm with no GRN",
+      "next": "Receipt goes into March; stock and purchases both up ₹49,440"
+     },
+     {
+      "loc": "B1 · bearings 6205-2RS",
+      "found": "2,150 on the shelf, 2,400 in the register; no issue slip",
+      "next": "Datta looks for the issue record; if none, a ₹36,500 shortage is written off"
+     },
+     {
+      "loc": "A2 · blanks GB-145",
+      "found": "3,400 on the shelf, as in the register; tag 3,300 missed the 100 loose",
+      "next": "Tag corrected to 3,400; Bay A recounted, no other error"
+     },
+     {
+      "loc": "C2 · bearings 30206",
+      "found": "Cartons hold 50, not the 60 printed; tag 4,680 was wrong",
+      "next": "Tag corrected to 3,900; Bay C recounted, no other error"
+     },
+     {
+      "loc": "D1 · boxes",
+      "found": "180 of 1,600 soaked",
+      "next": "Write-off of ₹17,280"
+     },
+     {
+      "loc": "E4 · shafts 0907",
+      "found": "1,240 untouched since February 2025",
+      "next": "Write-down of ₹10,67,640 to scrap value"
+     },
+     {
+      "loc": "A4 · QC hold",
+      "found": "60 rejected bearings 6306-ZZ waiting to go back",
+      "next": "Kept out; listed with GRN 0443"
+     },
+     {
+      "loc": "E3 · dispatch bay",
+      "found": "Goods billed to Naik on 31 March, still here",
+      "next": "Listed with the invoice; Aarti checks the terms and the date of the sale"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "The CARO working paper, as it goes to Rehan:"
+   },
+   {
+    "type": "list",
+    "items": [
+     "Management verified all inventory on 26–27 September 2026 and on 31 March 2027, under written instructions: reasonable intervals.",
+     "Coverage and procedure appropriate: every location, controlled tags, test counts with recounts, the Hosur depot’s own count and the job workers’ confirmations.",
+     "No class showed a discrepancy of 10% or more, in September (under 1%) or tonight: bought-out parts 0.42% short, raw materials 0.08% over. Hosur’s signed sheets, due 2 April, are still to be added.",
+     "Both differences and both write-downs go on the list of audit adjustments."
+    ]
+   },
+   {
+    "type": "note",
+    "from": "aarti",
+    "text": "A test count goes both ways. From the register to the shelf asks: is it really there? From the shelf to the register asks: is everything recorded? B1 failed the first test, and the blanks at A1 failed the second."
+   }
+  ]
+ },
+ "principles": [
+  "Count what is on the shelf, whatever the bin card, tag or label says, and test both ways: register to shelf, shelf to register.",
+  "A count difference is the shelf against the books; wet or dead stock that is all there is written down to what it will fetch.",
+  "CARO’s 10% is per class, by value and net, and smaller differences still go into the books."
+ ],
+ "earned": {
+  "clause": "test-counted {bins} store locations at a year-end stock count[[; found {diffs} count {diffs|difference|differences}]][[; flagged {lots} damaged or slow-moving {lots|lot|lots}]][[; checked each class against CARO’s 10% {caro|test|test}{caroq|}]]",
+  "counts": {
+   "bins": {
+    "kind": "items",
+    "task": "t1",
+    "answered": "gate"
+   },
+   "diffs": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "result",
+    "equals": [
+     "short",
+     "excess"
+    ]
+   },
+   "lots": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "flag",
+    "equals": [
+     "damaged",
+     "slow"
+    ]
+   },
+   "caro": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "bop",
+    "col": "pct",
+    "withRight": [
+     "rm.pct",
+     "sit.pct",
+     "fg.pct",
+     "pkg.pct"
+    ]
+   },
+   "caroq": {
+    "kind": "correctQuestions",
+    "task": "t3",
+    "questions": [
+     "q3"
+    ]
+   }
+  },
+  "fallback": "test-counted {bins} store locations at a year-end stock count"
+ },
+ "interview": [
+  {
+   "q": "How did you do the stock count?",
+   "checking": "Whether you know why test counts go both ways, and what you keep out.",
+   "outline": [
+    "I test-counted both ways: register to shelf shows it exists; shelf to register shows it is recorded.",
+    "I counted packs × what one held, plus loose; kept rejected and billed goods out and listed them.",
+    "In the simulation I covered {bins} locations[[ and found {diffs} {diffs|difference|differences} against the register]]."
+   ]
+  },
+  {
+   "q": "What does CARO ask about inventory?",
+   "checking": "Whether you know the clause, and that the 10% is per class, by value.",
+   "outline": [
+    "Whether management verified inventory at reasonable intervals, with appropriate coverage and procedure.",
+    "Then any class out by 10% or more in aggregate, and how the books dealt with it.",
+    "Per class, by value, net: in the simulation a 10.4% bearing shortage was 0.42% of its class."
+   ]
+  }
+ ]
+}

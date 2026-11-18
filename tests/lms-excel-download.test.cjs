@@ -120,14 +120,17 @@ test('course page: Tests 2-9 after the data fix say Download Excel and explain t
     const source = fs.readFileSync(path.join(root, 'learning-management-system/course-script.js'), 'utf8');
     const start = source.indexOf('const isGoogleSheetResource');
     const end = source.indexOf('const updateLearningStreak', start);
-    const context = {};
+    // The label helpers read the page's course table (Articleship v3 compact resources).
+    const context = { courses: {}, state: { courseSlug: 'industrial-training-mastery' },
+        window: { MSCExcelSheets: require('../scripts/excel-sheet-view.js') } };
     vm.createContext(context);
-    vm.runInContext(source.slice(start, end) + '\nthis.api = { getResourceDownloadLabel, getResourceFormatNote, getResourceViewerSubtitle };', context);
-    const { getResourceDownloadLabel, getResourceFormatNote, getResourceViewerSubtitle } = context.api;
+    vm.runInContext(source.slice(start, end) + '\nthis.api = { getResourceViewLabel, getResourceDownloadLabel, getResourceFormatNote, getResourceViewerSubtitle };', context);
+    const { getResourceViewLabel, getResourceDownloadLabel, getResourceFormatNote, getResourceViewerSubtitle } = context.api;
     const test2 = { title: 'Excel Test 2', type: 'csv', group: 'Excel Tests', view_storage_path: 'Excel-Assessment-Test-_Questions__.csv', download_storage_path: 'Excel Assessment Test (Questions).xlsx' };
     assert.equal(getResourceDownloadLabel(test2), 'Download Excel');
-    assert.equal(getResourceFormatNote(test2), 'Preview shows one sheet. Download the Excel file for every sheet.');
-    assert.equal(getResourceViewerSubtitle(test2, 'csv'), 'This preview shows one sheet. Download the Excel file for every sheet.');
+    assert.equal(getResourceViewLabel(test2), 'Preview Excel');
+    assert.equal(getResourceFormatNote(test2), 'Preview every sheet here. Download the Excel file to edit it.');
+    assert.match(getResourceViewerSubtitle(test2, 'xlsx'), /keep the formulas/);
 });
 
 // ---- Data fix: supabase/migrations/202610310001_excel_tests_xlsx_downloads.sql ----
