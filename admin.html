@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="scripts/style.css">
-  <link rel="stylesheet" href="scripts/admin-styles.css">
+  <link rel="stylesheet" href="scripts/admin-styles.css?v=20261118_1">
   <style>
     /* SVG Sizing Fallbacks if Tailwind CDN fails */
     svg.w-5 {
@@ -2150,8 +2150,9 @@
                 style="width: 18px; height: 18px; accent-color: #d97706; cursor: pointer; flex-shrink: 0;">
               <label for="is_exclusive_checkbox" style="cursor: pointer; margin: 0; font-size: 0.9rem;">
                 <strong style="color: #92400e;">⭐ Exclusive Vacancy</strong>
-                <span style="display: block; font-size: 0.78rem; color: #78350f; font-weight: 400;">Only MSC Industrial
-                  Training Program students can view full details. Others will see a lock screen.</span>
+                <span style="display: block; font-size: 0.78rem; color: #78350f; font-weight: 400;">Industrial Training and
+                  Articleship only. Only students in that MSC program can view full details and apply. Others see a lock
+                  screen.</span>
               </label>
             </div>
             <div class="form-group">
@@ -2390,26 +2391,7 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-    const CLOUDFLARE_WORKER_URL = 'https://auth-check.bhansalimanan55.workers.dev';
 
-    const PREDEFINED_LOCATIONS = ["mumbai", "bangalore", "bengaluru", "gurgaon", "gurugram", "pune", "kolkata", "delhi", "new delhi", "noida", "hyderabad", "ahmedabad", "chennai", "jaipur"];
-    const JOB_TYPE_MAP = { "Industrial Training Job Portal": "industrial", "Fresher Jobs": "fresher", "Semi Qualified Jobs": "semi", "Articleship Jobs": "articleship" };
-    const PORTAL_NAME_MAP = { "Industrial Training Job Portal": "Industrial Training", "Fresher Jobs": "Fresher", "Semi Qualified Jobs": "Semi Qualified", "Articleship Jobs": "Articleship" };
-    const PORTAL_LINK_MAP = { "Industrial Training Job Portal": "https://www.mystudentclub.com/", "Fresher Jobs": "https://www.mystudentclub.com/ca-fresher-jobs", "Semi Qualified Jobs": "https://www.mystudentclub.com/semi-qualified-ca-jobs", "Articleship Jobs": "https://www.mystudentclub.com/ca-articleship-opportunities" };
-    // Type-wide ("All India") topic names, exactly as used by the subscribe UI in portal3.js
-    // (manageTopicSubscription / the location+job-type dropdown). Note "Industrial-all" is
-    // capitalized where the other three are not — this mirrors an existing inconsistency in
-    // portal3.js, not a typo here; topic names must match what subscribers actually subscribed to.
-    const TYPE_WIDE_TOPIC_MAP = { industrial: 'Industrial-all', fresher: 'fresher-all', semi: 'semi-all', articleship: 'articleship-all', experienced: 'experienced-all' };
-    // Experienced CA jobs are rows in "Fresher Jobs" with Experience = 'Experienced'. Besides the
-    // usual Fresher topics, they also go to the "Experienced CA" topics students pick in the bell.
-    const EXPERIENCED_PORTAL_NAME = 'Experienced CA';
-    const EXPERIENCED_PORTAL_LINK = 'https://www.mystudentclub.com/experienced-ca-jobs';
-    
-    // Batched job notifications: a burst of job postings to the same topic within this
-    // rolling window is collapsed into a single "N+ new jobs posted" push instead of one
-    // push per job. Named constant so the window is trivial to tune later.
-    const NOTIFICATION_BATCH_WINDOW_HOURS = 3;
 
     let currentSession = null;
     let isFetching = false;
@@ -2571,136 +2553,6 @@
       label: PROFILE_EXPORT_LABEL_OVERRIDES[key] || humanizeFieldLabel(key)
     }));
 
-    function normalizeLocation(location) { if (!location) return ''; const lowerLoc = location.toLowerCase().trim(); if (lowerLoc === 'gurugram') return 'gurgaon'; if (lowerLoc === 'bengaluru') return 'bangalore'; if (lowerLoc === 'new delhi') return 'delhi'; return lowerLoc; }
-    function findMatchingLocationKeyword(jobLocation) { const normalizedJobLoc = normalizeLocation(jobLocation); if (!normalizedJobLoc) return null; for (const keyword of PREDEFINED_LOCATIONS) { if (normalizedJobLoc.includes(normalizeLocation(keyword))) { return normalizeLocation(keyword); } } return null; }
-    function generateTopicName(locationKeyword, jobType) { if (!locationKeyword || !jobType) return null; return `${locationKeyword.toLowerCase().replace(/\s+/g, '-')}-${jobType}`; }
-    function truncateDescription(description, wordLimit = 20) { if (!description) return ''; const words = description.split(/\s+/); return words.length <= wordLimit ? description : words.slice(0, wordLimit).join(' ') + '...'; }
-    async function sendNotification(topic, title, description, link, accessToken) {
-        if (!topic || !title || !description || !link || !accessToken) return false;
-        try {
-            const response = await fetch(CLOUDFLARE_WORKER_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-                body: JSON.stringify({ title, description, link, topic })
-            });
-            const result = await response.json();
-            if (!response.ok || !result.success) {
-                console.error(`Failed to send notification to topic ${topic}:`, result.error || response.statusText);
-                return false;
-            }
-            console.log(`Successfully sent notification request for topic: ${topic}`);
-            return true;
-        } catch (error) {
-            console.error(`Error sending notification fetch request for topic ${topic}:`, error);
-            return false;
-        }
-    }
-    
-    // ---- Batched job notifications: decision logic (pure, unit-tested in tests/) ----
-    
-    // True when a topic's pending batch should be flushed now: either it has never
-    // been sent before (lastSentAt is null/undefined), or the rolling window has
-    // fully elapsed since the last send.
-    function shouldFlushJobNotificationBatch(lastSentAt, nowMs = Date.now()) {
-        if (!lastSentAt) return true;
-        const lastSentMs = new Date(lastSentAt).getTime();
-        if (Number.isNaN(lastSentMs)) return true;
-        const windowMs = NOTIFICATION_BATCH_WINDOW_HOURS * 60 * 60 * 1000;
-        return (nowMs - lastSentMs) >= windowMs;
-    }
-    
-    // Given the current job_notification_batches row for a topic (or null/undefined if
-    // the topic has no row yet) and "now", returns:
-    //   - shouldFlush: whether a push should be sent for this job
-    //   - pendingCount: the total pending count including this job (used in the message)
-    //   - nextRow: the { pending_count, last_sent_at } to persist after this call —
-    //     reset to 0 / now() when flushing, otherwise just the incremented count.
-    function computeJobNotificationBatchUpdate(row, nowMs = Date.now()) {
-        const currentPendingCount = (row && typeof row.pending_count === 'number') ? row.pending_count : 0;
-        const lastSentAt = row ? row.last_sent_at : null;
-        const pendingCount = currentPendingCount + 1;
-        const shouldFlush = shouldFlushJobNotificationBatch(lastSentAt, nowMs);
-        if (shouldFlush) {
-            return { shouldFlush: true, pendingCount, nextRow: { pending_count: 0, last_sent_at: new Date(nowMs).toISOString() } };
-        }
-        return { shouldFlush: false, pendingCount, nextRow: { pending_count: pendingCount, last_sent_at: lastSentAt } };
-    }
-    
-    // Increments the pending count for `topic` and, if the batch window says it's time,
-    // sends one "{pending_count}+ new jobs posted[ for {label}]" push and resets the
-    // counter. Otherwise it just persists the incremented count and sends nothing.
-    // Safe to call from this admin-session context the same way the rest of admin.js
-    // reads/writes Supabase (see job_notification_batches migration for RLS).
-    async function notifyOrBatch(topic, label, link, accessToken) {
-        if (!topic) return;
-        try {
-            const { data: row, error: fetchError } = await supabaseClient
-                .from('job_notification_batches')
-                .select('pending_count, last_sent_at')
-                .eq('topic', topic)
-                .maybeSingle();
-            if (fetchError) {
-                console.error(`Could not read notification batch for topic ${topic}:`, fetchError.message || fetchError);
-                return;
-            }
-    
-            const update = computeJobNotificationBatchUpdate(row, Date.now());
-            let rowToPersist = update.nextRow;
-    
-            if (update.shouldFlush) {
-                const message = topic === 'all'
-                    ? `${update.pendingCount}+ new jobs posted`
-                    : `${update.pendingCount}+ new jobs posted for ${label}`;
-                const sent = await sendNotification(topic, message, message, link, accessToken);
-                if (!sent) {
-                    // Don't advance last_sent_at on a failed send — keep the pending count
-                    // so the next job posting on this topic retries the flush.
-                    rowToPersist = { pending_count: update.pendingCount, last_sent_at: row ? row.last_sent_at : null };
-                }
-            }
-    
-            const { error: upsertError } = await supabaseClient
-                .from('job_notification_batches')
-                .upsert({ topic, pending_count: rowToPersist.pending_count, last_sent_at: rowToPersist.last_sent_at }, { onConflict: 'topic' });
-            if (upsertError) {
-                console.error(`Could not persist notification batch for topic ${topic}:`, upsertError.message || upsertError);
-            }
-        } catch (error) {
-            console.error(`Error batching notification for topic ${topic}:`, error);
-        }
-    }
-    
-    function capitalizeFirst(word) {
-        if (!word) return '';
-        return word.charAt(0).toUpperCase() + word.slice(1);
-    }
-    
-    async function triggerNotifications(jobData, accessToken) {
-        if (!jobData || !accessToken) return;
-        const { Location = 'Various Locations', table = currentTable } = jobData;
-        const portalName = PORTAL_NAME_MAP[table] || 'Job';
-        const jobType = JOB_TYPE_MAP[table];
-        const link = PORTAL_LINK_MAP[table] || 'https://www.mystudentclub.com/';
-        const matchedLocationKeyword = findMatchingLocationKeyword(Location);
-        const specificTopic = generateTopicName(matchedLocationKeyword, jobType);
-        const typeWideTopic = TYPE_WIDE_TOPIC_MAP[jobType];
-    
-        if (specificTopic) {
-            const specificLabel = `${capitalizeFirst(matchedLocationKeyword)} - ${portalName}`;
-            await notifyOrBatch(specificTopic, specificLabel, link, accessToken);
-        }
-        if (typeWideTopic) {
-            await notifyOrBatch(typeWideTopic, portalName, link, accessToken);
-        }
-        if (table === 'Fresher Jobs' && jobData.Experience === 'Experienced') {
-            const experiencedTopic = generateTopicName(matchedLocationKeyword, 'experienced');
-            if (experiencedTopic) {
-                await notifyOrBatch(experiencedTopic, `${capitalizeFirst(matchedLocationKeyword)} - ${EXPERIENCED_PORTAL_NAME}`, EXPERIENCED_PORTAL_LINK, accessToken);
-            }
-            await notifyOrBatch(TYPE_WIDE_TOPIC_MAP.experienced, EXPERIENCED_PORTAL_NAME, EXPERIENCED_PORTAL_LINK, accessToken);
-        }
-        await notifyOrBatch('all', null, link, accessToken);
-    }
     function showAccessDenied(message = "You don't have permission to access this page.") {
       document.getElementById('access-denied').style.display = 'flex';
       document.getElementById('admin-content').style.display = 'none';
@@ -4052,7 +3904,113 @@
     async function showEditJobModal(job) { const modal = document.getElementById('job-edit-modal'); const form = document.getElementById('job-form'); form.reset(); document.getElementById('job-edit-title').textContent = 'Edit Job'; form.elements['table'].value = currentTable; updateCategoryOptions(currentTable); const experienceFormGroup = document.getElementById('experience-form-group'); if (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') { experienceFormGroup.style.display = 'block'; } else { experienceFormGroup.style.display = 'none'; } Object.keys(job).forEach(field => { const input = form.elements[field]; if (input) { if (field === 'Created_At' && job[field]) { const date = new Date(job[field]); input.value = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, 16); } else if (input.type === 'checkbox') { input.checked = !!job[field]; } else { input.value = job[field]; } } }); form.elements['id'].value = job.id; modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
     async function getJobById(id, table) { try { const { data, error } = await supabaseClient.from(table).select('*').eq('id', id).single(); if (error) throw error; return data; } catch (error) { console.error('Error fetching job:', error); return null; } }
     async function deleteJob(id, table) { if (!confirm('Are you sure you want to delete this job?')) return; try { const { error } = await supabaseClient.from(table).delete().eq('id', id); if (error) throw error; const cardToRemove = document.querySelector(`.job-card[data-job-id='${id}']`); if (cardToRemove) { cardToRemove.style.transition = 'opacity 0.3s ease, transform 0.3s ease'; cardToRemove.style.opacity = '0'; cardToRemove.style.transform = 'scale(0.95)'; setTimeout(() => cardToRemove.remove(), 300); } } catch (error) { alert('Failed to delete job: ' + error.message); } }
-    function renderJobCard(job, table) { const jobCard = document.createElement('article'); jobCard.className = 'job-card' + (job.is_exclusive ? ' exclusive-job-card' : ''); jobCard.dataset.jobId = job.id; jobCard.innerHTML = ` <div class="admin-job-actions"> <button class="icon-btn edit-icon-btn" data-action="edit" title="Edit Job"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button> <button class="icon-btn delete-icon-btn" data-action="delete" title="Delete Job"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button> </div> <div class="job-info"> <h2 class="job-company">${job.Company || 'N/A'} ${job.is_exclusive ? '<span style="display:inline-block;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:0.04em;vertical-align:middle;margin-left:6px;">⭐ EXCLUSIVE</span>' : ''}</h2> <div class="job-meta"> <span class="job-tag location-tag"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${job.Location || 'N/A'}</span> ${job.Salary ? `<span class="job-tag salary-tag"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''} </div> </div>`; return jobCard; }
+    // Repost (migration 202611170001): bumps the same row to the top as new, keeping its id, link and applicants.
+    function repostChipHtml(job) {
+      if (!job || !job.reposted_at) return '';
+      const times = Number(job.repost_count) > 1 ? ` ${Number(job.repost_count)}×` : '';
+      const when = new Date(job.reposted_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+      return `<span class="repost-chip" title="Last reposted ${when}">↻ Reposted${times} · ${when}</span>`;
+    }
+
+    const repostEsc = (value) => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+
+    function repostAgeText(iso) {
+      const t = iso ? new Date(iso).getTime() : NaN;
+      if (!Number.isFinite(t)) return '';
+      const days = Math.floor((Date.now() - t) / 86400000);
+      return days <= 0 ? 'today' : days === 1 ? 'yesterday' : `${days} days ago`;
+    }
+
+    // In-page confirm for a repost (replaces the browser's confirm box). Resolves true on "Repost", false otherwise.
+    function askRepostConfirm(job) {
+      return new Promise(resolve => {
+        const name = (job && job.Company) || 'this vacancy';
+        const created = job && job.Created_At ? new Date(job.Created_At).getTime() : NaN;
+        const recent = Number.isFinite(created) && Date.now() - created < 3 * 86400000;
+        const today = new Date().toISOString().slice(0, 10);
+        const pastDeadline = job && job.deadline && String(job.deadline).slice(0, 10) < today;
+        const deadlineText = pastDeadline ? new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '';
+        const age = repostAgeText(job && job.Created_At);
+        const overlay = document.createElement('div');
+        overlay.className = 'repost-modal-overlay';
+        overlay.innerHTML = `
+          <div class="repost-modal" role="dialog" aria-modal="true" aria-labelledby="repost-modal-title">
+            <div class="repost-modal-head">
+              <span class="repost-modal-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></span>
+              <div>
+                <h3 id="repost-modal-title">Repost this vacancy?</h3>
+                <p class="repost-modal-job"><strong>${repostEsc(name)}</strong>${job && job.Location ? ` · ${repostEsc(job.Location)}` : ''}${age ? ` · ${job.reposted_at ? 'reposted' : 'posted'} ${age}` : ''}</p>
+              </div>
+            </div>
+            <ul class="repost-modal-list">
+              <li>Moves back to the <strong>top of the portal</strong> and shows <strong>"Reposted today"</strong>.</li>
+              <li>Counts as new again for the next 15 days.</li>
+              <li>Same link, job page and applicants.</li>
+              ${pastDeadline ? `<li>Its closing date (${repostEsc(deadlineText)}) has passed, so it will be <strong>removed</strong>. Set a new one in Edit if needed.</li>` : ''}
+            </ul>
+            ${recent ? `<p class="repost-modal-note">It was ${job.reposted_at ? 'reposted' : 'posted'} less than 3 days ago, so it is probably still near the top.</p>` : ''}
+            <div class="repost-modal-actions">
+              <button type="button" class="repost-modal-cancel">Cancel</button>
+              <button type="button" class="repost-modal-ok">Repost</button>
+            </div>
+          </div>`;
+        const close = (answer) => {
+          document.removeEventListener('keydown', onKey);
+          overlay.remove();
+          resolve(answer);
+        };
+        const onKey = (event) => { if (event.key === 'Escape') close(false); };
+        overlay.addEventListener('click', (event) => { if (event.target === overlay) close(false); });
+        overlay.querySelector('.repost-modal-cancel').addEventListener('click', () => close(false));
+        overlay.querySelector('.repost-modal-ok').addEventListener('click', () => close(true));
+        document.addEventListener('keydown', onKey);
+        document.body.appendChild(overlay);
+        overlay.querySelector('.repost-modal-ok').focus();
+      });
+    }
+
+    // Small message at the top right (replaces the browser's alert after a repost).
+    function showRepostToast(message, ok = true) {
+      document.querySelectorAll('.repost-toast').forEach(el => el.remove());
+      const toast = document.createElement('div');
+      toast.className = 'repost-toast' + (ok ? '' : ' repost-toast-error');
+      toast.setAttribute('role', ok ? 'status' : 'alert');
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => { toast.classList.add('repost-toast-hide'); setTimeout(() => toast.remove(), 300); }, ok ? 3500 : 6000);
+    }
+
+    async function repostJob(id, table) {
+      const job = await getJobById(id, table);
+      if (!job) { showRepostToast('Could not load this vacancy.', false); return; }
+      if (!(await askRepostConfirm(job))) return;
+      const button = document.querySelector(`.job-card[data-job-id='${id}'] [data-action='repost']`);
+      if (button) button.disabled = true;
+      try {
+        const { data, error } = await supabaseClient.rpc('msc_repost_vacancy', { p_table: table, p_id: String(id) });
+        if (error) {
+          if (/msc_repost_vacancy|function .* does not exist|PGRST202/i.test(`${error.code || ''} ${error.message || ''}`)) {
+            throw new Error('Repost is not switched on in the database yet (migration 202611170001).');
+          }
+          throw error;
+        }
+        // Reload the list with the current filters: the reposted vacancy now sorts first, and the
+        // offset paging stays right (prepending in place would repeat or skip a card on "Load more").
+        page = 0;
+        hasMoreData = true;
+        const jobsContainer = document.getElementById('jobs');
+        if (jobsContainer) jobsContainer.innerHTML = '';
+        const val = (elId) => (document.getElementById(elId) || {}).value || '';
+        await fetchJobs(val('searchInput'), val('locationSearchInput'), val('salaryFilter'), val('experienceFilter'));
+        showRepostToast(`Reposted: ${job.Company || 'the vacancy'} is back on top of the portal.`);
+      } catch (error) {
+        showRepostToast('Could not repost: ' + (error.message || error), false);
+      } finally {
+        if (button) button.disabled = false;
+      }
+    }
+
+    function renderJobCard(job, table) { const jobCard = document.createElement('article'); jobCard.className = 'job-card' + (job.is_exclusive ? ' exclusive-job-card' : ''); jobCard.dataset.jobId = job.id; jobCard.innerHTML = ` <div class="admin-job-actions"> <button class="icon-btn repost-icon-btn" data-action="repost" title="Repost: move this vacancy back to the top as new" aria-label="Repost vacancy"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button> <button class="icon-btn edit-icon-btn" data-action="edit" title="Edit Job"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button> <button class="icon-btn delete-icon-btn" data-action="delete" title="Delete Job"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button> </div> <div class="job-info"> <h2 class="job-company">${job.Company || 'N/A'} ${job.is_exclusive ? '<span style="display:inline-block;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:0.04em;vertical-align:middle;margin-left:6px;">⭐ EXCLUSIVE</span>' : ''}${repostChipHtml(job)}</h2> <div class="job-meta"> <span class="job-tag location-tag"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${job.Location || 'N/A'}</span> ${job.Salary ? `<span class="job-tag salary-tag"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''} </div> </div>`; return jobCard; }
 
     async function fetchJobs(searchTerm = '', locationSearch = '', salary = '', experience = '') {
       if (isFetching) return;
@@ -4062,8 +4020,8 @@
       loader.style.display = 'flex';
       loadMoreBtn.disabled = true;
       try {
-        let selectColumns = 'id, Company, Location, Salary, Description, "Application ID", Created_At, connect_link';
-        if (currentTable === "Industrial Training Job Portal") {
+        let selectColumns = 'id, Company, Location, Salary, Description, "Application ID", Created_At, connect_link, reposted_at, repost_count';
+        if (currentTable === "Industrial Training Job Portal" || currentTable === "Articleship Jobs") {
           selectColumns += ', is_exclusive';
         }
         if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
@@ -4097,10 +4055,17 @@
         let query = buildQuery(selectColumns);
         let { data, error } = await query;
 
-        // Failsafe Fallback: If is_exclusive does not exist yet on the table, strip it and retry.
-        if (error && error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
-          console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
-          selectColumns = selectColumns.replace(', is_exclusive', '');
+        // Failsafe Fallbacks for columns the database may not have yet, in whichever order it reports them:
+        // the repost columns (migration 202611170001) and is_exclusive.
+        for (let retry = 0; retry < 2 && error && error.message; retry++) {
+          if (/reposted_at|repost_count/.test(error.message) && selectColumns.includes(', reposted_at')) {
+            selectColumns = selectColumns.replace(', reposted_at, repost_count', '');
+          } else if (error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
+            console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
+            selectColumns = selectColumns.replace(', is_exclusive', '');
+          } else {
+            break;
+          }
           query = buildQuery(selectColumns);
           const fallbackResult = await query;
           data = fallbackResult.data;
@@ -4439,8 +4404,8 @@
               delete dataToSave.Experience;
             }
 
-            // Handle is_exclusive checkbox for Industrial Training
-            if (table === "Industrial Training Job Portal") {
+            // Handle is_exclusive checkbox for Industrial Training and Articleship
+            if (table === "Industrial Training Job Portal" || table === "Articleship Jobs") {
               dataToSave.is_exclusive = dataToSave.is_exclusive === 'true' || dataToSave.is_exclusive === true;
             } else {
               delete dataToSave.is_exclusive;
@@ -4493,13 +4458,6 @@
               }
               const newCard = renderJobCard(savedJob, table);
               dom.jobs.prepend(newCard);
-              if (currentSession?.access_token) {
-                try {
-                  await triggerNotifications({ ...savedJob, table }, currentSession.access_token);
-                } catch (notifErr) {
-                  console.error('Failed to send notification:', notifErr);
-                }
-              }
             }
           } catch (error) {
             console.error('Error saving job:', error);
@@ -4529,6 +4487,8 @@
             const action = button.dataset.action;
             if (action === 'delete') {
               await deleteJob(jobId, currentTable);
+            } else if (action === 'repost') {
+              await repostJob(jobId, currentTable);
             } else if (action === 'edit') {
               const jobDetails = await getJobById(jobId, currentTable);
               if (jobDetails) showEditJobModal(jobDetails);

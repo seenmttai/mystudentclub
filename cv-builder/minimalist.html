@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Padam Bhansali CV - Template 6</title>
+    <title>[Your name] CV - Template 6</title>
     <style>
         /* ---------------------------------------------------------
            CORE VARIABLES
@@ -458,7 +458,7 @@
 
             const targetWidth = window.innerWidth - 48;
             const refWidth = 1000;
-            const scale = targetWidth / refWidth;
+            const scale = Math.min(targetWidth / refWidth, 1);
 
             page.style.transform = `scale(${scale})`;
 

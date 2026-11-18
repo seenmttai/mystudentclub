@@ -4,7 +4,8 @@ const path = require('node:path');
 const test = require('node:test');
 
 // The notification bell's job-type dropdown is built from JOB_TYPES_NOTIF, and "All India"
-// picks the type-wide topic. Experienced CA must be offered and map to the topic admin.html sends to.
+// picks the type-wide topic. Experienced CA must be offered and map to the topics the job digest worker sends to
+// (experienced-all and <city>-experienced, from the Experienced rows of Fresher Jobs).
 const root = path.resolve(__dirname, '..');
 
 for (const file of ['scripts/portal3.js', 'scripts/portal-email.js']) {

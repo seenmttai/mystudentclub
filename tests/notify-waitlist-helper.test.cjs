@@ -7,6 +7,7 @@ const test = require('node:test');
 
 const root = path.resolve(__dirname, '..');
 const helperSrc = fs.readFileSync(path.join(root, 'scripts', 'notify-waitlist.js'), 'utf8');
+// Articleship: registrations open 9 Nov 2026, closed again 16 Nov 2026 (back to the waitlist); see the test at the end.
 const PAGES = [['msc-ca-fresher-program', 'ca-fresher'], ['articleship-program', 'articleship']];
 
 function load(storage = {}) {
@@ -109,4 +110,13 @@ test('each program page loads the helper first and uses its own topic', () => {
     assert.match(html, new RegExp(`MSCWaitlist\\??\\.isOn\\([^'"]*['"]${topic}['"]`), `${dir} isOn topic`);
     assert.doesNotMatch(html, /from\(['"]notifiable['"]\)/, `${dir} no direct insert left`);
   }
+});
+
+test('articleship page is closed: Notify Me waitlist, no payment form', () => {
+  const html = fs.readFileSync(path.join(root, 'articleship-program', 'index.html'), 'utf8');
+  assert.doesNotMatch(html, /<form id="registerForm"/, 'no registration form');
+  assert.doesNotMatch(html, /register\.js/, 'register.js not loaded');
+  assert.match(html, /id="notifyMeBtn"/, 'Notify Me button');
+  assert.match(html, /id="waitlist-section"/, 'waitlist section');
+  assert.doesNotMatch(html, /data-program="articleship"/, 'refunded registrations are not shown as registered');
 });

@@ -1,0 +1,439 @@
+{
+  "v": 1,
+  "domains": [
+    {
+      "id": "statutory-audit",
+      "name": "Statutory audit",
+      "short": "Statutory audit",
+      "cvName": "Statutory Audit Work Simulation",
+      "icon": "magnifier",
+      "blurb": "Most articles start here: vouching, stock counts, fixed assets and payroll, through to CARO and the opinion.",
+      "secondRep": {
+        "title": "PwC US Audit Job Simulation",
+        "provider": "Forage",
+        "time": "3–4 hours, free",
+        "why": "You draft questions on a fictional client’s purchasing process for your senior, then work on controls and documentation: the control side of the audit work you do here.",
+        "url": "https://www.theforage.com/simulations/pwc-us/audit-w3fr"
+      }
+    },
+    {
+      "id": "internal-audit",
+      "name": "Internal audit, risk & IFC",
+      "short": "Internal audit",
+      "cvName": "Internal Audit Work Simulation",
+      "icon": "flow",
+      "blurb": "You walk a business process end to end, then test whether its controls worked across the year.",
+      "secondRep": {
+        "title": "PwC US Digital Assurance & Transparency Job Simulation",
+        "provider": "Forage",
+        "time": "3–4 hours, free",
+        "why": "You walk through a client’s user-access process, write the control narrative, then test the control and present what you found: walk first, then test.",
+        "url": "https://www.theforage.com/simulations/pwc-us/digital-assurance-transparency-9rtv"
+      }
+    },
+    {
+      "id": "direct-tax",
+      "name": "Direct tax",
+      "short": "Direct tax",
+      "cvName": "Direct Tax Work Simulation",
+      "icon": "calculator",
+      "blurb": "Tax audits, TDS, notices and advance tax: you read the rule, then prove each number from the books.",
+      "secondRep": {
+        "title": "PwC US Tax Job Simulation",
+        "provider": "Forage",
+        "time": "3–4 hours, free",
+        "why": "You map a company’s chart of accounts, find the book-to-tax adjustments and work out taxable income: the computation that every direct-tax level here feeds.",
+        "url": "https://www.theforage.com/simulations/pwc-us/tax-l9rj"
+      }
+    },
+    {
+      "id": "gst",
+      "name": "GST",
+      "short": "GST",
+      "cvName": "GST Work Simulation",
+      "icon": "receipt",
+      "blurb": "Every month: sales into GSTR-1, credit matched to GSTR-2B, tax paid in 3B. Then the annual return.",
+      "secondRep": {
+        "title": "Ryan Transaction Tax Consulting Job Simulation",
+        "provider": "Forage",
+        "time": "1–2 hours, free",
+        "why": "US sales tax, not GST, but the same habit: deciding bill by bill what is taxable and putting the tax data in order.",
+        "url": "https://www.theforage.com/simulations/ryan/transaction-tax-consulting-b245"
+      }
+    },
+    {
+      "id": "bank-audit",
+      "name": "Bank audit",
+      "short": "Bank audit",
+      "cvName": "Bank Audit Work Simulation",
+      "icon": "clipboard",
+      "blurb": "You check a bank branch’s loans: drawing power against the stock statement, the days overdue and the NPA call.",
+      "secondRep": {
+        "title": "Standard Chartered Credit Analyst Job Simulation",
+        "provider": "Forage",
+        "time": "3–4 hours, free",
+        "why": "You help with a bank’s annual credit review of a manufacturer: its financial health first, then its industry. It is the same kind of loan file, seen from the credit officer’s desk.",
+        "url": "https://www.theforage.com/simulations/standardchartered/banking-coverage-kr4i"
+      }
+    },
+    {
+      "id": "transfer-pricing",
+      "name": "Transfer pricing",
+      "short": "Transfer pricing",
+      "cvName": "Transfer Pricing Work Simulation",
+      "icon": "link",
+      "blurb": "You check that dealings with group companies abroad are priced as they would be between strangers.",
+      "secondRep": null
+    },
+    {
+      "id": "ma-tax",
+      "name": "M&A tax",
+      "short": "M&A tax",
+      "cvName": "M&A Tax Work Simulation",
+      "icon": "briefcase",
+      "blurb": "You work out the tax on buybacks, mergers and cash moves in a group, and set out the options.",
+      "secondRep": {
+        "title": "PwC Switzerland Corporate Tax Job Simulation",
+        "provider": "Forage",
+        "time": "7–8 hours, free",
+        "why": "Six tasks with a corporate tax team whose listed skills include M&A tax and tax restructuring. The law is Swiss, so take it for how a tax team frames a client’s options, not for India’s rules.",
+        "url": "https://www.theforage.com/simulations/pwc-ch/corporate-tax-hmom"
+      }
+    },
+    {
+      "id": "valuation",
+      "name": "Valuation",
+      "short": "Valuation",
+      "cvName": "Valuation Work Simulation",
+      "icon": "target",
+      "blurb": "You clean a company’s numbers, finish the DCF, check it against peers and write the cover note.",
+      "secondRep": {
+        "title": "Bank of America Investment Banking Job Simulation",
+        "provider": "Forage",
+        "time": "4–5 hours, free",
+        "why": "Its first task is reading a company’s annual report (Form 10-K) and building a financial summary in Excel, and the skills it lists include DCF modelling and valuation methods. The P&L reading is the same, on an American filing.",
+        "url": "https://www.theforage.com/simulations/bank-of-america/investment-banking-bwp7"
+      }
+    },
+    {
+      "id": "fdd",
+      "name": "Financial due diligence",
+      "short": "Financial due diligence",
+      "cvName": "Financial Due Diligence Work Simulation",
+      "icon": "sheet",
+      "blurb": "Before a buyer pays, you test the target’s real earnings, working capital and debt.",
+      "secondRep": {
+        "title": "Vista Equity Partners Demystifying Private Equity Job Simulation",
+        "provider": "Forage",
+        "time": "2–3 hours, free",
+        "why": "You play a private-equity analyst who turns a listed company’s financial statements into findings on growth and profitability, to help decide whether it deserves full due diligence: the screen that comes before a databook.",
+        "url": "https://www.theforage.com/simulations/vista-equity-partners/demystifying-private-equity-xzrs"
+      }
+    },
+    {
+      "id": "forensic",
+      "name": "Forensic",
+      "short": "Forensic",
+      "cvName": "Forensic Work Simulation",
+      "icon": "flag",
+      "blurb": "You follow the money through ledgers and bank data and help establish what really happened.",
+      "secondRep": {
+        "title": "EY Forensic and Integrity Services Job Simulation",
+        "provider": "Forage",
+        "time": "3–4 hours, free",
+        "why": "You work as an analyst on a fraud investigation, collecting evidence and analysing data to piece together what happened: the work that starts once ledger tests have flagged a vendor.",
+        "url": "https://www.theforage.com/simulations/ey/forensics-g8l7"
+      }
+    },
+    {
+      "id": "consulting",
+      "name": "Consulting & risk advisory",
+      "short": "Consulting",
+      "cvName": "Consulting Work Simulation",
+      "icon": "bulb",
+      "blurb": "You turn a client’s business problem into numbers and recommend the one change that matters most.",
+      "secondRep": {
+        "title": "PwC US Management Consulting Job Simulation",
+        "provider": "Forage",
+        "time": "4–5 hours, free",
+        "why": "You start by writing a business summary of a listed company for a diligence team, and the programme covers basic financial statements and modelling: numbers first, as in this case.",
+        "url": "https://www.theforage.com/simulations/pwc-us/management-consulting-gwcm"
+      }
+    },
+    {
+      "id": "accounting",
+      "name": "Accounting, MIS & company law",
+      "short": "Accounting",
+      "cvName": "Accounting and Company Law Work Simulation",
+      "icon": "ledger",
+      "blurb": "You close a client’s books, turn raw exports into Excel registers, and check minutes and ROC filings.",
+      "secondRep": {
+        "title": "Forage Academy Excel Skills Job Simulation",
+        "provider": "Forage",
+        "time": "6–7 hours, free",
+        "why": "The first task is cleaning a sales dataset and flagging errors and missing values with conditional formatting. Clean first, then build: the order every register and close in this domain follows.",
+        "url": "https://www.theforage.com/simulations/forage/sponsored-content-excel-skills-jf8r"
+      }
+    },
+    {
+      "id": "ib-er",
+      "name": "IB & equity research",
+      "short": "IB & equity research",
+      "cvName": "IB and Equity Research Work Simulation",
+      "icon": "trophy",
+      "blurb": "Rare as articleship work: you screen acquisition targets and price a listed company against its peers.",
+      "secondRep": {
+        "title": "Citi Investment Banking Job Simulation",
+        "provider": "Forage",
+        "time": "5–6 hours, free",
+        "why": "Task One has you pick a public company to be acquired and build its company profile page, and the skills it lists include comparative analysis and enterprise valuation: the profile and peer pricing you do here.",
+        "url": "https://www.theforage.com/simulations/citi/investment-banking-9wcw"
+      }
+    }
+  ],
+  "levels": [
+    {
+      "id": "sa-1",
+      "domain": "statutory-audit",
+      "number": 1,
+      "title": "Vouching and cut-off",
+      "minutes": 45,
+      "order": 1,
+      "published": true
+    },
+    {
+      "id": "sa-2",
+      "domain": "statutory-audit",
+      "number": 2,
+      "title": "Physical verification of stock",
+      "minutes": 35,
+      "order": 2,
+      "published": true
+    },
+    {
+      "id": "dt-1",
+      "domain": "direct-tax",
+      "number": 1,
+      "title": "Tax audit checks",
+      "minutes": 40,
+      "order": 3,
+      "published": true
+    },
+    {
+      "id": "gst-1",
+      "domain": "gst",
+      "number": 1,
+      "title": "Monthly returns (GSTR-1 and GSTR-3B)",
+      "minutes": 40,
+      "order": 4,
+      "published": true
+    },
+    {
+      "id": "val-1",
+      "domain": "valuation",
+      "number": 1,
+      "title": "P&L to a simple DCF",
+      "minutes": 40,
+      "order": 5,
+      "published": true
+    },
+    {
+      "id": "sa-3",
+      "domain": "statutory-audit",
+      "number": 3,
+      "title": "Fixed assets and depreciation",
+      "minutes": 40,
+      "order": 6,
+      "published": true
+    },
+    {
+      "id": "ia-1",
+      "domain": "internal-audit",
+      "number": 1,
+      "title": "Purchase-to-pay walkthrough",
+      "minutes": 40,
+      "order": 7,
+      "published": true
+    },
+    {
+      "id": "sa-4",
+      "domain": "statutory-audit",
+      "number": 4,
+      "title": "Payroll",
+      "minutes": 40,
+      "order": 8,
+      "published": true
+    },
+    {
+      "id": "dt-2",
+      "domain": "direct-tax",
+      "number": 2,
+      "title": "TDS desk",
+      "minutes": 40,
+      "order": 9,
+      "published": true
+    },
+    {
+      "id": "sa-5",
+      "domain": "statutory-audit",
+      "number": 5,
+      "title": "Quarterly limited review",
+      "minutes": 40,
+      "order": 10,
+      "published": true
+    },
+    {
+      "id": "gst-2",
+      "domain": "gst",
+      "number": 2,
+      "title": "Annual return and reconciliation",
+      "minutes": 40,
+      "order": 11,
+      "published": true
+    },
+    {
+      "id": "dt-3",
+      "domain": "direct-tax",
+      "number": 3,
+      "title": "Notices and appeals",
+      "minutes": 35,
+      "order": 12,
+      "published": true
+    },
+    {
+      "id": "dt-4",
+      "domain": "direct-tax",
+      "number": 4,
+      "title": "Computation and advance tax",
+      "minutes": 40,
+      "order": 13,
+      "published": true
+    },
+    {
+      "id": "sa-6",
+      "domain": "statutory-audit",
+      "number": 6,
+      "title": "Bank, FD and confirmations",
+      "minutes": 40,
+      "order": 14,
+      "published": true
+    },
+    {
+      "id": "ia-2",
+      "domain": "internal-audit",
+      "number": 2,
+      "title": "Risk-control matrix and expense claims",
+      "minutes": 55,
+      "order": 15,
+      "published": true
+    },
+    {
+      "id": "gst-3",
+      "domain": "gst",
+      "number": 3,
+      "title": "ITC and IMS actions",
+      "minutes": 40,
+      "order": 16,
+      "published": true
+    },
+    {
+      "id": "xl-1",
+      "domain": "accounting",
+      "number": 1,
+      "title": "Excel: raw export to a register",
+      "minutes": 40,
+      "order": 17,
+      "published": true
+    },
+    {
+      "id": "fdd-1",
+      "domain": "fdd",
+      "number": 1,
+      "title": "Quality of earnings",
+      "minutes": 40,
+      "order": 18,
+      "published": true
+    },
+    {
+      "id": "ba-1",
+      "domain": "bank-audit",
+      "number": 1,
+      "title": "Drawing power and classification",
+      "minutes": 40,
+      "order": 19,
+      "published": true
+    },
+    {
+      "id": "for-1",
+      "domain": "forensic",
+      "number": 1,
+      "title": "Red flags in a ledger",
+      "minutes": 40,
+      "order": 20,
+      "published": true
+    },
+    {
+      "id": "tp-1",
+      "domain": "transfer-pricing",
+      "number": 1,
+      "title": "Arm’s length test",
+      "minutes": 40,
+      "order": 21,
+      "published": true
+    },
+    {
+      "id": "mat-1",
+      "domain": "ma-tax",
+      "number": 1,
+      "title": "Cash-out options note",
+      "minutes": 35,
+      "order": 22,
+      "published": true
+    },
+    {
+      "id": "acc-1",
+      "domain": "accounting",
+      "number": 2,
+      "title": "Close the books",
+      "minutes": 40,
+      "order": 23,
+      "published": true
+    },
+    {
+      "id": "cl-1",
+      "domain": "accounting",
+      "number": 3,
+      "title": "Company law: minutes and filings",
+      "minutes": 35,
+      "order": 24,
+      "published": true
+    },
+    {
+      "id": "sa-7",
+      "domain": "statutory-audit",
+      "number": 7,
+      "title": "Materiality, CARO report and opinion",
+      "minutes": 40,
+      "order": 25,
+      "published": true
+    },
+    {
+      "id": "con-1",
+      "domain": "consulting",
+      "number": 1,
+      "title": "Profitability case",
+      "minutes": 40,
+      "order": 26,
+      "published": true
+    },
+    {
+      "id": "iber-1",
+      "domain": "ib-er",
+      "number": 1,
+      "title": "Analyst desk",
+      "minutes": 40,
+      "order": 27,
+      "published": true
+    }
+  ]
+}
