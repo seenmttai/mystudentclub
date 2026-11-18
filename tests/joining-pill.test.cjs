@@ -14,7 +14,8 @@ after(async () => { if (db) await db.close(); });
 async function getDb() {
   if (db) return db;
   db = new PGlite();
-  await db.exec(`create table public."Industrial Training Job Portal" (id bigint primary key, "Company" text, "Description" text);
+  await db.exec(`create role anon; create role authenticated;
+    create table public."Industrial Training Job Portal" (id bigint primary key, "Company" text, "Description" text);
     insert into "Industrial Training Job Portal" values (1, 'A', 'Joining by: Immediate'), (2, 'B', 'Join our team');`);
   await db.exec(migration);
   await db.exec(migration); // idempotent

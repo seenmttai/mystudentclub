@@ -41,6 +41,7 @@ for (const [file, tab] of Object.entries(PAGES)) {
   });
 
   test(`${file}: loads the stylesheet version that has the Post a job styles`, () => {
-    assert.ok(html.includes('/scripts/portal-style.css?v=2.3'));
+    // 2.4 adds the Industrial Training joining pill on top of the Post a job styles (2.3).
+    assert.ok(html.includes('/scripts/portal-style.css?v=2.4'));
   });
 }
