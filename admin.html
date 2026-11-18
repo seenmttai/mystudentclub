@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="scripts/style.css">
-  <link rel="stylesheet" href="scripts/admin-styles.css">
+  <link rel="stylesheet" href="scripts/admin-styles.css?v=20261118_1">
   <style>
     /* SVG Sizing Fallbacks if Tailwind CDN fails */
     svg.w-5 {
@@ -3912,20 +3912,78 @@
       return `<span class="repost-chip" title="Last reposted ${when}">↻ Reposted${times} · ${when}</span>`;
     }
 
-    function repostConfirmText(job) {
-      const name = (job && job.Company) || 'this vacancy';
-      let text = `Repost ${name}?\n\nIt moves back to the top of the portal as a new vacancy ("Reposted today") and counts as new again for the next 15 days. Its link, job page and applicants stay the same.`;
-      const created = job && job.Created_At ? new Date(job.Created_At).getTime() : NaN;
-      if (Number.isFinite(created) && Date.now() - created < 3 * 24 * 60 * 60 * 1000) {
-        text += `\n\nNote: it was ${job.reposted_at ? 'reposted' : 'posted'} less than 3 days ago, so it is probably still near the top.`;
-      }
-      return text;
+    const repostEsc = (value) => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+
+    function repostAgeText(iso) {
+      const t = iso ? new Date(iso).getTime() : NaN;
+      if (!Number.isFinite(t)) return '';
+      const days = Math.floor((Date.now() - t) / 86400000);
+      return days <= 0 ? 'today' : days === 1 ? 'yesterday' : `${days} days ago`;
+    }
+
+    // In-page confirm for a repost (replaces the browser's confirm box). Resolves true on "Repost", false otherwise.
+    function askRepostConfirm(job) {
+      return new Promise(resolve => {
+        const name = (job && job.Company) || 'this vacancy';
+        const created = job && job.Created_At ? new Date(job.Created_At).getTime() : NaN;
+        const recent = Number.isFinite(created) && Date.now() - created < 3 * 86400000;
+        const today = new Date().toISOString().slice(0, 10);
+        const pastDeadline = job && job.deadline && String(job.deadline).slice(0, 10) < today;
+        const deadlineText = pastDeadline ? new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '';
+        const age = repostAgeText(job && job.Created_At);
+        const overlay = document.createElement('div');
+        overlay.className = 'repost-modal-overlay';
+        overlay.innerHTML = `
+          <div class="repost-modal" role="dialog" aria-modal="true" aria-labelledby="repost-modal-title">
+            <div class="repost-modal-head">
+              <span class="repost-modal-icon" aria-hidden="true"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></span>
+              <div>
+                <h3 id="repost-modal-title">Repost this vacancy?</h3>
+                <p class="repost-modal-job"><strong>${repostEsc(name)}</strong>${job && job.Location ? ` · ${repostEsc(job.Location)}` : ''}${age ? ` · ${job.reposted_at ? 'reposted' : 'posted'} ${age}` : ''}</p>
+              </div>
+            </div>
+            <ul class="repost-modal-list">
+              <li>Moves back to the <strong>top of the portal</strong> and shows <strong>"Reposted today"</strong>.</li>
+              <li>Counts as new again for the next 15 days.</li>
+              <li>Same link, job page and applicants.</li>
+              ${pastDeadline ? `<li>Its closing date (${repostEsc(deadlineText)}) has passed, so it will be <strong>removed</strong>. Set a new one in Edit if needed.</li>` : ''}
+            </ul>
+            ${recent ? `<p class="repost-modal-note">It was ${job.reposted_at ? 'reposted' : 'posted'} less than 3 days ago, so it is probably still near the top.</p>` : ''}
+            <div class="repost-modal-actions">
+              <button type="button" class="repost-modal-cancel">Cancel</button>
+              <button type="button" class="repost-modal-ok">Repost</button>
+            </div>
+          </div>`;
+        const close = (answer) => {
+          document.removeEventListener('keydown', onKey);
+          overlay.remove();
+          resolve(answer);
+        };
+        const onKey = (event) => { if (event.key === 'Escape') close(false); };
+        overlay.addEventListener('click', (event) => { if (event.target === overlay) close(false); });
+        overlay.querySelector('.repost-modal-cancel').addEventListener('click', () => close(false));
+        overlay.querySelector('.repost-modal-ok').addEventListener('click', () => close(true));
+        document.addEventListener('keydown', onKey);
+        document.body.appendChild(overlay);
+        overlay.querySelector('.repost-modal-ok').focus();
+      });
+    }
+
+    // Small message at the top right (replaces the browser's alert after a repost).
+    function showRepostToast(message, ok = true) {
+      document.querySelectorAll('.repost-toast').forEach(el => el.remove());
+      const toast = document.createElement('div');
+      toast.className = 'repost-toast' + (ok ? '' : ' repost-toast-error');
+      toast.setAttribute('role', ok ? 'status' : 'alert');
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => { toast.classList.add('repost-toast-hide'); setTimeout(() => toast.remove(), 300); }, ok ? 3500 : 6000);
     }
 
     async function repostJob(id, table) {
       const job = await getJobById(id, table);
-      if (!job) { alert('Could not load this vacancy.'); return; }
-      if (!confirm(repostConfirmText(job))) return;
+      if (!job) { showRepostToast('Could not load this vacancy.', false); return; }
+      if (!(await askRepostConfirm(job))) return;
       const button = document.querySelector(`.job-card[data-job-id='${id}'] [data-action='repost']`);
       if (button) button.disabled = true;
       try {
@@ -3944,9 +4002,9 @@
         if (jobsContainer) jobsContainer.innerHTML = '';
         const val = (elId) => (document.getElementById(elId) || {}).value || '';
         await fetchJobs(val('searchInput'), val('locationSearchInput'), val('salaryFilter'), val('experienceFilter'));
-        alert('Reposted: it is back on top of the portal.');
+        showRepostToast(`Reposted: ${job.Company || 'the vacancy'} is back on top of the portal.`);
       } catch (error) {
-        alert('Failed to repost: ' + (error.message || error));
+        showRepostToast('Could not repost: ' + (error.message || error), false);
       } finally {
         if (button) button.disabled = false;
       }
