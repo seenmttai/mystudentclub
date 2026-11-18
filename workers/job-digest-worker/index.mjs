@@ -20,9 +20,14 @@ const SITE = 'https://www.mystudentclub.com';
 
 // table: the Supabase table. type: the topic suffix. topic: the portal-wide topic as students subscribe to it
 // ("Industrial-all" is capitalised where the others are not - that is how it is subscribed, do not "fix" it).
+// Optional: key = its own job_digest_state row (default: table); filter = [column, PostgREST condition] narrowing the
+// table; inAllTotal: false = these jobs are already counted by another entry, so they don't add to the "all" total.
 export const PORTALS = [
   { table: 'Industrial Training Job Portal', type: 'industrial', name: 'Industrial Training', topic: 'Industrial-all', link: `${SITE}/` },
   { table: 'Fresher Jobs', type: 'fresher', name: 'Fresher', topic: 'fresher-all', link: `${SITE}/ca-fresher-jobs` },
+  // Experienced CA (19 Nov 2026): the Experienced rows of Fresher Jobs, for students who follow "Experienced CA" in the
+  // bell. They still count in the Fresher push too, as before; the "all" total counts them once.
+  { key: 'Fresher Jobs:experienced', table: 'Fresher Jobs', filter: ['Experience', 'eq.Experienced'], inAllTotal: false, type: 'experienced', name: 'Experienced CA', topic: 'experienced-all', link: `${SITE}/experienced-ca-jobs` },
   { table: 'Semi Qualified Jobs', type: 'semi', name: 'Semi Qualified', topic: 'semi-all', link: `${SITE}/semi-qualified-ca-jobs` },
   { table: 'Articleship Jobs', type: 'articleship', name: 'Articleship', topic: 'articleship-all', link: `${SITE}/ca-articleship-opportunities` },
 ];
@@ -108,13 +113,14 @@ async function readMarkers(env) {
 
 // Jobs created after `from` and up to `through`, oldest first, as {Location, Created_At}. Ties on Created_At are ordered
 // by id so the pages never overlap. `capped` is true when MAX_PAGES was reached with more still waiting.
-async function readNewJobs(env, table, from, through) {
+async function readNewJobs(env, table, from, through, filter = null) {
   const rows = [];
   let capped = false;
   for (let page = 0; page < MAX_PAGES; page++) {
     const query = new URLSearchParams({ select: 'Location,Created_At', order: 'Created_At.asc,id.asc', limit: String(PAGE_SIZE), offset: String(page * PAGE_SIZE) });
     query.append('Created_At', `gt.${from.toISOString()}`);
     query.append('Created_At', `lte.${through.toISOString()}`);
+    if (filter) query.append(filter[0], filter[1]);
     const res = await rest(env, `${encodeURIComponent(table)}?${query}`);
     if (!res.ok) throw new Error(`${table} read failed: ${res.status}`);
     const batch = await res.json();
@@ -160,12 +166,13 @@ export async function runDigest(env, now = new Date()) {
   const summary = { dryRun, sent: [], failed: [], announced: 0 };
 
   for (const portal of PORTALS) {
+    const key = portal.key || portal.table;
     try {
-      const marker = markers[portal.table];
+      const marker = markers[key];
       // The marker row is created (at the moment the migration ran) by the migration. Without one we would announce
       // the whole backlog, so skip and say so.
-      if (!marker || Number.isNaN(marker.getTime())) { console.error(`no usable job_digest_state row for "${portal.table}", skipping`); continue; }
-      const { rows, capped } = await readNewJobs(env, portal.table, marker, through);
+      if (!marker || Number.isNaN(marker.getTime())) { console.error(`no usable job_digest_state row for "${key}", skipping`); continue; }
+      const { rows, capped } = await readNewJobs(env, portal.table, marker, through, portal.filter);
       if (!rows.length) continue;
       // Normally everything up to `through` was read. If the page cap cut the read short, only move as far as the last
       // job actually read, so the rest is announced by the next run instead of being lost.
@@ -173,18 +180,18 @@ export async function runDigest(env, now = new Date()) {
 
       const [portalMessage, ...cityMessages] = messagesFor(portal, rows);
       if (dryRun) {
-        console.log(`[dry run] ${portal.table}: ${rows.length} new, would send`, [portalMessage, ...cityMessages].map(m => `${m.topic}: ${m.title}`));
+        console.log(`[dry run] ${key}: ${rows.length} new, would send`, [portalMessage, ...cityMessages].map(m => `${m.topic}: ${m.title}`));
         continue;
       }
       // The portal push decides the marker: if it fails the marker stays, and the next run tries the same jobs again.
       if (!(await send(env, portalMessage))) { summary.failed.push(portalMessage.topic); continue; }
       summary.sent.push(portalMessage.topic);
       for (const message of cityMessages) (await send(env, message) ? summary.sent : summary.failed).push(message.topic);
-      await writeMarker(env, portal.table, announcedThrough);
-      summary.announced += rows.length;
+      await writeMarker(env, key, announcedThrough);
+      if (portal.inAllTotal !== false) summary.announced += rows.length;
     } catch (error) {
-      console.error(`digest failed for ${portal.table}`, error);
-      summary.failed.push(portal.table);
+      console.error(`digest failed for ${key}`, error);
+      summary.failed.push(key);
     }
   }
 
