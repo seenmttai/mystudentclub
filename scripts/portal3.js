@@ -142,7 +142,7 @@ function getPublicJobSelectColumns(tableName) {
     } else if (tableName === 'Semi Qualified Jobs') {
         columns += ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"';
     } else if (tableName === 'Industrial Training Job Portal') {
-        columns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
+        columns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive, joining_label';
     } else if (tableName === 'Articleship Jobs') {
         columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
     }
@@ -155,10 +155,13 @@ async function runPublicJobSelect(build) {
     let cols = getPublicJobSelectColumns(currentTable);
     let result = await build(cols);
     // reposted_at arrives with migration 202611170001; until then, drop it like is_exclusive.
-    for (let retry = 0; retry < 2 && result && result.error; retry++) {
+    for (let retry = 0; retry < 3 && result && result.error; retry++) {
         const message = result.error.message || '';
         if (/reposted_at/.test(message) && cols.includes(', reposted_at')) {
             cols = cols.replace(', reposted_at', '');
+        } else if (/joining_label/.test(message) && cols.includes(', joining_label')) {
+            // joining_label (migration 202611060002) missing or not readable: show the list without the pill.
+            cols = cols.replace(', joining_label', '');
         } else if (/is_exclusive/.test(message) && cols.includes(', is_exclusive')) {
             cols = cols.replace(', is_exclusive', '');
         } else {
@@ -594,6 +597,7 @@ function renderJobCard(job) {
             </div>`);
     const infoRowHtml = infoRowItems.length ? `<div class="job-card-info-row">${infoRowItems.join('')}</div>` : '';
     const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
+    const joiningLabel = currentTable === 'Industrial Training Job Portal' ? (job.joining_label || '') : '';
     const isLocked = isExclusiveLocked(job, currentTable, isEnrolledSync(currentTable));
     const exclusiveNoteHtml = renderCardNote(job, currentTable, isEnrolledSync(currentTable));
     let applyButtonHtml = '';
@@ -643,6 +647,7 @@ function renderJobCard(job) {
             </span>
             ${job.Experience ? `<span class="job-tag job-tag-exp"><i class="far fa-clock"></i> ${job.Experience}</span>` : ""}
             <span class="job-tag tag-primary"><i class="fas fa-briefcase"></i> ${primaryDomain}</span>
+            ${joiningLabel ? `<span class="job-tag tag-joining"><i class="far fa-calendar-check"></i> ${joiningLabel}</span>` : ""}
             ${companyType ? `<span class="job-tag"><i class="fas fa-building"></i> ${companyType}</span>` : ""}
             ${firmType ? `<span class="job-tag"><i class="fas fa-file-alt"></i> ${firmType}</span>` : ""}
             ${job.transfer_accepted === true ? `<span class="job-tag"><i class="fas fa-exchange-alt"></i> Transfer cases welcome</span>` : ""}
@@ -1237,6 +1242,7 @@ function showModal(job) {
             ${isSalaryDisclosed(compDisplay) ? `<span class="job-tag">${compLabel}: ${compDisplay}</span>` : ''}
             <span class="job-tag">${job.reposted_at && !isExpired ? 'Reposted' : 'Posted'}: ${postedDate}</span>
             <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">Category: ${primaryDomain}</span>
+            ${currentTable === 'Industrial Training Job Portal' && job.joining_label ? `<span class="job-tag tag-joining"><i class="far fa-calendar-check" style="margin-right: 4px;"></i>${job.joining_label}</span>` : ''}
             ${job['Secondary Domain'] ? `<span class="job-tag" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Secondary: ${job['Secondary Domain']}</span>` : ''}
             ${job['Company Type'] ? `<span class="job-tag"><i class="fas fa-building" style="margin-right: 4px;"></i>${job['Company Type']}</span>` : ''}
             ${(job['Firm Type'] || (job.firm_size && job.firm_size !== 'Other' ? job.firm_size : '')) ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job['Firm Type'] || job.firm_size}</span>` : ''}
@@ -1689,7 +1695,7 @@ async function fetchJobs() {
         } else if (currentTable === "Semi Qualified Jobs") {
             selectColumns += ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"';
         } else if (currentTable === "Industrial Training Job Portal") {
-            selectColumns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
+            selectColumns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive, joining_label';
         } else if (currentTable === "Articleship Jobs") {
             selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
         }
@@ -1851,10 +1857,13 @@ async function fetchJobs() {
 
         // Failsafes for columns the database does not have yet. Either can come first, so retry
         // until neither applies.
-        for (let retry = 0; retry < 3 && error; retry++) {
+        for (let retry = 0; retry < 4 && error; retry++) {
             if (error.message && error.message.includes('reposted_at') && selectColumns.includes(', reposted_at')) {
                 // The repost column is not in the database yet (migration 202611170001).
                 selectColumns = selectColumns.replace(', reposted_at', '');
+            } else if (error.message && error.message.includes('joining_label') && selectColumns.includes(', joining_label')) {
+                // joining_label (migration 202611060002) missing or not readable: list without the joining pill.
+                selectColumns = selectColumns.replace(', joining_label', '');
             } else if (jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
                 // The filter columns are not in the database yet (migration 202611060003): use the older filters.
                 console.warn('Structured filter columns are not available yet; using the basic filters.', error.message);
