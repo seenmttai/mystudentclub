@@ -151,7 +151,8 @@ test('portal: articleship exclusives use the shared lock rule, pinned on top of 
   assert.match(src, /hasMoreData = dbPageLength === limit;/);
   assert.match(read('jobs-builder/src/pages/jobs/[category]/[slug].astro'), /hirer_email\.is\.null,hirer_email\.neq\.recruit@mystudentclub\.com/);
   assert.match(src, /reviewSummaryRpcAvailable = false/);
-  assert.match(src, /data = data\.filter\(job => !pinnedExclusiveIds\.has\(job\.id\)\);/);
+  // Nov 2026: one pinned set for Featured (every portal) and the Articleship exclusives (tests/featured-vacancy.test.cjs).
+  assert.match(src, /data = data\.filter\(job => !pinnedJobIds\.has\(job\.id\)\);/);
   assert.match(src, /runPublicJobSelect\(cols => supabaseClient/);
 });
 

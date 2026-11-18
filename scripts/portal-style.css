@@ -1561,6 +1561,14 @@ body {
   border-color: #fecaca;
 }
 
+/* Featured vacancy badge (Vacancy Boost on hire.msc): a tag only, never a lock */
+.job-tag.tag-featured {
+  background: #eef2ff;
+  color: #3730a3;
+  border-color: #c7d2fe;
+  font-weight: 700;
+}
+
 /* Exclusive vacancy badge */
 .job-tag.tag-exclusive {
   background: linear-gradient(135deg, #f59e0b, #d97706);
