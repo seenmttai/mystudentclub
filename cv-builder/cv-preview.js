@@ -186,13 +186,12 @@
     let pinchStartDistance = 0;
     let pinchStartScale = fitZoom;
     let lastPanPoint = null;
-    let movedNode;
-    let placeholder;
+    const movedContent = [];
 
     function restoreContent() {
-        if (movedNode && placeholder) placeholder.replaceWith(movedNode);
-        movedNode = null;
-        placeholder = null;
+        for (const { node, placeholder } of movedContent.splice(0).reverse()) {
+            placeholder.replaceWith(node);
+        }
         content.replaceChildren();
         delete sheet.dataset.kind;
         const subtitle = document.getElementById('preview-sheet-subtitle');
@@ -203,9 +202,9 @@
 
     function moveIntoSheet(node) {
         if (!node) return false;
-        placeholder = document.createComment('Preview control home');
+        const placeholder = document.createComment('Preview control home');
         node.before(placeholder);
-        movedNode = node;
+        movedContent.push({ node, placeholder });
         content.append(node);
         return true;
     }
@@ -420,6 +419,7 @@
             if (resetBtn) resetBtn.style.display = 'none';
             if (kind === 'template') {
                 renderTemplateCards();
+                moveIntoSheet(document.getElementById('template-collection-controls'));
                 if (!moveIntoSheet(document.getElementById('template-grid'))) showUnavailable('Template options are unavailable right now.');
             } else if (kind === 'color') {
                 renderThemeControls();
@@ -462,7 +462,8 @@
 
     function syncEnlargedPreview() {
         if (!zoomViewer.open) return;
-        const template = document.getElementById('template-select').value;
+        const selectedTemplate = document.getElementById('template-select').value;
+        const template = typeof getTemplateRenderFile === 'function' ? getTemplateRenderFile(selectedTemplate) : selectedTemplate;
         if (zoomFrame.getAttribute('src') !== template) zoomFrame.src = template;
         else sendEnlargedPreviewData();
     }
@@ -491,7 +492,8 @@
     }
 
     window.openEnlargedPreview = () => {
-        const template = document.getElementById('template-select').value;
+        const selectedTemplate = document.getElementById('template-select').value;
+        const template = typeof getTemplateRenderFile === 'function' ? getTemplateRenderFile(selectedTemplate) : selectedTemplate;
         zoomFrame.onload = () => setTimeout(sendEnlargedPreviewData, 80);
         if (zoomFrame.getAttribute('src') !== template) zoomFrame.src = template;
         if (!zoomViewer.open) zoomViewer.showModal();
