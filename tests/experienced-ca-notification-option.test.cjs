@@ -4,7 +4,8 @@ const path = require('node:path');
 const test = require('node:test');
 
 // The notification bell's job-type dropdown is built from JOB_TYPES_NOTIF, and "All India"
-// picks the type-wide topic. Experienced CA must be offered and map to the topic admin.html sends to.
+// picks the type-wide topic. Experienced CA must be offered and map to the topics the job digest worker sends to
+// (experienced-all and <city>-experienced, from the Experienced rows of Fresher Jobs).
 const root = path.resolve(__dirname, '..');
 
 for (const file of ['scripts/portal3.js', 'scripts/portal-email.js']) {
@@ -22,3 +23,14 @@ for (const file of ['scripts/portal3.js', 'scripts/portal-email.js']) {
     assert.match(src, /topic === ['"]experienced-all['"]\)\s*return \{ location: ['"]All India['"], jobType: ['"]Experienced CA['"] \}/);
   });
 }
+
+// Mobile: on /experienced-ca-jobs, /experienced-ca and /semi-qualified the bell pickers are plain <select>s, which never
+// set data-value, so Subscribe stayed disabled. Both the button check and the subscribe handler read either kind now.
+test('mobile bell: Subscribe works with the plain <select> pickers too', () => {
+  const src = fs.readFileSync(path.join(root, 'scripts/portal3.js'), 'utf8');
+  assert.match(src, /function notifSelectValue\(el\)/);
+  assert.match(src, /el\.dataset\.value \|\| \(el\.tagName === "SELECT" \? el\.value : ""\)/);
+  assert.match(src, /notifSelectValue\(dom\.locationSelectEl\) && notifSelectValue\(dom\.jobTypeSelectEl\)/);
+  assert.match(src, /const location = notifSelectValue\(dom\.locationSelectEl\);/);
+  assert.doesNotMatch(src, /(locationSelectEl|jobTypeSelectEl)\?\.dataset\.value/);
+});

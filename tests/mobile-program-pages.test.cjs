@@ -12,14 +12,16 @@ const read = (p) => fs.readFileSync(path.join(root, p), 'utf8').replace(/\r\n/g,
 const exists = (p) => fs.existsSync(path.join(root, p));
 
 // Synced to master's redesigned pages (129251eab): all notify/waitlist triggers share the .js-notify-btn class.
+// Articleship opened registrations on www on 9 Nov 2026 (master #197/#198) and this branch ported it on 15 Nov; the
+// register flow is covered by notify-waitlist-helper.test.cjs. IT's hero CTA became a live Register link on 15 Nov (#235).
 const PROGRAMS = [
-  { dir: 'ca-industrial-training-program', buttons: ['heroPrimaryCta', 'notifyMeBtn', 'notifyMeFooterBtn'], topic: 'industrial-program-notify' },
-  { dir: 'articleship-program', buttons: ['notifyMeBtn', 'notifyMeFooterBtn'], topic: 'articleship-program-notify' },
+  { dir: 'ca-industrial-training-program', buttons: [], topic: 'industrial-program-notify' }, // notify buttons replaced by Register CTAs in #235; notify JS still present
   { dir: 'msc-ca-fresher-program', buttons: ['heroNotifyBtn', 'certNotifyBtn', 'notifyMeBtn', 'notifyMeFooterBtn'], topic: 'fresher-program-notify' },
 ];
+const ALL_PAGES = [...PROGRAMS, { dir: 'articleship-program' }];
 
 test('each program page links only local CSS/JS that exist', () => {
-  for (const p of PROGRAMS) {
+  for (const p of ALL_PAGES) {
     const html = read(`${p.dir}/index.html`);
     const refs = [...html.matchAll(/(?:src|href)="([^"#?:]+\.(?:js|css|png|svg|jpg|jpeg|webp))(?:\?[^"]*)?"/g)].map((m) => m[1]).filter((r) => !r.startsWith('//'));
     assert.ok(refs.length > 0, p.dir);
@@ -60,7 +62,7 @@ test('WebView FCM token path (getFlutterFcmToken) is intact', () => {
 });
 
 test('program headers keep Airy Flow safe-area padding and the horizontal logo', () => {
-  for (const p of PROGRAMS) {
+  for (const p of ALL_PAGES) {
     assert.match(read(`${p.dir}/header.css`), /safe-area-inset-top/, p.dir);
     assert.match(read(`${p.dir}/index.html`), /<img class="header-logo" src="\/assets\/logo(?:-mark\.svg|\.png)"/, p.dir);
   }

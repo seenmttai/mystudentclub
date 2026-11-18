@@ -2975,6 +2975,27 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
 }
 
+.fixed-cta .status-live-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #10B981;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fixed-cta .status-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10B981;
+  box-shadow: 0 0 10px #10B981;
+  animation: pulse-dot 1.8s infinite;
+}
+
 .fixed-cta .status-closed-text {
   font-family: 'Outfit', sans-serif;
   font-size: 13px;

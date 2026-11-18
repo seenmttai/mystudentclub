@@ -1,0 +1,1576 @@
+{
+ "paper": "May 2026",
+ "id": "may26",
+ "takeaways": [
+  "Two MCQs had no correct option (3.4, 5.2) and three had two accepted keys (2.1, 2.2, 5.5): do one clean working in 3 minutes, tick the closest option and move on.",
+  "Questions chain: 1.8's machine cost needs 1.1 (customs duty) and 1.7 (hedge cost). Solve the linked MCQ carefully first and reuse its figures.",
+  "Dates decide answers: Bill of Entry vs entry inwards (exchange rate vs duty rate), use under 180 days, FY 2023-24 vs s.74A, buy-back after 1.10.2024. Underline every date in the case.",
+  "Cases carry unused data (TBL options in Case 4, P/E data in 2.1, the extra 3,000 sq ft lease). Answer only what the question asks.",
+  "21 descriptive marks were framework writing (BMC, non-value-added activities, new-product pricing, McKinsey 7S): headings + case facts + one strategic line each = safe marks."
+ ],
+ "cases": [
+  {
+   "no": 1,
+   "title": "Heritage Tea Processing Limited (HTPL)",
+   "industry": "Tea plantation, blending and packaging",
+   "story": "Bengaluru tea company with estates, three plants and exports to 50+ countries. A fire at the Kodagu factory, withdrawals from its Tea Development Account, a squeeze-out of minority holders in a subsidiary, and two sachet machines imported from Germany with a currency hedge.",
+   "marks_by_subject": {
+    "IDT": 4,
+    "Audit": 2,
+    "DT": 7,
+    "Law": 2,
+    "AFM": 5,
+    "Costing": 5
+   },
+   "difficulty": "Hard",
+   "first15": "Skip unless DT/IDT numericals are your strength: 16 of 25 marks are linked tax and forex sums, and 1.8 needs 1.1 and 1.7 right first.",
+   "questions": [
+    {
+     "q": "1.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "Customs - Valuation of imported goods (s.14, Customs Valuation Rules 2007) and Levy (s.15)",
+     "topic": "Assessable value with price revision and seller's agent commission; exchange rate of BoE date vs duty rate of entry-inwards date",
+     "ask": "Total BCD + Social Welfare Surcharge + IGST payable on the two sachet machines imported from Germany.",
+     "options": {
+      "a": "₹4,52,980",
+      "b": "₹5,34,516",
+      "c": "₹12,75,756",
+      "d": "₹8,22,780"
+     },
+     "clue": "'arrived ... on 6th March 2026 and the Bill of Entry was filed on 4th March'",
+     "chapter_clear": true,
+     "think": [
+      "Import + Bill of Entry + two exchange rates + BCD/SWS/IGST = Customs valuation and levy numerical.",
+      "Chapter clear -> IDT SM Customs: s.14 (exchange rate on the date BoE is presented) and s.15 (BoE filed before entry inwards is deemed filed on entry inwards, so duty rate of 6 March).",
+      "Build transaction value: revised FOB + freight + insurance + commission to the seller's agent; drop inland freight after import.",
+      "BCD, then SWS on BCD, then IGST on (AV + BCD + SWS); add all three."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - Customs: Valuation (s.14 + CVR Rule 10) and Levy (s.15)",
+      "index_keywords": [
+       "rate of exchange",
+       "entry inwards",
+       "date for determination of rate of duty",
+       "cost of transport",
+       "commission and brokerage",
+       "social welfare surcharge"
+      ]
+     },
+     "solve": "FOB €30,000 + 3% revision €900 = €30,900. Add actual freight €5,000 (within 20% of FOB) and insurance €400 -> CIF €36,300. Exchange rate = CBIC rate on the date BoE was presented (4.3.2026) = ₹109 -> ₹39,56,700. Add commission to XYZ's local agent ₹1,61,300 (selling commission is included). Inland freight Cochin to Kodagu ₹1,05,850 is after importation -> excluded. Assessable value = ₹41,18,000. BoE (4.3) filed before entry inwards (6.3) -> deemed filed on 6.3 -> BCD 10% (not 15%) = ₹4,11,800. SWS 10% of BCD = ₹41,180. IGST 18% on (41,18,000 + 4,11,800 + 41,180 = 45,70,980) = ₹8,22,776. Total = 4,11,800 + 41,180 + 8,22,776 = ₹12,75,756.",
+     "answer": "(c) ₹12,75,756",
+     "icai": "(c)",
+     "flag": null,
+     "trap": "Two dates, two rules: exchange rate of the BoE date (₹109) but BCD rate of the entry-inwards date (10%). Stopping at BCD + SWS gives (a); IGST alone is about (d).",
+     "minutes": 3
+    },
+    {
+     "q": "1.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "SA 505 External Confirmations (with SA 500, SA 260, SA 705)",
+     "topic": "Replies from unrecorded email IDs, client-collected confirmations, zero-balance creditors, effect on opinion",
+     "ask": "Which are correct? (i) probe replies from unregistered email IDs, reconcile and do alternative procedures; (ii) reassess only quantitative materiality, KAM only if amounts are large; (iii) accept Chief Accountant's physical letters as primary evidence; (iv) escalate unresolved issues to TCWG and qualify if material but not pervasive.",
+     "options": {
+      "a": "(i) and (ii)",
+      "b": "(i) and (iv)",
+      "c": "(ii) and (iii)",
+      "d": "(i), (ii) and (iv)"
+     },
+     "clue": "'responses should be sent directly to the auditor's official email ID'",
+     "chapter_clear": true,
+     "think": [
+      "Balance confirmations, odd email IDs, letters collected by the client = SA 505; opinion impact = SA 705.",
+      "Chapter clear -> Audit SM SA 505: the auditor must control requests and responses.",
+      "Any statement that leans on management or ignores qualitative factors is wrong.",
+      "Known without the book: 2 minutes, mark and move."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - SA 505 External Confirmations; SA 705",
+      "index_keywords": [
+       "external confirmation",
+       "reliability of responses",
+       "non-response",
+       "alternative audit procedures",
+       "qualified opinion"
+      ]
+     },
+     "solve": "(i) Correct: replies not from recorded email IDs are doubtful, so verify the sender, reconcile and use alternative procedures (subsequent receipts or payments, invoices, GRNs). (ii) Wrong: materiality has a qualitative side (15% cash settlements hint at fraud or s.40A(3) risk); KAM under SA 701 is for listed entities and HTPL is unlisted; KAM is not chosen by size alone. (iii) Wrong: letters gathered by the Chief Accountant bypass the auditor's control. Zero-balance creditors with heavy volumes are exactly where understated liabilities hide. (iv) Correct: tell TCWG (SA 260/265); if evidence is still missing and the effect is material but not pervasive, give a qualified opinion (SA 705).",
+     "answer": "(b) (i) and (iv)",
+     "icai": "(b)",
+     "flag": null,
+     "trap": "Treating client-obtained physical letters (iii) as enough. Evidence routed through management fails SA 505.",
+     "minutes": 3
+    },
+    {
+     "q": "1.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "DT",
+     "also": null,
+     "chapter": "PGBP - s.33AB Tea Development Account; Rule 8 (tea income); Capital Gains s.112",
+     "topic": "Withdrawal unused or used for a barred purpose = deemed profit, only 40% taxable under Rule 8; LTCG on land without indexation",
+     "ask": "Tax effect for AY 2026-27 of the ₹5 crore withdrawn from the Tea Development Account and of the land sale.",
+     "options": {
+      "a": "₹0.30 crore business income; ₹1.50 crore LTCG",
+      "b": "₹0.72 crore business income; ₹0.60 crore LTCG",
+      "c": "₹0.82 crore business income; ₹0.60 crore LTCG",
+      "d": "₹0.12 crore business income; ₹1.50 crore LTCG"
+     },
+     "clue": "'by withdrawing ₹5 crore from the Tea Development Account'",
+     "chapter_clear": false,
+     "think": [
+      "Tea Development Account = deduction for tea growers; the question is what happens on withdrawal.",
+      "Unsure of the section -> A-Z index -> 'Tea Development Account' -> s.33AB: amount withdrawn but not used for the scheme in the same year = deemed business profit; office items barred, computers carved out.",
+      "Tea income is composite: Rule 8 taxes only 40% as business income, so apply 40% to the deemed profit too.",
+      "Land: bought Jan 2023, sold Nov 2025 -> long-term; no indexation after 23.7.2024."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - PGBP: s.33AB; Rule 8; Capital Gains (s.112)",
+      "index_keywords": [
+       "33AB",
+       "Tea Development Account",
+       "Rule 8",
+       "forty per cent",
+       "office appliances not being computers",
+       "indexation 23 July 2024"
+      ]
+     },
+     "solve": "Withdrawn ₹5.00 cr. Used for the scheme: machinery 2.50 + freight and installation 0.05 + solar panels 1.90 + computers 0.25 = ₹4.70 cr. Not allowed or not used: office furnishing and renovation 0.25 (office use is barred) + unspent 0.05 = ₹0.30 cr -> deemed profit of the tea business. Rule 8: 40% taxable -> 0.30 x 40% = ₹0.12 cr business income. Land: the 2023 diversion of TDA money to buy land was taxable in that year (AY 2023-24), not now. Sale ₹3.00 cr - cost ₹1.50 cr = ₹1.50 cr LTCG (held over 24 months, no indexation), taxed @12.5% u/s 112.",
+     "answer": "(d) ₹0.12 crore business income and ₹1.50 crore LTCG",
+     "icai": "(d)",
+     "flag": null,
+     "trap": "Taxing the full ₹0.30 crore (option a). The deposit saved tax on only 40% of tea income, so only 40% comes back.",
+     "minutes": 3
+    },
+    {
+     "q": "1.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "GST - Input Tax Credit: s.17(5) blocked credits; capital goods (Rule 43, 5-year life)",
+     "topic": "Reversal for destroyed stock, destroyed capital goods and CSR purchases",
+     "ask": "Total ITC CA Abhinav must reverse for the year.",
+     "options": {
+      "a": "₹45,96,000",
+      "b": "₹23,12,700",
+      "c": "₹28,43,700",
+      "d": "₹14,10,000"
+     },
+     "clue": "'completely destroyed in the fire' ... 'Corporate Social Responsibility obligations'",
+     "chapter_clear": true,
+     "think": [
+      "Fire loss + CSR purchases + ITC already claimed = blocked credits u/s 17(5).",
+      "Chapter clear -> IDT SM GST 'Input Tax Credit' -> s.17(5)(h) goods destroyed; s.17(5)(fa) goods or services used for CSR.",
+      "Capital goods destroyed mid-life: reverse only the unexpired part of the 60-month life.",
+      "Add the three pieces; insurance money does not change ITC."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - GST: Input Tax Credit (s.16, s.17(5)); Rule 43",
+      "index_keywords": [
+       "goods lost, stolen, destroyed",
+       "corporate social responsibility",
+       "17(5)(fa)",
+       "capital goods five years",
+       "17(5)(h)"
+      ]
+     },
+     "solve": "(1) Stock destroyed: ₹9,60,000 reversed in full, s.17(5)(h). (2) CSR kits ₹90,000 + tablets ₹3,60,000 = ₹4,50,000, blocked u/s 17(5)(fa). (3) Machinery bought 1.2.2022: IGST 18% x ₹1.77 cr = ₹31,86,000. Used Feb 2022 to Aug 2025 = 43 of 60 months; unexpired 17 months -> 31,86,000 x 17/60 = ₹9,02,700. Total = 9,60,000 + 4,50,000 + 9,02,700 = ₹23,12,700.",
+     "answer": "(b) ₹23,12,700",
+     "icai": "(b)",
+     "flag": "The Act gives no formula for destroyed capital goods; ICAI reversed the unexpired 17/60 of ITC. A 5%-per-quarter approach gives ₹7.97 lakh, which is not an option.",
+     "trap": "Reversing the whole machinery ITC of ₹31.86 lakh gives (a); missing it gives (d).",
+     "minutes": 3
+    },
+    {
+     "q": "1.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Corporate Laws - Compromises, Arrangements and Amalgamations: s.236 Purchase of minority shareholding (Rule 27, CAA Rules 2016)",
+     "topic": "Offer price for unlisted shares, sharing of a higher negotiated price, deposit and 60-day payment",
+     "ask": "Which are correct for buying the last 9%? (i) price = valuer's fair price, considering the highest price paid in the last 12 months; (ii) all 30 holders get ₹190; (iii) extra received by the 10 is shared pro rata with the 20; (iv) amount kept in a separate account run by ABC for at least a year, paid within 60 days, never beyond one year.",
+     "options": {
+      "a": "(i), (iii)",
+      "b": "(ii), (iv)",
+      "c": "(i), (ii), (iv)",
+      "d": "(i), (iii), (iv)"
+     },
+     "clue": "'raising its holding to 91%' ... 'intention to acquire the remaining 9% of shares'",
+     "chapter_clear": true,
+     "think": [
+      "Holder of 90%+ buying out the rest of an unlisted company = s.236 squeeze-out.",
+      "Chapter clear -> Law SM 'Compromises, Arrangements and Amalgamations' -> s.236 + Rule 27.",
+      "Check the 75% trigger: the 10 holders own 78% of the minority and negotiated ₹190, so the sharing rule applies."
+     ],
+     "look_up": {
+      "where": "ICAI SM Corporate & Economic Laws - Compromises, Arrangements and Amalgamations (s.236)",
+      "index_keywords": [
+       "purchase of minority shareholding",
+       "registered valuer",
+       "highest price paid twelve months",
+       "seventy-five per cent of minority",
+       "sixty days"
+      ]
+     },
+     "solve": "(i) True: for unlisted shares the valuer fixes the price considering the acquirer's highest price in the last 12 months (₹170) and fair value (₹180), so ₹180 is offered. (ii) False: s.236 does not reprice everyone at ₹190. (iii) True: where holders of at least 75% of the minority negotiate a higher price, the extra must be shared pro rata with the other minority holders (s.236(7)). (iv) True: the amount sits in a separate bank account operated by the company for at least one year; paid within 60 days, with payment continuing up to one year for anyone not yet paid.",
+     "answer": "(d) (i), (iii), (iv)",
+     "icai": "(d)",
+     "flag": null,
+     "trap": "Assuming everyone automatically gets ₹190 (ii). The law shares the extra amount; it does not reprice the offer.",
+     "minutes": 3
+    },
+    {
+     "q": "1.6",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCMPE (SPOM Set B) Ch 1 - Business Model Canvas (SM 1.25)",
+     "topic": "Five asked BMC blocks applied to HTPL: partners/activities/resources, relationships, segments, cost structure, value proposition",
+     "ask": "Draw HTPL's Business Model Canvas for the five listed elements and show how each streamlines operations or opens growth.",
+     "options": null,
+     "clue": "'Business Model Canvas, which illustrated how it helps businesses map, design'",
+     "chapter_clear": true,
+     "think": [
+      "A named model in the question = framework + case facts; marks come from mapping HTPL's facts, not theory.",
+      "Chapter clear -> SM study material (or A-Z index 'Business Model Canvas') for the nine blocks.",
+      "For each asked block: one line on what it is for HTPL + one line on how it cuts cost or adds growth.",
+      "Known without the book: 5 headings in about 12 minutes; channels and revenue only if time is left."
+     ],
+     "look_up": {
+      "where": "ICAI SM SPOM Set B (SCMPE) - Ch 1, Business Model Canvas (1.25)",
+      "index_keywords": [
+       "business model canvas",
+       "key partners",
+       "value proposition",
+       "customer segments",
+       "cost structure"
+      ]
+     },
+     "solve": "BMC puts nine blocks on one page: partners, activities, resources, value proposition, relationships, channels, segments, cost, revenue. Pull HTPL's facts into each asked block, then add the operational or growth effect.",
+     "answer": "The Business Model Canvas shows on one page how HTPL creates, delivers and earns from value. Applied to the asked blocks:\n1. Key partners, activities, resources. Partners: Sri Lankan leaf suppliers, recycled-packaging vendors, logistics firms, solar-energy providers, supermarkets/hotels, tea research bodies. Activities: plucking on 5-6 day cycles, CTC processing, blending, packing, distribution, R&D, waste-to-compost. Resources: own estates, 3 modern plants, 1,500 staff, R&D team, brand known in 50+ countries, solar capacity. Effect: standard plucking and clustered routing cut rejections, idle hours and fuel; in-house sachets reduce vendor dependence; R&D partners speed new flavours.\n2. Customer relationships: dedicated order support, surveys and quality monitoring that feed back into blends. Effect: better demand forecasts, fewer rejections, repeat buying and loyalty.\n3. Customer segments: supermarkets, hotels and restaurants, wholesalers, retail and D2C buyers, export buyers in 50+ countries, health-conscious buyers of organic and green tea; packs from 100 g to 10 kg fit each segment. Effect: premium, organic and export segments give higher margins and spread risk.\n4. Cost structure: plantation labour (manual plucking), processing, packaging, logistics, R&D, marketing, fixed estate and plant costs. Effect: benchmarking, solar power, recycled bags and tea waste used as fertiliser lower costs, so HTPL can face low-price new entrants without cutting quality.\n5. Value proposition: consistent purity and aroma through plantation-to-pack control, innovative blends, 180+ SKUs, personalised service and a green brand. Effect: supports premium pricing and differentiation against price-cutting entrants.\nConclusion: the canvas shows the Board which blocks drive cost and which drive growth, and ties the sachet project, sustainability and exports into one model.",
+     "icai": "Same conclusion as ICAI (ICAI also gives an alternative answer; either structure scores).",
+     "flag": null,
+     "trap": "Writing theory of all nine blocks with no HTPL facts. Marks are for case-linked points under the five asked heads.",
+     "minutes": 15
+    },
+    {
+     "q": "1.7",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "AFM - Foreign Exchange Exposure and Risk Management",
+     "topic": "Import payable: forward vs money market hedge vs forward with LC credit",
+     "ask": "Which is cheapest for the €30,000 payable in 3 months: forward, money market hedge, or forward under the LC option?",
+     "options": null,
+     "clue": "'spot exchange rate stands at ₹102 per Euro, with the three-month forward rate at ₹104'",
+     "chapter_clear": true,
+     "think": [
+      "Euro payable + forward / money market / LC = hedging an import payable.",
+      "Chapter clear -> AFM SM 'Foreign Exchange Exposure and Risk Management' -> money market hedge illustration; replace the figures.",
+      "Payable -> deposit in € today (Germany 4%, quarterly), funded by a ₹ loan (India 10%, monthly).",
+      "Compare all three in ₹ at the 3-month point; lowest outflow wins."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - Foreign Exchange Exposure and Risk Management",
+      "index_keywords": [
+       "money market hedge",
+       "forward cover",
+       "letter of credit",
+       "import payable"
+      ]
+     },
+     "solve": "Amount = 2 x €15,000 = €30,000 (the 3% rise was not known when hedging). Forward: 30,000 x 104 = ₹31,20,000. Money market: deposit 30,000 / (1 + 0.04/4) = €29,702.97 now; buy at ₹102 = ₹30,29,703, borrowed in India; repay 30,29,703 x (1 + 0.10/12)^3 = 30,29,703 x 1.025209 = ₹31,06,079 (interest ₹76,376). LC: interest 6% p.a. for 3 months = 1.5% x €30,000 = €450 x 102 = ₹45,900 paid now, plus 10% monthly-compounded cost for 3 months ₹1,157 = ₹47,057; at maturity €30,000 + LC commission 2% p.a. x 3/12 = €150 -> €30,150 x 104 = ₹31,35,600; total ₹31,82,657. (Paying the €450 at maturity instead gives ₹31,82,400; same ranking.)",
+     "answer": "Outflow in ₹ at the end of 3 months:\nForward hedge: €30,000 x ₹104 = ₹31,20,000\nMoney market hedge: €30,000/1.01 = €29,702.97 x ₹102 = ₹30,29,703 borrowed; repay with interest at 10% compounded monthly for 3 months = ₹31,06,079\nForward under LC: interest 1.5% (₹45,900 + ₹1,157) + (€30,000 + €150 commission) x ₹104 = ₹31,82,657\nConclusion: the money market hedge costs least (₹13,921 below the forward), so HTPL should use it.",
+     "icai": "Same conclusion as ICAI (money market hedge).",
+     "flag": null,
+     "trap": "Doing the receivable version (borrow in €, deposit in ₹) or using simple interest instead of the given monthly/quarterly compounding.",
+     "minutes": 15
+    },
+    {
+     "q": "1.8",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "DT",
+     "also": "IDT",
+     "chapter": "PGBP - Depreciation: s.32 incl. additional depreciation s.32(1)(iia); s.43(1) actual cost; s.43(6) WDV",
+     "topic": "Block WDV with insurance money, half rate for use under 180 days, additional depreciation, cost of the imported machine",
+     "ask": "Depreciation, including additional depreciation, on the 15% plant and machinery block for AY 2026-27 (old regime).",
+     "options": null,
+     "clue": "'WDV ... ₹120 crore as at 1st April 2025' ... 'put to use on 15th November'",
+     "chapter_clear": true,
+     "think": [
+      "Block WDV + additions + insurance money + put-to-use dates = s.32 depreciation numerical.",
+      "Chapter clear -> DT SM PGBP 'Depreciation' -> illustration with additions used under 180 days and additional depreciation; replace the figures.",
+      "Only 15% block items go in: new machinery ₹2.55 cr and the imported sachet machines. Solar (40%), computers (40%) and furniture (10%) are other blocks.",
+      "Machine cost = hedge cost (1.7) + 3% rise + freight, insurance, agent commission, inland freight, BCD + SWS (1.1); IGST out (ITC taken)."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - PGBP: Depreciation (s.32, s.43(1), s.43(6))",
+      "index_keywords": [
+       "additional depreciation",
+       "put to use for less than 180 days",
+       "moneys payable destroyed",
+       "actual cost",
+       "block of assets"
+      ]
+     },
+     "solve": "Machine cost: hedge outflow ₹31,06,079 + 3% rise €900 x ₹107 = ₹96,300 -> ₹32,02,379; + freight €5,000 x 107 = ₹5,35,000; + insurance €400 x 107 = ₹42,800; + agent commission ₹1,61,300; + Cochin-Kodagu freight ₹1,05,850; + BCD and SWS ₹4,52,980; IGST nil = ₹45,00,309 (about ₹0.45 cr). Block: 120 + 2.55 + 0.45 - 1.40 insurance money = ₹121.60 cr. Equipment received from the insurer cost HTPL nothing: nil. Normal: (121.60 - 3.00) x 15% = 17.79; 3.00 x 7.5% = 0.225. Additional: 3.00 x 20% x 50% = 0.30. Total ₹18.315 cr.",
+     "answer": "Depreciation on P&M block (15%) for AY 2026-27 (₹ crore):\nWDV on 1.4.2025: 120.00\nAdd: new machinery 2.50 + freight and installation 0.05 (used 15.11.2025): 2.55\nAdd: imported sachet machines (used 25.3.2026) [note]: 0.45\nLess: insurance money for machinery destroyed in fire: (1.40)\nAdd: equipment received from insurer: Nil\nWDV before depreciation: 121.60\nNormal depreciation: 118.60 x 15% = 17.790; 3.00 x 7.5% (used under 180 days) = 0.225\nAdditional depreciation u/s 32(1)(iia): 3.00 x 20% x 50% = 0.300\nTotal depreciation = ₹18.315 crore (the other ₹0.30 crore of additional depreciation is allowed in AY 2027-28).\nNote, actual cost of machines (₹): hedge cost 31,06,079 + price rise 96,300 + sea freight 5,35,000 + insurance 42,800 + agent commission 1,61,300 + inland freight 1,05,850 + BCD and SWS 4,52,980 (IGST excluded as ITC is taken) = 45,00,309.",
+     "icai": "Same as ICAI: ₹18.315 crore.",
+     "flag": "ICAI's note shows 'Total purchase price ₹32,02,079', a typo for ₹32,02,379; its final cost of ₹45,00,309 is right.",
+     "trap": "Putting solar panels, computers or office furnishing into the 15% block, or giving full-rate depreciation to assets used under 180 days.",
+     "minutes": 15
+    }
+   ]
+  },
+  {
+   "no": 2,
+   "title": "Heritage Organic Limited (Heritage)",
+   "industry": "Artisanal food and beverages (balsamic vinegar, sauces, craft spirits)",
+   "story": "Uttarakhand family brand stretched by hasty expansion across three facilities. Shrey Industries wants to buy in and values it; Heritage also seeks an advance ruling, plans a buy-back and an EV-motor venture, while Shrey faces a GST audit.",
+   "marks_by_subject": {
+    "AFM": 2,
+    "DT": 6,
+    "IDT": 8,
+    "Costing": 9
+   },
+   "difficulty": "Easy",
+   "first15": "Attempt: the friendliest case. All five MCQs are one-step, and 15 descriptive marks are known theory (non-value-added activities, buy-back, ITC blocks).",
+   "questions": [
+    {
+     "q": "2.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "AFM - Corporate Valuation",
+     "topic": "Capitalisation of earnings: future maintainable profit / capitalisation rate; non-listing discount",
+     "ask": "Value of Heritage Organic by capitalisation of earnings at 14%.",
+     "options": {
+      "a": "₹700 crore",
+      "b": "₹980 crore",
+      "c": "₹560 crore",
+      "d": "₹630 crore"
+     },
+     "clue": "'capitalisation of earnings method. Given the capitalization rate of 14%'",
+     "chapter_clear": true,
+     "think": [
+      "Capitalisation of earnings = FMP / rate: a one-line formula.",
+      "Chapter clear and known without the book; no lookup needed.",
+      "The 20% non-listing discount is a judgement call; ICAI accepts the value with or without it."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - Corporate Valuation",
+      "index_keywords": [
+       "capitalisation of earnings",
+       "future maintainable profit",
+       "discount for lack of marketability"
+      ]
+     },
+     "solve": "₹98 crore / 14% = ₹700 crore. After the 20% non-listing discount: 700 x 80% = ₹560 crore. P/E 15 and EPS ₹6.50 belong to a different method; ignore them here.",
+     "answer": "(a) ₹700 crore; (c) ₹560 crore (after the 20% non-listing discount) is also accepted.",
+     "icai": "(a) or (c), both accepted",
+     "flag": null,
+     "trap": "Pulling in the P/E data, or multiplying by the capitalisation rate instead of dividing.",
+     "minutes": 3
+    },
+    {
+     "q": "2.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "DT",
+     "also": null,
+     "chapter": "DT - Advance Rulings (Chapter XIX-B, ss.245N-245W)",
+     "topic": "Who can apply, 6-month time limit, appeal to High Court, calling for records",
+     "ask": "Which statement about Heritage's application to the Board for Advance Rulings is incorrect?",
+     "options": {
+      "a": "Transaction value must exceed ₹100 crore to seek a ruling",
+      "b": "Board must give its ruling within six months of the application",
+      "c": "Heritage cannot appeal against the ruling",
+      "d": "Board can call for records before ruling"
+     },
+     "clue": "'file an application to the Board for Advance Rulings'",
+     "chapter_clear": true,
+     "think": [
+      "Board for Advance Rulings = DT, Chapter XIX-B.",
+      "Chapter clear -> DT SM 'Advance Rulings' -> definition of applicant, s.245R, s.245W.",
+      "Heritage (resident) deals with a German (non-resident) distributor -> eligible applicant with no value limit."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - Advance Rulings",
+      "index_keywords": [
+       "Board for Advance Rulings",
+       "applicant",
+       "245R",
+       "245W appeal",
+       "one hundred crore"
+      ]
+     },
+     "solve": "(a) Incorrect: the ₹100 crore test is for a resident seeking a ruling on its own tax liability; a resident's transaction with a non-resident has no value limit. (b) Correct: ruling within six months. (c) Incorrect: since 2021, BAR rulings can be appealed to the High Court (s.245W) by the applicant or the Department. (d) Correct: the Board may call for records from the Commissioner.",
+     "answer": "(a); (c) is also an incorrect statement and is accepted.",
+     "icai": "(a) or (c), both accepted",
+     "flag": null,
+     "trap": "Remembering the old AAR line 'ruling is binding, no appeal'. BAR rulings are appealable to the High Court.",
+     "minutes": 3
+    },
+    {
+     "q": "2.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "GST - Charge of GST: reverse charge (s.9(3), Notification 13/2017-CT(R)); Exemptions",
+     "topic": "Sponsorship service received by a body corporate",
+     "ask": "GST treatment of the ₹25 lakh Heritage paid to sponsor the farmers' sports event.",
+     "options": {
+      "a": "Heritage (recipient) pays under reverse charge",
+      "b": "The club (supplier) pays",
+      "c": "Exempt as sponsorship for farmers",
+      "d": "Exempt as sponsorship of a sports event"
+     },
+     "clue": "'The company paid ₹25 lakhs for sponsoring the event'",
+     "chapter_clear": true,
+     "think": [
+      "Sponsorship paid by a company = a standard reverse charge item.",
+      "Chapter clear -> IDT SM GST 'Charge of GST' (RCM list) and 'Exemptions'.",
+      "Check exemptions: nothing covers sponsorship of a sports event by a farmers' club."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - GST: Charge of GST (reverse charge) and Exemptions",
+      "index_keywords": [
+       "sponsorship services",
+       "body corporate",
+       "reverse charge",
+       "sporting events"
+      ]
+     },
+     "solve": "Sponsorship services supplied to a body corporate or partnership firm are under reverse charge, so Heritage (a company) pays. No exemption covers sponsorship of this event, whether seen as a sports event or as a farmers' cause.",
+     "answer": "(a) GST is payable by Heritage under reverse charge",
+     "icai": "(a)",
+     "flag": null,
+     "trap": "Picking (d) from a vague memory of a sports exemption. It does not reach a farmers' club event.",
+     "minutes": 3
+    },
+    {
+     "q": "2.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SPOM-B (Strategic Cost & Performance Management) - Learning Curve",
+     "topic": "90% learning curve with a plateau after 10 batches; total variable cost",
+     "ask": "Total variable cost of producing 5,000 EV motors in 2026-27.",
+     "options": {
+      "a": "₹345.80 lakh",
+      "b": "₹340.30 lakh",
+      "c": "₹341.29 lakh",
+      "d": "₹345.25 lakh"
+     },
+     "clue": "'90% learning curve effect (learning index = -0.1520)'",
+     "chapter_clear": true,
+     "think": [
+      "Learning index + first-batch hours + plateau = learning curve.",
+      "Chapter clear -> SPOM-B Learning Curve illustration with a steady state after the nth batch; replace the figures.",
+      "Cumulative average y = 250 x^-0.152; 10th batch time = total of 10 batches - total of 9; batches 11-50 at that time."
+     ],
+     "look_up": {
+      "where": "ICAI SM SPOM-B - Learning Curve",
+      "index_keywords": [
+       "learning curve",
+       "cumulative average time",
+       "steady state",
+       "learning index"
+      ]
+     },
+     "solve": "Average for 10 batches = 250 x 0.705 = 176.25 h -> total 1,762.5 h. Average for 9 batches = 250 x 0.716 = 179 h -> total 1,611 h. 10th batch = 151.5 h. Batches 11-50: 40 x 151.5 = 6,060 h. Total = 7,822.5 h x (₹240 + ₹160) = ₹31,29,000. Material 5,000 x ₹6,200 = ₹3,10,00,000. Total variable cost = ₹3,41,29,000 = ₹341.29 lakh.",
+     "answer": "(c) ₹341.29 lakh",
+     "icai": "(c)",
+     "flag": null,
+     "trap": "Using the cumulative average (176.25 h) for batches 11-50 instead of the 10th batch's own time (151.5 h). That gives (d).",
+     "minutes": 3
+    },
+    {
+     "q": "2.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SPOM-B - Value-added and non-value-added activities (Lean / activity-based management)",
+     "topic": "Five NVA types: moving, waiting, inspecting, storing, scheduling",
+     "ask": "Classify the delay of bottled spirits sitting in the holding bay for quality checks.",
+     "options": {
+      "a": "Storing",
+      "b": "Moving",
+      "c": "Waiting",
+      "d": "Inspecting"
+     },
+     "clue": "'moved to a temporary holding bay where they are waiting for quality control'",
+     "chapter_clear": true,
+     "think": [
+      "The five NVA types are being tested.",
+      "Known without the book: idle time before the next step = waiting; inspecting is the check itself."
+     ],
+     "look_up": {
+      "where": "ICAI SM SPOM-B - non-value-added activities",
+      "index_keywords": [
+       "non-value-added activities",
+       "moving",
+       "waiting",
+       "inspecting",
+       "storing",
+       "scheduling"
+      ]
+     },
+     "solve": "Goods lying idle until an inspector is free are waiting for the next process. Inspecting is the act of checking; storing is holding finished goods in stock.",
+     "answer": "(c) Waiting",
+     "icai": "(c)",
+     "flag": null,
+     "trap": "Picking (d) Inspecting because the next step is QC. The question asks about the delay, not the check.",
+     "minutes": 3
+    },
+    {
+     "q": "2.6",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SPOM-B - Non-value-added activities (Lean system, business process improvement)",
+     "topic": "Identify each NVA in the audit list, how to remove it, and the strategic implication",
+     "ask": "Which of the six audit findings are non-value-added activities that can be removed, and what is the strategic effect?",
+     "options": null,
+     "clue": "'which of the identified Non-Value-Added activities can be eliminated'",
+     "chapter_clear": true,
+     "think": [
+      "Six audit points + 'non-value-added' = map each to moving, waiting, inspecting, storing or scheduling.",
+      "Chapter clear -> SPOM-B NVA list (else A-Z index 'non-value-added').",
+      "Key insight: the 25-year barrel ageing is value-adding storage (like wine), so keep it and cut only the waste around it.",
+      "Write finding -> NVA type -> fix, then 3-4 lines of strategic implication."
+     ],
+     "look_up": {
+      "where": "ICAI SM SPOM-B - non-value-added activities / Lean",
+      "index_keywords": [
+       "non-value-added",
+       "value-added activity",
+       "total productive maintenance",
+       "total quality management"
+      ]
+     },
+     "solve": "An NVA activity costs time and money but adds nothing the customer pays for. Classify each of the six findings, give a fix, and separate them from the ageing process that truly adds value.",
+     "answer": "Non-value-added activity: work the customer will not pay for; it adds time and cost but no quality.\n1. Labour-heavy transfer of part-aged product between facilities = Moving. Fix: re-layout or co-locate stages, mechanised handling.\n2. Barrels left unattended in the staging area while forklift operators do other work = Waiting (idle handling). Fix: dedicated handlers, scheduled material movement, tracking.\n3. Bottled spirits waiting in the holding bay for inspectors = Waiting. Fix: more or automated inspection, checks built into the line.\n4. Inspecting 10% of all output = Inspecting. Fix: build quality in (TQM, process control, self-checks) and cut the sample.\n5. Disorganised warehouse, long dwell of finished goods = Storing. Fix: demand-led production, better layout, faster dispatch (JIT).\n6. Haphazard production from unscheduled maintenance = Scheduling. Fix: production planning, preventive maintenance and TPM.\nNot NVA: fermentation and 25-year ageing in barrels. This storage creates the flavour customers pay for, so it stays.\nStrategic implication: Roshan is right about the craft but not about the waste. Removing the six NVAs cuts cost and lead time, frees working capital, improves margins and delivery, and raises future cash flows, which lifts the value Shrey Industries will pay, while the artisanal core that differentiates the brand stays intact.",
+     "icai": "Same conclusion as ICAI (ICAI's alternative answer adds a fix for each point, covered above).",
+     "flag": null,
+     "trap": "Calling the 25-year ageing an NVA 'storing' activity. It adds value, like wine maturing.",
+     "minutes": 15
+    },
+    {
+     "q": "2.7",
+     "type": "Descriptive",
+     "marks": 4,
+     "subject": "DT",
+     "also": null,
+     "chapter": "DT - Income from Other Sources (deemed dividend s.2(22)(f)); Capital Gains (s.46A); TDS (s.194/s.195)",
+     "topic": "Buy-back on or after 1.10.2024: dividend for shareholders, capital loss, no tax on company, TDS",
+     "ask": "Note on the income-tax effect of buying back 10 lakh shares at ₹150 for the shareholders and the company, and the company's obligations.",
+     "options": null,
+     "clue": "'buy 10 lakh equity shares for ₹150 per share'",
+     "chapter_clear": true,
+     "think": [
+      "Buy-back = the post-1.10.2024 regime: dividend in shareholders' hands, no tax on the company.",
+      "Chapter clear -> DT SM 'Income from Other Sources' (deemed dividend) + 'Capital Gains' s.46A + TDS s.194.",
+      "Shareholder has two effects (dividend income and a capital loss); company has only TDS duties."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - IFOS (deemed dividend), Capital Gains (s.46A), TDS (s.194)",
+      "index_keywords": [
+       "buy-back",
+       "2(22)(f)",
+       "46A",
+       "115QA",
+       "dividend TDS 194"
+      ]
+     },
+     "solve": "Deemed dividend = 10,00,000 x ₹150 = ₹15 crore. Shareholders' capital loss = cost of the shares bought back (₹10 each for original allottees) = ₹1 crore in all, long-term (held about 16 years). TDS at 10% on resident payees = up to ₹1.5 crore.",
+     "answer": "Shareholders:\n1. The whole ₹150 per share is a deemed dividend u/s 2(22)(f), taxed under 'Income from other sources' at their applicable rates; no expense is deductible against it.\n2. For capital gains the consideration is taken as nil (s.46A), so the cost of the shares (₹10 each for original allottees) becomes a capital loss. Here it is long-term (held about 16 years; unlisted shares over 24 months), set off only against LTCG and carried forward for 8 AYs.\nCompany:\n1. No tax on Heritage: the s.115QA buy-back tax does not apply to buy-backs on or after 1.10.2024.\n2. TDS: s.194 at 10% for resident shareholders (no TDS for an individual paid other than in cash if the dividend does not exceed ₹10,000 in the year); s.195 at 20% or the treaty rate for non-residents. Deposit the tax, file TDS returns and issue Form 16A.",
+     "icai": "Same conclusion as ICAI.",
+     "flag": "Budget 2026 proposed taxing buy-backs as capital gains again from 1.4.2026 (promoters pay extra); use the law that applies to your attempt.",
+     "trap": "Still charging 20% buy-back tax on the company u/s 115QA. That ended for buy-backs from 1.10.2024.",
+     "minutes": 12
+    },
+    {
+     "q": "2.8",
+     "type": "Descriptive",
+     "marks": 6,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "GST - Input Tax Credit (s.16(2)(b), s.17(5)); Supply (Schedule I); Interest (s.50(3), Rule 88B); Demands (s.73/74/74A)",
+     "topic": "Premature ITC, blocked catering and gift ITC, gifts to employees, interest only on utilised ITC, penalty",
+     "ask": "Advise Shrey Industries on tax, ITC admissibility, and interest and penalty for the three issues raised in the GST audit.",
+     "options": null,
+     "clue": "'goods were physically received at the warehouse only on 4th April 2024'",
+     "chapter_clear": true,
+     "think": [
+      "ITC timing, catering, gifts to employees, interest and penalty = GST ITC + supply + demand chapters.",
+      "Chapter clear -> IDT SM GST: 'Input Tax Credit' (s.16(2)(b), s.17(5)(b), (h)), 'Supply' (Schedule I, gifts up to ₹50,000), 'Payment of Tax' (s.50(3), Rule 88B), 'Demands' (s.73/74; s.74A only from FY 2024-25).",
+      "Interest only on ITC actually used: total wrong ITC vs ECL balance.",
+      "Write three blocks: tax liability, ITC, interest and penalty."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - GST: Input Tax Credit; Supply; Payment of Tax; Demands and Recovery",
+      "index_keywords": [
+       "receipt of goods 16(2)(b)",
+       "outdoor catering",
+       "gifts not exceeding fifty thousand",
+       "Rule 88B",
+       "wrongly availed and utilised",
+       "section 73 penalty"
+      ]
+     },
+     "solve": "Wrong ITC = 150 + 2.70 + ITC on gifts (55 x 18% = 9.90) = ₹162.60 lakh. ECL balance after the March 2024 return = ₹120 lakh, so deemed utilised = 162.60 - 120 = ₹42.60 lakh (Rule 88B). Interest at 18% on ₹42.60 lakh from 18.4.2024 (earlier of filing date 18.4.2024 and due date 20.4.2024) till reversal or payment.",
+     "answer": "1. Tax liability (gifts): goods given free are a supply only if Schedule I says so. Gifts by an employer to an employee up to ₹50,000 per employee in a year are not a supply. Appliances worth ₹15,000 and ₹5,000 each (workers taken to be on the payroll) are below the limit, so no GST; the demand for tax on gifts is not sustainable.\n2. ITC admissibility: (a) ₹150 lakh: s.16(2)(b) requires receipt of goods. Goods arrived on 4.4.2024, so the credit is not admissible for March 2024 (it belongs to April 2024) and must be reversed. (b) ₹2.70 lakh on outdoor catering for a dealers' event: blocked u/s 17(5)(b), as it is not used for an outward catering supply; reverse. (c) ITC on gifted appliances (₹55 lakh x 18% = ₹9.90 lakh): blocked u/s 17(5)(h) for goods given as gifts; reverse.\n3. Interest: s.50(3) applies only to wrongly availed ITC that is utilised. Under Rule 88B it is utilised to the extent the ECL balance falls below the wrong credit: (150 + 2.70 + 9.90) - 120 = ₹42.60 lakh. Interest at 18% p.a. on ₹42.60 lakh from 18.4.2024 till reversal. The other ₹120 lakh is simply reversed, without interest.\n4. Penalty: these are FY 2023-24 issues, so s.73 (no fraud) applies; s.74A covers FY 2024-25 onwards. If ITC is reversed with interest before the notice or within 30 days of it, no penalty; otherwise 10% of tax or ₹10,000, whichever is higher.\nAdvice: reverse ₹162.60 lakh of ITC, pay interest on ₹42.60 lakh, and contest the tax demand on gifts.",
+     "icai": "Same conclusion on tax and ITC; ICAI states interest at 15% and penalty u/s 74A.",
+     "flag": "ICAI says interest @15% and penalty u/s 74A; the s.50(3) rate is 18% and FY 2023-24 dues fall under s.73/74 (s.74A starts from FY 2024-25).",
+     "trap": "Charging interest on the full ₹162.60 lakh. Interest runs only on the ₹42.60 lakh actually used.",
+     "minutes": 18
+    }
+   ]
+  },
+  {
+   "no": 3,
+   "title": "Harcharan Ceramics Limited (HCL)",
+   "industry": "Tiles, sanitaryware and engineered marble",
+   "story": "Mysore ceramics group that has bought Savreen Ceramics, faces disqualified directors and excess MD pay in its subsidiaries, plans an export plant abroad and is fighting income-tax appeals and revisions.",
+   "marks_by_subject": {
+    "Law": 4,
+    "Audit": 2,
+    "IDT": 2,
+    "FR": 6,
+    "AFM": 6,
+    "DT": 5
+   },
+   "difficulty": "Moderate",
+   "first15": "Good pick if FR/AFM are strong: 12 marks are textbook sums (Ind AS 21, DTL + goodwill, CFAT perpetuity) and 3.8 is recall; 3.4 has no right option, so don't stall there.",
+   "questions": [
+    {
+     "q": "3.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Corporate Laws - Appointment and Qualifications of Directors (s.164(2), s.167(1)(a), s.167(3))",
+     "topic": "All directors vacate office; promoter appoints",
+     "ask": "All HCL directors are disqualified. Pick the INCORRECT statements: (i) promoter cannot appoint; (ii) promoter can appoint the required directors; (iii) only with prior consent of all three disqualified directors; (iv) with consent of any two of them.",
+     "options": {
+      "a": "(i) and (ii)",
+      "b": "(iii) and (iv)",
+      "c": "(i), (iii) and (iv)",
+      "d": "(ii)"
+     },
+     "clue": "'defaulted in filing its financial statements for three financial years'",
+     "chapter_clear": true,
+     "think": [
+      "Non-filing for 3 years = s.164(2) disqualification; office vacated = s.167; all vacate = promoter appoints.",
+      "Chapter clear -> Law SM 'Appointment and Qualifications of Directors' -> s.167(3).",
+      "The question asks for INCORRECT statements; circle that word first."
+     ],
+     "look_up": {
+      "where": "ICAI SM Corporate Laws - Appointment and Qualifications of Directors",
+      "index_keywords": [
+       "vacation of office",
+       "all directors vacate",
+       "promoter shall appoint",
+       "164(2)"
+      ]
+     },
+     "solve": "s.164(2): directors of a company that has not filed financial statements for 3 years are disqualified; under the proviso to s.167(1)(a) they vacate office in every other company (here HCL), but not in the defaulting HSCTL. With all HCL directors gone, s.167(3) lets the promoter (or, failing him, the Central Government) appoint the required directors till the general meeting appoints directors. So (ii) is correct; (i), (iii) and (iv) are incorrect, as consent of disqualified directors is irrelevant.",
+     "answer": "(c) (i), (iii) and (iv)",
+     "icai": "(c)",
+     "flag": null,
+     "trap": "Choosing the correct statement (d) when the question asks for the incorrect ones.",
+     "minutes": 3
+    },
+    {
+     "q": "3.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Corporate Laws - Appointment and Remuneration of Managerial Personnel (s.197, Schedule V)",
+     "topic": "Remuneration beyond Schedule V limits with inadequate profits and default to lenders",
+     "ask": "Correct route for HITL to pay its MD above the Schedule V limits.",
+     "options": {
+      "a": "Prior approval of banks and NCD holders, then special resolution",
+      "b": "Prior approval of banks and NCD holders, then ordinary resolution",
+      "c": "Prior approval of Central Government, banks and NCD holders, then special resolution",
+      "d": "Prior approval of Central Government, banks and NCD holders, then ordinary resolution"
+     },
+     "clue": "'defaulted in payment of dues to Banks as well as to Non-Convertible debenture holders'",
+     "chapter_clear": true,
+     "think": [
+      "Inadequate profits + pay above limits + default to lenders = s.197 provisos and Schedule V.",
+      "Chapter clear -> Law SM 'Appointment and Remuneration of Managerial Personnel'.",
+      "Central Government approval was removed in 2018; what remains is a special resolution and lenders' prior approval."
+     ],
+     "look_up": {
+      "where": "ICAI SM Corporate Laws - Appointment and Remuneration of Managerial Personnel",
+      "index_keywords": [
+       "inadequate profits",
+       "Schedule V",
+       "special resolution",
+       "prior approval of bank",
+       "non-convertible debenture holders"
+      ]
+     },
+     "solve": "With inadequate profits, Schedule V allows the higher limits only with a special resolution of shareholders. Where the company has defaulted to banks, financial institutions, NCD holders or other secured creditors, their prior approval must be obtained before the general meeting. Central Government approval is no longer needed (removed by the Companies (Amendment) Act 2017, effective 12.9.2018).",
+     "answer": "(a) Prior approval of banks and NCD holders, then special resolution",
+     "icai": "(a)",
+     "flag": null,
+     "trap": "Adding Central Government approval (c). That requirement was dropped in 2018.",
+     "minutes": 3
+    },
+    {
+     "q": "3.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": "Ethics",
+     "chapter": "ICAI UDIN Guidelines (Professional Ethics; signing of audit reports and certificates)",
+     "topic": "UDIN is document-wise for attest documents; not needed for letters and communications",
+     "ask": "Pick the INCORRECT statements: (i) one UDIN for the whole year per engagement covering all communications; (ii) separate UDINs for the audit report and the TCWG letter; (iii) UDIN needed for certificates, audit reports and other attest reports, not for communication letters; (iv) one UDIN per client.",
+     "options": {
+      "a": "(i) and (ii)",
+      "b": "(i) and (iv)",
+      "c": "(i), (ii) and (iv)",
+      "d": "(ii) and (iv)"
+     },
+     "clue": "'contemplating whether he needs to generate a Unique Document Identification Number'",
+     "chapter_clear": false,
+     "think": [
+      "UDIN = an ICAI guideline, not an SA.",
+      "Unsure where it sits -> A-Z index -> 'UDIN'.",
+      "Rule: one UDIN per attest document (certificate, audit or assurance report); letters to management or TCWG need none."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - Professional Ethics (UDIN guidelines), via A-Z index",
+      "index_keywords": [
+       "UDIN",
+       "unique document identification number",
+       "certificates",
+       "attest functions"
+      ]
+     },
+     "solve": "(iii) states the actual position: UDIN is generated for each certificate, audit report and other assurance or attest report; communications such as letters to TCWG do not need one. So (i) is wrong (no single year-long UDIN), (ii) is wrong (the TCWG letter needs none) and (iv) is wrong (UDIN is per document, not per client).",
+     "answer": "(c) (i), (ii) and (iv)",
+     "icai": "(c)",
+     "flag": null,
+     "trap": "Thinking every document sent to a client needs a UDIN. Only attest and certification documents do.",
+     "minutes": 3
+    },
+    {
+     "q": "3.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "Customs - Import and Export Procedures (s.30, s.31, s.46, s.17, s.47)",
+     "topic": "Order of import steps; Bill of Entry now filed before arrival",
+     "ask": "Correct order of: (i) entry inwards to vessel, (ii) import general manifest, (iii) unloading (printed 'uploading'), (iv) assessment, (v) Bill of Entry, (vi) payment of duty.",
+     "options": {
+      "a": "(i), (ii), (iii), (iv), (v), (vi)",
+      "b": "(ii), (iii), (i), (iv), (v), (vi)",
+      "c": "(iii), (ii), (i), (vi), (v), (iv)",
+      "d": "(ii), (i), (iii), (v), (iv), (vi)"
+     },
+     "clue": "'conveyance, clearance and warehousing procedures under the Indian Customs Law'",
+     "chapter_clear": true,
+     "think": [
+      "Import steps in order = Customs procedures chapter.",
+      "Chapter clear -> IDT SM Customs 'Import and Export Procedures' flow chart.",
+      "Apply current law: IGM (s.30) and BoE (s.46(3), by the end of the day before arrival) are both filed before the ship arrives; then entry inwards (s.31), unloading, assessment (s.17), duty (s.47).",
+      "If no option fits within 3 minutes, mark the closest and move on."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - Customs: Import and Export Procedures",
+      "index_keywords": [
+       "import general manifest",
+       "entry inwards",
+       "bill of entry 46(3)",
+       "assessment section 17",
+       "payment of duty section 47"
+      ]
+     },
+     "solve": "Current-law order: (ii) IGM -> (v) Bill of Entry (in advance) -> (i) entry inwards -> (iii) unloading -> (iv) assessment -> (vi) payment of duty. No option puts the BoE before entry inwards. (d) is the older textbook order with the BoE after unloading.",
+     "answer": "No option is correct (closest: (d), the older order with BoE after unloading).",
+     "icai": "No correct option (ICAI)",
+     "flag": "ICAI declared no correct option: under s.46(3) the Bill of Entry now goes in before arrival, which none of the options shows.",
+     "trap": "Ticking (d) from an old flow chart without checking the advance Bill of Entry rule (Case 1 itself shows a BoE filed before arrival).",
+     "minutes": 3
+    },
+    {
+     "q": "3.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 21 The Effects of Changes in Foreign Exchange Rates",
+     "topic": "Foreign currency payable restated at closing rate; differences to profit or loss",
+     "ask": "Exchange gain or loss for FY 2024-25 and FY 2025-26 on the US$1,00,000 payable for new machines.",
+     "options": {
+      "a": "FY 2024-25 loss ₹2,00,000; FY 2025-26 loss ₹50,000",
+      "b": "FY 2024-25 gain ₹2,00,000; FY 2025-26 gain ₹50,000",
+      "c": "FY 2024-25 gain ₹2,00,000; FY 2025-26 loss ₹50,000",
+      "d": "FY 2024-25 loss ₹2,00,000; FY 2025-26 gain ₹50,000"
+     },
+     "clue": "'purchased ... for US$ 1,00,000 when the exchange rate per US dollar was ₹84'",
+     "chapter_clear": true,
+     "think": [
+      "Foreign currency payable outstanding at year end = Ind AS 21 monetary item.",
+      "Chapter clear and known without the book.",
+      "Machine stays at ₹84 (non-monetary); payable restated at the closing rate; differences to P&L."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 21",
+      "index_keywords": [
+       "monetary items",
+       "closing rate",
+       "exchange differences profit or loss"
+      ]
+     },
+     "solve": "Initial: $1,00,000 x 84 = ₹84,00,000 for both machine and payable. 31.3.2025: payable at ₹86 = ₹86,00,000 -> loss ₹2,00,000 in FY 2024-25. Paid 5.6.2025 at ₹86.50 = ₹86,50,000 -> further loss ₹50,000 in FY 2025-26. The rupee weakened while HCL owed dollars, so it is a loss both years.",
+     "answer": "(a) FY 2024-25 loss ₹2,00,000; FY 2025-26 loss ₹50,000",
+     "icai": "(a)",
+     "flag": null,
+     "trap": "Adding the difference to the machine's cost (the old AS 11 option or the s.43A tax rule). Under Ind AS 21 it goes to P&L.",
+     "minutes": 3
+    },
+    {
+     "q": "3.6",
+     "type": "Descriptive",
+     "marks": 4,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 12 Income Taxes with Ind AS 103 Business Combinations",
+     "topic": "Deferred tax on fair value vs tax base at acquisition; goodwill",
+     "ask": "Compute the deferred tax arising on acquiring SCL and the goodwill.",
+     "options": null,
+     "clue": "'together with their tax bases. Any goodwill ... is not deductible for tax purposes'",
+     "chapter_clear": true,
+     "think": [
+      "Fair values vs tax bases in an acquisition = Ind AS 12 temporary differences inside Ind AS 103.",
+      "Chapter clear -> FR SM Ind AS 12 'deferred tax in business combinations' illustration; replace the figures.",
+      "Ignore SCL's own ₹15 lakh book DTL; recompute on fair value vs tax base; no DTL on goodwill."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 12 (business combinations) and Ind AS 103 (goodwill)",
+      "index_keywords": [
+       "temporary differences",
+       "tax base",
+       "business combination deferred tax",
+       "goodwill initial recognition exception"
+      ]
+     },
+     "solve": "For each item: (fair value - tax base) x 30%. Taxable differences give DTL, deductible ones give DTA. Net them, deduct from fair value of net assets, then goodwill = consideration - net assets.",
+     "answer": "Deferred tax (₹ lakh): fair value / tax base / temporary difference / tax @30%\nLand and buildings: 700 / 500 / 200 taxable / DTL 60\nProperty, plant and equipment: 270 / 200 / 70 taxable / DTL 21\nInventory: 80 / 100 / 20 deductible / DTA (6)\nRetirement benefit obligation: 100 / nil / 100 deductible / DTA (30)\nReceivables, cash, payables: no difference\nNet deferred tax liability = 60 + 21 - 6 - 30 = ₹45 lakh\nFair value of net identifiable assets = 1,070 - 45 = ₹1,025 lakh\nGoodwill = 1,500 - 1,025 = ₹475 lakh\nNo deferred tax on goodwill: it is not tax-deductible and Ind AS 12 bars DTL on its initial recognition.",
+     "icai": "Same as ICAI: net DTL ₹45 lakh, goodwill ₹475 lakh.",
+     "flag": null,
+     "trap": "Using book values or SCL's ₹15 lakh DTL instead of fair value vs tax base, or creating DTL on goodwill.",
+     "minutes": 12
+    },
+    {
+     "q": "3.7",
+     "type": "Descriptive",
+     "marks": 6,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "AFM - International Financial Management (international capital budgeting)",
+     "topic": "CFAT under exchange-rate scenarios, expected CFAT, growing-perpetuity NPV",
+     "ask": "(i) Annual CFAT under each scenario; (ii) expected CFAT; (iii) viability with US$25 million outlay, 11% required return and 3% perpetual growth.",
+     "options": null,
+     "clue": "'Dollar is expected to decline by 10% or 15%'",
+     "chapter_clear": true,
+     "think": [
+      "Foreign plant + exchange scenarios + probabilities = international capital budgeting.",
+      "Chapter clear -> AFM SM 'International Financial Management' illustration; replace the figures.",
+      "Cost and depreciation both move with the exchange rate: depreciation 1.00 -> 0.90 -> 0.85 million.",
+      "Expected CFAT -> growing perpetuity CF x 1.03 / (0.11 - 0.03) -> NPV."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - International Financial Management (international capital budgeting)",
+      "index_keywords": [
+       "international capital budgeting",
+       "expected value of cash flows",
+       "growing perpetuity",
+       "exchange rate scenarios"
+      ]
+     },
+     "solve": "Unit cost: 6.00 (no change), 6.00 - 0.30 = 5.70 (10%), 5.70 - 0.15 = 5.55 (15%). Depreciation: 10,00,000 x 1, x 0.90, x 0.85. If 32,26,000 is instead read as year-1 CFAT (no growth applied), PV = US$4,03,25,000 and NPV = US$1,53,25,000: still viable. ICAI grows it once.",
+     "answer": "(i) CFAT (US$), scenarios 0% / 10% / 15% decline:\nProfit per unit: 10 - 6.00 = 4.00 / 10 - 5.70 = 4.30 / 10 - 5.55 = 4.45\nTotal for 10 lakh units: 40,00,000 / 43,00,000 / 44,50,000\nLess depreciation: 10,00,000 / 9,00,000 / 8,50,000\nPBT: 30,00,000 / 34,00,000 / 36,00,000\nTax @30%: 9,00,000 / 10,20,000 / 10,80,000\nPAT: 21,00,000 / 23,80,000 / 25,20,000\nCFAT (PAT + depreciation): 31,00,000 / 32,80,000 / 33,70,000\n(ii) Expected CFAT = 31,00,000 x 0.4 + 32,80,000 x 0.4 + 33,70,000 x 0.2 = US$32,26,000\n(iii) PV of inflows = 32,26,000 x 1.03 / (0.11 - 0.03) = 33,22,780 / 0.08 = US$4,15,34,750\nNPV = 4,15,34,750 - 2,50,00,000 = US$1,65,34,750. NPV is positive, so the proposal is viable.",
+     "icai": "Same as ICAI: expected CFAT US$32,26,000; NPV US$1,65,34,750; viable.",
+     "flag": null,
+     "trap": "Keeping depreciation at US$1 million in every scenario, or missing that 0.15 is an extra cut on top of 0.30.",
+     "minutes": 18
+    },
+    {
+     "q": "3.8",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "DT",
+     "also": null,
+     "chapter": "DT - Appeals and Revision (s.263, s.264; doctrine of merger)",
+     "topic": "Partial merger for s.263; total bar on s.264 once the order is under appeal to the ITAT",
+     "ask": "Is the tax counsel right on (i) s.263 revision for AY 2023-24 while the CIT(A) appeal is pending, and (ii) the CIT's refusal of the s.264 petition for AY 2024-25? Suggest the course of action.",
+     "options": null,
+     "clue": "'doctrine of total merger would apply and therefore, the revision proposed is bad'",
+     "chapter_clear": true,
+     "think": [
+      "Commissioner revising while an appeal is pending = s.263 / s.264 + doctrine of merger.",
+      "Chapter clear -> DT SM 'Appeals and Revision' -> Explanation 1(c) to s.263; s.264(4).",
+      "s.263 = partial merger (only matters decided in appeal are out of reach); s.264 = total bar once the order is under ITAT appeal."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - Appeals and Revision",
+      "index_keywords": [
+       "revision of orders prejudicial to revenue",
+       "doctrine of merger",
+       "matters not considered and decided in appeal",
+       "subject of an appeal to the Appellate Tribunal"
+      ]
+     },
+     "solve": "Test each year against its section: s.263 Explanation 1(c) for AY 2023-24; s.264(4)(c) for AY 2024-25. Then give the remedy.",
+     "answer": "(i) AY 2023-24, s.263: Explanation 1(c) to s.263 lets the Commissioner revise any matter not considered and decided in appeal (partial merger). The issues being revised were not part of the CIT(A) appeal, so revision is valid and counsel's 'total merger' view is not correct. Course of action: reply to the s.263 notice on merits (the order is neither erroneous nor prejudicial to revenue); if a revision order is passed, appeal to the ITAT u/s 253; continue the CIT(A) appeal.\n(ii) AY 2024-25, s.264: s.264(4)(c) bars the Commissioner from revising an order that is the subject of an appeal to the ITAT. This is total merger: it applies even though the relief sought (s.40A(2)) differs from the appeal issue (depreciation), and whoever filed the appeal. Rejecting the petition is valid, so counsel's view is not correct. Course of action: raise the s.40A(2) disallowance as an additional ground before the ITAT, which can admit a question of law arising on facts already on record (NTPC v. CIT, SC).",
+     "icai": "Same conclusion as ICAI (counsel is wrong on both); the course-of-action lines are added.",
+     "flag": null,
+     "trap": "Applying 'total merger' to s.263. The total bar belongs to s.264; s.263 has only a partial bar.",
+     "minutes": 15
+    }
+   ]
+  },
+  {
+   "no": 4,
+   "title": "Vinod Heavy Industries Ltd. (VHIL)",
+   "industry": "Heavy infrastructure machinery and components",
+   "story": "Listed Gujarat manufacturer that hedges a short-term loan with an FRA, amalgamates a distressed logistics company, gets special-purpose audits for a bank consortium and wants to take tunnelling machines to Africa.",
+   "marks_by_subject": {
+    "AFM": 2,
+    "Law": 4,
+    "Audit": 9,
+    "FR": 5,
+    "Costing": 5
+   },
+   "difficulty": "Moderate",
+   "first15": "Pick if Audit is strong: 9 marks on SA 805/810 plus an easy FRA and s.230 MCQ; 4.6 is a standard by-product sum and 4.8 is free writing.",
+   "questions": [
+    {
+     "q": "4.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "AFM - Interest Rate Risk Management",
+     "topic": "6x9 FRA settlement amount, discounted to the settlement date",
+     "ask": "Settlement amount and profit or loss to VHIL on its 6x9 FRA at 7.80% on ₹100 crore (360-day year).",
+     "options": {
+      "a": "₹7,35,114 (Profit)",
+      "b": "₹7,50,827 (Profit)",
+      "c": "₹7,35,114 (Loss)",
+      "d": "₹7,50,827 (Loss)"
+     },
+     "clue": "'entered into a 6x9 Forward Rate Agreement' ... 'Forward Rate (FR) of 7.80%'",
+     "chapter_clear": true,
+     "think": [
+      "FRA settlement = interest rate risk numerical with a known formula.",
+      "VHIL (borrower) locked 7.80%; the reference rate 8.10% is higher, so VHIL receives.",
+      "Settlement happens at the start of the loan period, so discount at the reference rate for 3 months."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - Interest Rate Risk Management",
+      "index_keywords": [
+       "forward rate agreement",
+       "settlement amount",
+       "FRA"
+      ]
+     },
+     "solve": "Interest difference = ₹100 cr x (8.10% - 7.80%) x 90/360 = ₹7,50,000. Paid at settlement, so 7,50,000 / (1 + 0.081 x 90/360) = 7,50,000 / 1.02025 = ₹7,35,114. MIBOR above the FRA rate means a gain for the borrower. (The case gives only one MIBOR, 8.10%; ICAI uses it as the settlement reference rate.)",
+     "answer": "(a) ₹7,35,114 (Profit)",
+     "icai": "(a)",
+     "flag": null,
+     "trap": "Not discounting (₹7,50,000), or calling it a loss. Rates went up, so the borrower who fixed the rate gains.",
+     "minutes": 3
+    },
+    {
+     "q": "4.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Corporate Laws - Compromises, Arrangements and Amalgamations (s.230(6))",
+     "topic": "Majority in number and three-fourths in value of members present and voting",
+     "ask": "Was the amalgamation scheme approved by VLL's members with the required majority?",
+     "options": {
+      "a": "Yes: more than 400 members and more than 22,00,000 shares in favour",
+      "b": "Yes: more than 600 members and more than 26,25,000 shares in favour",
+      "c": "Yes: more than 375 members and more than 24,00,000 shares in favour",
+      "d": "Yes: more than 375 members and more than 25,00,000 shares in favour"
+     },
+     "clue": "'650 shareholders holding 28,00,000 shares voted in favour'",
+     "chapter_clear": true,
+     "think": [
+      "Scheme approval at a Tribunal-convened meeting = s.230(6) dual test.",
+      "Chapter clear and known without the book.",
+      "Base = members present AND voting (650 + 100 = 750; 32 lakh shares), not attendance and not total members."
+     ],
+     "look_up": {
+      "where": "ICAI SM Corporate Laws - Compromises, Arrangements and Amalgamations (s.230)",
+      "index_keywords": [
+       "majority of persons representing three-fourths in value",
+       "present and voting",
+       "230(6)"
+      ]
+     },
+     "solve": "Voting: 750 members holding 32,00,000 shares. Majority in number: more than 375; 650 in favour, passed. Three-fourths in value: 3/4 x 32,00,000 = 24,00,000; 28,00,000 in favour, passed. Scheme approved.",
+     "answer": "(c) Yes: more than 375 members and more than 24,00,000 shares in favour",
+     "icai": "(c)",
+     "flag": null,
+     "trap": "Counting the 50 who abstained (800 present) or all 1,200 members in the base, which gives (a) or (b).",
+     "minutes": 3
+    },
+    {
+     "q": "4.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "SA 805 (Revised) Audits of Single Financial Statements and Specific Elements",
+     "topic": "Unmodified opinion on an element when the complete-FS opinion is only qualified",
+     "ask": "Can R & Co. give an unmodified opinion on 'Trade Receivables from Government Contracts' after qualifying the full FS?",
+     "options": {
+      "a": "No, because the full-FS opinion was qualified",
+      "b": "Yes, only if not published with the qualified report",
+      "c": "Yes, if not a major portion and not published together",
+      "d": "Yes, regardless of size or joint publication, as it is a separate engagement"
+     },
+     "clue": "'issued a qualified audit report' ... 'special purpose framework tailored to the loan agreement'",
+     "chapter_clear": true,
+     "think": [
+      "Specific element audited by the same auditor = SA 805.",
+      "Chapter clear -> Audit SM SA 805: effect of a modified opinion on the complete FS.",
+      "The 'major portion / not published together' conditions apply only when the full-FS opinion is ADVERSE or a DISCLAIMER; here it is only qualified."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - SA 805 (Revised)",
+      "index_keywords": [
+       "specific element",
+       "adverse opinion or disclaimer on complete set",
+       "major portion",
+       "published together"
+      ]
+     },
+     "solve": "SA 805: the auditor weighs the effect of the qualification on the element. The qualification concerns long-term investments, not receivables. The extra conditions (element not a major portion, report not published alongside) bite only for an adverse opinion or a disclaimer on the complete FS. So an unmodified opinion on receivables is possible without those conditions.",
+     "answer": "(d) An unmodified opinion is possible regardless of proportion or joint publication",
+     "icai": "(d)",
+     "flag": null,
+     "trap": "Choosing (c). Those conditions belong to the adverse or disclaimer case.",
+     "minutes": 3
+    },
+    {
+     "q": "4.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Corporate Laws - Compromises, Arrangements and Amalgamations (s.235, acquiring shares of dissenting shareholders)",
+     "topic": "Transferee is entitled and bound to acquire all dissenting shares once the Tribunal declines relief",
+     "ask": "VHIL bought only 75% of the dissenters' shares. What must it do?",
+     "options": {
+      "a": "No action: VHIL already holds a substantial majority",
+      "b": "Action: VHIL is bound to acquire all remaining dissenting shares at the price fixed per the rules",
+      "c": "No action: partial acquisition is at VHIL's discretion",
+      "d": "No action: dissenters should have had an exit earlier"
+     },
+     "clue": "'acquired 75% of the shares held by these dissenting shareholders'",
+     "chapter_clear": true,
+     "think": [
+      "90% approval + notice to dissenters + their application = s.235.",
+      "Chapter clear -> Law SM 'Compromises, Arrangements and Amalgamations' -> s.235.",
+      "'Entitled and bound': once relief is refused, VHIL must buy all, not some."
+     ],
+     "look_up": {
+      "where": "ICAI SM Corporate Laws - s.235",
+      "index_keywords": [
+       "dissenting shareholders",
+       "nine-tenths in value",
+       "entitled and bound to acquire",
+       "235"
+      ]
+     },
+     "solve": "Under s.235, once holders of at least 90% in value approve, the transferee may notify the dissenters; unless the Tribunal, on their application within a month, orders otherwise, the transferee is entitled and bound to acquire their shares on the scheme terms. The application failed, so VHIL must buy the remaining 25% as well; partial acquisition is not allowed. (The 'registered valuer' wording in (b) comes from s.236; (b) is still the only defensible option.)",
+     "answer": "(b) Action required: VHIL must acquire all the remaining dissenting shares",
+     "icai": "(b)",
+     "flag": null,
+     "trap": "Reading 'entitled' as optional (c). The section says entitled AND bound.",
+     "minutes": 3
+    },
+    {
+     "q": "4.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "SA 810 (Revised) Engagements to Report on Summary Financial Statements",
+     "topic": "Summary report dated later than the audited-FS report; qualified opinion on audited FS",
+     "ask": "Extra reporting in the summary FS report (15.7.2025) when the full-FS report (1.6.2025) is qualified.",
+     "options": {
+      "a": "State that summary FS do not reflect events after 15.7.2025, and describe the basis of qualification",
+      "b": "State that summary FS do not reflect events after 1.6.2025, and describe the basis of qualification",
+      "c": "Re-audit the full FS up to 15.6.2025",
+      "d": "Re-audit the full FS up to 15.7.2025"
+     },
+     "clue": "'summary financial statement for the year ... report was to be dated 15th July 2025'",
+     "chapter_clear": true,
+     "think": [
+      "Report on summary FS = SA 810.",
+      "Chapter clear -> SA 810: report dated later than the audited-FS report; modified opinion on the audited FS.",
+      "The cut-off date to mention is the date of the audited-FS report (1.6.2025), not the summary report's date."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - SA 810 (Revised)",
+      "index_keywords": [
+       "summary financial statements",
+       "date of auditor's report later",
+       "qualified opinion audited financial statements"
+      ]
+     },
+     "solve": "SA 810: if the summary report is dated later, it states that the summary and audited FS do not reflect events after the date of the report on the audited FS (1.6.2025). If that report is qualified, the summary report says so, gives the basis for the qualification and its effect on the summary FS. No re-audit is needed.",
+     "answer": "(b)",
+     "icai": "(b)",
+     "flag": null,
+     "trap": "Using the summary report's own date (15.7.2025), which is option (a).",
+     "minutes": 3
+    },
+    {
+     "q": "4.6",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 2 Inventories",
+     "topic": "Joint products, by-product at NRV, scrap, finished-goods storage cost excluded, raw material not written down",
+     "ask": "Value the closing stock of the Metal Cast Division (raw material and both main products) under Ind AS 2.",
+     "options": null,
+     "clue": "'1,000 units of a By-product also emerged' ... 'Godown is used for storing finished products'",
+     "chapter_clear": true,
+     "think": [
+      "By-product + joint products + replacement cost of raw material = Ind AS 2 cost and NRV rules.",
+      "Chapter clear -> FR SM Ind AS 2 illustration on joint and by-products; replace the figures.",
+      "Three cuts: drop the finished-goods godown rent, deduct by-product NRV and scrap from joint cost, keep raw material at cost because finished goods sell above cost.",
+      "Allocate joint cost on sales value (3:1)."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 2",
+      "index_keywords": [
+       "joint products",
+       "by-products net realisable value",
+       "storage costs",
+       "replacement cost of materials"
+      ]
+     },
+     "solve": "Storage of finished goods is excluded from cost (Ind AS 2 para 16). By-products and scrap at NRV reduce the joint cost (para 14). Materials are not written down when the product they go into sells at or above cost (para 32).",
+     "answer": "1. NRV of by-product = 1,000 x ₹24 - ₹5,000 = ₹19,000.\n2. Joint cost: material 6,40,000 + labour 3,20,000 + direct expenses 1,56,000 + fixed overheads 1,60,000 (1,90,000 less 30,000 finished-goods godown rent) = 12,76,000; less by-product NRV 19,000 and scrap 9,600 = ₹12,47,400.\n3. Allocation on sales value: P1 6,000 x ₹320 = 19,20,000; P2 3,200 x ₹200 = 6,40,000; ratio 3:1. P1 ₹9,35,550 (₹155.925 per unit); P2 ₹3,11,850 (₹97.453 per unit).\n4. Finished goods: P1 500 x 155.925 = ₹77,962.50; P2 300 x 97.453 = ₹29,235.94; total ₹1,07,198.44 (cost is below selling price, so at cost).\n5. Raw material: replacement cost ₹40 is below cost ₹70, but the finished products sell above cost, so no write-down: 1,400 x ₹70 = ₹98,000.\nTotal closing stock = ₹2,05,198.44.",
+     "icai": "Same as ICAI: ₹2,05,198.44.",
+     "flag": null,
+     "trap": "Valuing raw material at the ₹40 replacement cost, or leaving finished-goods godown rent in inventory cost.",
+     "minutes": 15
+    },
+    {
+     "q": "4.7",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "SA 805 (Revised) with SA 800 (Revised), SA 210, SA 200",
+     "topic": "Acceptance, planning and performance of a specific-element audit by the statutory auditor",
+     "ask": "Key considerations for accepting, planning and performing the audit of 'Trade Receivables from Government Contracts' under a special purpose framework, given R & Co. is also the statutory auditor.",
+     "options": null,
+     "clue": "'audited specific element ... special purpose framework tailored to the loan agreement'",
+     "chapter_clear": true,
+     "think": [
+      "Specific element + special purpose framework = SA 805 and SA 800 together.",
+      "Chapter clear -> Audit SM SA 800/805: considerations when accepting, and when planning and performing.",
+      "Write three heads: acceptance; planning and performance; existing role and reporting."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - SA 800 (Revised) and SA 805 (Revised)",
+      "index_keywords": [
+       "special purpose framework",
+       "acceptability of framework",
+       "specific element",
+       "interrelated items",
+       "materiality for element"
+      ]
+     },
+     "solve": "Answer under three heads: acceptance (framework and terms), planning and performance (adapt SAs, materiality, interrelated items, evidence), existing role and reporting (effect of the qualification, emphasis of matter).",
+     "answer": "A. Acceptance\n- Framework: confirm the loan-agreement framework is acceptable, i.e. it meets the bank consortium's needs and has the attributes of an acceptable framework (SA 210, SA 800). If it is drawn from Ind AS, it should keep the requirements relevant to receivables, with adequate disclosure (SA 805).\n- Terms: agree in writing the element, framework, intended users, form of opinion and any restriction on use. As statutory auditor, auditing the element is practicable.\n- Ethics: independence and other ethical requirements apply (SA 200).\nB. Planning and performance\n- Apply every SA relevant to the engagement, adapted to the element (SA 200, SA 805).\n- SA 240 (fraud), SA 550 (related parties) and SA 570 (going concern) remain relevant even for one element.\n- Set materiality for the receivables element itself, not for the full FS.\n- Test interrelated items (revenue from government contracts, impairment and ECL, subsequent receipts, disputes); the element cannot be audited in isolation.\n- Evidence from the statutory audit may be used, but sufficient appropriate evidence on the element must still be obtained (confirmations, subsequent collections, contract terms).\n- Communicate with the right TCWG (SA 260) and obtain written representations.\nC. Existing role and reporting\n- The qualified opinion on the full FS relates to long-term investments; consider its effect on receivables. It does not bar an unmodified opinion on the element (restrictions apply only for adverse or disclaimer).\n- Issue a separate report with an emphasis of matter on the special purpose basis and a restriction on distribution or use (SA 800).",
+     "icai": "Same conclusion as ICAI; the existing-role and reporting points are added.",
+     "flag": null,
+     "trap": "Saying no new work is needed because the statutory audit is done. SA 805 needs evidence specific to the element.",
+     "minutes": 15
+    },
+    {
+     "q": "4.8",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SPOM-B - Pricing Decisions (new product pricing: revolutionary, evolutionary, me-too; skimming vs penetration)",
+     "topic": "Pricing under conflicting market reports; leasing via a subsidiary vs a local joint venture",
+     "ask": "Pricing strategy for tunnelling machines in Africa given conflicting research reports, including the effect of a joint venture with a local player.",
+     "options": null,
+     "clue": "'it would be a Me-too product or it is a evolutionary product'",
+     "chapter_clear": true,
+     "think": [
+      "'Me-too', 'evolutionary', 'no similar product' = new-product pricing categories.",
+      "Chapter clear -> SPOM-B 'Pricing Decisions': revolutionary -> skimming; evolutionary -> value or cost-plus; me-too -> penetration or market price.",
+      "Map each report to a product type and a price, then add the lease route and the JV effect."
+     ],
+     "look_up": {
+      "where": "ICAI SM SPOM-B - Pricing Decisions",
+      "index_keywords": [
+       "revolutionary product",
+       "evolutionary product",
+       "me-too product",
+       "skimming pricing",
+       "penetration pricing"
+      ]
+     },
+     "solve": "Because the reports disagree on what kind of product this is, price by scenario: one strategy per report, then the lease and JV overlay, then a recommendation.",
+     "answer": "VHIL should price by scenario because the reports disagree on what kind of product this is:\n1. Truly unique (two reports: no similar high-end product) = revolutionary product: skimming price to recover R&D and capture early adopters; premium backed by technology and shorter project time.\n2. Evolutionary (an improvement buyers must be educated about): price close to value delivered (faster tunnelling, less labour), set after a cost-benefit, competitor and demand study; heavy demos and promotion.\n3. Strong players and conservative buyers = me-too product: penetration or market-based price; compete on service, spares, training and finance rather than a high price.\n4. Leasing through a subsidiary: lease rentals cut the upfront cost for cautious buyers, give steady income and let VHIL test demand before setting sale prices.\n5. Joint venture with a local player: brings customer access, government contacts and cheaper distribution and service, allowing sharper prices and faster trust; the cost is shared margin and control, so do due diligence.\n6. Price by country (duties, freight, purchasing power) and start with pilot projects; move from penetration or lease pricing to value-based pricing as acceptance grows.\nRecommendation: enter through a JV and lease model with value-based (not rock-bottom) pricing; keep skimming only if the 'unique product' report is confirmed.",
+     "icai": "Same conclusion as ICAI (ICAI also accepts a broader alternative answer).",
+     "flag": null,
+     "trap": "Choosing one strategy for all reports. The marks are for linking each report to a pricing approach.",
+     "minutes": 15
+    }
+   ]
+  },
+  {
+   "no": 5,
+   "title": "Avigo Airlines (Avigo Global Limited)",
+   "industry": "Aviation - low-cost airline",
+   "story": "India's dominant low-cost airline, hit by a November 2025 crew-rostering meltdown after the new FDTL rules. It is now rebuilding operations, weighing a bond refunding, re-measuring an office lease and answering a TDS survey.",
+   "marks_by_subject": {
+    "Costing": 8,
+    "AFM": 2,
+    "DT": 6,
+    "IDT": 2,
+    "Law": 2,
+    "FR": 5
+   },
+   "difficulty": "Moderate",
+   "first15": "Attempt if Ind AS 116 and TDS case law are comfortable: 7S (6) and 5.8 (4) are recall-and-apply, 5.7 is a standard lease sum; 5.2 has no right option, so tick and move.",
+   "questions": [
+    {
+     "q": "5.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SPOM-B - Kano model (customer requirement attributes)",
+     "topic": "Basic, performance, delighter and indifferent attributes",
+     "ask": "Match: a. Basic, b. Performance, c. Delighter, d. Indifferent with 1. free high-speed WiFi, 2. efficient baggage handling, 3. logos on headrests and magazines, 4. seamless transfers.",
+     "options": {
+      "a": "a-3, b-1, c-2, d-4",
+      "b": "a-2, b-4, c-1, d-3",
+      "c": "a-1, b-3, c-4, d-2",
+      "d": "a-4, b-2, c-3, d-1"
+     },
+     "clue": "'complimentary high-speed WiFi for economy class travellers'",
+     "chapter_clear": false,
+     "think": [
+      "Basic / performance / delighter / indifferent = Kano model.",
+      "Unsure which book -> A-Z index -> 'Kano model'.",
+      "Basic = expected, its absence angers; performance = more is better; delighter = unexpected; indifferent = nobody cares."
+     ],
+     "look_up": {
+      "where": "ICAI SM SPOM-B - Kano model (via A-Z index 'Kano')",
+      "index_keywords": [
+       "Kano model",
+       "basic attributes",
+       "performance attributes",
+       "delighters",
+       "indifferent attributes"
+      ]
+     },
+     "solve": "Bags handled properly are expected (basic). Smoother transfers raise satisfaction in step (performance). Free high-speed WiFi on a no-frills airline is a surprise (delighter). Logos on headrests change nothing for the flyer (indifferent).",
+     "answer": "(b) a-2, b-4, c-1, d-3",
+     "icai": "(b)",
+     "flag": null,
+     "trap": "Treating WiFi as basic. On a no-frills economy flight it is a surprise.",
+     "minutes": 3
+    },
+    {
+     "q": "5.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "AFM - Bond refunding (refinancing) decision",
+     "topic": "Call premium, flotation costs and after-tax interest savings at the after-tax cost of debt",
+     "ask": "NPV of calling the 13% bonds at ₹1,100 and refunding with new 11% bonds (PVIFA 8%,10 = 6.71; PVIFA 8%,5 = 3.99).",
+     "options": {
+      "a": "₹10.82 crore",
+      "b": "₹25.84 crore",
+      "c": "₹36.63 crore",
+      "d": "₹24.13 crore"
+     },
+     "clue": "'currently callable at ₹1,100 per bond' ... 'new 11%, 10 year bonds at par'",
+     "chapter_clear": false,
+     "think": [
+      "Call old bonds + issue cheaper new bonds = bond refunding NPV.",
+      "Unsure of the chapter -> A-Z index -> 'bond refunding' / 'call premium'.",
+      "Outlay = call premium after tax + new flotation cost - tax saved on unamortised old flotation (nil: the 5-year write-off is over).",
+      "Savings = after-tax interest saving x PVIFA(8%,10) + new flotation tax shield x PVIFA(8%,5). If no option matches, tick the closest and move on."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - bond refunding (via A-Z index 'refunding', 'call premium')",
+      "index_keywords": [
+       "bond refunding",
+       "call premium",
+       "flotation cost",
+       "after-tax cost of debt"
+      ]
+     },
+     "solve": "Bonds = ₹500 cr / ₹1,000 = 50 lakh. Call premium = (1,100 - 1,000) x 50 lakh = ₹50 cr; tax saving 25% = ₹12.5 cr; net ₹37.5 cr. Add new flotation ₹1.5 cr: outlay ₹39.0 cr (old flotation ₹1.2 cr already written off over 5 years). Interest saving after tax = (13% - 11%) x 500 x 0.75 = ₹7.5 cr a year x 6.71 = ₹50.325 cr. New flotation tax shield = 1.5/5 x 25% = ₹0.075 cr x 3.99 = ₹0.30 cr. NPV = 50.325 + 0.30 - 39.0 = ₹11.62 cr, positive, so refund. The ₹25 cr premium received on the old issue is sunk.",
+     "answer": "No option is correct (ICAI). Working: NPV about ₹11.62 crore, so retiring the bonds pays.",
+     "icai": "No correct option (ICAI)",
+     "flag": "ICAI declared no correct option; (a) ₹10.82 crore matches this working with the new-flotation tax shield (over 10 years) deducted instead of added.",
+     "trap": "Spending 10 minutes forcing a match. After one clean working, tick the closest option and move on.",
+     "minutes": 3
+    },
+    {
+     "q": "5.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "DT",
+     "also": null,
+     "chapter": "DT - Deduction and Collection of Tax at Source: s.192 (s.192(2D), Rule 26C), s.201, s.271C",
+     "topic": "Employer's duty to obtain and verify HRA/LTC proofs; assessee in default; interest; penalty",
+     "ask": "Pick the INCORRECT statements: (i) not an assessee in default, as TDS was correct on employees' evidence and they filed returns; (ii) interest is payable even if not deemed in default; (iii) penalty u/s 221, not s.271C, once short deduction is shown; (iv) employees' intimation relieves the employer from verifying HRA/LTC.",
+     "options": {
+      "a": "(ii) only",
+      "b": "(ii) and (iv)",
+      "c": "(i), (iii), (iv)",
+      "d": "(i), (ii), (iii), (iv)"
+     },
+     "clue": "'accepted cash rent receipts containing only the address of the property'",
+     "chapter_clear": true,
+     "think": [
+      "Employer accepting weak HRA/LTC proofs = s.192(2D) and Form 12BB; consequences = s.201, s.201(1A), s.271C.",
+      "Chapter clear -> DT SM 'Deduction and Collection of Tax at Source' -> s.192, s.201.",
+      "Read 'incorrect': the only true line is the interest one (proviso to s.201(1A))."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - Deduction and Collection of Tax at Source",
+      "index_keywords": [
+       "192(2D)",
+       "Form 12BB",
+       "assessee in default",
+       "201(1A) interest",
+       "271C"
+      ]
+     },
+     "solve": "(i) Incorrect: the employer must collect proper evidence (Form 12BB; landlord's PAN where rent exceeds ₹1 lakh a year). Address-only cash receipts and LTC on a self-declaration are not enough, so the deduction was not 'correct'; relief u/s 201 also needs the payee's return plus an accountant's certificate. (ii) Correct: even when not treated as in default, interest u/s 201(1A) runs till the payee files the return. (iii) Incorrect: failure to deduct attracts s.271C (penalty equal to tax not deducted). (iv) Incorrect: s.192(2D) puts the duty to obtain and check proofs on the employer.",
+     "answer": "(c) (i), (iii) and (iv)",
+     "icai": "(c)",
+     "flag": null,
+     "trap": "Thinking the employees' later returns clear the employer completely. Interest still runs and the accountant's certificate is needed.",
+     "minutes": 3
+    },
+    {
+     "q": "5.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "GST - Composite supply (s.2(30), s.8); Value of supply (pure agent); ITC (s.17(5)(b))",
+     "topic": "Air travel with meals, PSF/UDF excluded from airfare, catering ITC allowed",
+     "ask": "Which statement on on-board meals, PSF/UDF and Avigo's net GST for February 2026 is fully correct?",
+     "options": {
+      "a": "Mixed supply; catering ITC allowed; net GST ₹125.5 cr; PSF/UDF part of fare at 18%",
+      "b": "Composite supply; catering ITC blocked; net GST ₹117.30 cr; PSF/UDF part of fare; ITC on PSF/UDF",
+      "c": "Composite supply; catering ITC allowed; net GST ₹116.40 cr; PSF/UDF collected as agent and excluded",
+      "d": "Composite supply; catering ITC allowed; net GST ₹116.40 cr; ITC taken on PSF/UDF paid to airports"
+     },
+     "clue": "'meals on board, with the value of these meals included in the fare'",
+     "chapter_clear": true,
+     "think": [
+      "Meals inside the ticket = composite supply; PSF/UDF = airport levies; catering ITC = s.17(5)(b) proviso.",
+      "Chapter clear -> IDT SM GST: 'Supply' (composite), 'Value of Supply' (pure agent), 'Input Tax Credit' (blocked credits).",
+      "Compute: fares net of PSF/UDF at 5% and 18%, less the full ITC of ₹26.50 crore."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - GST: Supply, Value of Supply, Input Tax Credit",
+      "index_keywords": [
+       "composite supply principal supply",
+       "pure agent",
+       "outdoor catering element of taxable composite supply",
+       "transport of passengers by air"
+      ]
+     },
+     "solve": "Economy: (1,600 - 60 - 50) = 1,490 x 5% = ₹74.50 cr. Business: (400 - 12 - 8) = 380 x 18% = ₹68.40 cr. Output tax ₹142.90 cr. Catering ITC (₹0.90 cr) is allowed because catering is an element of a taxable composite supply (proviso to s.17(5)(b)). Less ITC ₹26.50 cr = ₹116.40 cr. PSF/UDF are collected for airport operators, so they are outside Avigo's value and Avigo takes no ITC on them. Including PSF/UDF gives ₹125.50 cr (a); blocking catering ITC gives ₹117.30 cr (b).",
+     "answer": "(c) Composite supply; catering ITC allowed; net GST ₹116.40 crore; PSF and UDF excluded from airfare",
+     "icai": "(c)",
+     "flag": null,
+     "trap": "(d) has the right number but claims ITC on PSF/UDF. For a 'fully correct' option, check every clause.",
+     "minutes": 3
+    },
+    {
+     "q": "5.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Corporate Laws - Appointment and Remuneration of Managerial Personnel (s.197(5); Rule 4 of the Managerial Personnel Rules 2014)",
+     "topic": "Sitting fee cap of ₹1 lakh per meeting; independent and women directors not paid less than others",
+     "ask": "Is the revised sitting fee (₹60,000 for other directors; ₹75,000 for independent directors and the woman director) valid?",
+     "options": {
+      "a": "Not valid: all directors must get equal fees",
+      "b": "Valid only for the woman director",
+      "c": "Valid: within the maximum limit",
+      "d": "Valid if approved by shareholders in general meeting"
+     },
+     "clue": "'revise the sitting fees for Board meetings from ₹50,000 per meeting to ₹60,000'",
+     "chapter_clear": true,
+     "think": [
+      "Sitting fees = s.197(5) + Rule 4 limits.",
+      "Chapter clear and known without the book: cap ₹1 lakh per meeting; independent and women directors not less than others."
+     ],
+     "look_up": {
+      "where": "ICAI SM Corporate Laws - Appointment and Remuneration of Managerial Personnel (sitting fees)",
+      "index_keywords": [
+       "sitting fees",
+       "one lakh rupees per meeting",
+       "independent directors and women directors",
+       "197(5)"
+      ]
+     },
+     "solve": "The Board may fix sitting fees up to ₹1,00,000 per meeting; independent and women directors cannot be paid less than the others. ₹60,000 and ₹75,000 pass both tests, so the proposal is valid. The Articles were altered by special resolution, so shareholder approval also exists; ICAI accepts (c) or (d).",
+     "answer": "(c); (d) is also accepted by ICAI",
+     "icai": "(c) or (d), both accepted",
+     "flag": null,
+     "trap": "Believing all directors must get equal fees (a). The rule only sets a floor for independent and women directors.",
+     "minutes": 3
+    },
+    {
+     "q": "5.6",
+     "type": "Descriptive",
+     "marks": 6,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCMPE (SPOM Set B) Ch 8 - McKinsey 7S framework",
+     "topic": "Aligning hard S (strategy, structure, systems) and soft S (shared values, style, staff, skills) after a crisis",
+     "ask": "How can Avigo align all seven S's to make operations robust, sharpen its edge and prevent a repeat of the November 2025 crisis?",
+     "options": null,
+     "clue": "'recommended adopting the McKinsey 7S Model'",
+     "chapter_clear": true,
+     "think": [
+      "A named model in the question: marks = each S with Avigo facts + how they link.",
+      "Chapter clear -> SM 'Strategy Implementation' -> McKinsey 7S (hard: strategy, structure, systems; soft: shared values, style, staff, skills).",
+      "Diagnose from the case first: lean model, ignored FDTL warnings, old rostering technology, no crew buffer.",
+      "Write 7 short headed points + 1 alignment paragraph in about 18 minutes."
+     ],
+     "look_up": {
+      "where": "ICAI SM SPOM Set B (SCMPE) - Ch 8, McKinsey 7S",
+      "index_keywords": [
+       "McKinsey 7S",
+       "hard S soft S",
+       "shared values",
+       "strategy implementation"
+      ]
+     },
+     "solve": "Avigo's lean-cost strategy was not backed by staff, systems and values. Fix each S with a case fact, then show how they reinforce each other.",
+     "answer": "McKinsey 7S: seven linked elements, three 'hard' (strategy, structure, systems) and four 'soft' (shared values, style, staff, skills). A change in one must be matched by the others. Avigo's crisis came from a lean-cost strategy not supported by its staff, systems and values.\n1. Strategy: move from lowest cost at any price to low cost with resilience: crew and aircraft buffers, contingency plans for rule changes like FDTL, the 7% capacity trim until stable.\n2. Structure: keep the Crisis Management Group as a standing risk and operations-control unit with clear escalation; link crew planning, network planning, maintenance and compliance.\n3. Systems: use the 3% of revenue for AI-based predictive rostering, real-time disruption management, FDTL legality checks and passenger alerts.\n4. Shared values: safety, reliability and passenger trust rank equal with cost discipline; early warnings (like FDTL) are acted on, not ignored.\n5. Style: participative, transparent leadership; the Board and independent directors oversee operational risk; early reporting of problems is rewarded.\n6. Staff: hire the 750+ pilots and staff, keep reserve crew pools, plan the workforce ahead of rule changes, manage fatigue and morale.\n7. Skills: train teams in rostering analytics, network recovery, crisis handling and regulatory compliance; build cross-qualified crew.\nAlignment: the new strategy works only if the CMG structure, AI systems and enough skilled staff are in place, and values and leadership style back them. With each S reinforcing the others, Avigo turns its lean model into one that is efficient and resilient, protects its 60% share and rebuilds passenger trust.",
+     "icai": "Same conclusion as ICAI (ICAI gives two styles of answer; either scores).",
+     "flag": null,
+     "trap": "Listing the seven S's as theory without tying each to Avigo's crisis facts.",
+     "minutes": 18
+    },
+    {
+     "q": "5.7",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 116 Leases - reassessment of lease term (paras 20, 39-40) and separate lease (para 44)",
+     "topic": "Extension option now reasonably certain: remeasure liability at a revised rate, adjust the RoU asset",
+     "ask": "Accounting and journal entry at 31.3.2026 when Avigo decides to exercise the 5-year extension option on the original lease (and the treatment of the extra 3,000 sq ft).",
+     "options": null,
+     "clue": "'decided to exercise the extension option relating to the original 6,000 sq. ft. lease'",
+     "chapter_clear": true,
+     "think": [
+      "Change in assessment of an extension option = Ind AS 116 reassessment, not a modification.",
+      "Chapter clear -> FR SM Ind AS 116 'remeasurement of lease liability' illustration; replace the figures.",
+      "Roll the original liability and RoU to 31.3.2026 at 11%; remeasure the remaining payments at the revised 12%; the difference goes to RoU.",
+      "The extra 3,000 sq ft is a separate lease from March 2027, so no entry now."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 116 Leases",
+      "index_keywords": [
+       "reassessment of lease term",
+       "extension option reasonably certain",
+       "revised discount rate",
+       "separate lease",
+       "remeasurement of lease liability"
+      ]
+     },
+     "solve": "1.4.2021: PV of 10 advance payments at 11% = 6,00,000 x 6.5370 = 39,22,200 (liability 33,22,200 after the day-one payment). RoU = 39,22,200 + initial direct cost 3,00,000 = 42,22,200; depreciation 4,22,220 a year. Liability at 11%: 36,87,642 -> 34,27,283 -> 31,38,284 -> 28,17,495 -> 24,61,419 at 31.3.2026 (includes the ₹6,00,000 due 1.4.2026; 18,61,419 without it). RoU at 31.3.2026 = 21,11,100. Remeasured at 12% (excluding the 1.4.2026 instalment): 6,00,000 x 3.0374 = 18,22,440 (years 1-4) + 8,00,000 x 2.2909 = 18,32,720 (years 5-9) = 36,55,160. Increase = 36,55,160 - 18,61,419 = 17,93,741.",
+     "answer": "Treatment: Avigo is now reasonably certain to extend, so the lease term changes from 10 to 15 years. Under Ind AS 116 the lease liability is remeasured using the revised payments and a revised discount rate (12% incremental borrowing rate at 31.3.2026), and the RoU asset is adjusted by the same amount. This is a reassessment, not a lease modification. The additional 3,000 sq ft is a separate lease (it adds a new right of use at a stand-alone price) and is recognised only when it becomes available in March 2027.\nWorking (₹):\nLease liability at 31.3.2026 at 11%, excluding the 1.4.2026 instalment: 18,61,419\nRemeasured at 12%: 6,00,000 x 3.0374 (years 1-4) = 18,22,440 + 8,00,000 x 2.2909 (years 5-9) = 18,32,720; total 36,55,160\nIncrease in lease liability = 17,93,741\nRoU: cost 42,22,200 - depreciation 5 x 4,22,220 = 21,11,100; add 17,93,741 = 39,04,841\nJournal entry on 31.3.2026:\nRight-of-Use Asset A/c Dr 17,93,741\n  To Lease Liability A/c 17,93,741\n(Remeasurement of lease liability on reassessment of the extension option)\nFrom 2026-27: depreciation 39,04,841 / 10 = ₹3,90,484 a year; interest at 12%.",
+     "icai": "Same as ICAI: adjustment ₹17,93,741; revised RoU ₹39,04,841.",
+     "flag": null,
+     "trap": "Remeasuring at the old 11% rate, or folding the new 3,000 sq ft lease into this remeasurement.",
+     "minutes": 15
+    },
+    {
+     "q": "5.8",
+     "type": "Descriptive",
+     "marks": 4,
+     "subject": "DT",
+     "also": null,
+     "chapter": "DT - TDS (s.194-I, s.194C, s.195, s.197A(1F), s.206AA) with DTAA relief (s.90(2))",
+     "topic": "IFSC aircraft-lease TDS exemption; DTAA rate vs s.206AA; landing and parking charges are not rent",
+     "ask": "Defend Avigo on: no TDS on aircraft lease rent to the IFSC unit, 10% DTAA rate on the German engine lease without PAN, and 2% TDS on landing and parking charges.",
+     "options": null,
+     "clue": "'PQR Fleet Services IFSC Limited located in Gujarat International Finance Tec-City'",
+     "chapter_clear": false,
+     "think": [
+      "Three TDS issues, each settled by a notification or a Supreme Court ruling: recall-based DT.",
+      "Unsure on the IFSC point -> A-Z index -> 'IFSC' / 's.197A(1F)' -> CBDT Notification 65/2022.",
+      "Engine lease: DTAA beats the Act (s.90(2)) and s.206AA cannot push it to 20% (SC, Air India). Landing and parking: SC, Japan Airlines -> s.194C."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - TDS and Non-resident taxation (s.90)",
+      "index_keywords": [
+       "197A(1F) aircraft leasing IFSC",
+       "80LA",
+       "206AA DTAA rate",
+       "landing and parking charges Japan Airlines",
+       "194C"
+      ]
+     },
+     "solve": "One point per issue: the legal basis, how it fits Avigo's facts, and any lapse to fix (here, the missing reporting in TDS returns).",
+     "answer": "(i) Aircraft lease rent to PQR Fleet Services IFSC Ltd: CBDT Notification 65/2022 under s.197A(1F) exempts from TDS u/s 194-I the lease rent paid to an IFSC unit engaged in aircraft leasing and eligible for s.80LA, once the prescribed declaration and documents are obtained. Avigo obtained them, so not deducting was correct. The lapse is reporting: file correction TDS statements showing these payments with the reason for non-deduction.\n(ii) Engine lease rent to the German company: the payee has no PE in India and the India-Germany DTAA rate of 10% is more beneficial, so it applies under s.90(2). The Supreme Court in CIT (International Taxation) v. Air India Ltd. held that s.206AA (20% without PAN) cannot override a beneficial treaty rate. Separately, s.206AA(7) with Rule 37BC relieves a non-resident that gives its TRC, address and tax ID. So 10% is correct.\n(iii) Landing and parking charges (₹12 crore to AAI, ₹8 crore to private operators): the Supreme Court in Japan Airlines / Singapore Airlines (2015) held these pay for a bundle of services (air traffic control, safety, navigation aids, met services), not just use of land, so they are not 'rent' under s.194-I. TDS at 2% u/s 194C is correct; there is no short deduction.",
+     "icai": "Same conclusion as ICAI; the s.206AA(7)/Rule 37BC point is added.",
+     "flag": null,
+     "trap": "Conceding s.194-I at 10% on landing and parking because the payment looks like rent for space.",
+     "minutes": 12
+    }
+   ]
+  }
+ ]
+}

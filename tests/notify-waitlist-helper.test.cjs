@@ -110,3 +110,12 @@ test('each program page loads the helper first and uses its own topic', () => {
     assert.doesNotMatch(html, /from\(['"]notifiable['"]\)/, `${dir} no direct insert left`);
   }
 });
+
+// Registrations were open 15–16 Nov 2026 and closed again on 16 Nov (programme not going ahead; payments refunded).
+test('articleship page is closed: Notify Me waitlist, no payment form', () => {
+  const html = fs.readFileSync(path.join(root, 'articleship-program', 'index.html'), 'utf8');
+  assert.doesNotMatch(html, /<form id="registerForm"/, 'no registration form');
+  assert.doesNotMatch(html, /register\.js/, 'register.js not loaded');
+  assert.match(html, /id="notifyMeBtn"/, 'Notify Me button');
+  assert.doesNotMatch(html, /data-program="articleship"/, 'refunded registrations are not shown as registered');
+});

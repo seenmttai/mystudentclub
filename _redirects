@@ -1,1 +1,6 @@
 /terms https://www.mystudentclub.com/ca-industrial-training-program/terms-and-conditions 301
+/ibs /ca-final-ibs-strategy/ 301
+/ibs/ /ca-final-ibs-strategy/ 301
+/IBS /ca-final-ibs-strategy/ 301
+/ca-final-ibs /ca-final-ibs-strategy/ 301
+/ca-final-ibs/* /ca-final-ibs-strategy/:splat 301

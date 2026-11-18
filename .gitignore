@@ -2,3 +2,8 @@ node_modules
 temp/
 logs/
 dev-server.js
+
+# Kept local, never pushed (Aniket, 2026-11-07): new test files and Supabase migrations.
+# Files already tracked before this stay tracked; this only stops new ones being added.
+tests/
+supabase/migrations/
