@@ -101,6 +101,20 @@ let allLocations = [];
 let allCategories = {};
 let currentFcmToken = null;
 let firebaseMessaging;
+
+// Hidden vacancies (third-party reposts and the like) stay in the table but never show on the site.
+// hiddenFilterOff covers the time before the `hidden` column exists: show everything rather than nothing.
+let hiddenFilterOff = false;
+
+function excludeHidden(query) {
+    return hiddenFilterOff ? query : query.not('hidden', 'is', true);
+}
+
+// Only an error about the `hidden` column itself turns the filter off (missing, or not readable for this visitor).
+function isHiddenColumnError(error) {
+    const message = (error && error.message) || '';
+    return /\bhidden\b/i.test(message) && /does not exist|could not find|permission denied/i.test(message);
+}
 // Cache sorted locations/categories for performance
 let cachedSortedLocations = null;
 let cachedSortedCategories = null;
@@ -796,43 +810,51 @@ async function fetchJobs() {
 
                 selectColumns += ', reposted_at';
                 const buildQuery = (cols) => {
-                let query = supabaseClient.from(table).select(cols);
+                    let query = excludeHidden(supabaseClient.from(table).select(cols));
 
-                // ONLY EMAILS
-                query = query.ilike('Application ID', '%@%').not('Application ID', 'ilike', 'http%');
+                    // ONLY EMAILS
+                    query = query.ilike('Application ID', '%@%').not('Application ID', 'ilike', 'http%');
 
-                // Apply Keyword filters
-                if (state.keywords && state.keywords.length > 0) {
-                    const keywordOrs = state.keywords.map(kw => {
-                        const flexibleTerm = kw.trim().replace(/\s+/g, '%');
-                        return `Company.ilike."%${flexibleTerm}%",Description.ilike."%${flexibleTerm}%",Category.ilike."%${flexibleTerm}%",Location.ilike."%${flexibleTerm}%"`;
-                    });
-                    query = query.or(keywordOrs.join(','));
-                }
+                    // Apply Keyword filters
+                    if (state.keywords && state.keywords.length > 0) {
+                        const keywordOrs = state.keywords.map(kw => {
+                            const flexibleTerm = kw.trim().replace(/\s+/g, '%');
+                            return `Company.ilike."%${flexibleTerm}%",Description.ilike."%${flexibleTerm}%",Category.ilike."%${flexibleTerm}%",Location.ilike."%${flexibleTerm}%"`;
+                        });
+                        query = query.or(keywordOrs.join(','));
+                    }
 
-                if (state.locations && state.locations.length > 0) {
-                    const locationOr = expandLocationTerms(state.locations).map(loc => `Location.ilike."%${loc}%"`);
-                    query = query.or(locationOr.join(','));
-                }
+                    if (state.locations && state.locations.length > 0) {
+                        const locationOr = expandLocationTerms(state.locations).map(loc => `Location.ilike."%${loc}%"`);
+                        query = query.or(locationOr.join(','));
+                    }
 
-                if (state.categories && state.categories.length > 0) {
-                    const categoryOr = state.categories.map(cat => `Category.ilike."%${cat}%"`);
-                    query = query.or(categoryOr.join(','));
-                }
+                    if (state.categories && state.categories.length > 0) {
+                        const categoryOr = state.categories.map(cat => `Category.ilike."%${cat}%"`);
+                        query = query.or(categoryOr.join(','));
+                    }
 
-                if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
-                    const tupleString = `(${Array.from(appliedJobIds).join(',')})`;
-                    query = query.not('id', 'in', tupleString);
-                }
+                    if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
+                        const tupleString = `(${Array.from(appliedJobIds).join(',')})`;
+                        query = query.not('id', 'in', tupleString);
+                    }
 
-                query = query.order('Created_At', { ascending: false, nullsFirst: false }).limit(300);
-                return query;
+                    query = query.order('Created_At', { ascending: false, nullsFirst: false }).limit(300);
+                    return query;
                 };
 
-                let { data, error } = await buildQuery(selectColumns);
-                if (error && /reposted_at/.test(error.message || '')) {
-                    // reposted_at arrives with migration 202611170001; until then, load without it.
-                    ({ data, error } = await buildQuery(selectColumns.replace(', reposted_at', '')));
+                let cols = selectColumns;
+                let { data, error } = await buildQuery(cols);
+                // Failsafes: the hidden column missing or unreadable (show everything), reposted_at not there yet.
+                for (let retry = 0; retry < 2 && error; retry++) {
+                    if (isHiddenColumnError(error)) {
+                        hiddenFilterOff = true;
+                    } else if (/reposted_at/.test(error.message || '') && cols.includes(', reposted_at')) {
+                        cols = cols.replace(', reposted_at', '');
+                    } else {
+                        break;
+                    }
+                    ({ data, error } = await buildQuery(cols));
                 }
                 if (error) throw error;
                 return (data || []).map(job => ({ ...job, source_table: table }));
@@ -2531,7 +2553,7 @@ async function fetchSharedJob(jobId, table) {
             .eq('id', jobId)
             .single();
 
-        if (!error && data) {
+        if (!error && data && data.hidden !== true) {
             setTimeout(() => showModal(data), 300);
         }
     } catch (err) {

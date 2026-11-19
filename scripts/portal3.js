@@ -149,15 +149,35 @@ function getPublicJobSelectColumns(tableName) {
     return columns;
 }
 
-// Runs a public job select. If is_exclusive isn't in the database yet (before its migration runs),
-// retries without it, so shared links and lists keep working.
+// Hidden vacancies (third-party reposts and the like) stay in the table but never show on the site.
+// hiddenFilterOff covers the time before the `hidden` column exists (or can't be read): show everything rather
+// than nothing.
+let hiddenFilterOff = false;
+
+function excludeHidden(query) {
+    return hiddenFilterOff ? query : query.not('hidden', 'is', true);
+}
+
+// Only an error about the `hidden` column itself turns the filter off (missing, or not readable for this visitor).
+function isHiddenColumnError(error) {
+    const message = (error && error.message) || '';
+    return /\bhidden\b/i.test(message) && /does not exist|could not find|permission denied/i.test(message);
+}
+
+// Runs a public job select. Callers wrap their query in excludeHidden(). If a newer column isn't in the database yet
+// (or can't be read), retries without it, so shared links and lists keep working.
 async function runPublicJobSelect(build) {
     let cols = getPublicJobSelectColumns(currentTable);
     let result = await build(cols);
     // reposted_at arrives with migration 202611170001; until then, drop it like is_exclusive.
-    for (let retry = 0; retry < 3 && result && result.error; retry++) {
+    for (let retry = 0; retry < 4 && result && result.error; retry++) {
         const message = result.error.message || '';
-        if (/reposted_at/.test(message) && cols.includes(', reposted_at')) {
+        // Retry on the error itself, not on the flag: another query may already have turned the filter off
+        // while this one was in flight with the filter on.
+        if (isHiddenColumnError(result.error)) {
+            console.warn('hidden column not available; showing all vacancies.', message);
+            hiddenFilterOff = true;
+        } else if (/reposted_at/.test(message) && cols.includes(', reposted_at')) {
             cols = cols.replace(', reposted_at', '');
         } else if (/joining_label/.test(message) && cols.includes(', joining_label')) {
             // joining_label (migration 202611060002) missing or not readable: show the list without the pill.
@@ -1706,7 +1726,7 @@ async function fetchJobs() {
         }
 
         const buildQuery = (cols, useFilterColumns = jobFilterColumnsAvailable) => {
-            let q = supabaseClient.from(currentTable).select(cols);
+            let q = excludeHidden(supabaseClient.from(currentTable).select(cols));
 
             // Optimize keyword query building - pre-process terms once
             if (state.keywords.length > 0) {
@@ -1859,8 +1879,13 @@ async function fetchJobs() {
 
         // Failsafes for columns the database does not have yet. Either can come first, so retry
         // until neither applies.
-        for (let retry = 0; retry < 4 && error; retry++) {
-            if (error.message && error.message.includes('reposted_at') && selectColumns.includes(', reposted_at')) {
+        for (let retry = 0; retry < 5 && error; retry++) {
+            if (isHiddenColumnError(error)) {
+                // The hidden column is missing or not readable: show every vacancy rather than none. (Retry on the
+                // error, not the flag: trending may have turned the filter off while this query was in flight.)
+                console.warn('hidden column not available; showing all vacancies.', error.message);
+                hiddenFilterOff = true;
+            } else if (error.message && error.message.includes('reposted_at') && selectColumns.includes(', reposted_at')) {
                 // The repost column is not in the database yet (migration 202611170001).
                 selectColumns = selectColumns.replace(', reposted_at', '');
             } else if (error.message && error.message.includes('joining_label') && selectColumns.includes(', joining_label')) {
@@ -4173,10 +4198,11 @@ function checkAndOpenSharedJob() {
 // Fetch a specific shared job and open modal
 async function fetchSharedJob(jobId) {
     try {
-        const { data, error } = await runPublicJobSelect(cols => supabaseClient
+        // A shared link to a hidden vacancy opens nothing.
+        const { data, error } = await runPublicJobSelect(cols => excludeHidden(supabaseClient
             .from(currentTable)
             .select(cols)
-            .eq('id', jobId)
+            .eq('id', jobId))
             .maybeSingle());
 
         if (!error && data) {
@@ -5214,9 +5240,9 @@ async function dv2PopulateTrending() {
     const list = document.getElementById('dv2TrendingList');
     if (!card || !list) return;
     try {
-        const { data, error } = await runPublicJobSelect(cols => supabaseClient
+        const { data, error } = await runPublicJobSelect(cols => excludeHidden(supabaseClient
             .from(currentTable)
-            .select(cols)
+            .select(cols))
             .order('Created_At', { ascending: false, nullsFirst: false })
             .limit(5));
         if (error || !data || data.length === 0) return;
