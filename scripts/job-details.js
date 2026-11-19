@@ -113,10 +113,23 @@ function getPublicJobSelectColumns(tableName) {
 
 async function fetchJobDetails(id, tableName) {
     const cols = getPublicJobSelectColumns(tableName);
-    const run = (c) => supabaseClient.from(tableName).select(c).eq('id', id).single();
-    let { data, error } = await run(`${cols}, reposted_at`);
-    // reposted_at arrives with migration 202611170001; until then, load without it.
-    if (error && /reposted_at/.test(error.message || '')) ({ data, error } = await run(cols));
+    // A hidden vacancy (third-party repost) reads as not found. If the hidden column is missing or can't be read,
+    // fetch without that filter rather than fail. reposted_at arrives with migration 202611170001.
+    let filterHidden = true;
+    let withRepost = true;
+    const run = () => {
+        let query = supabaseClient.from(tableName).select(withRepost ? `${cols}, reposted_at` : cols).eq('id', id);
+        if (filterHidden) query = query.not('hidden', 'is', true);
+        return query.single();
+    };
+    let { data, error } = await run();
+    for (let retry = 0; retry < 2 && error; retry++) {
+        const message = error.message || '';
+        if (filterHidden && /\bhidden\b/i.test(message) && /does not exist|could not find|permission denied/i.test(message)) filterHidden = false;
+        else if (withRepost && /reposted_at/.test(message)) withRepost = false;
+        else break;
+        ({ data, error } = await run());
+    }
 
     if (error) throw error;
     if (!data) throw new Error('Job not found');

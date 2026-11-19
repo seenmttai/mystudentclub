@@ -87,6 +87,21 @@ let currentTable = 'Industrial Training Job Portal';
 let currentSession = null;
 let appliedJobIds = new Set();
 let debounceTimeout = null;
+
+// Hidden vacancies (third-party reposts and the like) stay in the table but never show on the site.
+// hiddenFilterOff covers the time before the `hidden` column exists (or can't be read): show everything rather
+// than nothing.
+let hiddenFilterOff = false;
+
+function excludeHidden(query) {
+    return hiddenFilterOff ? query : query.not('hidden', 'is', true);
+}
+
+// Only an error about the `hidden` column itself turns the filter off (missing, or not readable for this visitor).
+function isHiddenColumnError(error) {
+    const message = (error && error.message) || '';
+    return /\bhidden\b/i.test(message) && /does not exist|could not find|permission denied/i.test(message);
+}
 let allLocations = [];
 let allCategories = {};
 let currentFcmToken = null;
@@ -646,38 +661,46 @@ async function fetchJobs() {
                 if (table === "Fresher Jobs") selectColumns = selectColumnsFresher;
                 else if (table === "Semi Qualified Jobs") selectColumns = selectColumnsSemi;
 
-                let query = supabaseClient.from(table).select(selectColumns);
+                const buildQuery = () => {
+                    let query = excludeHidden(supabaseClient.from(table).select(selectColumns));
 
-                // ONLY EMAILS
-                query = query.ilike('Application ID', '%@%').not('Application ID', 'ilike', 'http%');
+                    // ONLY EMAILS
+                    query = query.ilike('Application ID', '%@%').not('Application ID', 'ilike', 'http%');
 
-                // Apply Keyword filters
-                if (state.keywords && state.keywords.length > 0) {
-                    const keywordOrs = state.keywords.map(kw => {
-                        const flexibleTerm = kw.trim().replace(/\s+/g, '%');
-                        return `Company.ilike."%${flexibleTerm}%",Description.ilike."%${flexibleTerm}%",Category.ilike."%${flexibleTerm}%",Location.ilike."%${flexibleTerm}%"`;
-                    });
-                    query = query.or(keywordOrs.join(','));
+                    // Apply Keyword filters
+                    if (state.keywords && state.keywords.length > 0) {
+                        const keywordOrs = state.keywords.map(kw => {
+                            const flexibleTerm = kw.trim().replace(/\s+/g, '%');
+                            return `Company.ilike."%${flexibleTerm}%",Description.ilike."%${flexibleTerm}%",Category.ilike."%${flexibleTerm}%",Location.ilike."%${flexibleTerm}%"`;
+                        });
+                        query = query.or(keywordOrs.join(','));
+                    }
+
+                    if (state.locations && state.locations.length > 0) {
+                        const locationOr = expandLocationTerms(state.locations).map(loc => `Location.ilike."%${loc}%"`);
+                        query = query.or(locationOr.join(','));
+                    }
+
+                    if (state.categories && state.categories.length > 0) {
+                        const categoryOr = state.categories.map(cat => `Category.ilike."%${cat}%"`);
+                        query = query.or(categoryOr.join(','));
+                    }
+
+                    if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
+                        const tupleString = `(${Array.from(appliedJobIds).join(',')})`;
+                        query = query.not('id', 'in', tupleString);
+                    }
+
+                    query = query.order('Created_At', { ascending: false, nullsFirst: false }).limit(300);
+                    return query;
+                };
+
+                let { data, error } = await buildQuery();
+                // Retry on the error itself, not the flag: the hidden column missing or unreadable shows everything.
+                if (isHiddenColumnError(error)) {
+                    hiddenFilterOff = true;
+                    ({ data, error } = await buildQuery());
                 }
-
-                if (state.locations && state.locations.length > 0) {
-                    const locationOr = expandLocationTerms(state.locations).map(loc => `Location.ilike."%${loc}%"`);
-                    query = query.or(locationOr.join(','));
-                }
-
-                if (state.categories && state.categories.length > 0) {
-                    const categoryOr = state.categories.map(cat => `Category.ilike."%${cat}%"`);
-                    query = query.or(categoryOr.join(','));
-                }
-
-                if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
-                    const tupleString = `(${Array.from(appliedJobIds).join(',')})`;
-                    query = query.not('id', 'in', tupleString);
-                }
-
-                query = query.order('Created_At', { ascending: false, nullsFirst: false }).limit(300);
-
-                const { data, error } = await query;
                 if (error) throw error;
                 return (data || []).map(job => ({ ...job, source_table: table }));
             });
@@ -2143,7 +2166,8 @@ async function fetchSharedJob(jobId, table) {
             .eq('id', jobId)
             .single();
 
-        if (!error && data) {
+        // A shared link to a hidden vacancy opens nothing.
+        if (!error && data && data.hidden !== true) {
             setTimeout(() => showModal(data), 300);
         }
     } catch (err) {
