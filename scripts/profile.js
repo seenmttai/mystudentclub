@@ -6,6 +6,17 @@ const supabaseClient = window.supabaseClient || (typeof supabase !== 'undefined'
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/scripts/vendor/pdf.worker.min.js';
 const WORKER_URL = 'https://profile.mystudentclub.com';
 const PHOTO_WORKER_URL = 'https://hire.mystudentclub.com';
+
+// Calls to the CV services must never leave a student waiting forever (17 Nov 2026: a CV backup that never answered
+// left the Save button on "Saving" for minutes). After the limit the request is cancelled and the caller shows a message.
+const CV_BACKUP_TIMEOUT_MS = 60000;
+const CV_READ_TIMEOUT_MS = 90000;
+function fetchWithTimeout(url, options = {}, ms = CV_BACKUP_TIMEOUT_MS) {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), ms); // also covers reading the reply; a late abort after it is harmless
+    return fetch(url, { ...options, signal: controller.signal });
+}
+const isTimeout = (error) => Boolean(error && error.name === 'AbortError');
 let userPhotoBlobUrl = null;
 
 // DOM refs
@@ -15,6 +26,16 @@ const saveBtn = document.getElementById('saveBtn');
 let currentUser = null;
 let lastUpdatedISO = null;
 let currentLookingFor = null;
+// This tab's view of the profile when it last loaded or saved it. Saves overwrite only the keys
+// that changed since then, so edits made in the app or another tab meanwhile are kept.
+let profileSaveBaseline = null;
+// True once this tab has new resume text (an upload or a Storer sync here). Only then does a save
+// send ocr_cv, so a stale or cached copy never overwrites a resume uploaded from the app.
+let ocrChangedInTab = false;
+// Profile writes run one at a time, so each merges over the previous one's result.
+let profileWriteChain = Promise.resolve();
+// Set when the student removes the resume here, so the next save clears it on the server too.
+let resumeRemovedInTab = false;
 
 // Intake fields without editor controls must survive ordinary profile saves.
 // Browser drafts are read only when they are explicitly owned by this account.
@@ -49,6 +70,29 @@ function preserveCareerProfileFields(values) {
         if (Object.prototype.hasOwnProperty.call(saved, key)) result[key] = saved[key];
     }
     return Object.assign(result, values);
+}
+
+// The profile object exactly as this tab's saves build it (form values + career fields + resume flags).
+function buildTabProfile() {
+    const profileData = preserveCareerProfileFields(normalizeSchoolEducationProfile(Object.fromEntries(new FormData(profileForm).entries())));
+    delete profileData.resume;
+    delete profileData.cover_letter;
+    const cvFileName = localStorage.getItem('userCVFileName');
+    if (cvFileName) profileData.cv_filename = cvFileName;
+    profileData.cv_cloud_synced = isCloudSynced();
+    if (currentUser?.email) profileData.email = currentUser.email;
+    return profileData;
+}
+
+function takeProfileSaveBaseline() {
+    if (!profileForm) return;
+    try { profileSaveBaseline = buildTabProfile(); } catch (_) { profileSaveBaseline = null; }
+}
+
+// A resume this account already has on file: uploaded in this browser, synced to the cloud,
+// or uploaded from the app (its text arrives with the profile as ocr_cv).
+function hasResumeOnFile() {
+    return !!(localStorage.getItem('userCVImages') || isCloudSynced() || (localStorage.getItem('userCVText') || '').trim());
 }
 
 // =================== TOAST NOTIFICATIONS ===================
@@ -579,6 +623,10 @@ function applyPortalSections(type) {
         const portals = el.dataset.portal.split(',').map(s => s.trim());
         el.style.display = portals.includes(type) ? '' : 'none';
     });
+    // The app lets every student add a current organization. Never hide one that is saved.
+    const employment = document.getElementById('sec-employment');
+    const savedOrg = ['emp_company_name', 'emp_job_title'].some(name => (profileForm?.elements[name]?.value || '').trim());
+    if (employment && savedOrg) employment.style.display = '';
 }
 
 // =================== CHIP MULTI-SELECT HELPERS ===================
@@ -1524,14 +1572,14 @@ const WZ = (() => {
     function handleNext() {
         const phase = st.phase;
         if (phase === 'cv') {
+            // Consent is optional: without it the CV is saved but not shared with recruiters (the student can tick
+            // "CV sharing consent" on the profile page later). It was asked right after the upload.
             const consentGiven = document.getElementById('wz-consent-chk')?.checked;
-            if (!consentGiven) {
-                showToast('Please accept the data sharing consent to continue.', 'warning', 5000);
-                return;
-            }
             saveConsentFromWizard();
-            saveConsentRecord(true).catch(console.error); // fire independently — don't wait on storer
-            updatePrivacyCard(true); // refresh UI immediately — loadConsentStatus ran before wizard
+            if (consentGiven) {
+                saveConsentRecord(true).catch(console.error); // fire independently — don't wait on storer
+                updatePrivacyCard(true); // refresh UI immediately — loadConsentStatus ran before wizard
+            }
             fireStorerAndProfill();
             st.history.push({ phase: 'cv' });
             goTo('photo', 'forward');
@@ -2035,7 +2083,7 @@ const WZ = (() => {
             .then(r => r.json())
             .then(d => {
                 if (!d.ok) return;
-                if (d.ocr_text) localStorage.setItem('userCVText', d.ocr_text);
+                if (d.ocr_text) { localStorage.setItem('userCVText', d.ocr_text); ocrChangedInTab = true; }
                 if (d.uploaded) {
                     st.storerDone = true;
                     setCloudSyncFlag();
@@ -2193,6 +2241,8 @@ const WZ = (() => {
             localStorage.removeItem('userCVText'); // storer will set this on Next
 
             if (st.phase === 'cv') goTo('cv', 'forward');
+            // Right after the upload: may recruiters see this CV? (Also ticks the wizard's consent box when allowed.)
+            askCvConsentAfterUpload().catch(console.error);
         } catch (e) {
             console.error(e);
             showToast('Could not read the PDF. Please try a different file.', 'error');
@@ -2247,16 +2297,8 @@ const WZ = (() => {
 
             const lookingForVal = typeToLookingFor(st.programType);
 
-            const { error } = await supabaseClient.from('profiles').upsert({
-                uuid: currentUser.id,
-                profile: profileData,
-                ocr_cv: localStorage.getItem('userCVText') || '',
-                looking_for: lookingForVal,
-                updated_at: new Date().toISOString()
-            });
-            if (error) throw error;
+            await persistProfileRecord(profileData, localStorage.getItem('userCVText') || '', { looking_for: lookingForVal });
             currentLookingFor = lookingForVal;
-            localStorage.setItem('userProfileData', JSON.stringify(profileData));
         } catch (e) {
             console.error(e);
             showToast('Could not save profile. Please try again.', 'error');
@@ -2451,13 +2493,8 @@ const WZ = (() => {
 
         const lookingForVal = st.programType ? typeToLookingFor(st.programType) : undefined;
 
-        const upsertData = { uuid: currentUser.id, profile: profileData, updated_at: new Date().toISOString() };
-        if (lookingForVal) upsertData.looking_for = lookingForVal;
-
-        supabaseClient.from('profiles').upsert(upsertData).then(({ error }) => {
-            if (error) console.warn('Progress save failed:', error.message);
-            else localStorage.setItem('userProfileData', JSON.stringify(profileData));
-        });
+        persistProfileRecord(profileData, '', lookingForVal ? { looking_for: lookingForVal } : {})
+            .catch(error => console.warn('Progress save failed:', error?.message || error));
     }
 
     // ------ Helpers ------
@@ -2594,6 +2631,7 @@ async function loadProfile() {
         const clName = localStorage.getItem(clConfig.storageKeyName);
         if (clName) showFileDisplay('cover_letter', clName);
 
+        takeProfileSaveBaseline();
         setTimeout(() => refreshHeader(), 150);
         return profileObj;
 
@@ -2609,6 +2647,9 @@ async function loadProfile() {
             populateForm(profileObj);
             window.MSCProfileState?.cacheProfile(profileObj, currentUser.id);
         }
+        // Loaded from this browser's copy because the server read failed: saves still merge
+        // over the server row, so only what the student changes here is written.
+        takeProfileSaveBaseline();
         setTimeout(() => refreshHeader(), 150);
         return profileObj;
     } finally {
@@ -3107,6 +3148,8 @@ async function handleFile(file, type) {
         localStorage.setItem(config.storageKeyName, file.name);
         showFileDisplay(type, file.name);
         if (type === 'resume') {
+            resumeRemovedInTab = false;
+            ocrChangedInTab = true;
             try {
                 // Persist the autofilled form immediately so navigation/reload
                 // cannot restore the previous profile snapshot.
@@ -3115,6 +3158,8 @@ async function handleFile(file, type) {
                 console.error('Failed to persist autofilled profile:', saveError);
                 showToast('Resume processed, but profile details could not be saved. Please click Save Profile and try again.', 'warning', 9000);
             }
+            // Right after the upload (once the loader is gone): may recruiters see this CV?
+            setTimeout(() => { askCvConsentAfterUpload().catch(console.error); }, 0);
         }
         refreshHeader();
     } catch (error) {
@@ -3156,11 +3201,11 @@ async function extractProfileData(images, text, pdfBase64 = null) {
         if (pdf) {
             payload.pdf = pdf;
         }
-        const response = await fetch(WORKER_URL, {
+        const response = await fetchWithTimeout(WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
-        });
+        }, CV_READ_TIMEOUT_MS);
         if (!response.ok) return null;
         const data = await response.json();
         if (data.ok && data.is_cv === false) {
@@ -3175,6 +3220,7 @@ async function extractProfileData(images, text, pdfBase64 = null) {
         }
     } catch (e) {
         console.error(e);
+        if (isTimeout(e)) showToast('Reading your resume took too long, so we stopped waiting. Your CV is kept: fill in the details yourself or try again later.', 'warning', 9000);
     }
     return null;
 }
@@ -3320,16 +3366,187 @@ function updatePrivacyCard(isConsented) {
     }
 }
 
-// =================== SAVE ===================
-async function persistProfileRecord(profileData, ocrText) {
-    const { error } = await supabaseClient.from('profiles').upsert({
-        uuid: currentUser.id,
-        profile: profileData,
-        ocr_cv: ocrText,
-        updated_at: new Date().toISOString()
+// After a resume upload, ask once whether it may be shared with recruiters. "Not now" keeps the CV saved but not
+// shared (recorded as declined, like the portal's decline button) until the student ticks "CV sharing consent" on this
+// page. Students who already answered (yes or no) are not asked again. Resolves true when sharing is allowed.
+let cvConsentAsk = null;
+async function askCvConsentAfterUpload() {
+    if (!currentUser) return false;
+    if (cvConsentAsk) return cvConsentAsk;
+    const mainChk = document.getElementById('cvSharingConsent');
+    if (mainChk && mainChk.checked) return true;
+    try {
+        const { data } = await supabaseClient.from('consentform')
+            .select('cv_sharing_consent').eq('user_id', currentUser.id).maybeSingle();
+        if (data) return data.cv_sharing_consent === true;
+    } catch (e) {
+        console.warn('Could not check CV sharing consent:', e);
+    }
+    cvConsentAsk = new Promise(resolve => {
+        const overlay = document.createElement('div');
+        overlay.id = 'cvConsentAfterUpload';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-labelledby', 'cvConsentAfterUploadTitle');
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:30000;background:rgba(15,23,42,.6);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
+        overlay.innerHTML = `
+            <div style="background:#fff;border-radius:16px;max-width:440px;width:100%;padding:24px;font-family:Poppins,Arial,sans-serif;box-shadow:0 20px 60px rgba(15,23,42,.25);box-sizing:border-box;">
+                <h3 id="cvConsentAfterUploadTitle" style="margin:0 0 8px;font-size:1.15rem;color:#1f2937;">Share your CV with recruiters?</h3>
+                <p style="margin:0 0 18px;font-size:.9rem;line-height:1.55;color:#4b5563;">${CONSENT_TEXT}</p>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button type="button" data-cv-consent="yes" style="flex:1 1 160px;padding:12px 16px;border:0;border-radius:10px;background:#4f46e5;color:#fff;font:600 .95rem Poppins,Arial,sans-serif;cursor:pointer;">Yes, share my CV</button>
+                    <button type="button" data-cv-consent="no" style="flex:1 1 120px;padding:12px 16px;border:1px solid #d1d5db;border-radius:10px;background:#fff;color:#374151;font:600 .95rem Poppins,Arial,sans-serif;cursor:pointer;">Not now</button>
+                </div>
+                <p style="margin:12px 0 0;font-size:.75rem;line-height:1.5;color:#6b7280;">Your CV is saved either way. You can change this anytime in your profile.</p>
+            </div>`;
+        const answer = async (yes) => {
+            overlay.remove();
+            cvConsentAsk = null;
+            if (mainChk) mainChk.checked = yes;
+            const wizardChk = document.getElementById('wz-consent-chk');
+            if (wizardChk) wizardChk.checked = yes;
+            await saveConsentRecord(yes);
+            updatePrivacyCard(yes);
+            const statusText = document.getElementById('consentStatusText');
+            if (statusText) {
+                statusText.textContent = yes
+                    ? 'Consent given on ' + new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+                    : 'Not shared with recruiters';
+            }
+            showToast(yes
+                ? 'Thanks! Recruiters can now see your CV.'
+                : 'Your CV is saved but not shared with recruiters. You can turn sharing on anytime in your profile.',
+                yes ? 'success' : 'info', 7000);
+            resolve(yes);
+        };
+        overlay.querySelector('[data-cv-consent="yes"]').addEventListener('click', () => answer(true));
+        overlay.querySelector('[data-cv-consent="no"]').addEventListener('click', () => answer(false));
+        document.body.appendChild(overlay);
+        overlay.querySelector('[data-cv-consent="yes"]').focus();
     });
-    if (error) throw error;
+    return cvConsentAsk;
 }
+
+// =================== SAVE ===================
+function persistProfileRecord(profileData, ocrText, extraColumns = {}) {
+    const run = profileWriteChain.then(() => writeProfileRecord(profileData, ocrText, extraColumns));
+    profileWriteChain = run.catch(() => {});
+    return run;
+}
+
+async function writeProfileRecord(profileData, ocrText, extraColumns) {
+    // Read the latest row and merge (see mergeProfileForSave): never write a stale tab's whole form
+    // over newer app edits or over keys this form has no input for. The write is conditioned on the
+    // updated_at just read (as the app does), so an app save landing in between is merged, not lost.
+    const state = window.MSCProfileState;
+    const removingResume = resumeRemovedInTab;
+    const sendingOcr = !removingResume && ocrChangedInTab && !!(ocrText || '').trim();
+    let merged = null;
+    let written = false;
+    let lastRecord = null;
+
+    for (let attempt = 0; attempt < 3 && !written; attempt++) {
+        const { data: row, error: readError } = await supabaseClient
+            .from('profiles')
+            .select('profile, updated_at')
+            .eq('uuid', currentUser.id)
+            .maybeSingle();
+        if (readError) throw readError;
+
+        const serverProfile = (row && row.profile && typeof row.profile === 'object') ? row.profile : {};
+        merged = state
+            ? state.mergeProfileForSave(serverProfile, profileData, profileSaveBaseline)
+            : { ...serverProfile, ...profileData };
+        if (removingResume) {
+            delete merged.cv_filename;
+            delete merged.cv_cloud_synced;
+        }
+        const record = { profile: merged, updated_at: new Date().toISOString(), ...extraColumns };
+        if (removingResume) record.ocr_cv = '';
+        else if (sendingOcr) record.ocr_cv = ocrText;
+        lastRecord = record;
+
+        if (!row) {
+            const { error } = await supabaseClient.from('profiles').upsert({ uuid: currentUser.id, ...record });
+            if (error) throw error;
+            written = true;
+            break;
+        }
+        const { data: updated, error } = await supabaseClient
+            .from('profiles')
+            .update(record)
+            .eq('uuid', currentUser.id)
+            .eq('updated_at', row.updated_at)
+            .select('uuid');
+        if (error) throw error;
+        written = Array.isArray(updated) && updated.length > 0;
+    }
+    if (!written) {
+        // Kept changing under us (or the conditional update matched nothing): the old plain upsert,
+        // still with the merged profile.
+        const { error } = await supabaseClient.from('profiles').upsert({ uuid: currentUser.id, ...lastRecord });
+        if (error) throw error;
+    }
+
+    if (removingResume) resumeRemovedInTab = false;
+    if (sendingOcr) ocrChangedInTab = false;
+    cacheOwnProfile(merged);
+
+    // The new baseline is what was written for this tab's keys, not the live form, so anything typed
+    // while the save ran still counts as an edit next time.
+    profileSaveBaseline = Object.fromEntries(Object.keys(profileData).map(key => [key, merged[key] ?? '']));
+    // The server had newer values for fields this tab didn't touch: show them now.
+    const serverWasNewer = Object.keys(profileData).some(key =>
+        String(merged[key] ?? '') !== String(profileData[key] ?? ''));
+    if (serverWasNewer) {
+        populateForm(merged);
+        refreshHeader();
+    }
+    return merged;
+}
+
+// Back on this tab after editing in the app (or another tab): show the newer profile, unless the
+// student has unsaved edits here or the first-time wizard is open.
+async function refreshProfileFromServerIfIdle() {
+    const state = window.MSCProfileState;
+    if (!currentUser || !profileForm || !state || !profileSaveBaseline) return;
+    const wizard = document.getElementById('profile-wizard');
+    if (wizard && wizard.style.display !== 'none' && wizard.offsetParent !== null) return;
+    if (state.profilesDiffer(buildTabProfile(), profileSaveBaseline)) return;
+
+    const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('profile, ocr_cv, updated_at, looking_for')
+        .eq('uuid', currentUser.id)
+        .maybeSingle();
+    if (error || !data || !data.profile || typeof data.profile !== 'object') return;
+    if (state.profilesDiffer(buildTabProfile(), profileSaveBaseline)) return; // edited while we waited
+    if (!state.profilesDiffer(data.profile, cachedServerProfile())) return; // nothing new
+
+    populateForm(data.profile);
+    cacheOwnProfile(data.profile);
+    lastUpdatedISO = data.updated_at || lastUpdatedISO;
+    if (data.looking_for) currentLookingFor = data.looking_for;
+    if (data.ocr_cv && !ocrChangedInTab) {
+        localStorage.setItem('userCVText', data.ocr_cv);
+        if (!localStorage.getItem('userCVImages')) {
+            const name = data.profile.cv_filename || 'Your Resume.pdf';
+            localStorage.setItem('userCVFileName', name);
+            showFileDisplay('resume', name);
+        }
+    }
+    takeProfileSaveBaseline();
+    refreshHeader();
+}
+
+function cachedServerProfile() {
+    return readOwnProfileCache() || {};
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    refreshProfileFromServerIfIdle().catch(error => console.warn('Profile refresh skipped:', error?.message || error));
+});
 
 function normalizeSchoolEducationProfile(profileData) {
     ['class10', 'class12'].forEach(prefix => {
@@ -3389,7 +3606,6 @@ async function persistCurrentProfileSnapshot() {
 
     const ocrText = localStorage.getItem('userCVText') || '';
     await persistProfileRecord(profileData, ocrText);
-    localStorage.setItem('userProfileData', JSON.stringify(profileData));
     lastUpdatedISO = new Date().toISOString();
     refreshHeader();
 }
@@ -3406,18 +3622,13 @@ async function handleSave(e) {
         }
     }
 
-    if (!localStorage.getItem('userCVImages') && !isCloudSynced()) {
+    if (!hasResumeOnFile()) {
         showToast('Please upload your resume. It is required to use the AI features.', 'warning');
         return;
     }
 
-    // DPDP Act: Block save if CV is uploaded but consent not given
-    const consentCheckbox = document.getElementById('cvSharingConsent');
-    if (consentCheckbox && !consentCheckbox.checked) {
-        const modal = document.getElementById('consentRequiredModal');
-        if (modal) modal.style.display = 'flex';
-        return;
-    }
+    // DPDP Act: the CV may be saved without sharing consent; it is then simply not shared with recruiters
+    // (recruiter search only shows students whose consentform says so). Consent is asked right after the upload.
 
     const summaryField = document.getElementById('profile_summary');
     const headlineField = document.getElementById('headline');
@@ -3449,7 +3660,6 @@ async function handleSave(e) {
     // Otherwise navigating away while the upload is in progress cancels this
     // whole handler and the next page reloads the previous profile name.
     profileData.cv_cloud_synced = isCloudSynced();
-    localStorage.setItem('userProfileData', JSON.stringify(profileData));
 
     try {
         await persistProfileRecord(profileData, ocrText);
@@ -3466,6 +3676,8 @@ async function handleSave(e) {
 
     let syncSuccess = false;
     let hasImagesToSync = false;
+    // Removed by mistake on 8 Nov (4649d538a); without it every Save threw here, after the first write.
+    const consentCheckbox = document.getElementById('cvSharingConsent');
 
     // storer CV background sync if consent is given and CV matches profile form values even somewhat
     if (consentCheckbox && consentCheckbox.checked && localStorage.getItem('userCVImages')) {
@@ -3503,7 +3715,7 @@ async function handleSave(e) {
                     payload.pdf = cachedPdf;
                 }
 
-                const syncResponse = await fetch('https://storer.bhansalimanan55.workers.dev', {
+                const syncResponse = await fetchWithTimeout('https://storer.bhansalimanan55.workers.dev', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -3515,6 +3727,7 @@ async function handleSave(e) {
                         if (syncData.ocr_text) {
                             ocrText = syncData.ocr_text;
                             localStorage.setItem('userCVText', ocrText);
+                            ocrChangedInTab = true;
                         }
                         if (syncData.uploaded) {
                             syncSuccess = true;
@@ -3531,7 +3744,11 @@ async function handleSave(e) {
                 }
             } catch (syncErr) {
                 console.error('Error syncing CV to cloud during save:', syncErr);
-                showToast('Network error while backup syncing resume.', 'warning', 8000);
+                if (isTimeout(syncErr)) {
+                    showToast('Your profile is saved. The CV backup took too long, so we stopped waiting. Refresh the page and try Save again later.', 'warning', 10000);
+                } else {
+                    showToast('Network error while backup syncing resume.', 'warning', 8000);
+                }
             }
         }
     }
@@ -3541,7 +3758,6 @@ async function handleSave(e) {
         currentlySynced = syncSuccess;
     }
     profileData.cv_cloud_synced = currentlySynced;
-    localStorage.setItem('userProfileData', JSON.stringify(profileData));
 
     try {
         await persistProfileRecord(profileData, ocrText);
@@ -4739,6 +4955,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.addEventListener('click', (e) => {
         const btn = e.target.closest('.p2-remove-file');
         if (btn && btn.getAttribute('data-target')) {
+            if (btn.getAttribute('data-target') === 'resume') resumeRemovedInTab = true;
             hideFileDisplay(btn.getAttribute('data-target'));
             refreshHeader();
         }

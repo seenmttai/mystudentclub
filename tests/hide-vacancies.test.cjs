@@ -10,14 +10,19 @@ const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const TABLES = ['Industrial Training Job Portal', 'Articleship Jobs', 'Fresher Jobs', 'Semi Qualified Jobs'];
 
-test('migration adds hidden columns to every vacancy table, idempotently, hiding nothing', async () => {
+// The SQL is kept out of the repo (run by hand on Supabase), so this check runs only where the file is present.
+const HIDDEN_MIGRATION = 'supabase/migrations/202610310002_add_hidden_to_job_tables.sql';
+test('migration adds hidden columns to every vacancy table, idempotently, hiding nothing; logged-out visitors can read hidden', { skip: !fs.existsSync(path.join(root, HIDDEN_MIGRATION)) && 'migration file is local only' }, async () => {
   const db = new PGlite();
   try {
+    // Like live: logged-out visitors (anon) read the job tables only through column grants.
+    await db.exec('create role anon; create role authenticated;');
     for (const table of TABLES) {
       await db.exec(`create table public."${table}" (id bigint primary key, "Company" text);
-        insert into public."${table}" values (1, 'Existing Co');`);
+        insert into public."${table}" values (1, 'Existing Co');
+        grant select (id, "Company") on public."${table}" to anon;`);
     }
-    const migration = read('supabase/migrations/202610310002_add_hidden_to_job_tables.sql');
+    const migration = read(HIDDEN_MIGRATION);
     await db.exec(migration);
     await db.exec(migration);
     for (const table of TABLES) {
@@ -26,6 +31,14 @@ test('migration adds hidden columns to every vacancy table, idempotently, hiding
       await db.query(`insert into public."${table}" (id, "Company") values (2, 'New Co')`);
       const fresh = await db.query(`select hidden from public."${table}" where id = 2`);
       assert.equal(fresh.rows[0].hidden, false, `${table}: new rows default to visible`);
+      await db.exec('set role anon');
+      try {
+        const visible = await db.query(`select id from public."${table}" where hidden is not true order by id`);
+        assert.deepEqual(visible.rows.map(r => Number(r.id)), [1, 2], `${table}: anon can filter on hidden`);
+        await assert.rejects(db.query(`select hidden_reason from public."${table}"`), /permission denied/, `${table}: hidden_reason stays admin-only`);
+      } finally {
+        await db.exec('reset role');
+      }
     }
   } finally {
     await db.close();
@@ -58,6 +71,7 @@ for (const file of ['scripts/portal3.js', 'scripts/portal-email.js']) {
     assert.equal(calls.length, 1, 'no filter once the column is missing');
     assert.equal(helpers.isHiddenColumnError({ message: 'column Industrial Training Job Portal.hidden does not exist' }), true);
     assert.equal(helpers.isHiddenColumnError({ message: 'permission denied' }), false);
+    assert.equal(helpers.isHiddenColumnError({ message: 'permission denied for column hidden of relation Fresher Jobs' }), true);
     assert.equal(helpers.isHiddenColumnError(null), false);
   });
 }
@@ -67,13 +81,17 @@ test('portal listing, trending and shared link all skip hidden vacancies, with t
   assert.match(source, /let q = excludeHidden\(supabaseClient\.from\(currentTable\)\.select\(cols\)\);/);
   assert.equal((source.match(/excludeHidden\(supabaseClient/g) || []).length, 3, 'listing, shared link, trending');
   // Retry on the error itself, not on the flag: another query may already have turned the filter off.
-  assert.equal((source.match(/if \(isHiddenColumnError\(error\)\) \{\s*(console\.warn\([^)]*\);\s*)?hiddenFilterOff = true;/g) || []).length, 3);
-  assert.doesNotMatch(source, /isHiddenColumnError\(error\) && !hiddenFilterOff/);
+  // Since 19 Nov the shared link and trending go through runPublicJobSelect, so there are two retry points.
+  assert.match(source, /if \(isHiddenColumnError\(result\.error\)\) \{[\s\S]{0,120}?hiddenFilterOff = true;/);
+  assert.match(source, /if \(isHiddenColumnError\(error\)\) \{[\s\S]{0,500}?hiddenFilterOff = true;/);
+  assert.doesNotMatch(source, /!hiddenFilterOff && isHiddenColumnError/);
+  assert.equal((source.match(/runPublicJobSelect\(cols => excludeHidden\(supabaseClient/g) || []).length, 2, 'shared link and trending');
 });
 
 test('jobs by email skips hidden vacancies and ignores a hidden shared link', () => {
   const source = read('scripts/portal-email.js');
-  assert.match(source, /let query = excludeHidden\(supabaseClient\.from\(table\)\.select\(selectColumns\)\);/);
+  assert.match(source, /let query = excludeHidden\(supabaseClient\.from\(table\)\.select\(cols\)\);/);
+  assert.match(source, /if \(isHiddenColumnError\(error\)\) \{\s*hiddenFilterOff = true;/);
   assert.match(source, /if \(!error && data && data\.hidden !== true\) \{\s*setTimeout\(\(\) => showModal\(data\), 300\);/);
 });
 
@@ -89,7 +107,9 @@ test('admin can hide and unhide, and hidden cards are marked', () => {
   assert.match(source, /\{ hidden: true, hidden_at: new Date\(\)\.toISOString\(\) \}/);
   assert.match(source, /\{ hidden: false, hidden_reason: null, hidden_at: null \}/);
   assert.match(source, /else if \(action === 'hide'\) \{\s*await toggleHidden\(jobId, currentTable, card\);/);
-  assert.match(source, /connect_link, hidden';/);
+  assert.match(source, /reposted_at, repost_count, hidden';/);
+  assert.match(source, /\$\{repostChipHtml\(job\)\}\$\{job\.hidden === true \?/, 'Repost chip and HIDDEN badge sit together');
+  assert.match(source, /data-action="repost"/, 'Repost button kept');
 });
 
 test('static job pages: no page for hidden vacancies, and old pages of hidden ones are removed before the sitemap', async () => {

@@ -1,0 +1,2504 @@
+{
+ "id": "dt-3",
+ "domain": "direct-tax",
+ "number": 3,
+ "title": "Notices and appeals",
+ "minutes": 35,
+ "learn": [
+  "Which Act an earlier year’s notice and appeal run under",
+  "How to agree, agree in part or disagree, with proof",
+  "What goes into a first-appeal set, and what stays out"
+ ],
+ "do": [
+  "Read a CPC notice and diarise the reply date",
+  "Decide three proposed adjustments and pick the proof",
+  "Draft the reply and index the appeal set"
+ ],
+ "case": {
+  "role": "First-year article assistant on the direct-tax team",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
+  "team": "Kunal Mehrotra (tax senior); Milind Ogale (tax partner, reviews every reply and appeal before it is filed); Varun Shetty (second-year article, keeps the notice tracker). At Tamhini: Mahesh Kadam (GM Finance), Pallavi Shinde (accounts executive, made the computation) and Amol Joglekar (MD, verifies what Tamhini files)",
+  "goal": "Read an earlier year’s income-tax notice from the CPC, the department’s processing centre. Decide each proposed adjustment with its proof, draft the reply and, later, index the appeal set.",
+  "period": "FY 2025–26 (assessment year 2026–27)",
+  "where": "Tax desk, Prabhat Road office · Tuesday 12 January 2027"
+ },
+ "brief": {
+  "from": "kunal",
+  "time": "10:05 am",
+  "messages": [
+   "CPC has sent Tamhini three proposed adjustments on its AY 2026–27 return, ₹80,37,340 in all. Mahesh says all three should go. Tell me which we agree to, which we fight, and with what proof.",
+   "The return was due on 21 November 2026 after the CBDT extension; keep that date beside every payment. Draft reply on my desk by Friday the 22nd."
+  ]
+ },
+ "documents": [
+  {
+   "id": "notice",
+   "type": "letter",
+   "style": "notice",
+   "title": "CPC notice AY 2026–27 · Proposed adjustments",
+   "tab": "Notice",
+   "letterhead": [
+    "INCOME TAX DEPARTMENT",
+    "Centralised Processing Centre"
+   ],
+   "ref": "DIN: CPC/2627/G22/1716455031",
+   "date": "11-01-2027",
+   "to": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Village Mahalunge, Taluka Khed, Pune 410501"
+   },
+   "meta": [
+    {
+     "label": "PAN",
+     "value": "ZHDCT5940H"
+    },
+    {
+     "label": "Assessment year",
+     "value": "2026–27"
+    },
+    {
+     "label": "Acknowledgement no.",
+     "value": "721459630271026"
+    },
+    {
+     "label": "Date of filing",
+     "value": "27-10-2026"
+    }
+   ],
+   "subject": "Proposed adjustments under section 143(1)(a) of the Income-⁠tax Act, 1961",
+   "body": [
+    "On processing your return of income for the above assessment year, the items below are found indicated in the tax audit report but not taken into account in computing the total income in the return. It is proposed to adjust them under section 143(1)(a)(iv).",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "item",
+        "label": "Item"
+       },
+       {
+        "key": "tar",
+        "label": "As per tax audit report (₹)",
+        "format": "inr"
+       },
+       {
+        "key": "ret",
+        "label": "Considered in the return (₹)",
+        "format": "inr"
+       },
+       {
+        "key": "adj",
+        "label": "Proposed adjustment (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "item": "1. Bonus to employees not paid (section 43B)",
+        "tar": 6800000,
+        "ret": 0,
+        "adj": 6800000
+       },
+       {
+        "item": "2. Employees’ contribution to provident fund credited after the due date (section 36(1)(va))",
+        "tar": 277340,
+        "ret": 0,
+        "adj": 277340
+       },
+       {
+        "item": "3. Leave encashment not paid (section 43B)",
+        "tar": 960000,
+        "ret": 0,
+        "adj": 960000
+       },
+       {
+        "item": "Total",
+        "tar": 8037340,
+        "ret": 0,
+        "adj": 8037340,
+        "_class": "total"
+       }
+      ]
+     }
+    },
+    "Your response, if any, will be considered before the adjustments are made. If no response is received within thirty days of the issue of this communication, the adjustments will be made and an intimation under section 143(1) will follow.",
+    "Respond item by item: agree, or disagree with your reasons and the documents that support them."
+   ],
+   "sign": {
+    "name": "Assessing Officer",
+    "role": "Centralised Processing Centre",
+    "hand": false,
+    "note": "Computer-generated; needs no signature."
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "BAPAT VENKATESH & CO.\nINWARD 12 JAN 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": 5
+    }
+   ]
+  },
+  {
+   "id": "mail-mahesh",
+   "type": "letter",
+   "style": "email",
+   "title": "Mahesh’s mail · The notice and his papers",
+   "tab": "Mahesh’s mail",
+   "from": {
+    "name": "Mahesh Kadam",
+    "email": "mahesh.kadam@email.com"
+   },
+   "to": [
+    {
+     "name": "Kunal Mehrotra",
+     "email": "kunal.mehrotra@email.com"
+    }
+   ],
+   "cc": [
+    {
+     "name": "Pallavi Shinde",
+     "email": "pallavi.shinde@email.com"
+    }
+   ],
+   "date": "Mon, 11 Jan 2027, 11:12 pm",
+   "subject": "CPC notice AY 2026–27: papers",
+   "body": [
+    "Hi Kunal,",
+    "The CPC notice came in tonight; attached. I think all three should go:",
+    "- Bonus is fully paid. Workmen on 21 October, staff on 27 November. The return date was extended to 21 November anyway.",
+    "- PF was paid, only a few weeks late, and every rupee reached the fund.",
+    "- Leave encashment we had already added back, Pallavi says.",
+    "Amol sir also wants to know why a notice in 2027 still quotes the 1961 Act. Is the CPC behind the times?",
+    "Attaching what I have. Tell me if you need anything else.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Mahesh Kadam",
+    "role": "GM, Finance and Accounts",
+    "for": "Tamhini Drivetech Private Limited"
+   },
+   "attachments": [
+    "CPC_​notice_​AY2026-⁠27.pdf",
+    "Bonus_​register_​2025-⁠26.xlsx",
+    "CC_​statement_​Oct_​Nov_​2026.pdf",
+    "PF_​register_​Oct25-⁠Jan26.pdf",
+    "Bonus_​ledger_​2025-⁠26.pdf",
+    "Computation_​AY2026-⁠27.pdf"
+   ]
+  },
+  {
+   "id": "ack",
+   "type": "card",
+   "style": "slip",
+   "title": "Return acknowledgement · AY 2026–27",
+   "tab": "Return ack.",
+   "issuer": "Income Tax Department · e-filing",
+   "heading": "Acknowledgement of return of income",
+   "number": "721459630271026",
+   "fields": [
+    {
+     "label": "Name",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "PAN",
+     "value": "ZHDCT5940H"
+    },
+    {
+     "label": "Assessment year",
+     "value": "2026–27"
+    },
+    {
+     "label": "Filed under",
+     "value": "Section 139(1)"
+    },
+    {
+     "label": "Date of filing",
+     "value": "27-10-2026"
+    },
+    {
+     "label": "Total income",
+     "value": "₹7,70,82,000"
+    },
+    {
+     "label": "Tax payable with the return",
+     "value": "₹0"
+    },
+    {
+     "label": "Verified by",
+     "value": "Digital signature of Amol Joglekar, Managing Director"
+    }
+   ]
+  },
+  {
+   "id": "tracker",
+   "type": "table",
+   "style": "sheet",
+   "title": "Notice tracker · Direct-tax desk",
+   "tab": "Tracker",
+   "sheetName": "Notices",
+   "freeze": true,
+   "pinFit": true,
+   "columns": [
+    {
+     "key": "cl",
+     "label": "Client"
+    },
+    {
+     "key": "ay",
+     "label": "Year"
+    },
+    {
+     "key": "what",
+     "label": "Notice"
+    },
+    {
+     "key": "iss",
+     "label": "Issued"
+    },
+    {
+     "key": "by",
+     "label": "Respond by"
+    },
+    {
+     "key": "who",
+     "label": "With"
+    },
+    {
+     "key": "st",
+     "label": "Status"
+    }
+   ],
+   "rows": [
+    {
+     "cl": "Tamhini",
+     "ay": "AY 2025–26",
+     "what": "AIS mismatch: Lothal sale",
+     "iss": "14-11-2026",
+     "by": "14-12-2026",
+     "who": "Kunal",
+     "st": "Replied 02-12-2026; open"
+    },
+    {
+     "cl": "Tamhini",
+     "ay": "AY 2026–27",
+     "what": "143(1)(a) adjustments",
+     "iss": "11-01-2027",
+     "by": "",
+     "who": "Kunal and you",
+     "st": "Papers received from Mahesh"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Respond-by left for you – V.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "tar-43b",
+   "type": "table",
+   "style": "plain",
+   "title": "Tax audit report FY 2025–26 · Paid-only items",
+   "tab": "Audit report",
+   "heading": "Tax audit report for FY 2025–26 · statement of particulars (extract)",
+   "subtitle": "Sums covered by section 43B · signed 25-09-2026 by Sudha Venkatesh, Partner, for Bapat Venkatesh & Co. (FRN 1XXXXXW)",
+   "columns": [
+    {
+     "key": "n",
+     "label": "Nature of liability"
+    },
+    {
+     "key": "inc",
+     "label": "Incurred in FY 2025–26 (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "paid",
+     "label": "Paid by the date of this report (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "unp",
+     "label": "Not paid by the date of this report (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "n": "Employer’s contribution to PF and ESI",
+     "inc": 4140000,
+     "paid": 4140000,
+     "unp": 0
+    },
+    {
+     "n": "Bonus",
+     "inc": 6800000,
+     "paid": 0,
+     "unp": 6800000
+    },
+    {
+     "n": "Leave encashment",
+     "inc": 960000,
+     "paid": 0,
+     "unp": 960000
+    },
+    {
+     "n": "Interest on term loans from a scheduled bank",
+     "inc": 10240000,
+     "paid": 10240000,
+     "unp": 0
+    },
+    {
+     "n": "Rates and taxes",
+     "inc": 1100000,
+     "paid": 1100000,
+     "unp": 0
+    },
+    {
+     "n": "Total",
+     "inc": 23240000,
+     "paid": 15480000,
+     "unp": 7760000,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Date of this report: 25-09-2026."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Extract from the report as filed – V.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "tar-pf",
+   "type": "table",
+   "style": "plain",
+   "title": "Tax audit report FY 2025–26 · Employees’ PF",
+   "tab": "Audit report",
+   "heading": "Tax audit report for FY 2025–26 · statement of particulars (extract)",
+   "subtitle": "Sums received from employees towards provident fund · signed 25-09-2026 by Sudha Venkatesh, Partner, for Bapat Venkatesh & Co. (FRN 1XXXXXW)",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Wage month"
+    },
+    {
+     "key": "amt",
+     "label": "Sum received from employees (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "due",
+     "label": "Due date for payment"
+    },
+    {
+     "key": "paid",
+     "label": "Amount paid (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "on",
+     "label": "Date of payment"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2025",
+     "amt": 271860,
+     "due": "15-05-2025",
+     "paid": 271860,
+     "on": "15-05-2025"
+    },
+    {
+     "m": "May 2025",
+     "amt": 272410,
+     "due": "15-06-2025",
+     "paid": 272410,
+     "on": "13-06-2025"
+    },
+    {
+     "m": "Jun 2025",
+     "amt": 272980,
+     "due": "15-07-2025",
+     "paid": 272980,
+     "on": "15-07-2025"
+    },
+    {
+     "m": "Jul 2025",
+     "amt": 273640,
+     "due": "15-08-2025",
+     "paid": 273640,
+     "on": "14-08-2025"
+    },
+    {
+     "m": "Aug 2025",
+     "amt": 274120,
+     "due": "15-09-2025",
+     "paid": 274120,
+     "on": "15-09-2025"
+    },
+    {
+     "m": "Sep 2025",
+     "amt": 275300,
+     "due": "15-10-2025",
+     "paid": 275300,
+     "on": "15-10-2025"
+    },
+    {
+     "m": "Oct 2025",
+     "amt": 276050,
+     "due": "15-11-2025",
+     "paid": 276050,
+     "on": "14-11-2025"
+    },
+    {
+     "m": "Nov 2025",
+     "amt": 277340,
+     "due": "15-12-2025",
+     "paid": 277340,
+     "on": "27-01-2026"
+    },
+    {
+     "m": "Dec 2025",
+     "amt": 277910,
+     "due": "15-01-2026",
+     "paid": 277910,
+     "on": "15-01-2026"
+    },
+    {
+     "m": "Jan 2026",
+     "amt": 278240,
+     "due": "15-02-2026",
+     "paid": 278240,
+     "on": "13-02-2026"
+    },
+    {
+     "m": "Feb 2026",
+     "amt": 278480,
+     "due": "15-03-2026",
+     "paid": 278480,
+     "on": "13-03-2026"
+    },
+    {
+     "m": "Mar 2026",
+     "amt": 278620,
+     "due": "15-04-2026",
+     "paid": 278620,
+     "on": "15-04-2026"
+    },
+    {
+     "m": "Total",
+     "amt": 3306950,
+     "due": "",
+     "paid": 3306950,
+     "on": "",
+     "_class": "total"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Extract from the report as filed – V.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "comp",
+   "type": "table",
+   "style": "statement",
+   "title": "Computation of income · AY 2026–27",
+   "tab": "Computation",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "heading": "Computation of total income · Assessment year 2026–27 (previous year 2025–26)",
+   "subtitle": "Prepared for the return filed on 27-10-2026; the return carries these figures · tax under section 115BAA · amounts in ₹",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "1. Profit before tax as per the statement of profit and loss",
+     "amt": 77784000,
+     "_id": "pbt"
+    },
+    {
+     "part": "Add:",
+     "_class": "head"
+    },
+    {
+     "part": "2. Depreciation as per the books",
+     "amt": 28620000,
+     "_indent": 1,
+     "_id": "a1"
+    },
+    {
+     "part": "3. Corporate social responsibility expenditure",
+     "amt": 1200000,
+     "_indent": 1,
+     "_id": "a2"
+    },
+    {
+     "part": "4. Gratuity provided, less gratuity paid",
+     "amt": 1404000,
+     "_indent": 1,
+     "_id": "a3"
+    },
+    {
+     "part": "5. Other disallowances: leave encashment provided, not paid (section 43B)",
+     "amt": 960000,
+     "_indent": 1,
+     "_id": "a4"
+    },
+    {
+     "part": "Total additions",
+     "amt": 32184000,
+     "_class": "subtotal",
+     "_id": "adds",
+     "_sumOf": [
+      "a1",
+      "a2",
+      "a3",
+      "a4"
+     ]
+    },
+    {
+     "part": "Less:",
+     "_class": "head"
+    },
+    {
+     "part": "6. Depreciation under the Income-tax Rules",
+     "amt": 32886000,
+     "_indent": 1,
+     "_id": "dep"
+    },
+    {
+     "part": "Total income",
+     "amt": 77082000,
+     "_class": "total",
+     "_id": "ti",
+     "_sumOf": [
+      "pbt",
+      "adds",
+      "-dep"
+     ]
+    },
+    {
+     "part": "Tax on total income (22%, surcharge 10%, cess 4%)",
+     "amt": 19400000,
+     "_id": "tax"
+    },
+    {
+     "part": "Less: TDS and TCS credit (Form 26AS)",
+     "amt": 830400,
+     "_indent": 1,
+     "_id": "tds"
+    },
+    {
+     "part": "Less: advance tax paid",
+     "amt": 18569600,
+     "_indent": 1,
+     "_id": "adv"
+    },
+    {
+     "part": "Tax payable with the return",
+     "amt": 0,
+     "_class": "total",
+     "_id": "net",
+     "_sumOf": [
+      "tax",
+      "-tds",
+      "-adv"
+     ]
+    }
+   ],
+   "notes": [
+    "Prepared by Pallavi Shinde; reviewed by Mahesh Kadam."
+   ]
+  },
+  {
+   "id": "reg",
+   "type": "table",
+   "style": "sheet",
+   "title": "Bonus register · Bonus for FY 2025–26, paid",
+   "tab": "Bonus register",
+   "sheetName": "Paid 2026",
+   "otherSheets": [
+    "Employee-wise",
+    "Provision 31-3-26"
+   ],
+   "freeze": true,
+   "columns": [
+    {
+     "key": "g",
+     "label": "Group"
+    },
+    {
+     "key": "n",
+     "label": "Employees",
+     "format": "int"
+    },
+    {
+     "key": "amt",
+     "label": "Bonus (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "on",
+     "label": "Paid on (NEFT bulk)"
+    },
+    {
+     "key": "ref",
+     "label": "Bank batch",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "g": "Workmen, machining shift A",
+     "n": 58,
+     "amt": 2192400,
+     "on": "21-10-2026",
+     "ref": "BLK2610210447"
+    },
+    {
+     "g": "Workmen, machining shift B",
+     "n": 54,
+     "amt": 2041200,
+     "on": "21-10-2026",
+     "ref": "BLK2610210447"
+    },
+    {
+     "g": "Workmen, gear shop",
+     "n": 32,
+     "amt": 1209600,
+     "on": "21-10-2026",
+     "ref": "BLK2610210447"
+    },
+    {
+     "g": "Workmen, stores and QC",
+     "n": 18,
+     "amt": 676800,
+     "on": "21-10-2026",
+     "ref": "BLK2610210447"
+    },
+    {
+     "g": "Workmen, total",
+     "n": 162,
+     "amt": 6120000,
+     "on": "",
+     "ref": "",
+     "_class": "subtotal"
+    },
+    {
+     "g": "Staff, office",
+     "n": 12,
+     "amt": 184000,
+     "on": "27-11-2026",
+     "ref": "BLK2611270512"
+    },
+    {
+     "g": "Staff, plant",
+     "n": 21,
+     "amt": 346000,
+     "on": "27-11-2026",
+     "ref": "BLK2611270512"
+    },
+    {
+     "g": "Staff, sales and purchase",
+     "n": 10,
+     "amt": 150000,
+     "on": "27-11-2026",
+     "ref": "BLK2611270512"
+    },
+    {
+     "g": "Staff, total",
+     "n": 43,
+     "amt": 680000,
+     "on": "",
+     "ref": "",
+     "_class": "subtotal"
+    },
+    {
+     "g": "Bonus for 2025–26",
+     "n": 205,
+     "amt": 6800000,
+     "on": "",
+     "ref": "",
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Bonus for 2025–26, provided in the accounts at 31-03-2026: ₹68,00,000.",
+    "Staff bonus held back for the appraisal round and paid on 27-11-2026.",
+    "Prepared by Shabana Shaikh (HR and payroll); checked by Mahesh Kadam."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "Shabana S.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -4
+    },
+    {
+     "kind": "sign",
+     "text": "M. Kadam",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "bank-oct",
+   "type": "table",
+   "style": "bank",
+   "title": "Bank statement · 19–22 Oct 2026",
+   "tab": "Bank, Oct",
+   "brand": "Vindhya Commercial Bank Ltd",
+   "docName": "Statement of account",
+   "subtitle": "Chakan branch (0417) · cash credit account 041760000918 · Tamhini Drivetech Private Limited",
+   "meta": [
+    {
+     "label": "Period",
+     "value": "19-10-2026 to 22-10-2026"
+    },
+    {
+     "label": "Page",
+     "value": "14 of 31"
+    },
+    {
+     "label": "Sanctioned limit",
+     "value": "₹18,00,00,000"
+    }
+   ],
+   "columns": [
+    {
+     "key": "dt",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Dr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "dt": "19-10-2026",
+     "part": "Balance brought forward",
+     "dr": null,
+     "cr": null,
+     "bal": 100842316,
+     "_class": "muted"
+    },
+    {
+     "dt": "19-10-2026",
+     "part": "RTGS CR ASHVARATHA MOTORS LTD",
+     "dr": null,
+     "cr": 14630000,
+     "bal": 86212316
+    },
+    {
+     "dt": "20-10-2026",
+     "part": "NEFT DR KHARUN STEELS PVT LTD",
+     "dr": 3874200,
+     "cr": null,
+     "bal": 90086516
+    },
+    {
+     "dt": "20-10-2026",
+     "part": "NEFT CR KSHITIJ DRIVELINE SYSTEMS",
+     "dr": null,
+     "cr": 5210400,
+     "bal": 84876116
+    },
+    {
+     "dt": "21-10-2026",
+     "part": "NEFT BULK UPLD BONUS FY25-26 WORKMEN 162 TXNS BLK2610210447",
+     "dr": 6120000,
+     "cr": null,
+     "bal": 90996116
+    },
+    {
+     "dt": "22-10-2026",
+     "part": "NEFT DR RANKALA FORGINGS PVT LTD",
+     "dr": 4726900,
+     "cr": null,
+     "bal": 95723016
+    },
+    {
+     "dt": "22-10-2026",
+     "part": "RTGS CR VAIGAI AXLE SYSTEMS",
+     "dr": null,
+     "cr": 6418750,
+     "bal": 89304266
+    }
+   ]
+  },
+  {
+   "id": "bank-nov",
+   "type": "table",
+   "style": "bank",
+   "title": "Bank statement · 25–27 Nov 2026",
+   "tab": "Bank, Nov",
+   "brand": "Vindhya Commercial Bank Ltd",
+   "docName": "Statement of account",
+   "subtitle": "Chakan branch (0417) · cash credit account 041760000918 · Tamhini Drivetech Private Limited",
+   "meta": [
+    {
+     "label": "Period",
+     "value": "25-11-2026 to 27-11-2026"
+    },
+    {
+     "label": "Page",
+     "value": "29 of 33"
+    },
+    {
+     "label": "Sanctioned limit",
+     "value": "₹18,00,00,000"
+    }
+   ],
+   "columns": [
+    {
+     "key": "dt",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Dr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "dt": "25-11-2026",
+     "part": "Balance brought forward",
+     "dr": null,
+     "cr": null,
+     "bal": 97158430,
+     "_class": "muted"
+    },
+    {
+     "dt": "25-11-2026",
+     "part": "RTGS CR VAYUVEGA TWO WHEELERS LTD",
+     "dr": null,
+     "cr": 4862500,
+     "bal": 92295930
+    },
+    {
+     "dt": "26-11-2026",
+     "part": "NEFT DR GHANEKAR ALLOY STEELS PVT LTD",
+     "dr": 4210600,
+     "cr": null,
+     "bal": 96506530
+    },
+    {
+     "dt": "26-11-2026",
+     "part": "NEFT CR LOTHAL MOTORS LTD",
+     "dr": null,
+     "cr": 3184000,
+     "bal": 93322530
+    },
+    {
+     "dt": "27-11-2026",
+     "part": "NEFT BULK UPLD BONUS FY25-26 STAFF 43 TXNS BLK2611270512",
+     "dr": 680000,
+     "cr": null,
+     "bal": 94002530
+    },
+    {
+     "dt": "27-11-2026",
+     "part": "NEFT DR BHADAR FORGE AND ENGG PVT LTD",
+     "dr": 2846300,
+     "cr": null,
+     "bal": 96848830
+    }
+   ]
+  },
+  {
+   "id": "bonusled",
+   "type": "table",
+   "style": "tally",
+   "title": "Bonus payable ledger · FY 2025–26",
+   "tab": "Bonus ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2025–26"
+   },
+   "ledger": "Ledger: Bonus payable",
+   "period": "1-Apr-2025 to 31-Mar-2026",
+   "columns": [
+    {
+     "key": "dt",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vt",
+     "label": "Vch type"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Cr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "cr",
+      "minus": "dr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "dt": "01-04-2025",
+     "part": "Opening balance (bonus for 2024–25)",
+     "vt": "",
+     "vn": "",
+     "dr": null,
+     "cr": null,
+     "bal": 6240000,
+     "_class": "muted"
+    },
+    {
+     "dt": "30-04-2025",
+     "part": "Bonus: provision for the month",
+     "vt": "Journal",
+     "vn": "J 214",
+     "dr": null,
+     "cr": 566667,
+     "bal": 6806667
+    },
+    {
+     "dt": "31-05-2025",
+     "part": "Bonus: provision for the month",
+     "vt": "Journal",
+     "vn": "J 251",
+     "dr": null,
+     "cr": 566667,
+     "bal": 7373334
+    },
+    {
+     "dt": "30-06-2025",
+     "part": "Bonus: provision for the month",
+     "vt": "Journal",
+     "vn": "J 288",
+     "dr": null,
+     "cr": 566667,
+     "bal": 7940001
+    },
+    {
+     "dt": "31-07-2025",
+     "part": "Bonus: provision for the month",
+     "vt": "Journal",
+     "vn": "J 325",
+     "dr": null,
+     "cr": 566667,
+     "bal": 8506668
+    },
+    {
+     "dt": "31-08-2025",
+     "part": "Bonus: provision for the month",
+     "vt": "Journal",
+     "vn": "J 362",
+     "dr": null,
+     "cr": 566667,
+     "bal": 9073335
+    },
+    {
+     "dt": "30-09-2025",
+     "part": "Bonus: provision for the month",
+     "vt": "Journal",
+     "vn": "J 399",
+     "dr": null,
+     "cr": 566667,
+     "bal": 9640002
+    },
+    {
+     "dt": "17-10-2025",
+     "part": "Cash credit – Vindhya: bonus for 2024–25 paid",
+     "vt": "Payment",
+     "vn": "BP 1046",
+     "dr": 6240000,
+     "cr": null,
+     "bal": 3400002
+    },
+    {
+     "dt": "31-10-2025",
+     "part": "Bonus: provision for the month",
+     "vt": "Journal",
+     "vn": "J 436",
+     "dr": null,
+     "cr": 566667,
+     "bal": 3966669
+    },
+    {
+     "dt": "30-11-2025",
+     "part": "Bonus: provision for the month",
+     "vt": "Journal",
+     "vn": "J 473",
+     "dr": null,
+     "cr": 566667,
+     "bal": 4533336
+    },
+    {
+     "dt": "31-12-2025",
+     "part": "Bonus: provision for the month",
+     "vt": "Journal",
+     "vn": "J 510",
+     "dr": null,
+     "cr": 566667,
+     "bal": 5100003
+    },
+    {
+     "dt": "31-01-2026",
+     "part": "Bonus: provision for the month",
+     "vt": "Journal",
+     "vn": "J 547",
+     "dr": null,
+     "cr": 566667,
+     "bal": 5666670
+    },
+    {
+     "dt": "28-02-2026",
+     "part": "Bonus: provision for the month",
+     "vt": "Journal",
+     "vn": "J 584",
+     "dr": null,
+     "cr": 566667,
+     "bal": 6233337
+    },
+    {
+     "dt": "31-03-2026",
+     "part": "Bonus: provision for the month",
+     "vt": "Journal",
+     "vn": "J 621",
+     "dr": null,
+     "cr": 566663,
+     "bal": 6800000
+    },
+    {
+     "dt": "",
+     "part": "Closing balance",
+     "vt": "",
+     "vn": "",
+     "dr": null,
+     "cr": null,
+     "bal": 6800000,
+     "_class": "total",
+     "_check": false
+    }
+   ],
+   "notes": [
+    "Closing balance at 31-03-2026 carried to the balance sheet as provision for bonus."
+   ]
+  },
+  {
+   "id": "pfreg",
+   "type": "table",
+   "style": "register",
+   "title": "PF register · Oct 2025 to Jan 2026",
+   "tab": "PF register",
+   "company": "Tamhini Drivetech Private Limited · statutory dues register",
+   "heading": "Provident fund · employees’ share (extract)",
+   "period": "Wage months October 2025 to January 2026",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Wage month"
+    },
+    {
+     "key": "amt",
+     "label": "Employees’ share (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "due",
+     "label": "Due date"
+    },
+    {
+     "key": "on",
+     "label": "Paid on"
+    },
+    {
+     "key": "trrn",
+     "label": "TRRN",
+     "mono": true
+    },
+    {
+     "key": "rem",
+     "label": "Remarks"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Oct 2025",
+     "amt": 276050,
+     "due": "15-11-2025",
+     "on": "14-11-2025",
+     "trrn": "3412511140271",
+     "rem": "–"
+    },
+    {
+     "m": "Nov 2025",
+     "amt": 277340,
+     "due": "15-12-2025",
+     "on": "27-01-2026",
+     "trrn": "3412601270158",
+     "rem": "See note"
+    },
+    {
+     "m": "Dec 2025",
+     "amt": 277910,
+     "due": "15-01-2026",
+     "on": "15-01-2026",
+     "trrn": "3412601150334",
+     "rem": "–"
+    },
+    {
+     "m": "Jan 2026",
+     "amt": 278240,
+     "due": "15-02-2026",
+     "on": "13-02-2026",
+     "trrn": "3412602130410",
+     "rem": "–"
+    }
+   ],
+   "notes": [
+    "Nov 2025: ECR returned twice (UAN mismatch); paid after the fix."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "Shabana S.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -5
+    }
+   ]
+  },
+  {
+   "id": "intim",
+   "type": "letter",
+   "style": "notice",
+   "title": "Intimation under section 143(1) · 17 March 2027",
+   "tab": "Intimation",
+   "arrives": "t4",
+   "letterhead": [
+    "INCOME TAX DEPARTMENT",
+    "Centralised Processing Centre"
+   ],
+   "ref": "DIN: CPC/2627/A1/1726980114",
+   "date": "17-03-2027",
+   "to": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Village Mahalunge, Taluka Khed, Pune 410501"
+   },
+   "meta": [
+    {
+     "label": "PAN",
+     "value": "ZHDCT5940H"
+    },
+    {
+     "label": "Assessment year",
+     "value": "2026–27"
+    },
+    {
+     "label": "Acknowledgement no.",
+     "value": "721459630271026"
+    },
+    {
+     "label": "Response received on",
+     "value": "27-01-2027"
+    }
+   ],
+   "subject": "Intimation under section 143(1) of the Income-⁠tax Act, 1961",
+   "body": [
+    "The return for the above assessment year has been processed after considering your response. Total income has been computed as follows.",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "p",
+        "label": "Particulars"
+       },
+       {
+        "key": "amt",
+        "label": "Amount (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "p": "Total income as per the return",
+        "amt": 77082000
+       },
+       {
+        "p": "Add: bonus to employees not paid (section 43B)",
+        "amt": 6800000
+       },
+       {
+        "p": "Add: employees’ contribution to provident fund credited after the due date (section 36(1)(va))",
+        "amt": 277340
+       },
+       {
+        "p": "Add: leave encashment not paid (section 43B): response accepted, not adjusted",
+        "amt": 0
+       },
+       {
+        "p": "Total income as computed",
+        "amt": 84159340,
+        "_class": "total"
+       }
+      ]
+     }
+    },
+    "Tax and interest on the total income as computed, and the sum payable, are worked out in the computation sheet attached to this intimation.",
+    "This intimation is deemed to be a notice of demand under section 156. Sent by e-mail to the registered e-mail address on 17-03-2027."
+   ],
+   "sign": {
+    "name": "Assessing Officer",
+    "role": "Centralised Processing Centre",
+    "hand": false,
+    "note": "Computer-generated; needs no signature."
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "BAPAT VENKATESH & CO.\nINWARD 18 MAR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": 5
+    }
+   ]
+  },
+  {
+   "id": "goa",
+   "type": "letter",
+   "style": "memo",
+   "title": "Kunal’s draft · Grounds and statement of facts",
+   "tab": "Kunal’s draft",
+   "arrives": "t4",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants · direct tax",
+   "memoTitle": "Draft for Form 35",
+   "to": [
+    "Milind Ogale, Partner"
+   ],
+   "from": "Kunal Mehrotra",
+   "date": "19-03-2027",
+   "ref": "BV/DT/TDPL/2627/07",
+   "subject": "Tamhini Drivetech · AY 2026–27 · first appeal against the intimation of 17 March 2027",
+   "body": [
+    "## Statement of facts",
+    "1. The return for AY 2026–27, due on 21-11-2026 under section 139(1) as extended by the CBDT, was filed on 27-10-2026. Bonus of ₹68,00,000 for FY 2025–26 was provided in the accounts.",
+    "2. ₹61,20,000 of it was paid to workmen on 21-10-2026 and ₹6,80,000 to staff on 27-11-2026.",
+    "3. In its response of 27-01-2027 the appellant agreed to ₹6,80,000 and disputed ₹61,20,000, with the bank statement and the bonus register.",
+    "4. The intimation of 17-03-2027 added the whole ₹68,00,000.",
+    "## Grounds of appeal",
+    "1. The CPC erred in adding ₹61,20,000 of bonus paid on 21-10-2026, before the due date for the return under section 139(1).",
+    "2. The CPC erred in disregarding the bank statement and the bonus register filed with the appellant’s response of 27-01-2027.",
+    "3. The appellant craves leave to add, alter or withdraw any ground."
+   ],
+   "sign": {
+    "name": "Kunal Mehrotra",
+    "role": "Direct Tax Senior",
+    "hand": "Kunal M."
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Fine. File once Amol verifies – M.O.",
+     "color": "green",
+     "at": "inline",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "goa-v",
+   "type": "letter",
+   "style": "memo",
+   "title": "Varun’s draft · Grounds of appeal",
+   "tab": "Varun’s draft",
+   "arrives": "t4",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants · direct tax",
+   "memoTitle": "Draft for Form 35",
+   "to": [
+    "Kunal Mehrotra"
+   ],
+   "from": "Varun Shetty",
+   "date": "18-03-2027",
+   "subject": "Tamhini · AY 2026–27 · grounds (first draft)",
+   "body": [
+    "## Grounds of appeal",
+    "1. The CPC erred in adding ₹68,00,000 of bonus, which was paid in full before the return was processed.",
+    "2. The CPC erred in adding the bonus without considering the response filed on 27-01-2027.",
+    "3. The appellant craves leave to add, alter or withdraw any ground."
+   ],
+   "sign": {
+    "name": "Varun Shetty",
+    "role": "Article assistant",
+    "hand": "Varun"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Kunal, see if ok – V.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -5
+    }
+   ]
+  },
+  {
+   "id": "fee",
+   "type": "card",
+   "style": "challan",
+   "title": "Appeal fee challan · 22 March 2027",
+   "tab": "Fee challan",
+   "arrives": "t4",
+   "issuer": "Vindhya Commercial Bank Ltd · net banking · BSR code 6390417",
+   "heading": "Income-tax challan receipt",
+   "number": "05216",
+   "fields": [
+    {
+     "label": "PAN",
+     "value": "ZHDCT5940H"
+    },
+    {
+     "label": "Name",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Assessment year",
+     "value": "2026–27"
+    },
+    {
+     "label": "Type of payment",
+     "value": "Other receipts: appeal fees"
+    },
+    {
+     "label": "Amount",
+     "value": "₹1,000"
+    },
+    {
+     "label": "Date of deposit",
+     "value": "22-03-2027"
+    },
+    {
+     "label": "Mode of payment",
+     "value": "Net banking"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "For Form 35 – K.M.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -8
+    }
+   ]
+  },
+  {
+   "id": "taxpaid",
+   "type": "table",
+   "style": "plain",
+   "title": "Tax paid on the returned income · AY 2026–27",
+   "tab": "Tax paid",
+   "arrives": "t4",
+   "heading": "Tax paid on the returned income · AY 2026–27",
+   "subtitle": "Tamhini Drivetech Private Limited · from the tax file (Pallavi Shinde)",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Paid as"
+    },
+    {
+     "key": "dt",
+     "label": "Date"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bsr",
+     "label": "BSR code",
+     "mono": true
+    },
+    {
+     "key": "ch",
+     "label": "Challan no.",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "p": "Advance tax, instalment 1",
+     "dt": "13-06-2025",
+     "bsr": "6390417",
+     "ch": "20417",
+     "amt": 2800000,
+     "_id": "a0"
+    },
+    {
+     "p": "Advance tax, instalment 2",
+     "dt": "15-09-2025",
+     "bsr": "6390417",
+     "ch": "11392",
+     "amt": 5600000,
+     "_id": "a1"
+    },
+    {
+     "p": "Advance tax, instalment 3",
+     "dt": "15-12-2025",
+     "bsr": "6390417",
+     "ch": "10875",
+     "amt": 5600000,
+     "_id": "a2"
+    },
+    {
+     "p": "Advance tax, instalment 4",
+     "dt": "13-03-2026",
+     "bsr": "6390417",
+     "ch": "30146",
+     "amt": 4569600,
+     "_id": "a3"
+    },
+    {
+     "p": "TDS and TCS credit for the year (Form 26AS)",
+     "dt": "",
+     "bsr": "",
+     "ch": "",
+     "amt": 830400,
+     "_id": "tds"
+    },
+    {
+     "p": "Total paid",
+     "dt": "",
+     "bsr": "",
+     "ch": "",
+     "amt": 19400000,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Tax on the total income returned, ₹7,70,82,000: ₹1,94,00,000. Nothing was payable with the return."
+   ]
+  },
+  {
+   "id": "reply",
+   "type": "letter",
+   "style": "letter",
+   "title": "Our reply as filed · 27 January 2027",
+   "tab": "Reply",
+   "arrives": "t4",
+   "letterhead": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Village Mahalunge, Taluka Khed, Pune 410501",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "ref": "TD/FIN/IT/2026-27/07",
+   "date": "27-01-2027",
+   "to": {
+    "name": "The Assessing Officer",
+    "address": "Centralised Processing Centre"
+   },
+   "subject": "Assessment year 2026–27, PAN ZHDCT5940H. Our response to the adjustments proposed under section 143(1)(a) of the Income-⁠tax Act, 1961, in your notice issued on 11 January 2027 (DIN CPC/2627/G22/1716455031).",
+   "body": [
+    "Sir/Madam,",
+    "1. Bonus, ₹68,00,000. We disagree as to ₹61,20,000, paid to workmen on 21 October 2026, before the due date for the return under section 139(1); bank statement and bonus register enclosed. We agree to ₹6,80,000, paid to staff on 27 November 2026.",
+    "2. Employees’ PF, ₹2,77,340. We agree: the November 2025 contribution was credited on 27 January 2026, after the due date under the provident fund law.",
+    "3. Leave encashment, ₹9,60,000. We disagree: the return as filed already adds it back, under other disallowances, as our computation of income (copy enclosed) shows. Adding it again would tax it twice.",
+    "We request that the adjustments be limited to ₹9,57,340 (bonus ₹6,80,000 and PF ₹2,77,340) and that ₹70,80,000 be dropped. The papers named above are enclosed."
+   ],
+   "sign": {
+    "closing": "Yours faithfully,",
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Amol Joglekar",
+    "role": "Managing Director",
+    "hand": "A. Joglekar"
+   }
+  },
+  {
+   "id": "reply-ack",
+   "type": "card",
+   "style": "slip",
+   "title": "Acknowledgement of our response · 27 January 2027",
+   "tab": "Reply ack.",
+   "arrives": "t4",
+   "issuer": "Income Tax Department · e-filing",
+   "heading": "Acknowledgement of response to a notice",
+   "number": "5108847296",
+   "fields": [
+    {
+     "label": "PAN",
+     "value": "ZHDCT5940H"
+    },
+    {
+     "label": "Assessment year",
+     "value": "2026–27"
+    },
+    {
+     "label": "Notice",
+     "value": "Proposed adjustments under section 143(1)(a), DIN CPC/2627/G22/1716455031"
+    },
+    {
+     "label": "Response submitted on",
+     "value": "27-01-2027, 4:42 pm"
+    },
+    {
+     "label": "Items answered",
+     "value": "3 of 3"
+    },
+    {
+     "label": "Attachments",
+     "value": "Reply_​AY2026-⁠27.pdf\nCC_​statement_​Oct2026.pdf\nBonus_​register_​2025-⁠26.pdf\nComputation_​AY2026-⁠27.pdf"
+    }
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "choice",
+   "stage": "Planning",
+   "title": "Read the notice",
+   "weight": 1,
+   "lockOnLeave": {
+    "ask": "Hand your notes on the notice to Kunal?",
+    "note": "You can’t change these answers after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Kunal. These answers are now read-only."
+   },
+   "prompt": "Before any figure, read the notice the way Kunal will: what it is, why it quotes the 1961 Act, when the reply is due, and what follows if the CPC still disagrees. Varun has left the tracker’s respond-⁠by column blank for you.",
+   "hints": [
+    "Look at the year the return is for, not the date on the notice.",
+    "The notice itself says how long Tamhini has, and from when."
+   ],
+   "docs": [
+    "notice",
+    "ack",
+    "tracker",
+    "mail-mahesh"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What is this notice?",
+     "options": [
+      {
+       "id": "a",
+       "text": "A scrutiny notice: an officer will examine Tamhini’s books and records for the year",
+       "why": "Scrutiny comes with its own notice and an officer’s questions. This one is processing: the CPC compared the return with the tax audit report."
+      },
+      {
+       "id": "b",
+       "text": "A proposal: the CPC plans to add three audit-report items it says the return missed",
+       "correct": true,
+       "why": "Nothing is added yet. The CPC must consider Tamhini’s response before it makes any of these adjustments."
+      },
+      {
+       "id": "c",
+       "text": "A demand: tax on ₹80,37,340 is payable within 30 days",
+       "why": "No tax is payable yet. A demand comes only with the intimation, after the adjustments are made."
+      },
+      {
+       "id": "d",
+       "text": "A penalty notice: Tamhini is charged with under-reporting its income for the year",
+       "why": "Nothing here is a penalty. It is a proposal made on processing, and Tamhini can answer each item."
+      }
+     ]
+    },
+    {
+     "id": "q2",
+     "text": "Amol sir asks why a notice issued in 2027 still quotes the 1961 Act. What is the answer?",
+     "options": [
+      {
+       "id": "a",
+       "text": "The CPC slipped: from 1 April 2026 every notice should quote the 2025 Act",
+       "why": "No slip. The date of the notice doesn’t decide it; the year it is about does, and FY 2025–26 began before 1 April 2026."
+      },
+      {
+       "id": "b",
+       "text": "The 2025 Act sets the procedure now; the 1961 Act only supplies the old rules",
+       "why": "The 2025 Act’s transition rule covers procedure too: proceedings for earlier years are carried out as the 1961 Act provides."
+      },
+      {
+       "id": "c",
+       "text": "FY 2025–26 began before 1 April 2026, so the 1961 Act governs it, appeals included",
+       "correct": true,
+       "why": "Proceedings for years that began before 1 April 2026 stay under the 1961 Act, notices and appeals included, even when they start later."
+      },
+      {
+       "id": "d",
+       "text": "The notice follows the 1961 Act, but an appeal in 2027 goes under the 2025 Act",
+       "why": "The same rule names appeals. An appeal for FY 2025–26 goes under the 1961 Act, in Form 35, whenever it is filed."
+      }
+     ]
+    },
+    {
+     "id": "q3",
+     "text": "What goes in the tracker’s respond-⁠by column?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Wednesday 10 February 2027: 30 days from the date of issue",
+       "correct": true,
+       "why": "The notice gives 30 days from its issue on 11 January. Diarise 10 February, and plan to file well before it."
+      },
+      {
+       "id": "b",
+       "text": "Wednesday 31 March 2027: the day the financial year closes",
+       "why": "The year-end has nothing to do with it. The clock started when the notice was issued, on 11 January."
+      },
+      {
+       "id": "c",
+       "text": "30 days from the day Tamhini first opens the notice on the portal",
+       "why": "The clock runs from the date of issue printed on the notice, not from the day anyone reads it."
+      },
+      {
+       "id": "d",
+       "text": "Leave it blank: the CPC waits for as long as Tamhini takes",
+       "why": "It doesn’t wait. With no response in 30 days, it makes the adjustments."
+      }
+     ]
+    },
+    {
+     "id": "q4",
+     "text": "If the CPC still adds an item after reading the reply, what then?",
+     "options": [
+      {
+       "id": "a",
+       "text": "A scrutiny assessment starts, and the point is argued before an officer there",
+       "why": "Processing doesn’t turn into scrutiny on its own. The CPC sends an intimation, and that is what Tamhini takes further."
+      },
+      {
+       "id": "b",
+       "text": "Tamhini keeps replying to the same notice until the CPC finally agrees with it",
+       "why": "Once the CPC has decided, that notice is closed. The next step is against the intimation, not another reply."
+      },
+      {
+       "id": "c",
+       "text": "The amount waits for next year’s return and is set right in that year",
+       "why": "No. The intimation still follows, with the addition and a demand for AY 2026–27. An addition you dispute is fought in that year’s proceedings."
+      },
+      {
+       "id": "d",
+       "text": "An intimation follows; Tamhini can appeal it in Form 35 within 30 days of service",
+       "correct": true,
+       "why": "The intimation is appealable. Form 35 goes in within 30 days of the day it was served; a late appeal needs a reason the appellate authority accepts."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Agree or disagree, item by item",
+   "weight": 4,
+   "lockOnLeave": {
+    "ask": "Hand your three calls to Kunal?",
+    "note": "You can’t change them after this. Kunal reads them before the reply is drafted.",
+    "yes": "Hand them in",
+    "done": "Handed to Kunal. These calls are now read-only."
+   },
+   "noun": [
+    "adjustment",
+    "adjustments"
+   ],
+   "prompt": "Take each proposed adjustment to its papers. Decide whether Tamhini agrees, agrees in part or disagrees; say what decides it; give the amount in dispute; and pick the papers that prove it. Kunal reads your calls before the reply is drafted.",
+   "hints": [
+    "For PF, check which year’s rule applies before you lean on the return date.",
+    "Before you agree to anything, check whether the computation already added it back."
+   ],
+   "docs": [
+    "notice",
+    "tar-43b",
+    "tar-pf",
+    "reg",
+    "bank-oct",
+    "bank-nov",
+    "comp",
+    "pfreg",
+    "bonusled",
+    "mail-mahesh",
+    "ack"
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    }
+   ],
+   "fields": [
+    {
+     "id": "call",
+     "kind": "choice",
+     "label": "Tamhini’s answer",
+     "gate": true,
+     "neutral": true,
+     "short": "Answer",
+     "options": [
+      {
+       "id": "agree",
+       "label": "Agree",
+       "short": "Agree"
+      },
+      {
+       "id": "part",
+       "label": "Agree in part",
+       "short": "In part"
+      },
+      {
+       "id": "disagree",
+       "label": "Disagree",
+       "short": "Disagree"
+      }
+     ]
+    },
+    {
+     "id": "amt",
+     "kind": "number",
+     "label": "Amount in dispute",
+     "prefix": "₹",
+     "tolerance": 0,
+     "sign": false,
+     "placeholder": "For example: 1,25,000",
+     "showIf": {
+      "call": [
+       "part",
+       "disagree"
+      ]
+     }
+    },
+    {
+     "id": "basis",
+     "kind": "choice",
+     "label": "What decides Tamhini’s answer",
+     "weight": 2,
+     "layout": "list",
+     "options": [
+      {
+       "id": "paid",
+       "label": "Whether it was paid by the return due date",
+       "short": "paid by due date"
+      },
+      {
+       "id": "twice",
+       "label": "Whether the return already added it back",
+       "short": "already added back"
+      },
+      {
+       "id": "late",
+       "label": "Whether it reached the fund by the PF law’s date",
+       "short": "PF law’s date"
+      },
+      {
+       "id": "books",
+       "label": "Whether it was provided in the books",
+       "short": "provided in books"
+      }
+     ],
+     "showIf": {
+      "call": [
+       "agree",
+       "part",
+       "disagree"
+      ]
+     }
+    },
+    {
+     "id": "papers",
+     "kind": "multi",
+     "label": "Papers that prove it",
+     "extraLabel": "Papers you picked",
+     "weight": 3,
+     "options": [
+      {
+       "id": "bank",
+       "label": "October 2026 bank statement page",
+       "short": "bank page"
+      },
+      {
+       "id": "reg",
+       "label": "Bonus register for FY 2025–26",
+       "short": "bonus register"
+      },
+      {
+       "id": "comp",
+       "label": "Computation of income for the return",
+       "short": "computation"
+      },
+      {
+       "id": "led",
+       "label": "Bonus payable ledger for FY 2025–26",
+       "short": "bonus ledger"
+      },
+      {
+       "id": "pfreg",
+       "label": "PF register for Oct 2025 to Jan 2026",
+       "short": "PF register"
+      },
+      {
+       "id": "mail",
+       "label": "Mahesh’s mail of 11 January",
+       "short": "Mahesh’s mail"
+      }
+     ],
+     "showIf": {
+      "call": [
+       "part",
+       "disagree"
+      ]
+     }
+    }
+   ],
+   "items": [
+    {
+     "id": "bonus",
+     "label": "Bonus",
+     "amount": 6800000,
+     "disputed": 6120000,
+     "weight": 2,
+     "prompt": "Proposed ₹68,00,000: shown as not paid on 25 September 2026, the date of the tax audit report.",
+     "docs": [
+      "tar-43b",
+      "reg",
+      "bank-oct",
+      "bank-nov"
+     ],
+     "answer": {
+      "call": "part",
+      "amt": 6120000,
+      "basis": "paid",
+      "papers": [
+       "bank",
+       "reg"
+      ]
+     },
+     "note": "Bonus: the workmen’s ₹61,20,000 left the bank on 21 October, before the 21 November due date; the staff ₹6,80,000 went on 27 November, after it. Dispute ₹61,20,000 with the bank page and register; agree the rest. The ledger shows only the provision."
+    },
+    {
+     "id": "pf",
+     "label": "Employees’ PF",
+     "short": "PF",
+     "amount": 277340,
+     "prompt": "Proposed ₹2,77,340: the employees’ share for November 2025.",
+     "docs": [
+      "tar-pf",
+      "pfreg"
+     ],
+     "answer": {
+      "call": "agree",
+      "basis": "late"
+     },
+     "note": "PF: November 2025’s employees’ share reached the fund on 27 January 2026. For FY 2025–26 the test is the PF law’s date, and the return date doesn’t help. Agree. Fighting it would cost us credibility on the bonus."
+    },
+    {
+     "id": "leave",
+     "label": "Leave encashment",
+     "short": "Leave",
+     "amount": 960000,
+     "disputed": 960000,
+     "prompt": "Proposed ₹9,60,000: the year’s provision, not paid.",
+     "docs": [
+      "tar-43b",
+      "comp"
+     ],
+     "answer": {
+      "call": "disagree",
+      "amt": 960000,
+      "basis": "twice",
+      "papers": [
+       "comp"
+      ]
+     },
+     "note": "Leave encashment: line 5 of Tamhini’s computation already adds back ₹9,60,000, under other disallowances, so the CPC missed it. Agreeing would tax it twice. Dispute all of it and enclose the computation."
+    }
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Draft the reply",
+   "weight": 2,
+   "lockOnLeave": {
+    "ask": "Hand the draft reply to Kunal?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Kunal. The draft is now read-only."
+   },
+   "prompt": "Build Tamhini’s reply to the CPC from the lines below, one point to a paragraph; Milind reads it before it is filed. Pick the best line for each part: every amount and date must match the papers.",
+   "hints": [
+    "Each paragraph says agree or disagree, the amount, and the paper that proves it."
+   ],
+   "docs": [
+    "notice",
+    "tar-43b",
+    "tar-pf",
+    "comp",
+    "reg",
+    "bank-oct",
+    "bank-nov",
+    "pfreg"
+   ],
+   "previewLabel": "Your reply",
+   "slots": [
+    {
+     "id": "ref",
+     "label": "Subject",
+     "options": [
+      {
+       "id": "a",
+       "text": "Sub: Assessment year 2026–27, PAN ZHDCT5940H. Our response to the adjustments proposed under section 143(1)(a) of the Income-⁠tax Act, 1961, in your notice issued on 11 January 2027 (DIN CPC/2627/G22/1716455031).",
+       "correct": true,
+       "why": "Year, PAN, section and DIN: the CPC can match the reply to its notice without a phone call."
+      },
+      {
+       "id": "b",
+       "text": "Sub: Tax year 2026–27, PAN ZHDCT5940H. Our response to the adjustments proposed under section 270(2) of the Income-⁠tax Act, 2025, in your notice issued on 11 January 2027 (DIN CPC/2627/G22/1716455031).",
+       "why": "FY 2025–26 is assessment year 2026–27, a 1961-⁠Act year. Section 270(2) is the new Act’s version, for tax year 2026–27 onwards."
+      },
+      {
+       "id": "c",
+       "text": "Sub: Assessment year 2026–27, PAN ZHDCT5940H. Our appeal against the demand raised under section 143(1) of the Income-⁠tax Act, 1961, in your notice issued on 11 January 2027 (DIN CPC/2627/G22/1716455031).",
+       "why": "There is no demand yet and nothing to appeal. This is a response to a proposal."
+      }
+     ]
+    },
+    {
+     "id": "p1",
+     "label": "Item 1 · Bonus",
+     "options": [
+      {
+       "id": "a",
+       "text": "1. Bonus, ₹68,00,000. We disagree with all of it: ₹61,20,000 was paid to workmen on 21 October 2026 and ₹6,80,000 to staff on 27 November 2026, both before the CPC processed the return; the bank statement and the bonus register are enclosed.",
+       "why": "The test is the due date for the return, 21 November 2026, not the date of processing. The staff part missed it, so the whole bonus can’t be disputed."
+      },
+      {
+       "id": "b",
+       "text": "1. Bonus, ₹68,00,000. We disagree with all of it: the full bonus was provided in the accounts for FY 2025–26, the year in which it was earned, as the tax audit report itself shows; the bonus payable ledger is enclosed.",
+       "why": "A provision is exactly what section 43B holds back until payment, and the ledger shows only the provision."
+      },
+      {
+       "id": "c",
+       "text": "1. Bonus, ₹68,00,000. We disagree as to ₹61,20,000, paid to workmen on 21 October 2026, before the due date for the return under section 139(1); bank statement and bonus register enclosed. We agree to ₹6,80,000, paid to staff on 27 November 2026.",
+       "correct": true,
+       "why": "Each part on its own date, with the papers that prove the part disputed. Conceding ₹6,80,000 gives the rest its weight."
+      }
+     ]
+    },
+    {
+     "id": "p2",
+     "label": "Item 2 · Employees’ PF",
+     "options": [
+      {
+       "id": "a",
+       "text": "2. Employees’ PF, ₹2,77,340. We disagree: the November 2025 contribution was credited on 27 January 2026, well before the due date for the return under section 139(1).",
+       "why": "That is the rule from tax year 2026–27. For FY 2025–26 the date is the PF law’s, and section 43B does not help with employees’ contributions."
+      },
+      {
+       "id": "b",
+       "text": "2. Employees’ PF, ₹2,77,340. We agree: the November 2025 contribution was credited on 27 January 2026, after the due date under the provident fund law.",
+       "correct": true,
+       "why": "Short and true. For that year the law closes it."
+      },
+      {
+       "id": "c",
+       "text": "2. Employees’ PF, ₹2,77,340. We disagree: the full November 2025 contribution reached the employees’ accounts, only some weeks late, so nothing was withheld.",
+       "why": "Paid late but in full still fails that year’s test: credit by the PF law’s date. The delay is the whole point."
+      }
+     ]
+    },
+    {
+     "id": "p3",
+     "label": "Item 3 · Leave encashment",
+     "options": [
+      {
+       "id": "a",
+       "text": "3. Leave encashment, ₹9,60,000. We disagree: the return as filed already adds it back, under other disallowances, as our computation of income (copy enclosed) shows. Adding it again would tax it twice.",
+       "correct": true,
+       "why": "The answer sits in Tamhini’s own computation, line 5. Point to it and the CPC can see the double count."
+      },
+      {
+       "id": "b",
+       "text": "3. Leave encashment, ₹9,60,000. We agree: it was provided for FY 2025–26 and was not paid by the due date for the return, so section 43B holds it back for that year.",
+       "why": "True of the law, wrong for this return: the computation already adds it back. Agreeing would tax it twice."
+      },
+      {
+       "id": "c",
+       "text": "3. Leave encashment, ₹9,60,000. We disagree: leave encashment is part of the salary cost, which section 43B does not cover, so the provision is allowed.",
+       "why": "Section 43B covers it: clause (f) is any sum an employer owes in lieu of leave at the employee’s credit. The computation answers this one."
+      }
+     ]
+    },
+    {
+     "id": "ask",
+     "label": "What Tamhini asks",
+     "options": [
+      {
+       "id": "a",
+       "text": "We request that all three adjustments, ₹80,37,340 in all, be dropped and that the return be accepted as filed. The papers named above are enclosed.",
+       "why": "That contradicts the three points above, which agree ₹9,57,340. The request is the line the CPC acts on, so it must add up to what we argued."
+      },
+      {
+       "id": "b",
+       "text": "We request that the adjustments be limited to ₹9,57,340 (bonus ₹6,80,000 and PF ₹2,77,340) and that ₹70,80,000 be dropped. The papers named above are enclosed.",
+       "correct": true,
+       "why": "The ask adds up to the three points: ₹9,57,340 agreed, ₹70,80,000 disputed, ₹80,37,340 in all."
+      },
+      {
+       "id": "c",
+       "text": "We request that the adjustments be limited to ₹2,77,340 (PF) and that ₹77,60,000 be dropped. The papers named above are enclosed.",
+       "why": "That disputes the staff bonus too. ₹6,80,000 was paid after the due date, so the right limit is ₹9,57,340."
+      }
+     ]
+    }
+   ],
+   "template": "To,\nThe Assessing Officer, Centralised Processing Centre\n\n{ref}\n\nSir/Madam,\n\n{p1}\n\n{p2}\n\n{p3}\n\n{ask}\n\nYours faithfully,\nFor Tamhini Drivetech Private Limited\nAmol Joglekar, Managing Director"
+  },
+  {
+   "id": "t4",
+   "type": "items",
+   "stage": "Report",
+   "title": "Index the appeal set",
+   "weight": 0.6,
+   "noun": [
+    "paper",
+    "papers"
+   ],
+   "prompt": "Tuesday 23 March 2027. The CPC’s intimation of 17 March dropped leave encashment but added the whole ₹68,00,000 of bonus. Milind will appeal ₹61,20,000 of it in Form 35, within 30 days of service. Varun has pulled ten papers from the file. Mark each one: does it go in the appeal set?",
+   "hints": [
+    "Only what is still in dispute goes in, with the papers Form 35 asks for.",
+    "The appeal needs the order appealed against, the fee and proof that the tax on the returned income is paid."
+   ],
+   "docs": [
+    "intim",
+    "goa",
+    "goa-v",
+    "fee",
+    "taxpaid",
+    "reply",
+    "reply-ack",
+    "notice",
+    "bank-oct",
+    "reg",
+    "comp",
+    "pfreg",
+    "mail-mahesh"
+   ],
+   "columns": [
+    {
+     "key": "label"
+    }
+   ],
+   "fields": [
+    {
+     "id": "inc",
+     "kind": "choice",
+     "label": "In the appeal set",
+     "gate": true,
+     "neutral": true,
+     "short": "Appeal set",
+     "options": [
+      {
+       "id": "yes",
+       "label": "Goes in"
+      },
+      {
+       "id": "no",
+       "label": "Stays out"
+      }
+     ]
+    }
+   ],
+   "sampleGroups": [
+    {
+     "call": "yes",
+     "label": "The appeal set",
+     "whole": true
+    },
+    {
+     "call": "no",
+     "label": "Left in the file"
+    }
+   ],
+   "items": [
+    {
+     "id": "p1",
+     "label": "Kunal’s draft grounds and statement of facts",
+     "short": "Kunal’s draft",
+     "docs": [
+      "goa"
+     ],
+     "answer": {
+      "inc": "yes"
+     },
+     "note": "The core of the set. Ground 1 names ₹61,20,000 and the day it was paid; the statement of facts tells the story in dates. Form 35 asks for both."
+    },
+    {
+     "id": "p2",
+     "label": "Varun’s first draft of the grounds",
+     "short": "Varun’s draft",
+     "docs": [
+      "goa-v"
+     ],
+     "answer": {
+      "inc": "no"
+     },
+     "note": "It appeals all ₹68,00,000, including the ₹6,80,000 we agreed to in our own reply. That contradicts us on paper. Out."
+    },
+    {
+     "id": "p3",
+     "label": "Intimation under section 143(1), 17 March 2027",
+     "short": "Intimation",
+     "docs": [
+      "intim"
+     ],
+     "answer": {
+      "inc": "yes"
+     },
+     "note": "The order appealed against, with its DIN. It was served by e-mail on 17 March, and the 30 days run from that date."
+    },
+    {
+     "id": "p4",
+     "label": "Appeal fee challan",
+     "short": "Fee",
+     "docs": [
+      "fee"
+     ],
+     "answer": {
+      "inc": "yes"
+     },
+     "note": "Total income as computed is over ₹2 lakh, so the fee is ₹1,000. Form 35 asks for the challan’s details."
+    },
+    {
+     "id": "p5",
+     "label": "Advance-tax challans and TDS credit",
+     "short": "Tax paid",
+     "docs": [
+      "taxpaid"
+     ],
+     "answer": {
+      "inc": "yes"
+     },
+     "note": "An appeal is admitted only if the tax on the returned income is paid. These challans and the TDS credit show it was: ₹1,94,00,000."
+    },
+    {
+     "id": "p6",
+     "label": "The CPC’s notice, our reply and its acknowledgement",
+     "short": "Notice",
+     "docs": [
+      "notice",
+      "reply",
+      "reply-ack"
+     ],
+     "answer": {
+      "inc": "yes"
+     },
+     "note": "Ground 2 says the CPC disregarded our response, so the notice, the response and its acknowledgement go in. They show we disputed ₹61,20,000, with proof, before the CPC decided."
+    },
+    {
+     "id": "p7",
+     "label": "October bank page and bonus register",
+     "short": "Bank page",
+     "docs": [
+      "bank-oct",
+      "reg"
+     ],
+     "answer": {
+      "inc": "yes"
+     },
+     "note": "The proof itself. It went in with our reply in January, so it is already on record."
+    },
+    {
+     "id": "p8",
+     "label": "Computation, line 5: leave encashment added back",
+     "short": "Computation",
+     "docs": [
+      "comp"
+     ],
+     "answer": {
+      "inc": "no"
+     },
+     "note": "This page was our proof on leave encashment, and the CPC accepted it. Nothing is left to argue there, so it stays in the file."
+    },
+    {
+     "id": "p9",
+     "label": "PF register, Oct 2025 to Jan 2026",
+     "short": "PF register",
+     "docs": [
+      "pfreg"
+     ],
+     "answer": {
+      "inc": "no"
+     },
+     "note": "We agreed to PF in January, and the CPC added just that ₹2,77,340. Not in dispute, not in the set."
+    },
+    {
+     "id": "p10",
+     "label": "Mahesh’s mail of 11 January",
+     "short": "Mail",
+     "docs": [
+      "mail-mahesh"
+     ],
+     "answer": {
+      "inc": "no"
+     },
+     "note": "A client’s mail is not evidence, and this one is wrong about the staff part. The bank page already proves the date."
+    }
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "kunal",
+  "text": "₹9,57,340 agreed and ₹70,80,000 disputed, each point on its own paper, so the appeal has only ₹61,20,000 left to argue. Amol verifies Form 35 on 9 April, a week inside the 30 days."
+ },
+ "wrapPartial": {
+  "from": "kunal",
+  "text": "Not all of this would get past Milind yet. Read each note against the paper it names, and keep asking what is still in dispute."
+ },
+ "wrapRetry": {
+  "from": "kunal",
+  "text": "Begin with the year the notice is about, then put each item beside its own paper: the bank dates for the bonus, the PF register for PF, Tamhini’s computation for leave encashment. Try again with those three open."
+ },
+ "passNeeds": [
+  {
+   "task": "t2",
+   "min": 0.6,
+   "note": "The three calls decide the pass: get more of them right, with the amount and the proof."
+  },
+  {
+   "task": "t3",
+   "min": 0.6,
+   "note": "The reply needs more of its lines right before this passes."
+  }
+ ],
+ "model": {
+  "intro": "Agree ₹9,57,340, dispute ₹70,80,000. The bonus splits on its payment dates; PF is closed by that year’s law; leave encashment is already added back in the return. When the CPC still adds the workmen’s bonus, the appeal set carries only that point and its proof.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "i",
+      "label": "Adjustment"
+     },
+     {
+      "key": "p",
+      "label": "Proposed",
+      "format": "inr"
+     },
+     {
+      "key": "r",
+      "label": "Tamhini’s answer"
+     },
+     {
+      "key": "e",
+      "label": "Proof enclosed"
+     }
+    ],
+    "rows": [
+     {
+      "i": "Bonus",
+      "p": 6800000,
+      "r": "Dispute ₹61,20,000, paid 21 October 2026; agree ₹6,80,000, paid 27 November 2026",
+      "e": "October bank page, bonus register"
+     },
+     {
+      "i": "Employees’ PF",
+      "p": 277340,
+      "r": "Agree: credited on 27 January 2026, after the PF law’s date",
+      "e": "–"
+     },
+     {
+      "i": "Leave encashment",
+      "p": 960000,
+      "r": "Dispute all: the return already adds it back",
+      "e": "Computation of income for the return, line 5"
+     },
+     {
+      "i": "Total",
+      "p": 8037340,
+      "r": "Agree ₹9,57,340; dispute ₹70,80,000",
+      "e": "",
+      "_class": "total"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "The appeal set on ₹61,20,000:"
+   },
+   {
+    "type": "list",
+    "items": [
+     "Form 35, with the statement of facts and the grounds (Kunal’s draft)",
+     "The intimation of 17 March 2027, with its DIN; served that day by e-mail",
+     "The appeal fee challan, ₹1,000",
+     "The challans and TDS credit for the tax on the returned income, ₹1,94,00,000",
+     "The CPC’s notice, our reply and its acknowledgement",
+     "The October bank page and the bonus register, filed with the reply in January"
+    ]
+   },
+   {
+    "type": "text",
+    "text": "Left in the file: Varun’s draft, the computation, the PF register and Mahesh’s mail."
+   },
+   {
+    "type": "text",
+    "text": "Under the 2025 Act, for tax year 2026–27 onwards, the same proposal comes under section 270(2), still with 30 days to respond; a first appeal goes in Form 99 within 30 days of service; and employees’ PF counts if credited by the return due date."
+   },
+   {
+    "type": "note",
+    "from": "kunal",
+    "text": "Agreeing to PF and the staff bonus is what makes the rest believable. A reply that fights every item reads like a template."
+   }
+  ]
+ },
+ "principles": [
+  "Name the year first: FY 2025–26 is still a 1961-⁠Act year, even in 2027.",
+  "Take each item to its own paper: agree what the law closes, dispute what the evidence wins.",
+  "File the proof with the reply, so it is already on record if the matter goes to appeal."
+ ],
+ "earned": {
+  "clause": "drafted a point-wise reply to an income-tax notice on {adj} proposed adjustments[[, disputing {disp} with evidence]][[, and listed {papers} papers for a first appeal]]",
+  "fallback": "drafted a point-wise reply to an income-tax notice and listed the papers for a first appeal",
+  "counts": {
+   "adj": {
+    "kind": "items",
+    "task": "t2",
+    "answered": "gate"
+   },
+   "disp": {
+    "kind": "sumItems",
+    "task": "t2",
+    "prop": "disputed",
+    "where": {
+     "field": "call",
+     "equals": [
+      "part",
+      "disagree"
+     ]
+    },
+    "withRight": [
+     "amt",
+     "papers"
+    ],
+    "format": "lakh"
+   },
+   "papers": {
+    "kind": "itemsWhere",
+    "task": "t4",
+    "field": "inc",
+    "equals": "yes"
+   }
+  }
+ },
+ "interview": [
+  {
+   "q": "A notice comes in for a client. What do you do first?",
+   "checking": "Whether you read a notice in order and answer it point by point, with proof.",
+   "outline": [
+    "Read the year, the section, what it proposes and the reply date; tell my senior the same day.",
+    "Take each item to its papers: return, audit report, books; agree what the law closes, prove the rest.",
+    "In the simulation I answered {adj} proposed adjustments that way[[, disputing {disp} with evidence]]."
+   ]
+  },
+  {
+   "q": "Which Act governs a notice for FY 2025–26, and why does it matter?",
+   "checking": "Whether you can place an earlier year under the right Act during the change-over.",
+   "outline": [
+    "The 1961 Act governs proceedings for years that began before 1 April 2026, even notices issued later.",
+    "In the simulation it settled the PF item: that year’s law allowed no relief for a late credit.",
+    "From tax year 2026–27 the same proposal is section 270(2), and the PF test is the return date."
+   ]
+  }
+ ]
+}
