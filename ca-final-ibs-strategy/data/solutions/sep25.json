@@ -1,0 +1,1622 @@
+{
+ "paper": "September 2025",
+ "id": "sep25",
+ "takeaways": [
+  "Expect messy keys: ICAI accepted two options in 1.1, 1.2 and 3.2 and declared no correct option in 3.4 - pick the most defensible option in 3 minutes and move on.",
+  "GST blocked credits (s.17(5)) carried 7 marks across 1.8 and 4.5 - know the list, the 13-seat rule and 'foundation = plant and machinery' without opening the book.",
+  "SPOM-B costing and strategy was 22 of 125 marks (operating-income analysis, market size/share variances, BSC, TBL, pricing, Porter) - fast marks if you have read SPOM-B once.",
+  "Theory answers must carry case facts: 4.8 warned against an 'abstract' answer - put a figure or a name from the case in every point.",
+  "Case choice: Case 5 was the easiest (textbook MAT, customs warehousing, variances, ICDR); Case 3 was the slowest (4-way GBP hedge + Ind AS 116 lease in USD)."
+ ],
+ "cases": [
+  {
+   "no": 1,
+   "title": "DSL (listed technology company)",
+   "industry": "Computer hardware, IT services and crypto hardware wallets",
+   "story": "Listed IT hardware maker that has launched cold/hot crypto wallets and new laptops. It faces a GST rate dispute, a GST audit on ITC, an environmental notice, a director's logo licence, a change of auditors and a director's ECB idea for a company under CIRP.",
+   "marks_by_subject": {
+    "Ethics": 2,
+    "Law": 7,
+    "IDT": 7,
+    "FR": 2,
+    "DT": 2,
+    "Audit": 5
+   },
+   "difficulty": "Moderate",
+   "first15": "Pick it if IDT is your strength: 7 IDT marks incl. a 5-mark GST blocked-credit + interest sum, and SA 510 is bookish; but 1.1/1.2 have split keys and 1.7 (ECB during CIRP) is off-beat.",
+   "questions": [
+    {
+     "q": "1.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Ethics",
+     "also": null,
+     "chapter": "Code of Ethics - Responding to Non-Compliance with Laws and Regulations (NOCLAR) by professional accountants in business",
+     "topic": "Duty of a CFO (senior CA in employment) who knows of an environmental breach",
+     "ask": "CA G, the CFO, knew floatable solids were 4 mm against a 3 mm norm, gave one instruction, did no follow-up and did not tell management. A government notice followed. What was his responsibility?",
+     "options": {
+      "a": "Not liable - it is the production head's job, and CA G is not in practice",
+      "b": "As a CA, the CFO had to investigate the matter, inform those charged with governance of the results and keep documentation",
+      "c": "CA G had to inform those charged with governance and keep documentation",
+      "d": "Not liable as he is not in practice and has no duty on such non-compliance; only a moral duty as employee to inform TCWG"
+     },
+     "clue": "CFO was aware of this fact but failed to disclose the same to the management",
+     "chapter_clear": true,
+     "think": [
+      "Breach of environmental law noticed by a CA in a job = NOCLAR for a senior professional accountant in business (Part 2 of the Code).",
+      "Chapter clear -> Audit SM, Professional Ethics -> NOCLAR -> 'senior professional accountants in business'.",
+      "Code: obtain an understanding of the matter, discuss with superior, get it communicated to TCWG and rectified, document it - 'not in practice' is no excuse.",
+      "(B) has all three steps - understand/investigate, inform TCWG, document; (A) and (D) are excuses the Code rejects."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - Professional Ethics (Code of Ethics, NOCLAR for professional accountants in business)",
+      "index_keywords": [
+       "NOCLAR",
+       "senior professional accountant in business",
+       "those charged with governance",
+       "documentation"
+      ]
+     },
+     "solve": "The NOCLAR section for CAs in business covers CA G as CFO (a senior professional accountant). On becoming aware of suspected non-compliance (floatable solids 4 mm vs 3 mm norm, risk of heavy environmental penalties) he must: (1) obtain an understanding of the matter - what happened, which law, likely consequences; (2) discuss with his superior; (3) take steps to have it communicated to those charged with governance, rectified and prevented from recurring; (4) document the matter, discussions and responses. CA G only gave an instruction, did not follow up after three months and kept management in the dark - he failed this duty. Being an employee and not in practice does not exempt him.",
+     "answer": "(B) As a CA, the CFO had to investigate the matter, inform those charged with governance about the results and keep documentation. [ICAI also accepted (C).]",
+     "icai": "(B) or (C) - both accepted",
+     "flag": "ICAI accepted two keys; (B) is the fuller statement of the Code (understand + communicate + document), (C) drops the 'understand/investigate' step.",
+     "trap": "Choosing (A) or (D) because CA G is 'not in practice' - the NOCLAR section for CAs in business applies to him.",
+     "minutes": 3
+    },
+    {
+     "q": "1.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": "Audit",
+     "chapter": "Companies Act, 2013 - Sections 188/189 (contracts with interested directors, register in Form MBP-4) with CARO 2020",
+     "topic": "Licence fee to a director for his logo - register entry and CARO reporting",
+     "ask": "DSL pays its director Mr. B Rs 25 lakh a year to use his logo but did not enter the contract in the register of contracts in which directors are interested. Is entry needed, and is it reportable under CARO?",
+     "options": {
+      "a": "Neither entry in the register nor CARO reporting is required",
+      "b": "Entry in the register is required and it is reportable under CARO",
+      "c": "Entry in the register is required but it is not reportable under CARO",
+      "d": "Entry in the register is not required but it is reportable under CARO"
+     },
+     "clue": "register maintained for recording contracts or arrangements in which directors are interested",
+     "chapter_clear": true,
+     "think": [
+      "Contract with a director = related party (s.2(76)); the register for such contracts is s.189 (Form MBP-4).",
+      "Chapter clear -> SPOM-A Companies Act -> 'section 189', then Audit SM -> CARO 2020 clause 3(xiii).",
+      "Rs 25 lakh licence of the director's logo is a s.188 contract; the s.189(5) exemption is only for goods/services up to Rs 5 lakh a year -> entry needed.",
+      "Statutory auditor has already 'noted it for CARO' -> related party reporting under clause 3(xiii) -> (B); ICAI also accepted (A)."
+     ],
+     "look_up": {
+      "where": "SPOM-A Corporate Laws - Companies Act ss.184, 188, 189; ICAI SM Audit - CARO 2020",
+      "index_keywords": [
+       "register of contracts",
+       "MBP-4",
+       "section 189",
+       "related party transactions",
+       "CARO clause 3(xiii)"
+      ]
+     },
+     "solve": "Mr. B is a director, so he is a related party u/s 2(76). Paying him Rs 25 lakh a year for a licence to use his logo is a contract to which s.188 applies (use of his property/availing his services). S.189(1) requires particulars of every such contract to be entered in the register (Form MBP-4); the s.189(5) carve-out is only for goods/services up to Rs 5 lakh a year, so it does not apply. Hence entry was required. Under CARO 2020 clause 3(xiii) the auditor reports whether all related party transactions comply with ss.177/188 and are disclosed in the financial statements; the statutory auditor has noted the lapse for this.",
+     "answer": "(B) The payment must be entered in the register u/s 189 and is reportable by the statutory auditor under CARO (clause 3(xiii)). [ICAI also accepted (A).]",
+     "icai": "(A) or (B) - both accepted",
+     "flag": "Split key: CARO 2020 has no clause on the s.189 register itself (CARO 2003 had one), so reporting rests on clause 3(xiii); (A) is hard to defend under s.189.",
+     "trap": "Ticking (C) - the register point is right, but CARO 3(xiii) on related party transactions makes it reportable.",
+     "minutes": 3
+    },
+    {
+     "q": "1.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "Foreign Trade Policy - Duty Exemption Schemes (Advance Authorisation)",
+     "topic": "AA eligibility (no export-history condition, no value cap) and discharge of export obligation",
+     "ask": "DSL wants to import upgraded chips (FOB Rs 95 lakh) duty-free under Advance Authorisation and meet the export obligation by supplying laptops with the existing chip to Noida SEZ. Can it?",
+     "options": {
+      "a": "No - AA cannot be issued as DSL has not exported for a continuous period of three years",
+      "b": "Yes, AA up to Rs 90 lakh only; supply to Noida SEZ cannot count towards export obligation",
+      "c": "Yes, AA for the entire Rs 95 lakh; supply to Noida SEZ counts towards export obligation",
+      "d": "Yes, AA for the entire Rs 95 lakh; but supply to Noida SEZ cannot count towards export obligation"
+     },
+     "clue": "supply the laptops (with existing technology chip) to Noida Technology SEZ",
+     "chapter_clear": true,
+     "think": [
+      "'Advance authorization' + 'export obligation' -> FTP Chapter 4, duty exemption schemes (IDT).",
+      "Chapter clear -> IDT SM -> Foreign Trade Policy -> Advance Authorisation -> eligibility and export obligation.",
+      "AA has no 3-year export record condition and no value cap -> (A), (B) out; AA for the full Rs 95 lakh is fine.",
+      "AA inputs must be physically incorporated in the export product; laptops with the OLD chip do not use the imported chip -> cannot discharge EO -> (D)."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - Foreign Trade Policy (Advance Authorisation)",
+      "index_keywords": [
+       "advance authorisation",
+       "export obligation",
+       "physically incorporated",
+       "deemed exports",
+       "SEZ"
+      ]
+     },
+     "solve": "AA allows duty-free import of inputs that are physically incorporated in the export product (allowing normal wastage). It is issued to a manufacturer exporter or a merchant exporter tied to a supporting manufacturer. There is no condition of past exports for three years and no fixed value limit, so DSL can get AA for the full Rs 95 lakh (its small exports of Rs 25-35 lakh do not matter). But the export obligation must be met with products that use the imported inputs. DSL plans to supply laptops fitted with the existing chip, not the imported upgraded chip, so these supplies cannot discharge the obligation under this authorisation.",
+     "answer": "(D) Yes, AA can be issued for the entire Rs 95 lakh, but the supply of these laptops to Noida Technology SEZ cannot be counted towards the export obligation.",
+     "icai": "(D)",
+     "flag": "Know the real reason: supply to an SEZ generally counts as physical export for AA under the FTP; it fails here because the laptops do not carry the imported chip.",
+     "trap": "Thinking AA needs an export track record (A) or is capped at a lower value like Rs 90 lakh (B).",
+     "minutes": 3
+    },
+    {
+     "q": "1.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 34 Interim Financial Reporting read with Ind AS 10 Events after the Reporting Period",
+     "topic": "Government clarification on GST rate after period-end - adjusting event in condensed interim statements",
+     "ask": "DSL charged 12% GST on wallets sold up to 30.09.2024; before the interim statements were approved, the government clarified 18%. Management refuses to adjust or disclose. Is that right?",
+     "options": {
+      "a": "Yes - condensed interim statements need not be adjusted for events after the reporting date",
+      "b": "Yes - no adjustment needed; disclosure in notes is enough",
+      "c": "No - these are adjusting events; adjust the interim statements even though condensed",
+      "d": "No - adjust or disclose depending on gravity and amount; a full set would have been adjusted"
+     },
+     "clue": "government issued a clarification to tax such wallets @ GST 18%",
+     "chapter_clear": true,
+     "think": [
+      "Event after 30.09.2024 but before approval -> Ind AS 10; 'condensed interim' -> Ind AS 34.",
+      "Chapter clear -> FR SM -> Ind AS 10 adjusting vs non-adjusting; Ind AS 34 'same accounting policies as annual'.",
+      "The clarification creates no new liability - it confirms the 18% that already applied to sales made before 30.09.2024 -> condition existed at reporting date -> adjusting.",
+      "Ind AS 34 uses the same recognition and measurement as annual statements; condensed means fewer notes, not less recognition -> (C)."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 10 and Ind AS 34",
+      "index_keywords": [
+       "adjusting events",
+       "events after the reporting period",
+       "interim financial reporting",
+       "condensed financial statements"
+      ]
+     },
+     "solve": "Ind AS 10: events between the end of the period and the approval date that give evidence of conditions existing at the end of the period are adjusting events. GST at 18% was payable on the wallets already sold by 30.09.2024; the department's notice and the clarification only confirm that liability. So DSL must provide for the short-paid 6% GST (and interest, if any) in the interim statements. Ind AS 34 requires the same recognition and measurement principles as in annual statements; being condensed only reduces disclosures. Management's stand is wrong.",
+     "answer": "(C) No - these are adjusting events; the interim financial statements must be adjusted even though they are condensed.",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Treating it as a change in tax rate after the period (non-adjusting) - it clarifies the rate that already applied on the sales.",
+     "minutes": 3
+    },
+    {
+     "q": "1.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "DT",
+     "also": "Audit",
+     "chapter": "Tax audit u/s 44AB - Form 3CD (with ss.269SS, 40A(3A), 41(1), 56(2)(ix))",
+     "topic": "Which items need reporting in Form 3CD",
+     "ask": "Which issues need reporting in Form 3CD: (a) ICD Rs 80 lakh by a/c payee cheque; (b) warranty provision Rs 18 lakh with suit pending; (c) Rs 60,000 accrued last year, paid in cash this year in one day; (d) Rs 20 lakh advance for sale of investment plot, now time-barred?",
+     "options": {
+      "a": "Issues (a), (b) and (d)",
+      "b": "Issues (b), (c) and (d)",
+      "c": "Issues (a), (c) and (d)",
+      "d": "Issues (a), (b) and (c)"
+     },
+     "clue": "Tax Audit team also raised some issues for the year ending 31st March 2025",
+     "chapter_clear": true,
+     "think": [
+      "'Tax audit' -> Form 3CD; test each item against a 3CD clause.",
+      "Chapter clear -> DT SM index: 'section 269SS', '40A(3A)', '56(2)(ix)', '41(1)'; map to 3CD clauses 31, 21(g), 21(d).",
+      "(a) every loan/deposit above Rs 20,000 is reported with its mode, even by a/c payee cheque; (b) warranty with suit pending = contingent liability; (c) cash paid next year above limit = deemed income u/s 40A(3A).",
+      "(d) advance not forfeited, only time-barred, and not a trading liability -> neither s.56(2)(ix) nor s.41(1) -> not reportable -> (D)."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - PGBP (s.40A(3A), s.41(1)), Other Sources (s.56(2)(ix)), s.269SS; Form 3CD",
+      "index_keywords": [
+       "Form 3CD",
+       "269SS",
+       "40A(3A)",
+       "56(2)(ix)",
+       "contingent liability",
+       "remission of trading liability"
+      ]
+     },
+     "solve": "(a) ICD Rs 80 lakh: clause 31(a) asks for each loan/deposit accepted above the s.269SS limit with its mode - reportable even though received by account payee cheque. (b) Warranty provision Rs 18 lakh under litigation is a liability of a contingent nature - clause 21(g) - reportable. (c) Rs 60,000 allowed in FY 2023-24 on accrual and paid in cash in one day in FY 2024-25 - above the Rs 10,000 (Rs 35,000 for transporters) limit, so deemed income u/s 40A(3A) - clause 21(d) - reportable. (d) Rs 20 lakh advance for sale of a capital asset is not forfeited (s.56(2)(ix)) and is not a trading liability (s.41(1)) - nothing to report.",
+     "answer": "(D) Issues (a), (b) and (c).",
+     "icai": "(D)",
+     "flag": null,
+     "trap": "Treating the time-barred advance as income - s.56(2)(ix) needs forfeiture, and s.41(1) covers only trading liabilities.",
+     "minutes": 3
+    },
+    {
+     "q": "1.6",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "SA 510 Initial Audit Engagements - Opening Balances (with SA 705)",
+     "topic": "Opening inventory in a first-year audit; modified opinions",
+     "ask": "New auditor CA Shankar found weak controls over inventory as on 1.4.2024. State extra procedures for opening inventory, and his course of action if (a) no evidence is obtained, (b) opening inventory is materially misstated, (c) the company calls it a change in accounting policy.",
+     "options": null,
+     "clue": "Till last financial year, DEF & Associates were carrying out both the audits",
+     "chapter_clear": true,
+     "think": [
+      "New auditor + opening balance = initial audit engagement -> SA 510.",
+      "Chapter clear -> Audit SM -> SA 510 -> 'opening inventory'; then SA 705 for which modified opinion.",
+      "Write four blocks matching the four asks: procedures / no evidence / misstatement / change in policy.",
+      "Use case words: DEF & Associates (predecessor), count on 30-31 March 2025, inventory as on 1.4.2024."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - SA 510 Initial Audit Engagements - Opening Balances",
+      "index_keywords": [
+       "opening balances",
+       "initial audit engagement",
+       "opening inventory",
+       "predecessor auditor",
+       "SA 705"
+      ]
+     },
+     "solve": "SA 510 objective: get sufficient appropriate evidence that opening balances do not contain misstatements that materially affect the current year. Work on closing stock gives little evidence about opening stock, so extra procedures are needed: review DEF & Associates' working papers (if they share them); observe the current count (attended on 30-31 March 2025) and roll back to 1.4.2024 quantities using receipts and issues in between; test valuation of opening items (cost records, NRV, consistency of method); gross profit analysis and cut-off checks around 1.4.2024. Outcomes under SA 705: (1) evidence cannot be obtained -> qualified opinion or disclaimer; (2) material misstatement in opening stock not properly accounted, presented or disclosed -> qualified or adverse; (3) change in accounting policy: if not consistently applied to opening balances or not properly accounted, presented or disclosed (Ind AS 8) -> qualified or adverse; if the change is justified, applied consistently and disclosed -> no modification.",
+     "answer": "1. SA 510: in an initial audit, CA Shankar must get sufficient appropriate evidence that opening balances (inventory on 1.4.2024) have no material misstatement affecting 2024-25.\n2. Additional procedures for opening inventory:\n(a) Review working papers of predecessor DEF & Associates for the 31.3.2024 count and valuation.\n(b) Use the count observed on 30-31 March 2025 and reconcile back to opening quantities (roll-back using purchases, production and sales).\n(c) Test valuation of opening inventory items (cost records, NRV, same method as this year).\n(d) Gross profit ratio analysis and cut-off tests around 1.4.2024.\n3. If evidence is not obtained: qualified opinion or disclaimer of opinion, as appropriate (SA 705).\n4. If opening inventory is materially misstated and the effect is not properly accounted for, presented or disclosed: qualified or adverse opinion (SA 705).\n5. If claimed as a change in accounting policy: check the change is allowed by Ind AS 8, applied consistently to opening balances and properly accounted and disclosed. If yes - no modification. If not - qualified or adverse opinion.\nConclusion: try roll-back and valuation procedures first; modify the opinion only as per SA 705.",
+     "icai": "Same conclusion as ICAI; reviewing the predecessor's working papers is an extra valid SA 510 procedure added here.",
+     "flag": null,
+     "trap": "Writing just 'qualify the report' - each situation has its own pair: qualified/disclaimer (no evidence) vs qualified/adverse (misstatement or policy).",
+     "minutes": 15
+    },
+    {
+     "q": "1.7",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "Law",
+     "also": null,
+     "chapter": "FEMA - External Commercial Borrowings (RBI Master Direction) read with Insolvency and Bankruptcy Code, 2016 (CIRP)",
+     "topic": "Can a company under CIRP raise ECB on a director's suggestion",
+     "ask": "Mr. John, also a director of BNC Ltd (under CIRP), suggests BNC should raise ECB for its fund needs. Is it permissible? Give the legal background.",
+     "options": null,
+     "clue": "BNC Limited (a company under corporate insolvency resolution process), suggested the ECB route",
+     "chapter_clear": false,
+     "think": [
+      "Two laws meet: ECB (FEMA) and CIRP (IBC) - the words 'under corporate insolvency resolution process' are the real test.",
+      "Not sure where it sits -> A-Z index: 'ECB - entities under restructuring/CIRP', and 'IBC - management of corporate debtor (s.17), CoC approval (s.28)'.",
+      "ECB rule: a company under CIRP can raise ECB only if the resolution plan specifically permits it.",
+      "IBC: board suspended, RP runs the company, new finance needs CoC approval -> Mr. John's suggestion alone counts for nothing."
+     ],
+     "look_up": {
+      "where": "SPOM-A Economic Laws - FEMA (ECB Master Direction); IBC 2016 ss.14, 17, 28",
+      "index_keywords": [
+       "external commercial borrowings",
+       "restructuring",
+       "corporate insolvency resolution process",
+       "interim finance",
+       "committee of creditors"
+      ]
+     },
+     "solve": "ECB framework: an entity under a restructuring scheme or CIRP can raise ECB only if it is specifically permitted under the resolution plan. Related windows: eligible borrowers taking part in a CIRP as resolution applicants may raise ECB (approval route, not from foreign branches/subsidiaries of Indian banks) to repay the target's rupee term loans; stressed SMA-2/NPA manufacturing and infrastructure borrowers may use ECB under a one-time settlement. IBC: from the CIRP start, the board's powers are suspended and vest in the IRP/RP (s.17); a moratorium applies (s.14); the RP cannot raise interim finance or enter into transactions outside the ordinary course without prior CoC approval (s.28). So BNC's directors, including Mr. John, cannot take this decision.",
+     "answer": "Provisions:\n1. ECB Master Direction - an entity under CIRP can raise ECB only if specifically permitted under the resolution plan; resolution applicants may raise ECB (approval route) to repay rupee term loans of the target company.\n2. IBC - on CIRP, board powers are suspended and management vests in the IRP/RP (s.17); moratorium (s.14); raising finance or acts outside ordinary course need prior CoC approval (s.28).\nAnalysis: BNC is under CIRP. Mr. John's powers as BNC director are suspended, so his suggestion has no legal force. ECB is not an ordinary-course act.\nConclusion: The suggestion is not permissible as made. BNC can use the ECB route only if the approved resolution plan specifically allows it, and the decision lies with the RP with CoC approval.",
+     "icai": "Same conclusion as ICAI - ICAI printed two answers (ECB only if permitted under the resolution plan; not permissible under IBC); this answer combines both.",
+     "flag": "ICAI accepted two angles (FEMA-ECB and IBC); write both in 2-3 lines each to be safe.",
+     "trap": "Answering only ECB eligibility (eligible borrower, all-in-cost, MAMP) and missing that BNC is under CIRP.",
+     "minutes": 15
+    },
+    {
+     "q": "1.8",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "GST - Input Tax Credit (s.16(2) 180-day rule, s.17(5) blocked credits) and interest u/s 50",
+     "topic": "Responding to GST audit findings: ITC reversal, interest, form of payment",
+     "ask": "Explain CA Avinash's reply to the five GST audit points, compute ITC to be reversed and interest for non-payment to the supplier within 180 days, and name the form for payment.",
+     "options": null,
+     "clue": "reverse the input tax credit claimed being blocked credit",
+     "chapter_clear": true,
+     "think": [
+      "'Within 180 days' -> s.16(2) second proviso + Rule 37; 'blocked credit' -> s.17(5); interest on ITC availed and utilised -> s.50(3) @18%.",
+      "Chapter clear -> IDT SM -> Input Tax Credit -> blocked credits list; 'Payment of tax' -> interest.",
+      "Item by item: (i) count days, reverse, compute interest; (ii) canteen and (iii) leave travel blocked (not obligatory by law); (iv) 30-seat buses allowed, car insurance/repairs blocked; (v) outdoor catering blocked.",
+      "So Avinash accepts (i), (ii), (iii), the car part of (iv) and (v), and contests the buses Rs 12,96,000."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - GST Input Tax Credit (ss.16, 17(5)); Payment of Tax (s.50)",
+      "index_keywords": [
+       "180 days",
+       "blocked credit",
+       "17(5)",
+       "outdoor catering",
+       "leave travel concession",
+       "seating capacity",
+       "interest 50(3)"
+      ]
+     },
+     "solve": "(i) Invoice 25.10.2021; 180 days = 6 (Oct) + 30 + 31 + 31 + 28 + 31 + 23 (Apr) -> ends 23.04.2022. ITC Rs 14,04,000 (78,00,000 x 18%) had to be reversed in GSTR-3B for April 2022 (due 20.05.2022) with interest @18% from utilisation. Days 20.11.2021 to 20.05.2022 = 10 + 31 + 31 + 28 + 31 + 30 + 20 = 181; interest = 14,04,000 x 18% x 181/365 = Rs 1,25,321. If never reversed and squared off only in GSTR-3B for August 2022 (filed 18.09.2022), days = 302; interest = 14,04,000 x 18% x 302/365 = Rs 2,09,100. Since the supplier was paid on 20.08.2022, the credit can be re-availed (third proviso to s.16(2)). (ii) Food and beverages for canteen Rs 6,72,000 + 7,50,000 = Rs 14,22,000 - blocked u/s 17(5)(b)(i) unless a law makes it obligatory (e.g. Factories Act canteen for 250+ workers - not stated). (iii) Home travel for employees on leave Rs 6,48,000 - blocked u/s 17(5)(b)(iii). (iv) Buses of 30 seats - block covers only vehicles up to 13 seats -> Rs 12,96,000 allowed; insurance and repairs of cars Rs 96,000 blocked u/s 17(5)(ab). (v) Outdoor catering for customer event Rs 1,26,000 - blocked u/s 17(5)(b)(i). Total = 14,04,000 + 14,22,000 + 6,48,000 + 96,000 + 1,26,000 = Rs 36,96,000.",
+     "answer": "Reply of CA Avinash, item-wise:\n(i) Agree - supplier not paid within 180 days (ended 23.04.2022): ITC Rs 14,04,000 to be reversed with interest; re-availed after payment on 20.08.2022.\nInterest @18% u/s 50(3) = 14,04,000 x 18% x 181/365 = Rs 1,25,321 (reversal in April 2022 GSTR-3B, 20.05.2022). [If not reversed till GSTR-3B of Aug 2022 filed 18.09.2022: x 302/365 = Rs 2,09,100.]\n(ii) Agree - canteen food and beverages blocked, s.17(5)(b)(i): Rs 14,22,000.\n(iii) Agree - leave/home travel blocked, s.17(5)(b)(iii): Rs 6,48,000.\n(iv) Contest buses - 30-seat buses are outside s.17(5)(a): Rs 12,96,000 allowed. Agree on car insurance/repairs, s.17(5)(ab): Rs 96,000.\n(v) Agree - outdoor catering blocked, s.17(5)(b)(i): Rs 1,26,000.\nTotal ITC to be reversed = Rs 36,96,000 (of which Rs 14,04,000 is re-available as the supplier has been paid). Interest @18% also on (ii) to (v) from utilisation to reversal.\nForm: no demand has been raised, so reverse ITC and pay interest through GSTR-3B; a voluntary payment of audit dues before SCN may also be intimated in DRC-03.",
+     "icai": "Same figures as ICAI (Rs 36,96,000; interest Rs 1,25,321 or Rs 2,09,100); ICAI names GSTR-3B as the form.",
+     "flag": "Form: ICAI says GSTR-3B; dues accepted after a GST audit are commonly paid voluntarily before SCN with intimation in DRC-03 (s.73(5), Rule 142(2)) - mention both.",
+     "trap": "Reversing the bus ITC too - the 13-seat limit blocks only small vehicles; 30-seat buses are allowed.",
+     "minutes": 15
+    }
+   ]
+  },
+  {
+   "no": 2,
+   "title": "Kevin Agro Limited (KAL)",
+   "industry": "Agri-equipment and AI robotic arms (listed, Kevin Group)",
+   "story": "Listed agri-machinery maker launching AI robotic fruit-picking arms. Issues on intra-group steel purchases, transfer pricing with a US group, bond refunding, brokerage GST, BRSR and buying a controlling stake in a cricket franchise.",
+   "marks_by_subject": {
+    "Law": 2,
+    "DT": 7,
+    "Costing": 2,
+    "Audit": 2,
+    "IDT": 2,
+    "AFM": 5,
+    "FR": 5
+   },
+   "difficulty": "Moderate",
+   "first15": "Good pick for theory writers: all 15 descriptive marks are bookish theory (Rule 10C factors, bond refunding, Ind AS 103 for the franchise) - no long numericals.",
+   "questions": [
+    {
+     "q": "2.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Companies Act, 2013 - Section 188 Related Party Transactions (Rule 15, Meetings of Board Rules)",
+     "topic": "Holding-WOS sale below market price - Board approval needed, members' approval exempt",
+     "ask": "SKL (wholly owned subsidiary, accounts consolidated) sold Rs 62 crore of steel to KAL below market price with no approval; SKL's turnover is Rs 610 crore. Was it done correctly?",
+     "options": {
+      "a": "No - a special resolution was needed as it exceeds 10% of turnover",
+      "b": "No - an ordinary resolution was needed as it exceeds 10% of turnover",
+      "c": "No - Board consent by a resolution at a meeting was needed",
+      "d": "No approval is needed as it is between holding and WOS with consolidated accounts"
+     },
+     "clue": "wholly owned subsidiaries and whose accounts are consolidated with KAL",
+     "chapter_clear": true,
+     "think": [
+      "Sale between holding and subsidiary = related party transaction -> s.188.",
+      "Chapter clear -> SPOM-A Companies Act -> s.188, Rule 15(3) thresholds and the provisos.",
+      "'Price less than market price' -> not at arm's length -> Board approval at a meeting is a must.",
+      "62/610 = 10.2% crosses the 10% limit, but the proviso exempts holding-WOS deals (accounts consolidated and placed before members) from the members' resolution only -> (C)."
+     ],
+     "look_up": {
+      "where": "SPOM-A Corporate Laws - Companies Act s.188, Rule 15",
+      "index_keywords": [
+       "related party transactions",
+       "section 188",
+       "wholly owned subsidiary",
+       "10% of turnover",
+       "arm's length"
+      ]
+     },
+     "solve": "SKL is KAL's WOS, so they are related parties; sale of goods is covered by s.188(1)(a). Selling below market price is not at arm's length, so the ordinary-course exemption fails and consent of the Board by a resolution at a meeting is required. Value Rs 62 crore = 10.16% of Rs 610 crore turnover, which would normally need an ordinary resolution (Rule 15(3): 10% of turnover). But a proviso to s.188(1) exempts transactions between a holding company and its WOS whose accounts are consolidated and placed before shareholders from the members' resolution. So only Board approval was needed - and it was missing. KAL's later ordinary resolution does not cure that.",
+     "answer": "(C) No - SKL should have entered into the transaction only after Board consent given by a resolution at a meeting.",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Picking (B) because 62/610 > 10% - the WOS proviso removes the members' resolution, not the Board's consent.",
+     "minutes": 3
+    },
+    {
+     "q": "2.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "DT",
+     "also": null,
+     "chapter": "Transfer Pricing - Associated Enterprises (s.92A) and comparability data (Rule 10B(4))",
+     "topic": "Deemed AE through dependence on technology; which year's data the AO can use",
+     "ask": "KAL's robotic arms depend wholly on Novelty Inc.'s technology; Novelty controls TVIDIA, to whom KAL exported 'UNO'. Do s.92-92F apply, and was the AO right to finally use current-year uncontrolled prices?",
+     "options": {
+      "a": "Novelty-KAL are deemed AEs, so TVIDIA is covered too; AO's action at assessment is not valid",
+      "b": "Novelty-KAL are deemed AEs but not KAL-TVIDIA, so not covered; AO's action not valid",
+      "c": "Novelty-KAL are deemed AEs, so TVIDIA is covered too; AO's action at assessment is valid",
+      "d": "Neither pair are AEs; not covered; AO's action not valid"
+     },
+     "clue": "manufacturing of Robotic Arms is wholly dependent on technology provided by Novelty Inc.",
+     "chapter_clear": true,
+     "think": [
+      "'Wholly dependent on technology' -> deemed AE test in s.92A(2) (dependence on know-how/patents of the other).",
+      "Chapter clear -> DT SM -> Transfer Pricing -> s.92A(2) list; then Rule 10B(4) on which year's data.",
+      "KAL-Novelty deemed AEs; Novelty controls TVIDIA, so the same person participates in both -> KAL and TVIDIA are AEs (s.92A(1)(b)).",
+      "Rule 10B(4): use data of the year of the transaction (prior 2 years only as support) -> AO's final action valid -> (C)."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT (International Taxation) - Transfer Pricing",
+      "index_keywords": [
+       "associated enterprise",
+       "92A(2)",
+       "wholly dependent",
+       "know-how",
+       "Rule 10B(4)",
+       "comparability data"
+      ]
+     },
+     "solve": "S.92A(2): two enterprises are deemed AEs if goods made by one are wholly dependent on know-how, patents or similar rights owned by the other. KAL's robotic arms depend wholly on Novelty's IK technology -> KAL and Novelty are AEs. Novelty is TVIDIA's holding company and controls its decisions; so the same enterprise (Novelty) participates in the management/control of both KAL and TVIDIA -> KAL and TVIDIA are AEs (s.92A(1)(b)), and export of UNO to TVIDIA is an international transaction. Rule 10B(4): comparability data must be of the financial year in which the transaction took place; data of up to two earlier years can only be used in addition if it affects the price. The AO's first use of only the preceding year was wrong; his later use of current-year data is valid.",
+     "answer": "(C) Novelty and KAL are deemed AEs, so TVIDIA is also covered by transfer pricing; the AO's action at assessment (current-year data) is valid.",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Stopping at KAL-Novelty and missing that common control by Novelty makes TVIDIA an AE too (B).",
+     "minutes": 3
+    },
+    {
+     "q": "2.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCMPE (SPOM Set B) - Automation and innovation (SM 5.6, 7.16)",
+     "topic": "Classifying AI robotic arms from the customer's point of view",
+     "ask": "From the farm customers' point of view, how would you classify AI robotic arms that pick, weed/plant and grade produce in place of contract labour?",
+     "options": {
+      "a": "Transformation",
+      "b": "Disruptive Innovation",
+      "c": "Automation",
+      "d": "Advanced Manufacturing"
+     },
+     "clue": "The new invention will replace the processes which were earlier done by labour",
+     "chapter_clear": false,
+     "think": [
+      "Key words: 'replace the processes ... done by labour' and 'from the view point of their customers'.",
+      "No fixed chapter -> A-Z index: 'automation', 'disruptive innovation', 'advanced manufacturing' - compare the definitions.",
+      "Automation = machines/software doing tasks earlier done by people - exactly what the farm customer gets.",
+      "Advanced manufacturing describes KAL's own factory (CAD/CNC); disruptive innovation is about new markets or low-end entry -> (C)."
+     ],
+     "look_up": {
+      "where": "ICAI SM SPOM Set B (SCMPE) - Ch 5, Automation (5.6); Ch 7 (7.16)",
+      "index_keywords": [
+       "automation",
+       "disruptive innovation",
+       "advanced manufacturing",
+       "transformation"
+      ]
+     },
+     "solve": "For the customers (farm owners and processors), the arms take over harvesting, weeding/planting and sorting/grading that contract labour did, cutting labour cost and inefficiency. Using technology to perform tasks with little human involvement is automation. 'Advanced manufacturing' is about how KAL itself produces; 'disruptive innovation' is a product that opens a new market or displaces leaders from the low end; 'transformation' is a broad organisation-wide change.",
+     "answer": "(C) Automation",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Picking 'Disruptive Innovation' because the product is new - the question asks the customer's view: labour replaced by machines.",
+     "minutes": 3
+    },
+    {
+     "q": "2.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": "Law",
+     "chapter": "Business Responsibility and Sustainability Report (BRSR) - NGRBC nine principles",
+     "topic": "Principle 8 - inclusive growth and equitable development",
+     "ask": "Which BRSR disclosure goes against Principle 8 (inclusive growth and equitable development): D1 international artisans training, D2 vaccination drives, D3 renewable energy policy talks, D4 electric vehicles?",
+     "options": {
+      "a": "D1",
+      "b": "D2",
+      "c": "D3",
+      "d": "D4"
+     },
+     "clue": "community investments, partnerships, local employment, and social impact initiatives",
+     "chapter_clear": true,
+     "think": [
+      "BRSR = 9 NGRBC principles; P8 = inclusive growth and equitable development (local communities, local sourcing, CSR, social impact).",
+      "Chapter clear -> Audit SM (sustainability/ESG assurance - BRSR) or SEBI BRSR format -> Principle 8 indicators.",
+      "Map each: D2 community health = fits P8; D3 policy advocacy = P7; D4 EVs = P6 (environment).",
+      "D1 serves INTERNATIONAL artisans - P8 is about local/Indian communities and marginalised groups -> D1 is the misfit -> (A)."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - sustainability/ESG assurance (BRSR); SEBI LODR Reg 34(2)(f) BRSR format",
+      "index_keywords": [
+       "BRSR",
+       "nine principles",
+       "Principle 8",
+       "inclusive growth",
+       "NGRBC"
+      ]
+     },
+     "solve": "Principle 8 expects businesses to promote inclusive growth and equitable development: community development near operations, local employment, sourcing from local/small producers and marginalised groups, social impact assessment, CSR. The case says last year's BRSR missed community investment and local employment. D1 (training international artisans for international markets) does not serve local or Indian communities, so it goes against P8. D2 (vaccination and disease prevention support) is community welfare and fits P8. D3 belongs to P7 (responsible public policy advocacy) and D4 to P6 (environment).",
+     "answer": "(A) D1",
+     "icai": "(A)",
+     "flag": null,
+     "trap": "Choosing D2 - support to vaccination drives is community health, which fits P8.",
+     "minutes": 3
+    },
+    {
+     "q": "2.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "GST - Place of supply of services (s.12(2) IGST Act) and conditions for ITC",
+     "topic": "B2B brokerage by a Bangalore broker to a Mumbai company - IGST vs CGST+SGST",
+     "ask": "A Bangalore broker charged CGST+SGST on Rs 10 lakh brokerage to KAL (Mumbai). Is the invoice right, and can KAL take ITC of Rs 1,80,000?",
+     "options": {
+      "a": "POS Mumbai, invoice wrong; KAL is eligible for ITC",
+      "b": "POS Bangalore, invoice right; KAL is not eligible for ITC",
+      "c": "POS Mumbai, invoice wrong; KAL is not eligible for ITC",
+      "d": "POS Bangalore, invoice right; KAL is eligible for ITC"
+     },
+     "clue": "Broker raised invoice charging CGST and SGST treating Bangalore as place of supply",
+     "chapter_clear": true,
+     "think": [
+      "Supplier in Bangalore, recipient in Mumbai -> place of supply of services, B2B -> s.12(2)(a) IGST Act.",
+      "Chapter clear -> IDT SM -> Place of Supply -> general rule for services (location of registered recipient).",
+      "Stock-broking has no special rule -> POS = KAL's location Mumbai -> inter-State -> IGST, not CGST+SGST.",
+      "Wrong tax charged -> KAL cannot take ITC of that CGST/SGST; broker must pay IGST and claim refund (s.77) -> (C)."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - Place of Supply (IGST Act s.12); Input Tax Credit",
+      "index_keywords": [
+       "place of supply",
+       "registered recipient",
+       "section 12(2)",
+       "inter-State supply",
+       "tax wrongly paid",
+       "section 77"
+      ]
+     },
+     "solve": "S.12(2)(a) IGST Act: for services to a registered person, place of supply is the recipient's location. KAL (Mumbai) is registered, so POS is Maharashtra; the broker is in Karnataka -> inter-State supply -> IGST Rs 1,80,000 should have been charged. CGST+SGST is the wrong tax, so KAL cannot take ITC of it. The broker must pay IGST and claim refund of CGST/SGST (s.77 CGST Act); KAL can claim ITC only on a correct IGST invoice, and even then subject to s.17(2) as the brokerage relates to dealing in securities.",
+     "answer": "(C) Place of supply is Mumbai, so the invoice is wrongly raised; KAL is not eligible to take ITC.",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Going by the supplier's location (Bangalore) - for B2B services the default rule is the recipient's location.",
+     "minutes": 3
+    },
+    {
+     "q": "2.6",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "DT",
+     "also": null,
+     "chapter": "Transfer Pricing - Most appropriate method (s.92C, Rule 10C)",
+     "topic": "Meaning of most appropriate method and factors for selecting it",
+     "ask": "Explain what 'most appropriate method' means and guide GM Accounts on the factors to consider while selecting it for the TVIDIA transactions.",
+     "options": null,
+     "clue": "no idea about which is the most appropriate method and how he should select it",
+     "chapter_clear": true,
+     "think": [
+      "'Most appropriate method' is a defined phrase -> s.92C(1) + Rule 10C.",
+      "Chapter clear -> DT SM -> Transfer Pricing -> 'most appropriate method' -> Rule 10C(2) factors.",
+      "Write the meaning in 2 lines, then the 6 factors; tie 2-3 of them to KAL's export of UNO to TVIDIA.",
+      "If you know Rule 10C by heart, write without the book and bank time for 2.7/2.8."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT (International Taxation) - Transfer Pricing, Rule 10C",
+      "index_keywords": [
+       "most appropriate method",
+       "Rule 10C",
+       "arm's length price",
+       "comparability",
+       "CUP method"
+      ]
+     },
+     "solve": "S.92C(1): ALP is found by one of the prescribed methods (CUP, RPM, CPM, PSM, TNMM, other method) being the most appropriate method. Rule 10C(1): the most appropriate method is the one best suited to the facts of the transaction and which gives the most reliable measure of ALP. Rule 10C(2) factors: (i) nature and class of the international transaction; (ii) class of AEs and functions performed, considering assets employed and risks assumed; (iii) availability, coverage and reliability of data needed for the method; (iv) degree of comparability between the international and uncontrolled transactions and between the enterprises; (v) extent to which reliable and accurate adjustments can be made for differences; (vi) nature, extent and reliability of assumptions required. Application: for export of UNO, CUP suits if prices of UNO/similar products to unrelated buyers are available; if TVIDIA resells without value addition, RPM; otherwise TNMM.",
+     "answer": "Meaning: Under s.92C(1) read with Rule 10C(1), the most appropriate method is the prescribed method best suited to the facts and circumstances of the international transaction, which gives the most reliable measure of the arm's length price.\nFactors to consider (Rule 10C(2)):\n1. Nature and class of the international transaction (export of product UNO).\n2. Class of AEs and functions performed by them, considering assets employed and risks assumed (KAL manufactures; TVIDIA buys/distributes).\n3. Availability, coverage and reliability of data needed for the method.\n4. Degree of comparability between the international transaction and uncontrolled transactions, and between the enterprises.\n5. Extent to which reliable and accurate adjustments can be made for differences.\n6. Nature, extent and reliability of assumptions the method needs.\nGuidance: if KAL sells UNO or similar products to unrelated buyers, CUP gives the most reliable ALP; if not, RPM (if TVIDIA only resells) or TNMM. Use data of the year of the transaction and record why other methods were rejected (Rule 10D documentation).",
+     "icai": "Same conclusion as ICAI (meaning + the six Rule 10C factors); the application to UNO is added.",
+     "flag": null,
+     "trap": "Listing the six methods instead of the selection factors that were asked.",
+     "minutes": 15
+    },
+    {
+     "q": "2.7",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "Bond refunding decision (AFM)",
+     "topic": "When refunding is feasible, NPV method, overlapping interest",
+     "ask": "As financial advisor, state when the CFO's idea of refunding the 5-year bonds (issued 2 years ago) at a lower rate is feasible, which method decides it, and whether extra interest cost arises.",
+     "options": null,
+     "clue": "engage financial advisors to explore refunding options",
+     "chapter_clear": false,
+     "think": [
+      "'Refunding options' + 'lower interest rate' after a rating upgrade -> bond refunding decision (AFM).",
+      "Not sure which AFM chapter -> A-Z index: 'refunding', 'call premium'.",
+      "Three asks -> three short blocks: conditions (call feature, call premium, rate gap), method (NPV of refunding), extra cost (overlap interest).",
+      "Add: discount after-tax savings at after-tax cost of new debt; use case facts - 3 years left, rating improved."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - A-Z index 'bond refunding'",
+      "index_keywords": [
+       "refunding",
+       "call premium",
+       "callable bonds",
+       "overlapping interest",
+       "flotation cost"
+      ]
+     },
+     "solve": "Feasible only if (1) the existing bonds carry a call option, so KAL can redeem before maturity; (2) the fall in coupon from the better rating is large enough to cover the call premium (paid over face value), issue costs of new bonds and overlapping interest; (3) new bonds can be raised for the remaining 3 years at the lower rate. Method: NPV of refunding - PV of annual after-tax interest savings over the remaining life, discounted at the after-tax cost of new debt, less net initial outlay (call premium net of tax, new issue costs net of tax shield, overlap interest net of tax, less tax shield on unamortised old issue costs). Refund if NPV > 0. Extra interest: yes - new bonds are usually issued before the old ones are called, so for the overlap period interest is paid on both issues; it is part of the initial outlay.",
+     "answer": "1. When feasible:\n- Existing bonds must have a call feature (right to redeem before maturity).\n- Call premium (amount above face value) is payable - savings must exceed it.\n- New bonds at a lower coupon (improved rating) for the remaining 3 years, net of issue costs.\n2. Method: Net Present Value of refunding.\n- Inflows: PV of annual after-tax interest savings (old coupon - new coupon) over the remaining life, at the after-tax cost of new debt.\n- Outflows: call premium, issue costs of new bonds, overlap interest (all net of tax).\n- Refund if PV of savings > PV of outflows (NPV positive).\n3. Extra interest: Yes. New bonds are generally issued before old bonds are redeemed to avoid a funding gap, so interest runs on both for the overlap period - include it in the initial outlay.\nConclusion: Advise refunding only if the bonds are callable and the NPV of refunding is positive.",
+     "icai": "Same conclusion as ICAI.",
+     "flag": null,
+     "trap": "Saying refunding is always feasible after a rating upgrade - without a call feature KAL would have to buy back bonds at market price.",
+     "minutes": 15
+    },
+    {
+     "q": "2.8",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 103 Business Combinations with Ind AS 110, Ind AS 38 and Ind AS 116",
+     "topic": "Controlling stake in a cricket franchise - acquisition method, intangibles, lease, NCI, goodwill",
+     "ask": "Explain how KAL's Rs 2,500 crore investment for a 70% stake in GSB Warriors is structured, accounted for under Ind AS and how it affects the financial statements.",
+     "options": null,
+     "clue": "acquiring a controlling stake (70%) in GSB Warriors",
+     "chapter_clear": true,
+     "think": [
+      "'Controlling stake' in an existing team = acquisition of a business -> Ind AS 103; consolidate under Ind AS 110.",
+      "Chapter clear -> FR SM -> Ind AS 103 acquisition method; then Ind AS 38 (franchise rights, player contracts) and Ind AS 116 (leased stadium).",
+      "Walk the steps: acquirer and date, consideration (cash + shares at fair value), identifiable assets/liabilities at fair value, goodwill and NCI.",
+      "End with Balance Sheet and P&L impact; note the case says 70% and later 60% - either gives control (assume 70%)."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 103, Ind AS 38, Ind AS 116, Ind AS 110",
+      "index_keywords": [
+       "acquisition method",
+       "goodwill",
+       "non-controlling interest",
+       "indefinite useful life",
+       "right-of-use asset",
+       "acquiree is a lessee"
+      ]
+     },
+     "solve": "Structure: KAL buys 70% (the case also says 60% - either gives control) for Rs 2,500 crore paid in cash and KAL shares; 30% stays with old owners -> NCI. Accounting: GSB becomes a subsidiary; Ind AS 103 acquisition method; line-by-line consolidation (Ind AS 110). Consideration = cash + fair value of KAL shares issued on acquisition date; acquisition costs expensed. Identifiable assets at fair value: franchise rights Rs 1,500 crore - intangible; no term given, so indefinite life -> not amortised, tested for impairment every year; player contracts Rs 500 crore - finite-life intangible, amortised over contract terms; working capital/other assets Rs 500 crore at fair value; leased stadium - lease liability at PV of remaining payments and ROU of the same amount, adjusted for favourable/unfavourable terms. Goodwill = consideration + NCI - net identifiable assets; NCI at fair value or proportionate share (choice per deal). Illustration: if Rs 2,500 crore is paid for 70% and net assets (excluding the lease) are Rs 2,500 crore, proportionate NCI = Rs 750 crore and goodwill = 2,500 + 750 - 2,500 = Rs 750 crore; if consideration were lower than net assets, bargain purchase gain to capital reserve.",
+     "answer": "1. Structure: KAL acquires a 70% controlling stake for Rs 2,500 crore (cash + equity); 30% stays with old owners (NCI). GSB Warriors becomes a subsidiary.\n2. Accounting (Ind AS 103 - acquisition method):\n- Consideration: cash + fair value of KAL shares issued; transaction costs to P&L.\n- Franchise rights Rs 1,500 crore: intangible; no definite term given -> indefinite life, no amortisation, annual impairment test (Ind AS 36/38).\n- Player contracts Rs 500 crore: finite-life intangible, amortised over contract periods.\n- Working capital and other assets Rs 500 crore: at fair value.\n- Leased stadium and training facility: lease liability (PV of remaining payments) and ROU asset (Ind AS 116).\n- Goodwill = consideration + NCI - fair value of net identifiable assets; if negative, bargain purchase gain (capital reserve).\n- NCI 30%: at fair value or proportionate share of net assets.\n3. Impact on consolidated statements:\n- Balance Sheet: franchise rights, player contracts, ROU and goodwill as non-current assets; working capital in current assets; lease liability split current/non-current; NCI in equity; KAL's share capital/premium rises for shares issued.\n- P&L: new revenue (broadcasting, sponsorship, tickets, merchandise); amortisation of player contracts, depreciation of ROU, interest on lease liability, impairment if any; profit split between owners and NCI.",
+     "icai": "Same conclusion as ICAI; ICAI's line that consideration 'forms part of equity share capital' is read here as: only KAL shares issued as consideration raise KAL's share capital.",
+     "flag": "Case says 70% and later 60% - ICAI used 70% (NCI 30%); ICAI's equity line is loosely worded - consideration paid is not GSB's share capital on consolidation.",
+     "trap": "Amortising franchise rights without a stated term - with no definite term treat it as indefinite life: impairment test only.",
+     "minutes": 15
+    }
+   ]
+  },
+  {
+   "no": 3,
+   "title": "ABC Fashions Ltd. (AFL)",
+   "industry": "Apparel manufacturing and export (shirts and T-shirts)",
+   "story": "Vadodara garment maker-exporter with strong water, waste and community work. Questions on operating-income analysis, related party disclosure, a USD machinery lease, a GBP receivable hedge, FEMA commission and status-holder benefits.",
+   "marks_by_subject": {
+    "Costing": 6,
+    "FR": 7,
+    "Audit": 2,
+    "Law": 2,
+    "IDT": 2,
+    "AFM": 6
+   },
+   "difficulty": "Hard",
+   "first15": "Take it only if AFM and FR numericals are strong: 11 marks are a 4-way GBP hedge and an Ind AS 116 lease in USD; 3.2 has two keys and 3.4 has no correct option - a time sink.",
+   "questions": [
+    {
+     "q": "3.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "Strategic Analysis of Operating Income (growth, price-recovery, productivity components)",
+     "topic": "Splitting the growth component into market-size and product-differentiation effects",
+     "ask": "Operating income rose Rs 710 lakh (growth 300 F, price recovery 250 F, productivity 160 F). Pieces sold went from 44 to 48 lakh; the market grew 4%. Find the effect of market size and of product differentiation.",
+     "options": {
+      "a": "Market size Rs 168 lakh; product differentiation Rs 382 lakh",
+      "b": "Market size Rs 132 lakh; product differentiation Rs 418 lakh",
+      "c": "Market size Rs 110 lakh; product differentiation Rs 440 lakh",
+      "d": "Market size Rs 300 lakh; product differentiation Rs 250 lakh"
+     },
+     "clue": "The market for shirts and T-shirts grew by 4% during 2024-25",
+     "chapter_clear": true,
+     "think": [
+      "Growth / price-recovery / productivity components = SPOM-B 'Strategic Analysis of Operating Income'.",
+      "Chapter clear -> SPOM-B -> that chapter -> 'industry market size factor' and 'product differentiation' illustration.",
+      "Market-size units = 44 x 4% = 1.76 lakh of the 4 lakh increase -> 300 x 1.76/4 = 132.",
+      "Product differentiation = rest of growth (168) + price recovery (250) = 418; productivity 160 = cost leadership -> (B)."
+     ],
+     "look_up": {
+      "where": "ICAI SPOM-B SCPM - Strategic Analysis of Operating Income",
+      "index_keywords": [
+       "growth component",
+       "price-recovery component",
+       "industry market size",
+       "product differentiation",
+       "cost leadership"
+      ]
+     },
+     "solve": "Increase in units = 48 - 44 = 4 lakh. Due to market growth = 44 x 4% = 1.76 lakh; due to AFL's own strategy = 2.24 lakh. Market-size effect = 300 x 1.76/4 = Rs 132 lakh. Product differentiation = growth from own action 300 x 2.24/4 = 168 + price-recovery 250 = Rs 418 lakh. Check: 132 + 418 + productivity (cost leadership) 160 = 710.",
+     "answer": "(B) Rs 132 lakh due to market size and Rs 418 lakh due to product differentiation.",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Splitting only the growth component (132/168) and forgetting that price recovery (250) also goes to product differentiation.",
+     "minutes": 3
+    },
+    {
+     "q": "3.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 24 Related Party Disclosures",
+     "topic": "KMP compensation (independent director, non-monetary benefits) and entities linked to a director",
+     "ask": "Which statements are INCORRECT: (i) independent director's Rs 2.4 lakh sitting fee need not be disclosed as he is not KMP; (ii) Rs 1 lakh depreciation on CEO's house need not be disclosed as no cash flows; (iii) market rent Rs 12 lakh need not be disclosed; (iv) Rs 6 lakh to director's law firm is not an RPT regardless of his role?",
+     "options": {
+      "a": "Statements (i) and (iii)",
+      "b": "Statements (ii), (iii), (iv)",
+      "c": "Statements (i) and (ii)",
+      "d": "Statements (i), (ii) and (iv)"
+     },
+     "clue": "sitting fee of Rs 2.4 lakhs was paid to Mr. Raman (independent director)",
+     "chapter_clear": true,
+     "think": [
+      "Question names Ind AS 24 -> FR SM -> Ind AS 24 -> 'key management personnel', 'compensation', definition of related entity (para 9).",
+      "(i) KMP includes any director, executive or otherwise -> sitting fee is KMP compensation -> (i) wrong.",
+      "(ii) Compensation includes non-monetary benefits like housing - cash flow is irrelevant -> (ii) wrong; (iii) no rule to disclose market rent -> (iii) right.",
+      "(iv) A firm is related only if the KMP controls/jointly controls it; Harish is a partner with no control or influence shown -> (iv) right -> (C)."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 24",
+      "index_keywords": [
+       "key management personnel",
+       "compensation",
+       "non-monetary benefits",
+       "related party definition",
+       "common director"
+      ]
+     },
+     "solve": "(i) Ind AS 24 defines KMP to include any director, whether executive or otherwise -> Raman is KMP; his Rs 2.4 lakh sitting fee is part of KMP compensation to be disclosed -> statement incorrect. (ii) KMP compensation covers non-monetary benefits such as housing; the Rs 1 lakh cost to AFL is part of Purva's compensation even without a cash outflow -> incorrect. (iii) The standard asks for compensation, not the market value of the benefit; the Rs 12 lakh market rent need not be disclosed -> correct. (iv) HKN is related only if Harish (KMP of AFL) controls or jointly controls it (para 9(b)(vi)); a common director/partner alone does not make it related (para 11), and he had no role in the service -> not an RPT -> correct. Incorrect statements: (i) and (ii).",
+     "answer": "(C) Statements (i) and (ii). [ICAI also accepted (D).]",
+     "icai": "(C) or (D) - both accepted",
+     "flag": "Split key: (iv) turns on whether Harish controls or jointly controls HKN (Ind AS 24 para 9(b)(vi)) - the facts are silent, so ICAI accepted (D) too.",
+     "trap": "Treating independent directors as outside KMP - Ind AS 24 covers 'any director, executive or otherwise'.",
+     "minutes": 3
+    },
+    {
+     "q": "3.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": "FR",
+     "chapter": "Internal Financial Controls (s.143(3)(i)) with Ind AS 16 derecognition",
+     "topic": "Controls vs audit procedures for disposal of PPE",
+     "ask": "Which of Mr. Shashi's submissions on PPE disposal are correct: (a) derecognise on disposal or when no future benefits; (b) gain/loss in P&L; (c) IFC = disposal verified by inspection, confirmation, vouching; (d) gain/loss = net proceeds - carrying amount?",
+     "options": {
+      "a": "Submissions (a), (b) and (c)",
+      "b": "Submissions (b), (c) and (d)",
+      "c": "Submissions (a), (c) and (d)",
+      "d": "Submissions (a), (b) and (d)"
+     },
+     "clue": "requested for review of the internal financial controls over such transaction",
+     "chapter_clear": true,
+     "think": [
+      "Two layers: Ind AS 16 derecognition (FR) + what counts as an internal financial control (Audit).",
+      "Chapter clear -> FR SM Ind AS 16 'derecognition'; Audit SM 'internal financial controls'.",
+      "(a), (b), (d) are straight Ind AS 16 paras 67, 68, 71 -> correct.",
+      "(c) inspection, confirmation, vouching are the AUDITOR's procedures, not management's controls -> (D)."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 16; ICAI SM Audit - Internal Financial Controls",
+      "index_keywords": [
+       "derecognition",
+       "gain or loss on disposal",
+       "internal financial controls",
+       "control activities"
+      ]
+     },
+     "solve": "(a) Ind AS 16 para 67: derecognise on disposal or when no future economic benefits are expected - correct. (b) Para 68: gain/loss on derecognition goes to profit or loss (not revenue) - correct. (c) Inspection, confirmation and vouching are audit procedures used to test; internal controls are management's own checks, e.g. approval of disposal by the competent authority, segregation of duties, updating the fixed asset register, gate pass, matching sale proceeds - incorrect. (d) Para 71: gain/loss = net disposal proceeds - carrying amount - correct.",
+     "answer": "(D) Submissions (a), (b) and (d).",
+     "icai": "(D)",
+     "flag": null,
+     "trap": "Accepting (c) because it sounds like control - inspection/vouching/confirmation are tests by the auditor, not controls of the entity.",
+     "minutes": 3
+    },
+    {
+     "q": "3.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "FEMA, 1999 - Current Account Transactions Rules, 2000",
+     "topic": "Remittance of commission to a foreign agent",
+     "ask": "Does AFL need prior RBI permission to remit the 6% commission to Gordon Inc. (USA) for arranging the machinery lease (USD 18,000 a year for 5 years)?",
+     "options": {
+      "a": "Prior RBI permission needed for the entire commission of USD 54,000",
+      "b": "No RBI permission for the entire USD 54,000 - current account transaction in the ordinary course of foreign trade",
+      "c": "No permission up to USD 25,000; permission needed for the balance USD 29,000",
+      "d": "No permission up to USD 45,000; permission needed for the balance USD 9,000"
+     },
+     "clue": "commission payable was 6% to be remitted by AFL to the Gordon Inc.",
+     "chapter_clear": true,
+     "think": [
+      "Remittance abroad for commission = current account transaction -> FEMA s.5 + Current Account Transactions Rules.",
+      "Chapter clear -> SPOM-A -> FEMA -> CAT Rules Schedule III (commission to agents abroad).",
+      "Compute first: 6% x (USD 18,000 x 5) = USD 5,400 - not USD 54,000 as the options assume.",
+      "Schedule III limit (USD 25,000 or 5% of inward remittance) is only for commission on sale of flats/commercial plots in India -> remittance free, but no option has USD 5,400 -> no correct option."
+     ],
+     "look_up": {
+      "where": "SPOM-A Economic Laws - FEMA, Current Account Transactions Rules 2000",
+      "index_keywords": [
+       "current account transactions",
+       "commission to agents abroad",
+       "Schedule III",
+       "USD 25,000"
+      ]
+     },
+     "solve": "Commission = 6% of total lease payments USD 90,000 (18,000 x 5) = USD 5,400. Commission for a business deal is a current account transaction, freely allowed unless restricted in the Schedules. Schedule III needs RBI approval only for commission, per transaction, to agents abroad for sale of residential flats/commercial plots in India above USD 25,000 or 5% of inward remittance, whichever is more - not this case. So no RBI permission is needed for USD 5,400. All options are built on USD 54,000, so none is correct; (B) has the right principle with the wrong amount.",
+     "answer": "No correct option (ICAI). In the exam write (B) and add one line: 'commission is USD 5,400 (6% of USD 90,000), a current account transaction - no RBI permission needed'.",
+     "icai": "No correct option",
+     "flag": "Options assume USD 54,000; the correct commission is USD 5,400 (6% of USD 90,000), so ICAI declared no correct option.",
+     "trap": "Applying the USD 25,000 limit - it applies only to commission on sale of flats/commercial plots in India.",
+     "minutes": 3
+    },
+    {
+     "q": "3.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "Foreign Trade Policy - Status Holders (categories and privileges)",
+     "topic": "Privileges of a Two Star Export House",
+     "ask": "AFL exported USD 2, 3, 4 million in the last three years and USD 7 million this year. Which privileges does it get: (i) export warehouses, (ii) self-certify origin, (iii) mentoring/training partner, (iv) I-O norms within 60 days?",
+     "options": {
+      "a": "(i), (ii), (iii)",
+      "b": "(i), (iii), (iv)",
+      "c": "(ii), (iii), (iv)",
+      "d": "(i), (ii), (iv)"
+     },
+     "clue": "DGFT granted AFL a Status Holder Certificate",
+     "chapter_clear": true,
+     "think": [
+      "'Status Holder Certificate' -> FTP Chapter 3, status holders and privileges.",
+      "Chapter clear -> IDT SM -> FTP -> status holders -> category thresholds and privileges list.",
+      "Current + 3 previous years = 2 + 3 + 4 + 7 = USD 16 million -> Two Star (USD 15 m), not Three Star (USD 50 m).",
+      "Export warehouses (Two Star+), mentoring/training and 60-day I-O norms (all status holders) - yes; self-certification of origin is Three Star+ manufacturers only -> (B)."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - Foreign Trade Policy (Status Holders)",
+      "index_keywords": [
+       "status holder",
+       "two star export house",
+       "export warehouses",
+       "self-certify",
+       "input output norms"
+      ]
+     },
+     "solve": "Status depends on exports in the current and previous three years: USD 2 + 3 + 4 + 7 = 16 million -> Two Star Export House (threshold USD 15 m; Three Star needs USD 50 m). (i) Two Star and above may set up export warehouses - available. (ii) Self-certification of origin of manufactured goods for preferential tariffs is for Three Star and above manufacturers - not available. (iii) Status holders act as partners in mentoring/training in international trade - available. (iv) Input-output norms fixed on priority within 60 days by the Norms Committee - available to all status holders.",
+     "answer": "(B) (i), (iii), (iv)",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Ticking self-certification (ii) - it starts only at Three Star; AFL is Two Star.",
+     "minutes": 3
+    },
+    {
+     "q": "3.6",
+     "type": "Descriptive",
+     "marks": 4,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "Performance Measurement - Triple Bottom Line (SPOM-B)",
+     "topic": "Economic, environmental and social areas for a TBL report",
+     "ask": "As management accountant, list areas for a report evaluating AFL's performance using the Triple Bottom Line framework.",
+     "options": null,
+     "clue": "evaluating company's performance using Triple Bottom Line (TBL) Framework",
+     "chapter_clear": true,
+     "think": [
+      "TBL = profit, planet, people (economic, environmental, social).",
+      "Chapter clear -> SPOM-B -> performance measurement -> 'Triple Bottom Line'; then mine the case paragraphs.",
+      "Three headings; drop each case fact under one: Rs 710 lakh, USD 7 m exports, 50 MLD STP, 6 bn litres, 75% waste, 25% solar, net zero 2030, 1,00,000 trees, 9,000 farmers, 60% local workforce.",
+      "Add one balancing point (organic cotton needs more water) - shows evaluation, not just listing."
+     ],
+     "look_up": {
+      "where": "ICAI SPOM-B SCPM - Performance Measurement (Triple Bottom Line)",
+      "index_keywords": [
+       "triple bottom line",
+       "people planet profit",
+       "sustainability"
+      ]
+     },
+     "solve": "Economic: leading maker/exporter; process improvement and training cut rework and cost; poly-clothing entry with 5% share in two years; operating income up Rs 710 lakh; exports USD 7 m vs 2, 3, 4 m; durable products build loyalty. Environmental: 50 MLD sewage treatment plant recycling about 6 billion litres a year; rainwater harvesting ponds; organic cotton (fewer pesticides but more water - a trade-off); 75% of textile waste diverted from landfill; solar panels cutting energy use by 25%; carbon audit and net zero by 2030; 1,00,000 trees in 2024-25. Social: training for about 9,000 farmers; 60% workforce from local communities; support for food, clothing, education and healthcare; fair wages, labour-law compliance, HR skill training.",
+     "answer": "TBL report - areas with AFL's facts:\n1. Economic (Profit): market leadership as maker/wholesaler/exporter; lower cost and rework through process improvement; 5% share in poly clothing; operating income up Rs 710 lakh; exports up to USD 7 million from USD 2-4 million; durable products build loyalty.\n2. Environmental (Planet): 50 MLD sewage treatment plant recycling ~6 billion litres a year; rainwater harvesting ponds; shift to organic cotton (less pesticide, but more water); 75% textile waste diverted from landfill; solar panels - 25% lower energy use; carbon audit and net zero by 2030; 1,00,000 trees planted.\n3. Social (People): training ~9,000 farmers; 60% workforce from local communities; help with food, clothing, education and healthcare; fair wages, labour-law compliance and regular HR training.\nConclusion: AFL shows balanced TBL performance; the main gap is the water intensity of organic cotton - track KPIs like water per piece and % local hiring.",
+     "icai": "Same conclusion as ICAI.",
+     "flag": null,
+     "trap": "Writing TBL theory without AFL's figures - the marks are for placing case facts under each bottom line.",
+     "minutes": 12
+    },
+    {
+     "q": "3.7",
+     "type": "Descriptive",
+     "marks": 6,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "Foreign Exchange Exposure and Risk Management",
+     "topic": "Hedging a GBP receivable - forward, money market hedge, put option, unhedged",
+     "ask": "AFL will receive GBP 2,50,000 in 3 months. Compare forward cover, money market hedge, currency options and staying unhedged, and recommend the best choice.",
+     "options": null,
+     "clue": "forward contracts, money market hedging, options, or remaining unhedged",
+     "chapter_clear": true,
+     "think": [
+      "Exporter with a GBP receivable -> will sell GBP: forward bid, MMH (borrow GBP now), put option, expected spot.",
+      "Chapter clear -> AFM SM -> Foreign Exchange Exposure and Risk Management -> money market hedge illustration; swap in the figures.",
+      "Use the right side of quotes: exporter gets the bid (115.00 spot, 116.70 forward); borrow in UK at 4% (1% for 3 months), invest in India at 6% (1.5%).",
+      "Exporter needs a PUT (Rs 1.60); add interest on premium at 8% for 3 months; highest rupee inflow wins."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - Foreign Exchange Exposure and Risk Management",
+      "index_keywords": [
+       "money market hedge",
+       "forward cover",
+       "currency options",
+       "put option",
+       "receivable"
+      ]
+     },
+     "solve": "(a) Forward: 2,50,000 x 116.70 = Rs 2,91,75,000. (b) MMH: borrow GBP 2,50,000/1.01 = GBP 2,47,525; convert at 115.00 = Rs 2,84,65,375; invest at 1.5% -> interest Rs 4,26,981; maturity Rs 2,88,92,356; GBP loan repaid from the receivable. (c) Put at 116, premium 1.60: spot 114 -> exercise, net 116 - 1.60 = 114.40; spot 116 -> 114.40; spot 118 -> let lapse, 118 - 1.60 = 116.40. Expected = 0.2 x 2,86,00,000 + 0.5 x 2,86,00,000 + 0.3 x 2,91,00,000 = 57,20,000 + 1,43,00,000 + 87,30,000 = Rs 2,87,50,000; less interest on premium Rs 4,00,000 x 8% x 3/12 = Rs 8,000 -> Rs 2,87,42,000. (d) No hedge: expected rate = 114 x 0.2 + 116 x 0.5 + 118 x 0.3 = 116.20 -> Rs 2,90,50,000 (with risk).",
+     "answer": "Rupee receipt from GBP 2,50,000:\n(a) Forward cover: 2,50,000 x 116.70 = Rs 2,91,75,000 (certain).\n(b) Money market hedge: borrow GBP 2,50,000/1.01 = GBP 2,47,525 -> x 115.00 = Rs 2,84,65,375 -> invest 3 months @6% p.a. (+ Rs 4,26,981) = Rs 2,88,92,356.\n(c) Put option @Rs 116, premium Rs 1.60:\nSpot 114 (p 0.2): exercise, 114.40 x 2,50,000 = 2,86,00,000 -> 57,20,000\nSpot 116 (p 0.5): 114.40 -> 2,86,00,000 -> 1,43,00,000\nSpot 118 (p 0.3): lapse, 116.40 -> 2,91,00,000 -> 87,30,000\nExpected = Rs 2,87,50,000; less interest on premium (Rs 4,00,000 x 8% x 3/12) Rs 8,000 = Rs 2,87,42,000.\n(d) Unhedged: expected rate 116.20 -> Rs 2,90,50,000 (uncertain).\nRanking: Forward 2,91,75,000 > Unhedged 2,90,50,000 > MMH 2,88,92,356 > Option 2,87,42,000.\nRecommendation: Take forward cover - it gives the highest and certain rupee inflow.",
+     "icai": "Same figures and conclusion as ICAI (forward cover).",
+     "flag": null,
+     "trap": "Using a call option or the ask rates - an exporter sells GBP, so use the put and the bid side (115.00 / 116.70).",
+     "minutes": 18
+    },
+    {
+     "q": "3.8",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 116 Leases with Ind AS 21 The Effects of Changes in Foreign Exchange Rates",
+     "topic": "Lessee accounting for a USD lease - initial measurement, initial direct cost, restatement, depreciation, presentation",
+     "ask": "Machinery lease from PQR Inc.: USD 18,000 a year for 5 years in arrears, IBR 8%, Rs 83 at start, Rs 84 average, Rs 86 closing; 6% commission to Gordon Inc. Show initial recognition, year-1 measurement and presentation at 31.3.2025.",
+     "options": null,
+     "clue": "annual lease payments of USD 18,000, payable at the end of each year",
+     "chapter_clear": true,
+     "think": [
+      "Lessee + lease payments -> Ind AS 116; USD amounts with three rates -> Ind AS 21 monetary vs non-monetary.",
+      "Chapter clear -> FR SM -> Ind AS 116 lessee measurement; Ind AS 21 'monetary items' -> use the foreign-currency lease illustration and replace figures.",
+      "Lease liability = PV in USD x 83; ROU = liability + commission (initial direct cost) at 83.",
+      "Year end: interest at average 84, payment at 86, liability (monetary) restated at 86 -> exchange loss to P&L; ROU (non-monetary) stays at 83 cost, depreciate over 5 years."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 116 (lessee), Ind AS 21",
+      "index_keywords": [
+       "lease liability",
+       "right-of-use asset",
+       "initial direct costs",
+       "monetary item",
+       "closing rate"
+      ]
+     },
+     "solve": "PV factors total 3.993 -> PV = USD 18,000 x 3.993 = USD 71,874 x 83 = Rs 59,65,542 (lease liability). Initial direct cost: 6% x USD 90,000 = USD 5,400 x 83 = Rs 4,48,200. ROU = Rs 64,13,742. Year 1 in USD: 71,874 + interest 8% 5,750 - payment 18,000 = 59,624. Interest = 5,750 x 84 = Rs 4,83,000 (Dr Interest, Cr Lease liability). Payment = 18,000 x 86 = Rs 15,48,000 (Dr Lease liability, Cr Bank). Closing liability = 59,624 x 86 = Rs 51,27,664. Book balance before restatement = 59,65,542 + 4,83,000 - 15,48,000 = 49,00,542 -> exchange loss Rs 2,27,122 to P&L. ROU not restated (non-monetary, historical cost); depreciation = 64,13,742/5 = Rs 12,82,748; closing ROU Rs 51,30,994. Liability split: year-2 interest 59,624 x 8% = 4,770, principal 13,230 x 86 = Rs 11,37,780 current; balance Rs 39,89,884 non-current.",
+     "answer": "1. Initial recognition (1.4.2024):\nPV of payments = USD 18,000 x 3.993 = USD 71,874 x Rs 83 = Rs 59,65,542 -> Lease liability.\nCommission (initial direct cost) = 6% x USD 90,000 = USD 5,400 x 83 = Rs 4,48,200.\nROU asset = 59,65,542 + 4,48,200 = Rs 64,13,742.\n2. Subsequent measurement (31.3.2025):\nLease liability (USD): 71,874 + 5,750 (8%) - 18,000 = 59,624.\nInterest at average rate: 5,750 x 84 = Rs 4,83,000 (Dr Finance cost, Cr Lease liability).\nPayment at closing rate: 18,000 x 86 = Rs 15,48,000 (Dr Lease liability, Cr Bank).\nLiability is monetary -> restate at Rs 86: 59,624 x 86 = Rs 51,27,664; exchange loss = 51,27,664 - 49,00,542 = Rs 2,27,122 to P&L.\nROU is non-monetary -> no restatement; depreciation 64,13,742/5 = Rs 12,82,748; closing ROU Rs 51,30,994.\n3. Presentation and disclosure:\nBalance Sheet - ROU Rs 51,30,994 (separate line or within PPE with disclosure); lease liability Rs 51,27,664: current Rs 11,37,780, non-current Rs 39,89,884.\nP&L - depreciation Rs 12,82,748; finance cost Rs 4,83,000; exchange loss Rs 2,27,122.\nCash flow - principal part of payment in financing; interest as per policy.\nNotes - depreciation on ROU by class, interest on lease liability, total cash outflow for leases, additions to ROU, carrying amount at year end, maturity analysis of lease liability.",
+     "icai": "Same figures as ICAI (ROU Rs 64,13,742; liability Rs 51,27,664; exchange loss Rs 2,27,122; depreciation Rs 12,82,748); current/non-current split and disclosures added.",
+     "flag": null,
+     "trap": "Restating the ROU asset at Rs 86 - it is non-monetary; only the lease liability is retranslated.",
+     "minutes": 15
+    }
+   ]
+  },
+  {
+   "no": 4,
+   "title": "Motor Bikes Limited (MBL)",
+   "industry": "Two-wheeler manufacturing; diversifying into solar-powered bikes",
+   "story": "Unlisted public two-wheeler maker launching 'Powerhouse', a patented solar bike. Issues on a woman director, a new Baddi unit's GST, buying TPS Ltd, a Naira receivable, TDS on varied payments and Porter's five forces.",
+   "marks_by_subject": {
+    "Law": 2,
+    "Audit": 2,
+    "Costing": 7,
+    "FR": 2,
+    "IDT": 2,
+    "DT": 5,
+    "AFM": 5
+   },
+   "difficulty": "Moderate",
+   "first15": "Solid pick: MCQs are direct (ss.149/165, CAATs, Ind AS 103 date, GST ITC) and 4.7 is a short cross-rate sum; the 5-mark TDS (194E, 194R, DTAA) needs exact rates.",
+   "questions": [
+    {
+     "q": "4.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "Companies Act, 2013 - Woman director (s.149(1), Rule 3) and number of directorships (s.165)",
+     "topic": "Whether a woman director is mandatory and whether each candidate can be appointed",
+     "ask": "MBL: paid-up capital Rs 95 crore, turnover Rs 350 crore; company limit of 12 directorships by special resolution. Which are correct: (i) Nadar (15 other boards, 9 public) can be appointed; (ii) woman director mandatory on turnover; (iii) mandatory on average shareholder funds; (iv) Priya (11 other boards, 10 public) cannot be appointed?",
+     "options": {
+      "a": "Statements (i) and (iii)",
+      "b": "Statements (i), (iii) and (iv)",
+      "c": "Statements (i), (ii) and (iv)",
+      "d": "Statements (ii) and (iv)"
+     },
+     "clue": "should not be a director in more than 12 companies",
+     "chapter_clear": true,
+     "think": [
+      "Woman director -> s.149(1) second proviso + Rule 3; number of directorships -> s.165.",
+      "Chapter clear -> SPOM-A Companies Act -> 'woman director', 'maximum number of directorships'.",
+      "Rule 3 tests (latest audited FS): paid-up capital Rs 100 crore (MBL 95 - no) OR turnover Rs 300 crore (MBL 350 - yes); no shareholder-funds test -> (ii) true, (iii) false.",
+      "Nadar: 15 + MBL = 16 > MBL's own limit of 12 (s.165(2)) -> cannot; Priya: 10 public + MBL = 11 public > 10 -> cannot -> (D)."
+     ],
+     "look_up": {
+      "where": "SPOM-A Corporate Laws - Companies Act ss.149, 165; Appointment and Qualification of Directors Rules, Rule 3",
+      "index_keywords": [
+       "woman director",
+       "Rule 3",
+       "turnover 300 crore",
+       "section 165",
+       "public companies limit"
+      ]
+     },
+     "solve": "Woman director: every listed company and every other public company with paid-up share capital of Rs 100 crore or more, or turnover of Rs 300 crore or more (latest audited FS), must have one. MBL: capital Rs 95 crore (below), turnover Rs 350 crore (above) -> mandatory on turnover; there is no shareholders' funds test. S.165(1): maximum 20 companies, of which not more than 10 public; s.165(2): members may fix a lower number by special resolution - MBL fixed 12. Nadar: 15 others (9 public) + MBL = 16 -> within the Act (20/10 public) but above MBL's limit of 12 -> cannot be appointed. Priya: 11 others (10 public) + MBL (public) = 11 public > 10 -> cannot be appointed. Correct: (ii) and (iv).",
+     "answer": "(D) Statements (ii) and (iv).",
+     "icai": "(D)",
+     "flag": null,
+     "trap": "Clearing Ms. Nadar because 16 is within the s.165(1) limit of 20 - MBL's special resolution caps it at 12.",
+     "minutes": 3
+    },
+    {
+     "q": "4.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "Audit in an automated environment - Computer-Assisted Audit Techniques (with SA 240 limitations)",
+     "topic": "What CAATs can and cannot detect",
+     "ask": "Fraud with unrecorded assets/liabilities and fake vendor contracts was missed despite CAATs. Which statements INCORRECTLY explain why: (i) CAATs cannot see items kept out of the system or backed by forged papers; (ii) CAATs cannot recalculate or do ratio/trend analysis; (iii) CAATs are ineffective when controls are strong and audit is fully automated; (iv) CAATs can catch collusion, so this shows negligence?",
+     "options": {
+      "a": "(i), (ii), (iii)",
+      "b": "(i), (ii), (iv)",
+      "c": "(i), (iii), (iv)",
+      "d": "(ii), (iii), (iv)"
+     },
+     "clue": "fraud involving unrecorded liabilities and assets, along with fabricated vendor contracts",
+     "chapter_clear": true,
+     "think": [
+      "CAATs -> Audit SM chapter on audit in an automated environment / digital auditing.",
+      "Chapter clear -> Audit SM index 'CAATs' -> uses (compliance and substantive tests, recalculation, analytics) and limits (data outside the system).",
+      "(i) is a valid reason - CAATs only test data inside the system; off-book items and fake paper slip through.",
+      "(ii) false, (iii) false, (iv) false (collusion often leaves no anomaly; missing it is not proof of negligence) -> (D)."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - Audit in an Automated Environment / Digital Auditing; SA 240",
+      "index_keywords": [
+       "CAATs",
+       "computer assisted audit techniques",
+       "collusion",
+       "inherent limitations"
+      ]
+     },
+     "solve": "CAATs work on data captured in the system: they recalculate, run analytics (ratios, trends), test controls and do substantive tests on whole populations. They cannot see transactions kept out of the system or supported by forged documents - so (i) is a correct explanation. (ii) is wrong - recalculation and analytics are core CAAT uses. (iii) is wrong - CAATs serve both compliance and substantive testing; strong controls do not make them ineffective. (iv) is wrong - collusion and forgery may leave no system anomaly (inherent limitation under SA 240), so missing them does not by itself prove negligence. Incorrect: (ii), (iii), (iv).",
+     "answer": "(D) (ii), (iii), (iv)",
+     "icai": "(D)",
+     "flag": null,
+     "trap": "Reading it as 'which are correct' - the question asks for the INCORRECT explanations.",
+     "minutes": 3
+    },
+    {
+     "q": "4.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "Pricing Decisions - pricing strategies (SPOM-B)",
+     "topic": "Premium pricing vs skimming vs penetration",
+     "ask": "MBL fixes a 50% mark-up on direct cost for 'Powerhouse', a patented solar bike with superior technology expected to lead the market. Which pricing policy is this?",
+     "options": {
+      "a": "Skimming pricing",
+      "b": "Premium pricing",
+      "c": "Penetration pricing",
+      "d": "Revolutionary pricing"
+     },
+     "clue": "Powerhouse have the potential of being a market leader",
+     "chapter_clear": true,
+     "think": [
+      "Pricing policy for a new product -> SPOM-B 'Pricing Decisions' - skimming vs penetration vs premium.",
+      "Chapter clear -> SPOM-B -> pricing strategies -> compare definitions.",
+      "Facts: superior unique technology, patented parts, only 3 weak rivals, market-leader potential, high mark-up kept - no plan to cut price later.",
+      "High price justified by superiority and exclusivity = premium pricing; skimming needs a planned price cut -> (B)."
+     ],
+     "look_up": {
+      "where": "ICAI SPOM-B SCPM - Pricing Decisions",
+      "index_keywords": [
+       "premium pricing",
+       "skimming pricing",
+       "penetration pricing",
+       "pricing strategies"
+      ]
+     },
+     "solve": "Penetration = low price to win share fast - not the case. Skimming = high launch price for early buyers, lowered step by step as rivals enter. Premium pricing = a high price held because the product is superior/exclusive and buyers see higher value. Powerhouse has unique superior technology, patented spares sold only through MBL's distributors, little competition and a 50% mark-up justified by its market-leader potential; nothing says the price will be cut later -> premium pricing. 'Revolutionary pricing' is not a standard strategy.",
+     "answer": "(B) Premium pricing",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Choosing skimming because it is a new launch - skimming implies a planned price cut; the case only stresses superiority and leadership.",
+     "minutes": 3
+    },
+    {
+     "q": "4.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 103 Business Combinations - acquisition date and contingent consideration",
+     "topic": "Date control is obtained; cash earn-out as financial liability",
+     "ask": "Dates: agreement 1.12.2024, appointed date 1.1.2025, board control 1.2.2025, payment 28.2.2025, share transfer 15.3.2025; profits from 1.2.2025. What is the acquisition date, and how is the cash earn-out (Rs 2 m, fair value Rs 1.5 m) classified?",
+     "options": {
+      "a": "28 February 2025; Equity",
+      "b": "1 December 2024; Financial liability",
+      "c": "15 March 2025; Equity",
+      "d": "1 February 2025; Financial liability"
+     },
+     "clue": "The date of obtaining control over Board representation was 1st February, 2025",
+     "chapter_clear": true,
+     "think": [
+      "'Date of acquisition' + performance-based extra payment -> Ind AS 103 (acquisition date; contingent consideration).",
+      "Chapter clear -> FR SM -> Ind AS 103 -> 'acquisition date' = date control is obtained.",
+      "Board control and profits both from 1 Feb 2025 - payment, transfer and agreement dates do not decide it.",
+      "Earn-out payable in cash = obligation to deliver cash -> financial liability at fair value Rs 1.5 m, later changes in P&L -> (D)."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 103",
+      "index_keywords": [
+       "acquisition date",
+       "control",
+       "contingent consideration",
+       "financial liability"
+      ]
+     },
+     "solve": "Ind AS 103: acquisition date = date the acquirer obtains control of the acquiree. MBL got board control and the right to profits on 1 February 2025 -> acquisition date. Agreement, appointed, payment and share-transfer dates are not decisive. Contingent consideration is measured at acquisition-date fair value (Rs 1.5 m) and added to consideration; as it will be settled in cash, it is a financial liability (Ind AS 32), remeasured at fair value through P&L afterwards.",
+     "answer": "(D) 1 February 2025; financial liability.",
+     "icai": "(D)",
+     "flag": null,
+     "trap": "Picking the share-transfer or payment date - control, not legal formality, fixes the acquisition date.",
+     "minutes": 3
+    },
+    {
+     "q": "4.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "GST - Blocked credits u/s 17(5) (construction, plant and machinery, motor vehicles, outdoor catering)",
+     "topic": "Eligible ITC on setting up a new factory",
+     "ask": "Baddi unit (CGST+SGST 18%): civil construction Rs 200 lakh (incl. Rs 20 lakh foundation for P&M), P&M Rs 300 lakh, in-factory material vehicle Rs 18 lakh, outdoor catering for inauguration Rs 10 lakh. How much ITC is allowed?",
+     "options": {
+      "a": "Rs 98.64 lakh",
+      "b": "Rs 86.40 lakh",
+      "c": "Rs 60.84 lakh",
+      "d": "Rs 62.64 lakh"
+     },
+     "clue": "materials purchased for constructing the foundation bed for erecting plant and machinery",
+     "chapter_clear": true,
+     "think": [
+      "Factory set-up costs + ITC -> s.17(5)(c)/(d) construction block, (a) motor vehicles, (b) outdoor catering.",
+      "Chapter clear -> IDT SM -> ITC -> blocked credits -> Explanation 'plant and machinery' (includes foundation).",
+      "Civil Rs 180 lakh blocked; foundation Rs 20 lakh + P&M Rs 300 lakh allowed; in-factory material vehicle is not a passenger vehicle - allowed; catering blocked.",
+      "(20 + 300 + 18) x 18% = Rs 60.84 lakh -> (C)."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - GST Input Tax Credit, s.17(5)",
+      "index_keywords": [
+       "plant and machinery",
+       "foundation",
+       "construction of immovable property",
+       "motor vehicle",
+       "outdoor catering"
+      ]
+     },
+     "solve": "Civil construction (building) Rs 180 lakh - blocked u/s 17(5)(d). Foundation bed for P&M Rs 20 lakh - 'plant and machinery' includes foundation and structural supports -> ITC 3.60. P&M Rs 300 lakh -> 54.00. Vehicle to move material inside the factory - not a motor vehicle for transport of persons (block is only for those up to 13 seats) -> 3.24. Outdoor catering Rs 10 lakh - blocked u/s 17(5)(b)(i), even for a product-display event. Total = 3.60 + 54.00 + 3.24 = Rs 60.84 lakh.",
+     "answer": "(C) Rs 60.84 lakh",
+     "icai": "(C)",
+     "flag": "For Nov 2026: Finance Act 2025 replaced 'plant or machinery' with 'plant and machinery' in s.17(5)(d) retrospectively from 1.7.2017 (overriding Safari Retreats) - building ITC stays blocked; answer unchanged.",
+     "trap": "Allowing catering because products were shown to customers - s.17(5)(b) blocks outdoor catering whatever the purpose.",
+     "minutes": 3
+    },
+    {
+     "q": "4.6",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "DT",
+     "also": null,
+     "chapter": "Deduction of tax at source - ss.194, 194E, 194R, 195 with DTAA rate (s.90(2))",
+     "topic": "TDS on dividend, NR sportsman, influencer benefit, FTS to foreign company, dealer-meet sightseeing",
+     "ask": "State with reasons the TDS on: (i) dividend Rs 500 lakh (Rs 200 lakh to NRs); (ii) Rs 60 lakh to NR tennis player for a launch; (iii) bike (cost Rs 2 lakh) given to an influencer; (iv) FTS Rs 110 lakh to a German company (DTAA 15%); (v) Thailand meet for 200 distributors at Rs 4 lakh each (2 days meeting + 2 days sightseeing).",
+     "options": null,
+     "clue": "identified the following expenses incurred by company which involves applicability of TDS",
+     "chapter_clear": true,
+     "think": [
+      "Five items, four sections: 194 (resident dividend), 195 (NR dividend, FTS), 194E (NR sportsman), 194R (benefit/perquisite).",
+      "Chapter clear -> DT SM -> TDS chapter + Part II of First Schedule rates; s.194R CBDT circular for influencer and dealer-meet cases.",
+      "NR rates = rate + surcharge + 4% HEC; DTAA rate is applied as it is, without surcharge/cess, if lower (s.90(2)).",
+      "194R: only the sightseeing half (2 of 4 days) is a benefit; product retained by the influencer is a benefit."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - Deduction of Tax at Source (ss.194, 194E, 194R, 195); s.90(2)",
+      "index_keywords": [
+       "194E non-resident sportsman",
+       "194R benefit or perquisite",
+       "influencer",
+       "dealer conference",
+       "rates in force",
+       "DTAA rate"
+      ]
+     },
+     "solve": "(i) Residents: s.194 @10% on Rs 300 lakh = Rs 30 lakh (each shareholder above Rs 5,000). NRs: s.195 @20% + 4% HEC = 20.8% on Rs 200 lakh = Rs 41.60 lakh (surcharge ignored). Total Rs 71.60 lakh. (ii) Roger Borg, NR sportsman not a citizen, paid to appear at a launch - treated as advertisement -> s.194E @20% + SC 10% + HEC 4% = 22.88% x 60 = Rs 13.728 lakh. If not advertisement -> s.195 @30% + 10% + 4% = 34.32% -> Rs 20.592 lakh. (iii) Bike retained by influencer = benefit u/s 194R; value Rs 2 lakh > Rs 20,000 -> 10% = Rs 20,000; being in kind, MBL must ensure this tax is paid before handing over the bike. (iv) FTS: rate in force 35% (agreement not approved by CG) vs DTAA 15% -> lower DTAA rate, no SC/HEC: 15% x 110 = Rs 16.50 lakh (needs TRC/Form 10F). (v) Rs 4 lakh per distributor over 4 days; 2 meeting days are business, not a benefit; 2 sightseeing days = Rs 2 lakh each x 200 = Rs 4 crore -> s.194R @10% = Rs 40 lakh if tax is recovered from distributors; if MBL bears it, gross up: 4 crore x 100/90 = Rs 4.4444 crore -> Rs 44.44 lakh.",
+     "answer": "(i) Dividend: residents - s.194 @10% on Rs 300 lakh = Rs 30 lakh (assuming each gets > Rs 5,000); non-residents - s.195 @20% + HEC 4% = 20.8% on Rs 200 lakh = Rs 41.60 lakh. Total TDS Rs 71.60 lakh.\n(ii) Roger Borg (NR sportsman, not a citizen), launch appearance treated as advertisement: s.194E @20% + SC 10% + HEC 4% = 22.88% x Rs 60 lakh = Rs 13.728 lakh. [Alt: if not advertisement, s.195 @34.32% = Rs 20.592 lakh.]\n(iii) Bike to influencer, retained by him: benefit/perquisite u/s 194R; value Rs 2 lakh > Rs 20,000; TDS 10% = Rs 20,000; as it is in kind, MBL must ensure tax is paid before releasing the bike.\n(iv) FTS to Marina GmbH: lower of DTAA 15% and rate in force 35% -> 15% x Rs 110 lakh = Rs 16.50 lakh; no surcharge/cess on DTAA rate (s.90(2)).\n(v) Thailand meet: business meeting days not a benefit; sightseeing 2 of 4 days = Rs 2 lakh x 200 = Rs 4 crore -> s.194R @10% = Rs 40 lakh (if recovered from distributors); if borne by MBL, gross up: Rs 4 crore x 100/90 x 10% = Rs 44.44 lakh.",
+     "icai": "Same as ICAI (Rs 71.60 lakh; Rs 13.728 lakh or alt Rs 20.592 lakh; Rs 20,000; Rs 16.50 lakh; Rs 40 lakh / Rs 44.44 lakh).",
+     "flag": "(iii) CBDT Circular 12/2022 values self-manufactured goods at the price charged to customers; ICAI used cost Rs 2 lakh as no price is given. For Nov 2026: s.194 dividend threshold is Rs 10,000 from 1.4.2025 (Finance Act 2025).",
+     "trap": "Adding surcharge and cess to the DTAA rate - the 15% treaty rate is applied as it is.",
+     "minutes": 15
+    },
+    {
+     "q": "4.7",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "Foreign Exchange Exposure and Risk Management - cross rates and forward cover",
+     "topic": "Naira receivable via USD cross rates; unhedged vs forward",
+     "ask": "Export receivable of Naira 300 lakh. Using cross rates through USD, find the expected loss if unhedged and with forward cover; if actual spot is Rs 86.5/USD and Naira 1600/USD, was forward cover justified?",
+     "options": null,
+     "clue": "The currency Naira is not directly quoted against Indian Rupee",
+     "chapter_clear": true,
+     "think": [
+      "'Not directly quoted' -> cross rate through USD: Rs per Naira = (Rs per USD) / (Naira per USD).",
+      "Chapter clear -> AFM SM -> Foreign Exchange -> cross rates and forward cover illustration.",
+      "Spot 84/1400 = 0.0600; expected 85/1600 = 0.0531; forward 86/1550 = 0.0555; actual 86.5/1600 = 0.0541.",
+      "Compare each with the export-date value Rs 18,00,000; the higher rupee receipt wins."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - Foreign Exchange Exposure and Risk Management",
+      "index_keywords": [
+       "cross rate",
+       "forward cover",
+       "transaction exposure",
+       "export receivable"
+      ]
+     },
+     "solve": "Export value = 3,00,00,000 x 0.0600 = Rs 18,00,000. Unhedged expected: 0.0531 x 3 crore = Rs 15,93,000 -> loss Rs 2,07,000. Forward: 0.0555 x 3 crore = Rs 16,65,000 -> loss Rs 1,35,000 (saves Rs 72,000). Actual spot: 0.0541 x 3 crore = Rs 16,23,000 -> loss Rs 1,77,000. Forward gives Rs 42,000 more than actual spot -> forward cover justified. (Unrounded rates give losses of Rs 2,06,250 / Rs 1,35,484 / Rs 1,78,125 - also accepted.)",
+     "answer": "Cross rates (Rs per Naira = Rs/USD divided by Naira/USD):\nSpot at export: 84/1400 = 0.0600\nExpected: 85/1600 = 0.0531\nForward: 86/1550 = 0.0555\nActual on 31.3.2025: 86.5/1600 = 0.0541\n(i) Unhedged: value at export Rs 18,00,000 (0.0600 x 3 crore Naira); expected receipt Rs 15,93,000 -> expected loss Rs 2,07,000.\nWith forward cover: receipt Rs 16,65,000 -> loss Rs 1,35,000 (loss cut by Rs 72,000).\n(ii) At actual spot: receipt Rs 16,23,000 -> loss Rs 1,77,000.\nConclusion: forward cover gives Rs 16,65,000 vs Rs 16,23,000 unhedged - taking forward cover is justified.",
+     "icai": "Same as ICAI (loss Rs 2,07,000 unhedged; Rs 1,35,000 with forward; Rs 1,77,000 at actual spot; forward justified).",
+     "flag": null,
+     "trap": "Dividing the wrong way (Naira per Rs) - keep Rs per Naira = Rs per USD divided by Naira per USD.",
+     "minutes": 15
+    },
+    {
+     "q": "4.8",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "SCMPE (SPOM Set B) Ch 1 - Porter's Five Forces (SM 1.34)",
+     "topic": "Five forces applied to MBL's solar bike launch",
+     "ask": "Summarise the issues MBL must tackle under Porter's Five Forces for its solar bike launch - with reference to the case facts, not abstract theory.",
+     "options": null,
+     "clue": "analyse their strategy to launch solar powered motor vehicle as per Porter's Five Forces Model",
+     "chapter_clear": true,
+     "think": [
+      "Porter's Five Forces is named - chapter clear; known model -> write from memory (step 4) and save time.",
+      "Note the warning 'not a mere abstract reference' - every force must carry a case fact.",
+      "Map facts: Rs 100 crore R&D and patents (new entrants); petrol bikes and 20 EV makers (substitutes); only 3 weak solar rivals (rivalry); solar panels/batteries (suppliers); distributors and price-sensitive buyers (buyers).",
+      "End with 'key issues' + 3-4 actions - that is what 'summary of issues to be tackled' asks for."
+     ],
+     "look_up": {
+      "where": "ICAI SM SPOM Set B (SCMPE) - Ch 1, Porter's Five Forces (1.34)",
+      "index_keywords": [
+       "Porter's five forces",
+       "threat of new entrants",
+       "bargaining power of suppliers",
+       "threat of substitutes",
+       "competitive rivalry"
+      ]
+     },
+     "solve": "New entrants - low: Rs 100 crore R&D before regular operations, unique patented technology, MBL's existing market presence and logistics; but 20 EV makers could add solar later. Substitutes - moderate: petrol two-wheelers and plain EVs; rising fuel prices and OPEC dependence push buyers towards solar. Rivalry - low now: only 3 solar players without superior technology or visibility; may rise as bigger EV players enter. Suppliers - low to moderate: spares are patented and sold only through MBL's distributors; but solar panels and batteries may come from a few, often imported, suppliers. Buyers - moderate: distributors are tied to MBL; end customers may resist a price with 50% mark-up and compare with cheaper EVs. Issues: keep the technology lead, secure critical inputs, justify the premium price, prepare for new entrants. Actions: patents + continuous R&D; long-term contracts or backward integration for panels/batteries; awareness of fuel savings; cheaper variants later.",
+     "answer": "Porter's Five Forces - MBL's solar bike 'Powerhouse':\n1. Threat of new entrants - Low: Rs 100 crore R&D needed before operations, patented technology, MBL's existing brand and logistics. Issue: 20 EV makers can move into solar - keep innovating.\n2. Threat of substitutes - Moderate: petrol two-wheelers and EVs without solar. Rising fuel prices and OPEC dependence favour solar. Issue: show running-cost savings.\n3. Rivalry - Low for now: only 3 solar makers, none with superior technology or visibility. Issue: rivalry will rise as large EV/global players enter.\n4. Bargaining power of suppliers - Low to moderate: patented spares controlled by MBL; but solar panels and batteries depend on a few (often imported) suppliers. Issue: input supply and price risk.\n5. Bargaining power of buyers - Moderate: distributors bound to MBL's channel; end buyers price-sensitive vs a 50% mark-up. Issue: premium price may slow adoption.\nActions: protect patents and keep R&D going; long-term contracts/backward integration for panels and batteries; customer awareness on savings and green benefits; launch lower-priced variants later to widen the market.",
+     "icai": "Same conclusion as ICAI (ICAI notes alternative views are possible).",
+     "flag": null,
+     "trap": "Writing the textbook model with no case facts - the question says such an answer will not score.",
+     "minutes": 15
+    }
+   ]
+  },
+  {
+   "no": 5,
+   "title": "Time Jewellers Ltd. (TJL)",
+   "industry": "Gold and diamond jewellery; hotels ('TJ Residency')",
+   "story": "Chandigarh jeweller that has diversified into hotels and is planning an IPO and a merger with VMS Ltd. Questions on projections, merger EPS, BSC, ICDR eligibility, a membership scheme under Ind AS 115, variances, customs warehousing and MAT.",
+   "marks_by_subject": {
+    "Audit": 2,
+    "AFM": 2,
+    "Costing": 7,
+    "Law": 2,
+    "FR": 2,
+    "IDT": 5,
+    "DT": 5
+   },
+   "difficulty": "Easy",
+   "first15": "Best pick in this paper: the 15 descriptive marks are textbook numericals (variance reconciliation, customs warehousing interest, MAT book profit) and most MCQs are one-step.",
+   "questions": [
+    {
+     "q": "5.1",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Audit",
+     "also": null,
+     "chapter": "SAE 3400 The Examination of Prospective Financial Information (with ICAI UDIN guidelines)",
+     "topic": "Report on projections - UDIN, form of assurance, caveats",
+     "ask": "Which of CA Ravi's statements are INCORRECT: (i) UDIN not mandatory on such reports; (ii) no opinion needed on the projections; (iii) accuracy of projections is not vouched for; (iv) intended use to be stated with caution against other uses?",
+     "options": {
+      "a": "Statements (i), (iii) and (iv)",
+      "b": "Statements (i), (ii) and (iv)",
+      "c": "Statements (i) and (ii)",
+      "d": "Statements (i) and (iv)"
+     },
+     "clue": "projected cash flow and profitability statements examined and signed by the Chartered accountants",
+     "chapter_clear": true,
+     "think": [
+      "Examining projections = prospective financial information -> SAE 3400; UDIN -> ICAI guidelines.",
+      "Chapter clear -> Audit SM -> 'prospective financial information' -> contents of the report.",
+      "Report gives negative assurance on assumptions + opinion on preparation and presentation -> (ii) wrong; UDIN is mandatory for all attest/certificate work -> (i) wrong.",
+      "(iii) caveat on achievability and (iv) caution against other uses are both required -> correct -> (C)."
+     ],
+     "look_up": {
+      "where": "ICAI SM Audit - SAE 3400 (Prospective Financial Information); UDIN guidelines",
+      "index_keywords": [
+       "prospective financial information",
+       "SAE 3400",
+       "negative assurance",
+       "UDIN",
+       "projection"
+      ]
+     },
+     "solve": "(i) UDIN is mandatory for all certificates, reports and attest work signed by members, including this report -> incorrect. (ii) The SAE 3400 report gives negative assurance on whether the assumptions are a reasonable basis and an opinion on whether the projections are properly prepared on those assumptions and presented per the framework -> 'no opinion' is incorrect. (iii) The report says actual results will differ and the accountant does not vouch for achievability -> correct. (iv) For a projection, the report states the purpose and hypothetical assumptions and cautions readers against other uses -> correct.",
+     "answer": "(C) Statements (i) and (ii).",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Marking (iii) as wrong - the report never vouches for the accuracy or achievability of projections.",
+     "minutes": 3
+    },
+    {
+     "q": "5.2",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "AFM",
+     "also": null,
+     "chapter": "Mergers, Acquisitions and Corporate Restructuring - exchange ratio and post-merger EPS",
+     "topic": "Share exchange at market prices",
+     "ask": "TJL (earnings Rs 30 crore, 60 lakh shares, price Rs 75) merges VMS (Rs 6 crore, 30 lakh shares, price Rs 50) with exchange ratio on market prices. Post-merger EPS of TJL?",
+     "options": {
+      "a": "Rs 72",
+      "b": "Rs 65",
+      "c": "Rs 45",
+      "d": "Rs 40"
+     },
+     "clue": "exchange ratio is set according to current market prices",
+     "chapter_clear": true,
+     "think": [
+      "Share exchange + EPS -> AFM Mergers and Acquisitions.",
+      "Chapter clear; known formula -> no need to open the book.",
+      "Ratio = 50/75 = 2/3 -> new shares = 30 lakh x 2/3 = 20 lakh -> total 80 lakh.",
+      "Combined earnings 30 + 6 = Rs 36 crore / 80 lakh = Rs 45 -> (C)."
+     ],
+     "look_up": {
+      "where": "ICAI SM AFM - Mergers, Acquisitions and Corporate Restructuring",
+      "index_keywords": [
+       "exchange ratio",
+       "market price basis",
+       "post-merger EPS"
+      ]
+     },
+     "solve": "Exchange ratio = 50/75 = 0.6667 TJL share per VMS share. New shares = 30 lakh x 2/3 = 20 lakh. Total = 60 + 20 = 80 lakh shares. Combined earnings (no synergy given) = 30 + 6 = Rs 36 crore. EPS = 36,00,00,000 / 80,00,000 = Rs 45.",
+     "answer": "(C) Rs 45",
+     "icai": "(C)",
+     "flag": null,
+     "trap": "Stopping at pre-merger EPS Rs 50, or adding VMS's 30 lakh shares 1:1 - only 20 lakh new shares are issued.",
+     "minutes": 3
+    },
+    {
+     "q": "5.3",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "Performance Measurement - Balanced Scorecard (SPOM-B)",
+     "topic": "Four perspectives of the Balanced Scorecard",
+     "ask": "Which of the strategist's objectives fit the Balanced Scorecard: (i) revenue and earnings; (ii) customer satisfaction, acquisition, loyalty; (iii) meeting customer needs while keeping earnings; (iv) thought leadership for quick decisions; (v) employee, IT and procedure capabilities?",
+     "options": {
+      "a": "(i), (ii) and (iii)",
+      "b": "(i), (ii), (iii) and (v)",
+      "c": "(i), (iv) and (v)",
+      "d": "(i), (ii) and (v)"
+     },
+     "clue": "improving employee capabilities, information system capabilities and organizational procedures",
+     "chapter_clear": true,
+     "think": [
+      "Objectives in groups -> Balanced Scorecard: financial, customer, internal business process, learning and growth.",
+      "Chapter clear -> SPOM-B -> Balanced Scorecard; known - answer without the book.",
+      "(i) financial, (ii) customer, (iii) internal business process, (v) learning and growth.",
+      "(iv) 'thought leadership for quick decisions' is not a BSC perspective -> (B)."
+     ],
+     "look_up": {
+      "where": "ICAI SPOM-B SCPM - Performance Measurement (Balanced Scorecard)",
+      "index_keywords": [
+       "balanced scorecard",
+       "four perspectives",
+       "learning and growth",
+       "internal business process"
+      ]
+     },
+     "solve": "Financial - revenue and earnings (i). Customer - satisfaction, acquisition and loyalty (ii). Internal business process - processes that satisfy customer requirements while keeping earnings (iii). Learning and growth - employee capabilities, information system capabilities and organisational procedures (v). Item (iv) is a leadership trait, not a perspective.",
+     "answer": "(B) (i), (ii), (iii) and (v)",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Dropping (iii) - satisfying customer requirements through processes is the internal business process perspective.",
+     "minutes": 3
+    },
+    {
+     "q": "5.4",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "Law",
+     "also": null,
+     "chapter": "SEBI (ICDR) Regulations, 2018 - Eligibility for IPO (Regulation 6(1))",
+     "topic": "Profitability-route tests: NTA and monetary assets, operating profit, net worth, name change",
+     "ask": "TJL: NTA Rs 3.25/3.10/3.50 crore (60% monetary, 70% of it firmly committed), operating profit Rs 18/16/17 crore, net worth Rs 1.5 crore each year, name changed 10 months ago with 52% revenue from the new line. Is it eligible for an IPO?",
+     "options": {
+      "a": "Yes - all thresholds met and excess monetary assets committed to business use",
+      "b": "No - more than 50% of net tangible assets are monetary assets",
+      "c": "No - operating profit test is not met in all three years",
+      "d": "No - name changed within a year and less than 60% revenue came from the new activity"
+     },
+     "clue": "TJL planning to go public has provided the following financial details",
+     "chapter_clear": true,
+     "think": [
+      "IPO eligibility -> ICDR Regulation 6(1) (profitability route) - four tests.",
+      "Chapter clear -> SPOM-A -> SEBI ICDR -> 'eligibility requirements for initial public offer'.",
+      "NTA >= Rs 3 crore each year; monetary assets 60% > 50% but the excess is firmly committed -> pass; average operating profit 17 >= 15 with profit every year -> pass.",
+      "Net worth 1.5 >= 1 each year -> pass; name change test needs >= 50% revenue from the new activity: 52% -> pass -> (A)."
+     ],
+     "look_up": {
+      "where": "SPOM-A - SEBI (ICDR) Regulations 2018, Regulation 6",
+      "index_keywords": [
+       "eligibility for initial public offer",
+       "net tangible assets",
+       "monetary assets",
+       "average operating profit",
+       "change of name"
+      ]
+     },
+     "solve": "Reg 6(1): (a) NTA of at least Rs 3 crore in each of the preceding 3 full years, with not more than 50% in monetary assets - if more, the issuer must have firmly committed to use the excess in its business: 3.25, 3.10, 3.50 crore; 60% monetary but 70% of it committed -> met. (b) Average operating profit at least Rs 15 crore over 3 years, with operating profit in each year: (18 + 16 + 17)/3 = 17 -> met. (c) Net worth at least Rs 1 crore in each year: 1.5 -> met. (d) Name changed within the last year: at least 50% of the last full year's revenue from the activity shown by the new name: 52% -> met.",
+     "answer": "(A) Yes - all key thresholds are met and the excess monetary assets are committed to business use.",
+     "icai": "(A)",
+     "flag": null,
+     "trap": "Picking (D) by remembering 60% - the name-change test is 50% of revenue.",
+     "minutes": 3
+    },
+    {
+     "q": "5.5",
+     "type": "MCQ",
+     "marks": 2,
+     "subject": "FR",
+     "also": null,
+     "chapter": "Ind AS 115 Revenue from Contracts with Customers - customer options for additional services (renewal options)",
+     "topic": "Material right in discounted renewals - practical alternative allocation",
+     "ask": "500 members pay Rs 12,000 for year 1 with renewal options at Rs 10,000 (year 2) and Rs 8,000 (year 3); attrition 40% a year. Revenue and contract liability in year 1?",
+     "options": {
+      "a": "Rs 60,00,000; Nil",
+      "b": "Rs 53,26,530; Rs 6,73,470",
+      "c": "Rs 52,36,350; Rs 7,63,650",
+      "d": "Rs 54,13,045; Rs 5,86,955"
+     },
+     "clue": "the option to renew is given to the customers for Rs 10,000 and Rs 8,000",
+     "chapter_clear": true,
+     "think": [
+      "Discounted renewal option = material right -> Ind AS 115 customer options (practical alternative for renewals).",
+      "Chapter clear -> FR SM -> Ind AS 115 -> 'customer options' / renewal illustration; replace the figures.",
+      "Expected members 500, 300, 180 = 980 member-years; expected cash 60,00,000 + 30,00,000 + 14,40,000 = 1,04,40,000.",
+      "Per member-year 10,653.06 -> year 1 revenue 53,26,530; liability 60,00,000 - 53,26,530 = 6,73,470 -> (B)."
+     ],
+     "look_up": {
+      "where": "ICAI SM FR - Ind AS 115 (customer options, renewal options)",
+      "index_keywords": [
+       "material right",
+       "renewal option",
+       "customer options for additional goods or services",
+       "practical alternative"
+      ]
+     },
+     "solve": "Renewals at lower prices are a material right. Practical alternative: allocate total expected consideration over total expected services. Members: Y1 500; Y2 500 x 60% = 300; Y3 300 x 60% = 180; total 980. Consideration: 500 x 12,000 = 60,00,000; 300 x 10,000 = 30,00,000; 180 x 8,000 = 14,40,000; total 1,04,40,000. Per member-year = 1,04,40,000/980 = Rs 10,653.06. Year 1 revenue = 500 x 10,653.06 = Rs 53,26,530. Cash 60,00,000 - revenue = contract liability Rs 6,73,470.",
+     "answer": "(B) Revenue Rs 53,26,530; contract liability Rs 6,73,470.",
+     "icai": "(B)",
+     "flag": null,
+     "trap": "Recognising the full Rs 60 lakh (A) - the discount on renewals is a material right that defers part of year-1 cash.",
+     "minutes": 3
+    },
+    {
+     "q": "5.6",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "Costing",
+     "also": null,
+     "chapter": "Standard Costing - planning and operational variances (market size and market share), marginal costing reconciliation",
+     "topic": "Reconciling budgeted profit to actual profit",
+     "ask": "Reconcile budgeted profit Rs 34 lakh to actual profit Rs 17 lakh for the stone unit under marginal costing, splitting volume into market size and market share effects.",
+     "options": null,
+     "clue": "total market size would be 40 lakh units",
+     "chapter_clear": true,
+     "think": [
+      "'Market size' + marginal costing reconciliation -> sales volume contribution variance split into market size (planning) and market share (operational).",
+      "Chapter clear -> SPOM-B -> Standard Costing -> 'market size variance', 'market share variance' illustration; swap figures.",
+      "Per unit: budget price 10.50, VC 6.30, contribution 4.20; actual price 11.00, VC 7.00; budget share 50%, actual share 46%.",
+      "Variances: size -5.25, share -6.30, price +8.625, VC -12.075, fixed -2.00 (Rs lakh) -> 34 to 17."
+     ],
+     "look_up": {
+      "where": "ICAI SPOM-B SCPM - Standard Costing (planning and operational variances)",
+      "index_keywords": [
+       "market size variance",
+       "market share variance",
+       "sales volume contribution variance",
+       "reconciliation of profit"
+      ]
+     },
+     "solve": "Budget share = 20/40 = 50%; actual share = 17.25/37.50 = 46%. Budget per unit: price 210/20 = 10.50; VC 126/20 = 6.30; contribution 4.20. Actual per unit: price 189.75/17.25 = 11.00; VC 120.75/17.25 = 7.00. Market size (planning) = 50% x (37.5 - 40) lakh x 4.20 = Rs 5,25,000 A. Market share (operational) = (46% - 50%) x 37.5 lakh x 4.20 = Rs 6,30,000 A. Sales price = 17.25 lakh x (11.00 - 10.50) = Rs 8,62,500 F. Variable cost = 17.25 lakh x (6.30 - 7.00) = Rs 12,07,500 A. Fixed cost expenditure = 50 - 52 = Rs 2,00,000 A. 34,00,000 - 5,25,000 - 6,30,000 + 8,62,500 - 12,07,500 - 2,00,000 = 17,00,000.",
+     "answer": "Statement of reconciliation - budgeted vs actual profit (Rs):\nBudgeted profit 34,00,000\nLess: Sales volume contribution - planning (market size) variance (A) 5,25,000\nLess: Sales volume contribution - operational (market share) variance (A) 6,30,000\nAdd: Sales price variance (F) 8,62,500\nLess: Variable cost variance (A) 12,07,500\nLess: Fixed cost expenditure variance (A) 2,00,000\nActual profit 17,00,000\nWorkings:\nBudget share 20,00,000/40,00,000 = 50%; actual share 17,25,000/37,50,000 = 46%.\nBudgeted contribution per unit = (210 - 126) lakh / 20 lakh = Rs 4.20; std price Rs 10.50; actual price Rs 11.00; std VC Rs 6.30; actual VC Rs 7.00.\nMarket size = 50% x (37,50,000 - 40,00,000) x 4.20 = 5,25,000 (A).\nMarket share = (46% - 50%) x 37,50,000 x 4.20 = 6,30,000 (A).\nPrice = 17,25,000 x (11.00 - 10.50) = 8,62,500 (F).\nVariable cost = 17,25,000 x (6.30 - 7.00) = 12,07,500 (A).\nFixed cost = 50,00,000 - 52,00,000 = 2,00,000 (A).",
+     "icai": "Same figures as ICAI.",
+     "flag": null,
+     "trap": "Valuing volume variances at standard selling price or profit - under marginal costing use budgeted contribution per unit (Rs 4.20).",
+     "minutes": 15
+    },
+    {
+     "q": "5.7",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "IDT",
+     "also": null,
+     "chapter": "Customs - Warehousing (ss.59-61, 72) with rate of exchange (s.14) and rate of duty (s.15)",
+     "topic": "Duty and interest on warehoused goods not removed in time",
+     "ask": "Diamonds (AV USD 5,00,000) warehoused on 27.09.2024 were not removed in time; a s.72 notice was issued; cleared 30.03.2025. Compute duty and interest (ignore AIDC; IGST exempt).",
+     "options": null,
+     "clue": "notice was issued under section 72 of the Customs Act, 1962",
+     "chapter_clear": true,
+     "think": [
+      "'Warehouse' + 'section 72' -> Customs warehousing: rate of exchange, rate of duty on deemed improper removal, interest after 90 days.",
+      "Chapter clear -> IDT SM -> Customs -> Warehousing -> 'goods not removed within permissible period' + 'interest beyond 90 days'.",
+      "Exchange rate: date of into-bond bill of entry (20 Sep) = Rs 81; BCD: rate on the date goods should have been removed - ICAI takes the 10 Dec rate, 10%.",
+      "Interest 15% p.a. from end of 90 days (26 Dec) to payment (30 Mar) = 94 days."
+     ],
+     "look_up": {
+      "where": "ICAI SM IDT - Customs: Warehousing; Valuation",
+      "index_keywords": [
+       "warehoused goods",
+       "section 72",
+       "improper removal",
+       "interest after 90 days",
+       "into-bond bill of entry"
+      ]
+     },
+     "solve": "AV = USD 5,00,000 x Rs 81 (rate on date of presentation of the into-bond bill of entry, s.14) = Rs 4,05,00,000. Goods not removed in time are deemed improperly removed on the day they should have been removed (s.72) -> duty at the rate in force on that day: BCD 10% (10 Dec rate, assumed still in force) = Rs 40,50,000; SWS 10% of BCD = Rs 4,05,000; total duty Rs 44,55,000. Interest u/s 61(2): 90 days from 27.09.2024 end on 26.12.2024; 27.12.2024 to 30.03.2025 = 5 + 31 + 28 + 30 = 94 days; interest = 44,55,000 x 15% x 94/365 = Rs 1,72,097. Total payable Rs 46,27,097.",
+     "answer": "Computation (Rs):\nAssessable value USD 5,00,000 x Rs 81 (rate on date of into-bond bill of entry, 20.9.2024) = 4,05,00,000\nBCD @10% (rate on the date goods should have been removed - deemed improper removal u/s 72; 10 Dec rate) = 40,50,000\nSWS @10% of BCD = 4,05,000\nTotal customs duty = 44,55,000\nInterest: 90 days from order dated 27.9.2024 expire on 26.12.2024; interest @15% p.a. from 27.12.2024 to 30.3.2025 = 5 + 31 + 28 + 30 = 94 days.\nInterest = 44,55,000 x 15% x 94/365 = 1,72,097\nTotal duty + interest = 46,27,097\nNote: assumed the BCD rate notified on 10 December continued on the last date for removal.",
+     "icai": "Same figures as ICAI (duty Rs 44,55,000; interest Rs 1,72,097).",
+     "flag": "Facts are muddled (order 'for 4 months', yet ICAI treats 26 Dec as the last removal date); BCD 10% holds on either reading as the next change is only on 30 March - state your assumption.",
+     "trap": "Using Rs 85 (clearance date) as the exchange rate - for warehoused goods it is the rate on the into-bond bill of entry date.",
+     "minutes": 15
+    },
+    {
+     "q": "5.8",
+     "type": "Descriptive",
+     "marks": 5,
+     "subject": "DT",
+     "also": null,
+     "chapter": "Minimum Alternate Tax - Book profit u/s 115JB (Explanation 1)",
+     "topic": "Which adjustments are allowed in book profit",
+     "ask": "Compute book profit u/s 115JB for AY 2025-26 from profit Rs 1,425 lakh, given debits (bank interest, tax provision, MSME dues, depreciation incl. revaluation, gratuity, arrear wages) and credits (LTCG, agricultural income).",
+     "options": null,
+     "clue": "want to know book profit under section 115JB for the assessment year 2025-26",
+     "chapter_clear": true,
+     "think": [
+      "Book profit -> s.115JB Explanation 1: only the listed add-backs and deductions; s.43B, s.50C and tax depreciation do not matter.",
+      "Chapter clear -> DT SM -> MAT -> Explanation 1 items -> tick each case item against the list.",
+      "Add: income-tax provision 105, depreciation 360; gratuity provision is actuarial = ascertained -> no add-back.",
+      "Less: book depreciation excluding revaluation 210, agricultural income 20 (s.10) -> book profit 1,660."
+     ],
+     "look_up": {
+      "where": "ICAI SM DT - Minimum Alternate Tax (s.115JB)",
+      "index_keywords": [
+       "book profit",
+       "Explanation 1 to section 115JB",
+       "revaluation depreciation",
+       "unascertained liability",
+       "section 10 income"
+      ]
+     },
+     "solve": "Net profit 1,425. Add: provision for income-tax 105; depreciation 360. No adjustment: bank interest unpaid (s.43B not relevant for MAT); MSME dues (s.43B(h) not relevant); gratuity provision on actuarial basis (ascertained liability - Echjay Forgings); arrear wages of FY 2022-23 (not a listed item). Subtotal 1,890. Less: depreciation excluding revaluation (360 - 150) 210; agricultural income 20 (exempt u/s 10(1)). Not deducted: LTCG 720 (stays in book profit; s.50C value irrelevant); tax depreciation 280. Book profit = 1,890 - 230 = Rs 1,660 lakh.",
+     "answer": "Computation of book profit u/s 115JB, AY 2025-26 (Rs lakh):\nProfit as per Statement of P&L 1,425\nAdd (Explanation 1):\nProvision for income-tax 105\nDepreciation debited 360\nBank term loan interest - not a listed item (s.43B irrelevant) - Nil\nMSME dues - not a listed item - Nil\nGratuity provision (actuarial, ascertained liability) - Nil\nArrear wages of FY 2022-23 - not a listed item - Nil\nTotal additions 465 -> 1,890\nLess:\nDepreciation excluding revaluation (360 - 150) 210\nAgricultural income (exempt u/s 10(1)) 20\nLTCG on commercial apartments - not a listed item - Nil\nDepreciation as per IT Rules - not relevant - Nil\nTotal deductions 230\nBook profit 1,660",
+     "icai": "Same as ICAI (Rs 1,660 lakh).",
+     "flag": null,
+     "trap": "Adding back the actuarial gratuity provision or deducting tax depreciation (Rs 280 lakh) - neither is an Explanation 1 item.",
+     "minutes": 15
+    }
+   ]
+  }
+ ]
+}

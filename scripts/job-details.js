@@ -1,5 +1,5 @@
 
-import { getDaysAgo } from './date-utils.js';
+import { getDaysAgo, getPostedLabel } from './date-utils.js?v=20261118_1';
 import { ensureCvAvailable, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 const supabaseUrl = 'https://auth.mystudentclub.com';
@@ -112,17 +112,24 @@ function getPublicJobSelectColumns(tableName) {
 }
 
 async function fetchJobDetails(id, tableName) {
-    // A hidden vacancy (third-party repost) reads as not found. Before the hidden column exists, fetch without the filter.
-    const fetchJob = (filterHidden) => {
-        let query = supabaseClient
-            .from(tableName)
-            .select(getPublicJobSelectColumns(tableName))
-            .eq('id', id);
+    const cols = getPublicJobSelectColumns(tableName);
+    // A hidden vacancy (third-party repost) reads as not found. If the hidden column is missing or can't be read,
+    // fetch without that filter rather than fail. reposted_at arrives with migration 202611170001.
+    let filterHidden = true;
+    let withRepost = true;
+    const run = () => {
+        let query = supabaseClient.from(tableName).select(withRepost ? `${cols}, reposted_at` : cols).eq('id', id);
         if (filterHidden) query = query.not('hidden', 'is', true);
         return query.single();
     };
-    let { data, error } = await fetchJob(true);
-    if (error && error.message && /\bhidden" does not exist|\bhidden does not exist|could not find the 'hidden' column/i.test(error.message)) ({ data, error } = await fetchJob(false));
+    let { data, error } = await run();
+    for (let retry = 0; retry < 2 && error; retry++) {
+        const message = error.message || '';
+        if (filterHidden && /\bhidden\b/i.test(message) && /does not exist|could not find|permission denied/i.test(message)) filterHidden = false;
+        else if (withRepost && /reposted_at/.test(message)) withRepost = false;
+        else break;
+        ({ data, error } = await run());
+    }
 
     if (error) throw error;
     if (!data) throw new Error('Job not found');
@@ -138,7 +145,6 @@ function renderJob(job, tableName) {
 
     const companyName = (job.Company || 'Company Name').trim();
     const companyInitial = companyName.charAt(0).toUpperCase();
-    const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'Recently';
     const salary = job.Salary ? `₹${job.Salary}` : '';
     const location = job.Location || 'Remote / Unspecified';
     const category = job.Category || 'General';
@@ -173,7 +179,7 @@ function renderJob(job, tableName) {
                 ` : ''}
                 <div class="job-meta-item">
                     <i class="far fa-clock"></i>
-                    <span>Posted ${postedDate}</span>
+                    <span>${getPostedLabel(job, 'Recently')}</span>
                 </div>
                 <div class="job-meta-item">
                     <i class="fas fa-tag"></i>

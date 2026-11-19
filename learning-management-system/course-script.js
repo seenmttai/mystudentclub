@@ -37,6 +37,17 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'MSC CA Freshers Program',
             description: 'A comprehensive program for CA freshers to kickstart their career.',
             thumbnail: '../assets/courseimg-fresher.png'
+        },
+        'msc-articleship-program': {
+            title: 'MSC Articleship Program',
+            description: 'Build your CV, apply to firms, prepare for interviews and start your articleship.',
+            thumbnail: '../assets/articleship-course-main.png',
+            dayTitles: ['Start here', 'Crafting the Perfect CV', 'Applying the Right Way', 'Using LinkedIn',
+                'Cracking Interviews', 'Domain Guidance', 'Registration Formalities'],
+            // Phone-first rows: no repeated format notes, and links open without a dead Download button.
+            compactResources: true,
+            // v3: rows flagged `copy` open in the copyable reader; no "Templates" group opens the canvas viewer.
+            templateCanvas: false
         }
     };
 
@@ -78,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         prevVideoBtn: document.getElementById('prev-video-btn'),
         nextVideoBtn: document.getElementById('next-video-btn'),
         videoCounter: document.getElementById('video-counter'),
+        sessionTitle: document.getElementById('session-title'),
         courseTabsContainer: document.getElementById('course-tabs-container'),
         tabContents: {
             overview: document.getElementById('tab-content-overview'),
@@ -132,27 +144,47 @@ document.addEventListener('DOMContentLoaded', () => {
         return type === 'docx' && hasPreview && hasDownload;
     };
 
+    // A row whose only file is an Excel workbook opens in the in-page sheet viewer, with Download beside it (scripts/excel-sheet-view.js).
+    const excelSheets = () => (typeof window !== 'undefined' && window.MSCExcelSheets) || null;
+    const isExcelViewerResource = (resource) => Boolean(excelSheets()?.isExcelViewerRow(resource));
+
+    const isCompactResourceCourse = () => Boolean(courses[state.courseSlug]?.compactResources);
+
     const isExcelDownloadResource = (resource) => {
         const viewPath = String(resource?.view_storage_path || '').toLowerCase();
         const dlPath = String(resource?.download_storage_path || '').toLowerCase();
         return viewPath.endsWith('.csv') && (dlPath.endsWith('.xlsx') || dlPath.endsWith('.xls'));
     };
 
-    const getResourceViewLabel = (resource) => isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
+    const getResourceViewLabel = (resource) => resource?.type === 'external_link' && isCompactResourceCourse()
+        ? 'Open' : isDocxPreviewResource(resource) ? 'Preview PDF' :
+            (isExcelViewerResource(resource) || isExcelDownloadResource(resource)) ? 'Preview Excel' : 'View';
+
+    const articleshipLms = () => (typeof window !== 'undefined' && window.MSCArticleshipLms) || null;
 
     const getResourceDownloadLabel = (resource) => {
+        if (isCompactResourceCourse() && articleshipLms() &&
+            !/\.zip$/i.test(String(resource?.download_storage_path || '')) && resource?.type !== 'zip') {
+            return articleshipLms().downloadLabel(resource);
+        }
         if (isDocxPreviewResource(resource)) return 'Download DOCX';
-        if (isExcelDownloadResource(resource)) return 'Download Excel';
+        const dlPath = String(resource?.download_storage_path || '').toLowerCase();
+        if (dlPath.endsWith('.xlsx') || dlPath.endsWith('.xls')) return 'Download Excel';
+        if (dlPath.endsWith('.zip') || resource?.type === 'zip') return 'Download ZIP (for laptop)';
+        if (dlPath.endsWith('.csv') || resource?.type === 'csv') return 'Download CSV';
         return 'Download';
     };
 
     const getResourceFormatNote = (resource) => {
+        if (isCompactResourceCourse()) return '';
         if (isDocxPreviewResource(resource)) return 'PDF preview available. Download returns the original DOCX file.';
-        if (isExcelDownloadResource(resource)) return 'Preview shows one sheet. Download the Excel file for every sheet.';
+        if (isExcelDownloadResource(resource)) return 'Preview every sheet here. Download the Excel file to edit it.';
+        if (isExcelViewerResource(resource)) return 'Preview opens here. Download the Excel file to edit it.';
         return '';
     };
 
     const getResourceViewerSubtitle = (resource, type) => {
+        if (type === 'xlsx') return 'Preview only. Download the Excel file to edit it and keep the formulas.';
         if (isDocxPreviewResource(resource) && type === 'pdf') {
             return 'Previewing the PDF version. Use download to get the original DOCX file.';
         }
@@ -496,11 +528,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const isVideoLocked = isVideoViewLimitLocked(video.id);
+                // One session per Day: a session named like its Day reads as an action instead of repeating the title.
+                const sessionLabel = isCompactResourceCourse() && (day.title === video.title || String(day.title).endsWith(' · ' + video.title))
+                    ? `Open Day ${day.day_number}` : video.title;
                 sessionsHTML += `
                     <div class="sub-video-item ${isVideoSelected ? 'active' : ''} ${isVideoCompleted ? 'completed' : ''} ${isVideoLocked ? 'view-limit-locked' : ''}" data-video-id="${video.id}">
                         <div class="sub-video-header">
                             <i class="fas ${isVideoCompleted ? 'fa-check-circle' : (isVideoLocked ? 'fa-lock' : 'fa-play-circle')}"></i>
-                            <span>${video.title} ${isVideoLocked ? '<i class="fas fa-lock view-limit-lock-icon" title="Watch limit reached"></i>' : ''}</span>
+                            <span>${sessionLabel} ${isVideoLocked ? '<i class="fas fa-lock view-limit-lock-icon" title="Watch limit reached"></i>' : ''}</span>
                         </div>
                     </div>
                     ${resourcesHTML}
@@ -552,6 +587,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Resolve only PDFs already loaded for this enrolled student; links never supply storage paths.
+    const getArticleshipResourceTarget = () => {
+        if (state.courseSlug !== 'msc-articleship-program' || !state.user || !state.isEnrolled) return null;
+        const params = new URLSearchParams(window.location.search);
+        const rawSession = params.get('session') || '';
+        if (!/^[1-9]\d{0,5}$/.test(rawSession)) return null;
+        const video = findVideoById(Number(rawSession));
+        if (!video) return null;
+        const title = params.get('resource');
+        // Only a programme PDF (articleship-program-v<N>/day-<d>/…) of an enrolled row; never a path from the URL.
+        // A title that matches no such row (not uploaded yet, renamed, or a tool row) still opens its Day's session.
+        const resource = title ? video.resources?.find(item => item.title === title &&
+            /^articleship-program-v\d+\/day-[0-6]\//.test(String(item.view_storage_path || '')) &&
+            !String(item.view_storage_path || '').includes('..') &&
+            String(item.view_storage_path || '').toLowerCase().endsWith('.pdf')) || null : null;
+        const rawPage = params.get('page') || '1';
+        const page = /^[1-9]\d{0,5}$/.test(rawPage) ? Number(rawPage) : 1;
+        // A row of this Day that is not a programme PDF (a tool, an Excel sheet): the Day opens on its row, scrolled to.
+        const row = title && !resource ? video.resources?.find(item => item.title === title) || null : null;
+        return { video, resource, page, row };
+    };
+
+    // Scroll a deep-linked row (tool or download) into view on the Resources tab and flash it once.
+    const highlightResourceRow = (title) => {
+        const container = DOMElements.tabContents.resources;
+        if (!container || !title) return;
+        const item = [...container.querySelectorAll('.resource-item')]
+            .find(li => (li.querySelector('.resource-title')?.textContent || '').trim() === title);
+        if (!item) return;
+        const group = item.closest('details');
+        if (group) group.open = true;
+        const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        item.classList.remove('resource-item-target');
+        void item.offsetWidth; // restart the flash on a second deep link to the same row
+        item.classList.add('resource-item-target');
+        requestAnimationFrame(() => item.scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' }));
+        setTimeout(() => item.classList.remove('resource-item-target'), 2600);
+    };
+
     const loadVideoProgress = async () => {
         const savedVideos = localStorage.getItem(`courseVideos_${state.courseSlug}`);
         if (savedVideos) {
@@ -570,6 +644,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fetch cloud watch-time data before selecting first video
         await fetchWatchTimeForCourse();
+        const target = getArticleshipResourceTarget();
+        if (target) {
+            await selectVideo(target.video.id);
+            if (state.user && state.isEnrolled) {
+                setActiveTab('resources');
+                if (target.resource && articleshipLms()?.copyMode(target.resource)) {
+                    // A copyable row opens in the reader in place of this page, so Back returns to the tool that linked here.
+                    await openCopyResource(target.resource, target.page, { deepLink: true });
+                } else if (target.resource) {
+                    await openResourceViewer(target.resource, 'pdf', target.page);
+                } else if (target.row) {
+                    highlightResourceRow(target.row.title);
+                }
+            }
+            return;
+        }
         const lastVideoId = localStorage.getItem(`lastVideoId_${state.courseSlug}`);
         if (lastVideoId && findVideoById(lastVideoId)) {
             selectVideo(lastVideoId);
@@ -638,7 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             hlsPath = tsPath;
                         }
 
-                        const day = meta.day_number || 1;
+                        const day = meta.day_number ?? 1;
                         let parsedResources = [];
                         if (meta.resources) {
                             if (typeof meta.resources === 'string') {
@@ -663,9 +753,13 @@ document.addEventListener('DOMContentLoaded', () => {
             state.courseSections = Object.keys(videosByDay).map(dayNum => {
                 const dayVideos = videosByDay[dayNum];
                 const mainVideo = dayVideos[0] || {};
+                const parsedDay = parseInt(dayNum);
                 return {
-                    day_number: parseInt(dayNum), title: mainVideo.title || `Day ${dayNum}`,
-                    expanded: parseInt(dayNum) === 1, videos: dayVideos, mainVideo: mainVideo
+                    day_number: parsedDay,
+                    title: (courses[state.courseSlug]?.dayTitles?.[parsedDay]
+                        ? `Day ${parsedDay} · ${courses[state.courseSlug].dayTitles[parsedDay]}`
+                        : mainVideo.title) || `Day ${dayNum}`,
+                    expanded: parsedDay === 0 || parsedDay === 1, videos: dayVideos, mainVideo: mainVideo
                 };
             }).sort((a, b) => a.day_number - b.day_number);
 
@@ -674,7 +768,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 DOMElements.totalVideosCount.textContent = `${totalVideos} Sessions`;
                 DOMElements.totalVideosMeta.style.display = 'flex';
             }
-            loadVideoProgress();
+            await loadVideoProgress();
             renderCourseModules();
         } catch (error) {
             logFrontendError(error.message, error.stack, 'loadCourseVideos');
@@ -1263,10 +1357,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             DOMElements.videoPlayerContainer.style.display = 'none';
-            DOMElements.noVideoMessagePlayer.style.display = 'block';
+            DOMElements.noVideoMessagePlayer.style.display = isCompactResourceCourse() ? 'none' : 'block';
+            DOMElements.videoLoadingOverlay.style.display = 'none';
         }
 
-        setActiveTab('overview');
+        const resourceSession = isCompactResourceCourse() && currentVideo?.resources?.length &&
+            !currentVideo.hlsPath && !currentVideo.fileName;
+        setActiveTab(resourceSession ? 'resources' : 'overview');
         renderTabsAndContent();
 
         if (window.innerWidth < 768) {
@@ -1288,7 +1385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tabs.forEach(tabId => {
             const btn = document.createElement('button');
             btn.className = 'tab-btn';
-            btn.textContent = tabId === 'report' ? 'Report an Issue' : tabId.charAt(0).toUpperCase() + tabId.slice(1);
+            btn.textContent = tabId === 'report' ? (isCompactResourceCourse() ? 'Report issue' : 'Report an Issue') : tabId.charAt(0).toUpperCase() + tabId.slice(1);
             btn.dataset.tab = tabId;
 
             if (tabId === 'resources' && (!currentVideo.resources || currentVideo.resources.length === 0)) {
@@ -1315,8 +1412,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let resourcesHTML = '';
             for (const groupName in groups) {
-                resourcesHTML += `<div class="resource-group">`;
-                if (groupName !== 'General Resources' || Object.keys(groups).length > 1) {
+                const collapsible = isCompactResourceCourse() && groupName === 'Templates' && groups[groupName].length > 12;
+                resourcesHTML += collapsible ? `<details class="resource-group resource-template-group"><summary class="resource-group-title">Templates (${groups[groupName].length})</summary>` : `<div class="resource-group">`;
+                if (!collapsible && (groupName !== 'General Resources' || Object.keys(groups).length > 1)) {
                     resourcesHTML += `<h4 class="resource-group-title">${groupName}</h4>`;
                 }
                 resourcesHTML += `<ul class="resource-list">`;
@@ -1324,6 +1422,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const viewLabel = getResourceViewLabel(resource);
                     const downloadLabel = getResourceDownloadLabel(resource);
                     const formatNote = getResourceFormatNote(resource);
+                    const hasViewTarget = Boolean(resource.url) || resource.type === 'external_link' || isExcelViewerResource(resource) ||
+                        Boolean(resource.view_storage_path && resource.view_storage_path !== 'None' && String(resource.view_storage_path).trim() !== '');
+                    // Compact rows with only a file to download (e.g. the Excel test) show just the Download button.
+                    const showView = hasViewTarget || !isCompactResourceCourse();
                     resourcesHTML += `
                         <li class="resource-item">
                             <span class="resource-icon"><i class="${getResourceIcon(resource.type)}"></i></span>
@@ -1332,15 +1434,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ${formatNote ? `<span class="resource-format-note">${formatNote}</span>` : ''}
                             </div>
                             <div class="resource-actions">
-                                <button class="resource-btn resource-btn-view" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'><i class="fas fa-eye"></i> ${viewLabel}</button>
-                                ${resource.download_storage_path && resource.download_storage_path !== 'None' ?
+                                ${showView ? `<button class="resource-btn resource-btn-view" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'><i class="fas fa-eye"></i> ${viewLabel}</button>` : ''}
+                                ${(resource.download_storage_path && resource.download_storage_path !== 'None' && String(resource.download_storage_path).trim() !== '') ?
                             `<button class="resource-btn resource-btn-download" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'><i class="fas fa-download"></i> ${downloadLabel}</button>` :
-                            `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> ${downloadLabel}</span>`
+                            (isCompactResourceCourse() ? '' :
+                            `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> ${downloadLabel}</span>`)
                         }
                             </div>
                         </li>`;
                 });
-                resourcesHTML += `</ul></div>`;
+                resourcesHTML += collapsible ? `</ul></details>` : `</ul></div>`;
             }
             DOMElements.tabContents.resources.innerHTML = resourcesHTML;
 
@@ -1382,6 +1485,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateNavButtons = () => {
+        if (isCompactResourceCourse()) {
+            DOMElements.prevVideoBtn?.querySelector('span')?.replaceChildren('Previous session');
+            DOMElements.nextVideoBtn?.querySelector('span')?.replaceChildren('Next session');
+        }
         const prevVideo = getAdjacentVideo('previous');
         const nextVideo = getAdjacentVideo('next');
         if (DOMElements.prevVideoBtn) {
@@ -1404,9 +1511,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (section) {
             const currentVideoIndex = section.videos.findIndex(v => String(v.id) === String(state.currentVideoId)) + 1;
             const sessionText = section.videos.length > 1 ? ` - Session ${currentVideoIndex}/${section.videos.length}` : '';
-            DOMElements.videoCounter.textContent = section.day_number === 0 
+            const totalDays = state.courseSections.filter(s => s.day_number > 0).length;
+            const compact = isCompactResourceCourse();
+            if (DOMElements.sessionTitle) {
+                const sessionName = section.videos[currentVideoIndex - 1].title;
+                // One session per Day: a session named like its Day is not repeated under the Day title.
+                const repeatsDay = section.title === sessionName || String(section.title).endsWith(' · ' + sessionName);
+                DOMElements.sessionTitle.textContent = compact && !repeatsDay ? sessionName : '';
+                DOMElements.sessionTitle.hidden = !compact || repeatsDay;
+            }
+            DOMElements.videoCounter.textContent = compact ? section.title : section.day_number === 0
                 ? `Day 0${sessionText}` 
-                : `Day ${section.day_number} of ${state.courseSections.length}${sessionText}`;
+                : `Day ${section.day_number} of ${totalDays}${sessionText}`;
             DOMElements.videoCounter.style.display = 'inline-block';
         } else {
             DOMElements.videoCounter.style.display = 'none';
@@ -1427,7 +1543,30 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     };
 
+    // Copyable rows (V3 §0.3, P6): the copyable reader, or the browser's own PDF viewer when the row says "browser".
+    // In the app's WebView a new tab has nowhere to go, so the reader opens in place (Back returns to the course, or,
+    // for a deep link that replaced the course page, to the tool that linked here).
+    const openCopyResource = async (resource, page = 1, { deepLink = false } = {}) => {
+        const lms = articleshipLms();
+        try {
+            const { data, error } = await supabase.storage
+                .from(lms.bucketFor(resource.view_storage_path))
+                .createSignedUrl(resource.view_storage_path, 300);
+            if (error) throw error;
+            const target = lms.copyTarget(resource, data.signedUrl, page);
+            if (deepLink) window.location.replace(target);
+            else window.location.href = target;
+        } catch (err) {
+            console.error('Error opening copyable resource:', err);
+            alert('Could not open the resource. Please try again.');
+        }
+    };
+
     const handleResourceClick = async (resource) => {
+        if (articleshipLms()?.copyMode(resource)) {
+            await openCopyResource(resource, Number.isSafeInteger(resource.page) ? resource.page : 1);
+            return;
+        }
         // Define all sheets that should open in the embedded viewer
         const specialSheetUrls = [
             'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841',
@@ -1440,28 +1579,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (resource.type === 'external_link' && resource.url) {
+            // The programme's tools are site paths (/articleship-program/…, /cv-builder/…, /ai-interview.html…): open them
+            // in the mobile shell. An older row on the desktop host is read as the same path here.
+            if (state.courseSlug === 'msc-articleship-program') {
+                const sitePath = String(resource.url).replace(/^https:\/\/(?:www\.)?mystudentclub\.com(?=\/)/i, '');
+                if (articleshipLms()?.isSameOriginToolUrl(sitePath)) {
+                    window.location.href = sitePath;
+                    return;
+                }
+            }
             window.open(resource.url, '_blank');
             return;
         }
         if (resource.view_storage_path && resource.view_storage_path !== 'None') {
             const path = resource.view_storage_path.toLowerCase();
             if (path.endsWith('.csv')) {
-                await openResourceViewer(resource, 'csv');
-            } else if (resource.group && resource.group.toLowerCase().includes('template')) {
-                // Templates (CV, Cover Letter, etc.) use the inline modal viewer
-                await openResourceViewer(resource, 'pdf');
+                await openResourceViewer(resource, isExcelDownloadResource(resource) ? 'xlsx' : 'csv');
+            } else if (resource.group && resource.group.toLowerCase().includes('template') &&
+                courses[state.courseSlug]?.templateCanvas !== false) {
+                // Templates (CV, Cover Letter, etc.) use the inline modal viewer (switched off for the Articleship course)
+                await openResourceViewer(resource, 'pdf', Number.isSafeInteger(resource.page) ? resource.page : 1);
             } else {
                 // All other PDFs open in the ca-resource flipbook viewer
                 try {
                     const { data: viewData, error: viewError } = await supabase.storage
-                        .from('industrial-training-mastery-resources')
+                        .from(articleshipLms()?.bucketFor(resource.view_storage_path) || 'industrial-training-mastery-resources')
                         .createSignedUrl(resource.view_storage_path, 300);
                     if (viewError) throw viewError;
 
                     let dlUrl = '';
                     if (resource.download_storage_path && resource.download_storage_path !== 'None') {
                         const { data: dlData, error: dlError } = await supabase.storage
-                            .from('industrial-training-mastery-resources')
+                            .from(articleshipLms()?.bucketFor(resource.download_storage_path) || 'industrial-training-mastery-resources')
                             .createSignedUrl(resource.download_storage_path, 300, { download: true });
                         if (!dlError && dlData) {
                             dlUrl = dlData.signedUrl;
@@ -1476,12 +1625,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (isDocxPreviewResource(resource)) {
                         viewerUrl += '&preview=docx';
                     }
-                    window.open(viewerUrl, '_blank');
+                    if (state.courseSlug === 'msc-articleship-program') {
+                        window.location.href = viewerUrl;
+                    } else {
+                        window.open(viewerUrl, '_blank');
+                    }
                 } catch (err) {
                     console.error('Error generating PDF link:', err);
                     alert('Could not open the resource. Please try again.');
                 }
             }
+            return;
+        }
+        if (isExcelViewerResource(resource)) {
+            await openResourceViewer(resource, 'xlsx');
             return;
         }
         downloadResource(resource);
@@ -1533,7 +1690,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         try {
-            const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(path, 300);
+            const { data, error } = await supabase.storage.from(articleshipLms()?.bucketFor(path) || 'industrial-training-mastery-resources').createSignedUrl(path, 300);
             if (error) throw error;
             const response = await fetch(data.signedUrl);
             if (!response.ok) throw new Error('Network response was not ok.');
@@ -1671,7 +1828,240 @@ document.addEventListener('DOMContentLoaded', () => {
     const certBtn = document.getElementById('download-certificate-btn');
     if (certBtn) certBtn.addEventListener('click', generateCertificate);
 
-    const openResourceViewer = async (resource, type) => {
+    // Draws rows of text in the spreadsheet viewer: a CSV file, or one sheet of a workbook.
+    const renderCsvTable = (data) => {
+        const table = DOMElements.csvViewerContainer.querySelector('table');
+        table.innerHTML = '';
+
+        if (data.length === 0) {
+            table.innerHTML = '<tbody><tr><td style="text-align:center; padding: 2rem;">No data found in CSV</td></tr></tbody>';
+            return;
+        }
+
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        data[0].forEach(cell => {
+            const th = document.createElement('th');
+            th.textContent = cell;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        for (let i = 1; i < data.length; i++) {
+            const row = document.createElement('tr');
+            data[i].forEach(cell => {
+                const td = document.createElement('td');
+                td.textContent = cell;
+                td.title = cell;
+                row.appendChild(td);
+            });
+            tbody.appendChild(row);
+        }
+        table.appendChild(tbody);
+    };
+
+    // The sheet tabs of a workbook; a single sheet shows no tabs.
+    const renderSheetTabs = (names, activeIndex, onPick) => {
+        const container = DOMElements.csvViewerContainer;
+        if (!container) return;
+        let bar = document.getElementById('csv-sheet-tabs');
+        if (!bar) {
+            bar = document.createElement('div');
+            bar.id = 'csv-sheet-tabs';
+            bar.className = 'csv-sheet-tabs';
+            bar.setAttribute('role', 'tablist');
+            container.insertBefore(bar, container.firstChild);
+        }
+        bar.innerHTML = '';
+        if (names.length < 2) { bar.style.display = 'none'; return; }
+        bar.style.display = 'flex';
+        names.forEach((name, index) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'csv-sheet-tab' + (index === activeIndex ? ' active' : '');
+            btn.setAttribute('role', 'tab');
+            btn.setAttribute('aria-selected', String(index === activeIndex));
+            btn.textContent = name;
+            btn.addEventListener('click', () => { if (index !== activeIndex) onPick(index); });
+            bar.appendChild(btn);
+        });
+    };
+
+    let xlsxLibPromise = null;
+    // SheetJS loads only when a student opens a workbook.
+    const ensureXlsxLib = () => {
+        if (typeof window !== 'undefined' && window.XLSX) return Promise.resolve(window.XLSX);
+        if (!xlsxLibPromise) {
+            xlsxLibPromise = new Promise((resolve, reject) => {
+                const el = document.createElement('script');
+                el.src = excelSheets().SHEETJS_URL;
+                el.onload = () => (window.XLSX ? resolve(window.XLSX) : reject(new Error('Excel reader did not start')));
+                el.onerror = () => { xlsxLibPromise = null; el.remove(); reject(new Error('Could not load the Excel reader')); };
+                document.head.appendChild(el);
+            });
+        }
+        return xlsxLibPromise;
+    };
+
+    const excelGrid = () => (typeof window !== 'undefined' && window.MSCExcelGrid) || null;
+
+    let exceljsLibPromise = null;
+    // ExcelJS (the styles) loads only when a workbook is opened.
+    const ensureExcelJsLib = () => {
+        if (typeof window !== 'undefined' && window.ExcelJS) return Promise.resolve(window.ExcelJS);
+        if (!exceljsLibPromise) {
+            exceljsLibPromise = new Promise((resolve, reject) => {
+                const el = document.createElement('script');
+                el.src = excelSheets().EXCELJS_URL;
+                el.onload = () => (window.ExcelJS ? resolve(window.ExcelJS) : reject(new Error('Style reader did not start')));
+                el.onerror = () => { exceljsLibPromise = null; el.remove(); reject(new Error('Could not load the style reader')); };
+                document.head.appendChild(el);
+            });
+        }
+        return exceljsLibPromise;
+    };
+
+    const excelGridHost = () => document.getElementById('csv-table-scroll') || DOMElements.csvViewerContainer;
+
+    // Takes the Excel-look grid and its sheet tabs out of the viewer, and gives the plain table back.
+    const hideExcelGrid = () => {
+        const wrap = document.getElementById('xl-grid-wrap');
+        if (wrap) wrap.remove();
+        const tabs = document.getElementById('xl-sheet-tabs');
+        if (tabs) tabs.remove();
+        const host = excelGridHost();
+        const csvTable = host && host.querySelector('table.csv-preview-table');
+        if (csvTable) csvTable.style.display = '';
+    };
+
+    // Sheet tabs at the bottom, as in Excel.
+    const renderGridTabs = (names, activeIndex, onPick, host) => {
+        let bar = document.getElementById('xl-sheet-tabs');
+        if (!bar) {
+            bar = document.createElement('div');
+            bar.id = 'xl-sheet-tabs';
+            bar.className = 'xl-sheet-tabs';
+            bar.setAttribute('role', 'tablist');
+        }
+        host.appendChild(bar);
+        bar.innerHTML = '';
+        names.forEach((name, index) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'xl-sheet-tab' + (index === activeIndex ? ' active' : '');
+            btn.setAttribute('role', 'tab');
+            btn.setAttribute('aria-selected', String(index === activeIndex));
+            btn.textContent = name;
+            btn.addEventListener('click', () => { if (index !== activeIndex) onPick(index); });
+            bar.appendChild(btn);
+        });
+    };
+
+    // The workbook as an Excel-look grid: each cell's colours, fonts, borders, merges, widths and frozen panes.
+    // Returns false (and leaves the viewer untouched) when it cannot be built, so the caller shows the plain table.
+    const showExcelGrid = async (XLSX, buffer, resource, path) => {
+        const grid = excelGrid();
+        if (!grid || !/\.xlsx$/i.test(String(path))) return false;
+        let models;
+        try {
+            const ExcelJS = await ensureExcelJsLib();
+            const excelWorkbook = await new ExcelJS.Workbook().xlsx.load(buffer.slice(0));
+            models = grid.buildModels(XLSX, XLSX.read(buffer, { type: 'array' }), excelWorkbook);
+        } catch (err) {
+            console.warn('Excel-look grid unavailable, showing the plain table instead.', err);
+            return false;
+        }
+        if (!models.length) return false;
+        // The student may have closed the viewer, or opened another file, while this one loaded.
+        if (state.currentResource !== resource || state.previewType !== 'xlsx') return true;
+        const host = excelGridHost();
+        const csvTable = host.querySelector('table.csv-preview-table');
+        if (csvTable) csvTable.style.display = 'none';
+        DOMElements.csvViewerContainer.style.display = document.getElementById('csv-table-scroll') ? 'flex' : 'block';
+        DOMElements.viewerLoadingScreen.style.display = 'none';
+        const show = (index) => {
+            const previous = document.getElementById('xl-grid-wrap');
+            if (previous) previous.remove();
+            const model = models[index];
+            const wrap = document.createElement('div');
+            wrap.id = 'xl-grid-wrap';
+            wrap.className = 'xl-grid-wrap';
+            const drawn = grid.renderGrid(document, model);
+            wrap.appendChild(drawn.table);
+            host.appendChild(wrap);
+            grid.applyFreeze(drawn.table, model, drawn.visibleCols);
+            if (DOMElements.csvSearchInput) DOMElements.csvSearchInput.value = '';
+            if (DOMElements.csvInfoBar) {
+                DOMElements.csvInfoBar.textContent = model.truncated
+                    ? `First ${model.rows.toLocaleString()} of ${model.total.toLocaleString()} rows · ${model.cols} cols`
+                    : `${model.rows.toLocaleString()} row${model.rows !== 1 ? 's' : ''} · ${model.cols} col${model.cols !== 1 ? 's' : ''}`;
+            }
+            renderGridTabs(models.map(item => item.name), index, show, host);
+            host.scrollTop = 0;
+        };
+        show(0);
+        return true;
+    };
+
+    // Opens the workbook of a row in the sheet viewer: every visible sheet, as tabs.
+    const showCsvGrid = (rows) => {
+        const grid = excelGrid();
+        if (!grid || !Array.isArray(rows) || !rows.length) return false;
+        const model = grid.buildCsvModel(rows);
+        const host = excelGridHost();
+        const table = host.querySelector('table.csv-preview-table');
+        if (table) table.style.display = 'none';
+        const wrap = document.createElement('div');
+        wrap.id = 'xl-grid-wrap';
+        wrap.className = 'xl-grid-wrap';
+        wrap.appendChild(grid.renderGrid(document, model).table);
+        host.appendChild(wrap);
+        DOMElements.csvViewerContainer.style.display = 'block';
+        return true;
+    };
+
+    const openExcelWorkbook = async (resource) => {
+        if (!excelSheets()) throw new Error('Excel viewer is unavailable');
+        const path = resource.download_storage_path;
+        const [XLSX, signed] = await Promise.all([
+            ensureXlsxLib(),
+            supabase.storage.from(articleshipLms()?.bucketFor(path) || 'industrial-training-mastery-resources').createSignedUrl(path, 300)
+        ]);
+        if (signed.error) throw signed.error;
+        const response = await fetch(signed.data.signedUrl);
+        if (!response.ok) throw new Error('Network response was not ok.');
+        const buffer = await response.arrayBuffer();
+        // The Excel-look grid first (colours, merges, widths); the plain table when it cannot be built.
+        if (await showExcelGrid(XLSX, buffer, resource, path)) return;
+        const sheets = excelSheets().workbookToSheets(XLSX, buffer);
+        // The student may have closed the viewer, or opened another file, while this one loaded.
+        if (state.currentResource !== resource || state.previewType !== 'xlsx') return;
+        DOMElements.csvViewerContainer.style.display = 'block';
+        if (!sheets.length) {
+            renderCsvTable([]);
+            renderSheetTabs([], 0, () => {});
+            return;
+        }
+        const show = (index) => {
+            const sheet = sheets[index];
+            renderCsvTable(sheet.rows);
+            renderSheetTabs(sheets.map(item => item.name), index, show);
+            const subtitle = document.getElementById('resource-viewer-subtitle');
+            if (subtitle && sheet.truncated) {
+                subtitle.textContent = `First ${sheet.rows.length.toLocaleString()} of ${sheet.total.toLocaleString()} rows. Download the Excel file for every row.`;
+                subtitle.style.display = 'block';
+            } else if (subtitle) {
+                subtitle.textContent = getResourceViewerSubtitle(resource, 'xlsx');
+                subtitle.style.display = subtitle.textContent ? 'block' : 'none';
+            }
+        };
+        show(0);
+    };
+
+    const openResourceViewer = async (resource, type, initialPage = 1) => {
+        if (state.courseSlug === 'msc-articleship-program' && (!state.user || !state.isEnrolled)) return;
         state.pdfDoc = null; state.csvData = null; state.pdfCurrentPage = 1; state.pdfTotalPages = 1;
         const ctx = DOMElements.pdfCanvas.getContext('2d');
         ctx.clearRect(0, 0, DOMElements.pdfCanvas.width, DOMElements.pdfCanvas.height);
@@ -1690,6 +2080,9 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.pdfViewerContainer.style.display = 'none';
         DOMElements.csvViewerContainer.style.display = 'none';
         DOMElements.iframeViewerContainer.style.display = 'none';
+        const sheetTabBar = document.getElementById('csv-sheet-tabs');
+        if (sheetTabBar) sheetTabBar.style.display = 'none';
+        hideExcelGrid();
 
         const courseZoomControls = document.getElementById('course-zoom-controls');
         if (courseZoomControls) courseZoomControls.style.display = type === 'pdf' ? 'flex' : 'none';
@@ -1729,7 +2122,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
+            if (type === 'xlsx') {
+                try {
+                    await openExcelWorkbook(resource);
+                } catch (error) {
+                    if (!isExcelDownloadResource(resource)) throw error;
+                    console.warn('Workbook preview unavailable; opening CSV preview:', error);
+                    await openResourceViewer(resource, 'csv');
+                }
+                return;
+            }
+
+            const { data, error } = await supabase.storage.from(articleshipLms()?.bucketFor(resource.view_storage_path) || 'industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
             if (error) throw error;
             const response = await fetch(`https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`);
             if (!response.ok) throw new Error(`Failed to fetch from proxy: ${response.status}`);
@@ -1739,43 +2143,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.pdfDoc = await pdfjsLib.getDocument(pdfData).promise;
                 state.pdfTotalPages = state.pdfDoc.numPages;
                 DOMElements.pdfViewerContainer.style.display = 'block';
-                await renderPdfPage(1);
+                const requestedPage = Number.isSafeInteger(initialPage) ? initialPage : 1;
+                await renderPdfPage(Math.max(1, Math.min(state.pdfTotalPages, requestedPage)));
             } else if (type === 'csv') {
                 const csvText = await response.text();
                 Papa.parse(csvText, {
                     skipEmptyLines: true,
                     complete: function (results) {
-                        const data = results.data;
-                        const table = DOMElements.csvViewerContainer.querySelector('table');
-                        table.innerHTML = '';
-
-                        if (data.length === 0) {
-                            table.innerHTML = '<tbody><tr><td style="text-align:center; padding: 2rem;">No data found in CSV</td></tr></tbody>';
-                            return;
-                        }
-
-                        const thead = document.createElement('thead');
-                        const headerRow = document.createElement('tr');
-                        data[0].forEach(cell => {
-                            const th = document.createElement('th');
-                            th.textContent = cell;
-                            headerRow.appendChild(th);
-                        });
-                        thead.appendChild(headerRow);
-                        table.appendChild(thead);
-
-                        const tbody = document.createElement('tbody');
-                        for (let i = 1; i < data.length; i++) {
-                            const row = document.createElement('tr');
-                            data[i].forEach(cell => {
-                                const td = document.createElement('td');
-                                td.textContent = cell;
-                                td.title = cell;
-                                row.appendChild(td);
-                            });
-                            tbody.appendChild(row);
-                        }
-                        table.appendChild(tbody);
+                        if (state.currentResource === resource && state.previewType === 'csv' && !showCsvGrid(results.data)) renderCsvTable(results.data);
                     },
                     error: function (err) {
                         console.error("CSV Parse Error:", err);
@@ -2090,6 +2465,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const init = async () => {
         const urlParams = new URLSearchParams(window.location.search);
         state.courseSlug = urlParams.get('course');
+        document.body.classList.toggle('articleship-course', isCompactResourceCourse());
         if (!state.courseSlug || !courses[state.courseSlug]) {
             window.location.href = 'index.html';
             return;

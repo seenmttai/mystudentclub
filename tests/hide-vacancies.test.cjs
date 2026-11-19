@@ -34,18 +34,21 @@ for (const file of ['scripts/portal3.js', 'scripts/portal-email.js']) {
     assert.equal(calls.length, 1, 'no filter once the column is missing');
     assert.equal(helpers.isHiddenColumnError({ message: 'column Fresher Jobs.hidden does not exist' }), true);
     assert.equal(helpers.isHiddenColumnError({ message: 'permission denied' }), false);
+    assert.equal(helpers.isHiddenColumnError({ message: 'permission denied for column hidden of relation Fresher Jobs' }), true);
+    assert.equal(helpers.isHiddenColumnError({ message: 'column hidden_reason does not exist' }), false);
     assert.equal(helpers.isHiddenColumnError(null), false);
   });
 }
 
 test('mobile portal listing, trending and shared link skip hidden vacancies, with the fallback', () => {
   const source = read('scripts/portal3.js');
-  assert.match(source, /let query = excludeHidden\(supabaseClient\.from\(currentTable\)\.select\(selectCols\)\);/);
-  assert.equal((source.match(/excludeHidden\(supabaseClient/g) || []).length, 4, 'listing, trending, shared link and its numeric retry');
-  assert.match(source, /hiddenFilterOff = true;\s*isFetching = false;\s*await fetchJobs\(\);\s*return;/);
-  // Retry on whether this query used the filter, not on the flag: trending loads at the same time and may turn it off first.
-  assert.doesNotMatch(source, /isHiddenColumnError\(error\) && !hiddenFilterOff/);
-  assert.equal((source.match(/const usedHiddenFilter = !hiddenFilterOff;/g) || []).length, 2);
+  // Since 19 Nov every job query retries through withoutMissingExclusive(), which also handles the hidden column.
+  assert.match(source, /let query = excludeHidden\(supabaseClient\.from\(currentTable\)\.select\(cols\)\);/);
+  assert.match(source, /const trendingQuery = \(cols\) => excludeHidden\(supabaseClient/);
+  assert.equal((source.match(/excludeHidden\(supabaseClient/g) || []).length, 5, 'listing, trending, shared link, its retry and its numeric retry');
+  assert.match(source, /if \(isHiddenColumnError\(error\)\) \{\s*hiddenFilterOff = true;\s*return cols;/);
+  // Retry on the error itself, not on the flag: trending loads at the same time and may turn it off first.
+  assert.doesNotMatch(source, /!hiddenFilterOff && isHiddenColumnError/);
 });
 
 test('jobs by email skips hidden vacancies and ignores a hidden shared link', () => {
@@ -57,7 +60,7 @@ test('jobs by email skips hidden vacancies and ignores a hidden shared link', ()
 test('job page filters out a hidden vacancy and falls back before the column exists', () => {
   const source = read('scripts/job-details.js');
   assert.match(source, /if \(filterHidden\) query = query\.not\('hidden', 'is', true\);/);
-  assert.match(source, /hidden does not exist[^\n]*\(\{ data, error \} = await fetchJob\(false\)\);/);
+  assert.match(source, /if \(filterHidden && \/\\bhidden\\b\/i\.test\(message\)[^\n]*\) filterHidden = false;/);
 });
 
 test('admin can hide and unhide, and hidden cards are marked', () => {

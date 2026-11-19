@@ -1,0 +1,1626 @@
+{
+  "paper": "November 2024",
+  "id": "nov24",
+  "takeaways": [
+    "No case was single-subject: each mixed 5-6 papers, so pick cases by the descriptives you can write fully - Cases 4 and 3 were the safest; 1.7 (NR capital gains) and 2.5/2.8 (thin data) were the time sinks.",
+    "Most MCQs turned on one threshold or definition in the facts: brother's wife is not a relative (2% test), the 10% stamp-duty tolerance, the 3-year job-work clock, 'aggregate' not 'lower of' for IBC companies under MAT.",
+    "Wrong options were built from one wrong step (6% vs 7% discount, bid vs ask, 194C vs 194Q) - write a one-line working beside every MCQ.",
+    "Where facts were thin (3.4 renegotiation date, 3.8 issued vs paid-up capital, 2.8 productivity, 1.7 Chapter XII-A) ICAI accepted alternatives - state your assumption in one line and move on.",
+    "Law has moved since: capital gains rates for transfers from 23.07.2024 and s.74A for GST demands from FY 2024-25 - answer with your attempt's law."
+  ],
+  "cases": [
+    {
+      "no": 1,
+      "title": "CVV & Co., Chartered Accountants (HCP Ltd, VCM Ltd, WECARE Trust, Moon Ltd, Prime Ltd, Mr. Karanveer)",
+      "industry": "CA practice - one firm, many clients (GST, Ind AS, FCRA, audit, non-resident tax)",
+      "story": "A Chandigarh CA firm where four articles each handle a different client: GST on machines and exhibition exports for HCP Ltd, a lawsuit provision and concessional loan for VCM Ltd, an FCRA suspension notice, two audit-report problems and a non-resident's capital gains.",
+      "marks_by_subject": {
+        "FR": 4,
+        "IDT": 8,
+        "Law": 2,
+        "DT": 7,
+        "Audit": 4
+      },
+      "difficulty": "Hard",
+      "first15": "Pick only if DT and GST are your strengths: 15 of 25 marks are DT/IDT, but 1.7 is a 5-mark non-resident computation (Rule 115A, 112A, 115AC, GDRs) that can eat 20 minutes.",
+      "questions": [
+        {
+          "q": "1.1",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "FR",
+          "also": null,
+          "chapter": "Ind AS 37 Provisions, Contingent Liabilities and Contingent Assets",
+          "topic": "Best estimate of a lawsuit provision and discounting at a risk-specific rate",
+          "ask": "Provision at 31.03.2024 for a customer lawsuit: 35% chance of paying ₹16 lakh, 65% chance of ₹5 lakh, ruling by 31.03.2026; risk-free 6%, risk-specific 7%.",
+          "options": {
+            "a": "₹ 8,85,000",
+            "b": "₹ 8,27,475",
+            "c": "₹ 7,72,605",
+            "d": "₹ 7,87,650"
+          },
+          "clue": "35% chance of being ordered to pay the customer compensation",
+          "chapter_clear": true,
+          "think": [
+            "Lawsuit + probabilities + 'appropriate discount rate' = measuring a provision under Ind AS 37 (outflow is probable, so not a contingent liability).",
+            "Chapter clear -> FR index -> Ind AS 37 -> 'best estimate', 'present value', 'discount rate' (paras 36-47).",
+            "Best estimate = 0.35 × 16L + 0.65 × 5L = 8.85L. Discount 2 years at 7% - the pre-tax rate that reflects risks specific to the liability, not the 6% risk-free rate.",
+            "Options decode the traps: 8,85,000 = no discounting, 7,87,650 = 6%, 8,27,475 = only one year. Pick 7% for 2 years."
+          ],
+          "look_up": {
+            "where": "ICAI SM FR - Ind AS 37",
+            "index_keywords": [
+              "best estimate",
+              "expected value",
+              "present value",
+              "discount rate",
+              "risks specific to the liability"
+            ]
+          },
+          "solve": "Expected outflow = 0.35 × 16,00,000 + 0.65 × 5,00,000 = 5,60,000 + 3,25,000 = ₹8,85,000. Settlement expected 31.03.2026 = 2 years after the reporting date. Discount rate = 7% (risk-specific pre-tax rate). PV factor = 1 ÷ 1.07² = 0.873. Provision = 8,85,000 × 0.873 = ₹7,72,605.",
+          "answer": "(C) ₹ 7,72,605",
+          "icai": "(C)",
+          "flag": "Para 40 of Ind AS 37 says a single obligation is usually measured at its most likely outcome (adjusted for other outcomes); ICAI used the expected value, and only that approach matches an option.",
+          "trap": "Discounting at the 6% risk-free rate (₹7,87,650) or for one year only (₹8,27,475).",
+          "minutes": 3
+        },
+        {
+          "q": "1.2",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "FR",
+          "also": null,
+          "chapter": "Ind AS 20 Accounting for Government Grants and Disclosure of Government Assistance (with Ind AS 109)",
+          "topic": "Government loan at below-market interest - benefit treated as a grant",
+          "ask": "Grant to recognise on 01.04.2023 for a ₹75 lakh local-government loan at 6% (market rate 10%), repayable after 5 years, interest paid yearly.",
+          "options": {
+            "a": "NIL as the facility offered by Local Government is in the nature of Loan",
+            "b": "₹ 11,37,000",
+            "c": "₹ 28,42,500",
+            "d": "₹ 17,05,500"
+          },
+          "clue": "concessional rate of interest of 6% ... market rate of interest is 10%",
+          "chapter_clear": true,
+          "think": [
+            "Government loan cheaper than market = Ind AS 20 para 10A: the interest benefit is a government grant.",
+            "Chapter clear -> FR index -> Ind AS 20 -> 'below-market rate of interest'; the loan itself is measured at fair value under Ind AS 109.",
+            "Fair value = PV at 10% of ₹4.5 lakh interest for 5 years + ₹75 lakh at year 5. Grant = cash received − fair value."
+          ],
+          "look_up": {
+            "where": "ICAI SM FR - Ind AS 20 (with Ind AS 109 initial measurement)",
+            "index_keywords": [
+              "below-market rate of interest",
+              "government loan",
+              "para 10A",
+              "fair value of loan"
+            ]
+          },
+          "solve": "Interest per year = 75,00,000 × 6% = 4,50,000. PV of interest = 4,50,000 × 3.79 (annuity factor, 10%, 5 years) = 17,05,500. PV of principal = 75,00,000 × 0.621 = 46,57,500. Fair value of loan = 63,63,000. Grant = 75,00,000 − 63,63,000 = ₹11,37,000 - shown as deferred income and released to P&L as the related interest cost is recognised.",
+          "answer": "(B) ₹ 11,37,000",
+          "icai": "(B)",
+          "flag": null,
+          "trap": "Stopping at PV of interest (₹17,05,500) or at 75 lakh minus PV of principal (₹28,42,500), or saying NIL because it is 'only a loan'.",
+          "minutes": 3
+        },
+        {
+          "q": "1.3",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "IDT",
+          "also": null,
+          "chapter": "Tax Invoice, Credit and Debit Notes - Section 31(7) CGST Act",
+          "topic": "Goods sent on sale-or-return basis - date of invoice",
+          "ask": "Goods sent on 01.03.2024 on approval (sale or return) with a 60-day return option; buyer approved on 15.05.2024. When must the invoice be issued?",
+          "options": {
+            "a": "15.05.2024",
+            "b": "14.07.2024",
+            "c": "30.04.2024",
+            "d": "28.08.2024"
+          },
+          "clue": "on approval for sale or return basis ... option of returning within 60 days",
+          "chapter_clear": true,
+          "think": [
+            "'Sale or return' on delivery challan = s.31(7): invoice when supply takes place or 6 months from removal, whichever is earlier.",
+            "Chapter clear -> IDT index -> 'sale or return' / 'goods sent on approval' under Tax Invoice.",
+            "When does supply take place? When the buyer accepts - and a buyer who keeps goods beyond a fixed return period is treated as having accepted them (Sale of Goods Act s.24 idea).",
+            "60 days from 01.03.2024 end on 30.04.2024 - earlier than the 15.05.2024 approval and the 6-month limit. Answer 30.04.2024."
+          ],
+          "look_up": {
+            "where": "ICAI SM IDT - Tax Invoice, Credit and Debit Notes",
+            "index_keywords": [
+              "sale or return",
+              "goods sent on approval",
+              "section 31(7)",
+              "six months from the date of removal"
+            ]
+          },
+          "solve": "s.31(7): for goods sent on approval for sale or return, invoice is issued before or at the time of supply, or 6 months from removal, whichever is earlier. DEF had 60 days to return; it did not return the goods within that time, so acceptance (and supply) is on expiry of 60 days = 30.04.2024. The later approval of 15.05.2024 does not matter. 6 months from removal = 31.08.2024, later. Invoice date = 30.04.2024.",
+          "answer": "(C) 30.04.2024",
+          "icai": "(C)",
+          "flag": null,
+          "trap": "Taking the actual approval date 15.05.2024 - the 60-day return window had already lapsed.",
+          "minutes": 3
+        },
+        {
+          "q": "1.4",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "Law",
+          "also": null,
+          "chapter": "The Foreign Contribution (Regulation) Act, 2010",
+          "topic": "Section 13 - consequences of suspension of FCRA certificate",
+          "ask": "WCEMT's FCRA certificate is suspended; ₹66 lakh FC unspent. Which are INCORRECT? I: no FC during suspension except on Govt-approved terms. II: up to $25,000 with RBI permission. III: may spend ₹16.5 lakh WITHOUT Central Govt approval. IV: may spend ₹16.5 lakh WITH prior Central Govt approval.",
+          "options": {
+            "a": "I and II",
+            "b": "I, II and III",
+            "c": "II and III",
+            "d": "III and IV"
+          },
+          "clue": "enquiry before cancellation of registration and suspension of certificate",
+          "chapter_clear": true,
+          "think": [
+            "'Suspension of certificate' + 'foreign contribution' = FCRA s.13 (Law, SPOM Set A economic laws).",
+            "Chapter clear -> Law index -> FCRA -> 'suspension of certificate', 'section 13'.",
+            "Rule: no fresh FC unless the Central Government allows on its terms; unspent FC only with prior Central Govt approval, up to 25% (25% × 66L = 16.5L).",
+            "So II (RBI, $25,000 - not in FCRA) and III ('without' approval) are the wrong ones."
+          ],
+          "look_up": {
+            "where": "ICAI SPOM Set A Law - FCRA 2010",
+            "index_keywords": [
+              "suspension of certificate",
+              "section 13",
+              "unutilised foreign contribution",
+              "twenty-five per cent"
+            ]
+          },
+          "solve": "s.13(2) FCRA: during suspension (a) the person cannot receive FC, but the Central Government may allow receipt on application, on its terms - I is correct; (b) unutilised FC can be used only with prior Central Government approval, for declared aims, up to 25% of the unutilised amount = 25% × ₹66 lakh = ₹16.5 lakh; the rest after the suspension is revoked - IV is correct. II invents an RBI/$25,000 route - incorrect. III says 'without' approval - incorrect.",
+          "answer": "(C) II and III",
+          "icai": "(C)",
+          "flag": null,
+          "trap": "Reading III and IV too fast - they differ only in 'without' vs 'with' prior approval.",
+          "minutes": 3
+        },
+        {
+          "q": "1.5",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "DT",
+          "also": null,
+          "chapter": "Income from Other Sources (s.56(2)(x)); Exempt income of non-residents (s.10(4)(ii))",
+          "topic": "Gifts, property below stamp value, off-market share purchase, NRE interest",
+          "ask": "Mr. Karanveer's income from other sources for AY 2024-25: plot gifted by wife's cousin (SDV ₹2.48 lakh), shop bought ₹60 lakh (SDV ₹65 lakh), 1,000 Bright Ltd shares at ₹125 (BSE low ₹210, NSE low ₹218), NRE interest ₹1.25 lakh, debenture interest ₹1.75 lakh.",
+          "options": {
+            "a": "₹ 12,41,000",
+            "b": "₹ 5,08,000",
+            "c": "₹ 8,85,000",
+            "d": "₹ 3,85,000"
+          },
+          "clue": "gift from his wife's cousin (Stamp duty value was ₹ 2,48,000)",
+          "chapter_clear": true,
+          "think": [
+            "Gift + property below stamp value + shares bought cheap = s.56(2)(x); NRE interest = s.10(4)(ii).",
+            "Chapter clear -> DT index -> Income from Other Sources -> 56(2)(x), 'relative' definition, Rule 11UA for quoted shares.",
+            "Test each item: is the giver a relative? Is the difference above ₹50,000? For immovable property, is it above the 10% tolerance? Then add debenture interest."
+          ],
+          "look_up": {
+            "where": "ICAI SM DT - Income from Other Sources; Exempt Incomes",
+            "index_keywords": [
+              "section 56(2)(x)",
+              "relative",
+              "stamp duty value 10%",
+              "quoted shares lowest price",
+              "NRE account interest 10(4)(ii)"
+            ]
+          },
+          "solve": "Plot: wife's cousin is not a 'relative' (spouse's brother/sister and lineal relatives are); SDV ₹2,48,000 > ₹50,000 -> taxable ₹2,48,000.\nShop: SDV − price = 65L − 60L = 5L; tolerance = higher of ₹50,000 and 10% of 60L = ₹6L; 5L is within it -> not taxable.\nBright Ltd shares (quoted, bought off-market): FMV = lowest price on a recognised stock exchange = ₹210; (210 − 125) × 1,000 = ₹85,000 > ₹50,000 -> taxable ₹85,000.\nNRE interest ₹1,25,000 -> exempt u/s 10(4)(ii).\nDebenture interest -> taxable ₹1,75,000.\nTotal = 2,48,000 + 85,000 + 1,75,000 = ₹5,08,000.",
+          "answer": "(B) ₹ 5,08,000",
+          "icai": "(B)",
+          "flag": null,
+          "trap": "Taxing the ₹5 lakh shop difference (within the 10% tolerance) or the NRE interest, or using ₹218 instead of the lowest quote ₹210.",
+          "minutes": 3
+        },
+        {
+          "q": "1.6",
+          "type": "Descriptive",
+          "marks": 4,
+          "subject": "Audit",
+          "also": null,
+          "chapter": "Reporting - SA 705 Modifications to the Opinion in the Independent Auditor's Report; CARO 2020",
+          "topic": "Adverse opinion (material and pervasive misstatement) vs disclaimer (scope limitation); CARO 3(ii)(a)",
+          "ask": "How should CA. Sandeep Jain report (i) Moon Ltd's ₹120 lakh irrecoverable receivable not written off (profit ₹250 lakh) and (ii) Prime Ltd's unverifiable inventory (30% of total assets)?",
+          "options": null,
+          "clue": "party has gone bankrupt ... could not undertake the physical verification of inventory",
+          "chapter_clear": true,
+          "think": [
+            "Two facts, two different SA 705 boxes: Moon = misstatement with evidence in hand and management refusing to correct; Prime = no evidence at all (scope limitation).",
+            "Chapter clear -> Audit index -> SA 705 -> the 2×2 table: nature (misstatement / inability to obtain evidence) × effect (material / material and pervasive).",
+            "Size it: ₹120L vs profit ₹250L = 48% of profit -> material and pervasive -> adverse. Inventory 30% of assets, no records, no count -> disclaimer.",
+            "Prime is a company -> add the CARO 2020 clause 3(ii)(a) remark on physical verification of inventory."
+          ],
+          "look_up": {
+            "where": "ICAI SM Audit - SA 705 (Modified opinions); CARO 2020",
+            "index_keywords": [
+              "adverse opinion",
+              "disclaimer of opinion",
+              "pervasive",
+              "inability to obtain sufficient appropriate audit evidence",
+              "CARO clause 3(ii)(a) inventory"
+            ]
+          },
+          "solve": "SA 705: misstatement that is material and pervasive -> adverse opinion; inability to obtain sufficient appropriate evidence where possible effects could be material and pervasive -> disclaimer. Moon: debtor bankrupt and absconding, so ₹120 lakh is irrecoverable; not writing it off overstates profit by 48% (120/250) and overstates assets; management refused after being told. Prime: no management count, no proper records, auditor could not count; inventory is 30% of total assets and also drives cost of sales and profit. CARO 2020 clause 3(ii)(a): report whether management verified inventory at reasonable intervals and whether coverage and procedure are appropriate - here it did not.",
+          "answer": "(i) Moon Ltd - Adverse opinion\n- Provision: Under SA 705, when the auditor has sufficient appropriate evidence and concludes that misstatements are both material and pervasive, he expresses an adverse opinion.\n- Facts: Trade receivable of ₹120 lakh is irrecoverable (party bankrupt and absconding) but not written off despite being communicated. Profit of ₹250 lakh is overstated by 48%; assets are overstated too.\n- Conclusion: The misstatement is material and pervasive. CA. Sandeep Jain should express an adverse opinion, with a 'Basis for Adverse Opinion' paragraph stating the ₹120 lakh effect.\n\n(ii) Prime Ltd - Disclaimer of opinion\n- Provision: Under SA 705, when the auditor cannot obtain sufficient appropriate evidence and the possible effects of undetected misstatements could be material and pervasive, he disclaims an opinion.\n- Facts: No physical verification by management, no adequate inventory records, the audit team could not count; inventory is 30% of total assets, so closing inventory (and profit) cannot be verified.\n- Conclusion: Give a Disclaimer of Opinion with a 'Basis for Disclaimer of Opinion' paragraph.\n- CARO 2020, clause 3(ii)(a): state that management has not physically verified inventory at reasonable intervals, so coverage and procedure are not appropriate - report this adversely in the CARO annexure.",
+          "icai": "Same conclusion as ICAI: adverse opinion for Moon Ltd; disclaimer plus CARO 3(ii)(a) remark for Prime Ltd.",
+          "flag": "A single quantified receivable is often argued as material but not pervasive (qualified 'except for' opinion); ICAI treats 48% of profit as pervasive and goes adverse.",
+          "trap": "Giving a qualified opinion for Prime Ltd, or forgetting the CARO 3(ii)(a) remark.",
+          "minutes": 12
+        },
+        {
+          "q": "1.7",
+          "type": "Descriptive",
+          "marks": 5,
+          "subject": "DT",
+          "also": null,
+          "chapter": "Capital Gains; Taxation of Non-Residents (first proviso to s.48 / Rule 115A, s.111A, s.112A, s.115AC, s.47(viib), Chapter XII-A)",
+          "topic": "Non-resident's capital gains on shares and GDRs with foreign-currency conversion, special rates under the default regime",
+          "ask": "Compute total income and tax of non-resident Mr. Karanveer for AY 2024-25 under the default regime (s.115BAC): sale of X Ltd and Y Ltd listed shares, Z Ltd and A Ltd GDRs, plus the other-sources items.",
+          "options": null,
+          "clue": "He acquired shares in both the companies by remitting US dollars",
+          "chapter_clear": true,
+          "think": [
+            "Non-resident + shares bought with remitted dollars + GDRs + TTBR/TTSR table = NR capital gains: first proviso to s.48 (Rule 115A), 112A, 111A, 115AC, 47(viib).",
+            "Chapter clear -> DT index -> 'Non-resident' -> 'first proviso to section 48', '115AC', '47(viib)'. Other sources already done in 1.5 (₹5,08,000) - reuse it.",
+            "Classify each asset: X Ltd > 12 months = LTCG 112A (no FX conversion, no indexation); Y Ltd < 12 months = STCG 111A with Rule 115A conversion; Z GDRs sold NR-to-NR outside India = not a transfer; A GDRs = LTCG at 10% u/s 115AC.",
+            "Special-rate income at its own rate; a non-resident cannot use the basic exemption against 111A/112A, so slab tax only on ₹3,33,000; surcharge 10% (income 50L-1Cr); cess 4%."
+          ],
+          "look_up": {
+            "where": "ICAI SM DT - Capital Gains; Non-Resident Taxation",
+            "index_keywords": [
+              "first proviso to section 48",
+              "Rule 115A",
+              "section 112A",
+              "section 111A",
+              "section 115AC",
+              "section 47(viib) GDR",
+              "section 115E",
+              "section 115F"
+            ]
+          },
+          "solve": "1. X Ltd (listed, STT paid, 01.07.2020-28.02.2024) - LTCG u/s 112A; first proviso to s.48 and indexation not allowed: 1,30,00,000 − 26,000 − 90,00,000 = 39,74,000.\n2. Y Ltd (01.08.2023-28.02.2024) - STCG u/s 111A, Rule 115A: average rate 28.02.2024 = (82.80 + 83.50)/2 = 83.15; on 01.08.2023 = (80.60 + 81.30)/2 = 80.95. Consideration 65,00,000/83.15 = $78,171.98; expense 13,000/83.15 = $156.34; cost 50,00,000/80.95 = $61,766.52; gain = $16,249.12 × TTBR 82.80 = 13,45,427.\n3. Z Ltd GDRs sold by a non-resident to a non-resident outside India - not a transfer u/s 47(viib): Nil.\n4. A Ltd GDRs (held > 36 months) - LTCG u/s 115AC, no indexation: 15,00,000 − 3,000 − 12,00,000 = 2,97,000.\n5. Other sources (from 1.5): 5,08,000.\nTotal income = 61,24,427, rounded 61,24,430.\nTax: 10% × (39,74,000 − 1,00,000) = 3,87,400; 15% × 13,45,427 = 2,01,814; 10% × 2,97,000 = 29,700; 20% × 1,75,000 (s.115A) = 35,000; slab on 3,33,000 = 5% × 33,000 = 1,650. Total 6,55,564 + surcharge 10% 65,556 = 7,21,120 + cess 4% 28,845 = 7,49,965 -> ₹7,49,970.\nAlternative (Chapter XII-A, as he is an NRI who bought shares in foreign exchange): X Ltd gain with Rule 115A = $37,376.03 × 82.80 = 30,94,735, less s.115F exemption for ₹1,25,000 reinvested in Bright Ltd shares (30,94,735 × 1,25,000/1,29,74,000 = 29,817) = 30,64,918 at 10% u/s 115E; debenture interest at 20% u/s 115E. Total income 52,15,345; tax ₹6,57,410.",
+          "answer": "Computation of total income - Mr. Karanveer (non-resident), AY 2024-25, default regime\nCapital gains\n(a) LTCG on X Ltd shares [s.112A - no FX conversion, no indexation]: 1,30,00,000 − 26,000 − 90,00,000 = 39,74,000\n(b) STCG on Y Ltd shares [s.111A; Rule 115A]: net consideration $78,015.64 (65,00,000/83.15 − 13,000/83.15) − cost $61,766.52 (50,00,000/80.95) = $16,249.12 × ₹82.80 (TTBR on 28.02.2024) = 13,45,427\n(c) Z Ltd GDRs - transfer by a non-resident to a non-resident outside India is not a transfer [s.47(viib)]: Nil\n(d) LTCG on A Ltd GDRs [s.115AC - no indexation]: 15,00,000 − 3,000 − 12,00,000 = 2,97,000\nIncome from other sources: plot 2,48,000 + Bright Ltd shares 85,000 + debenture interest 1,75,000 = 5,08,000 (NRE interest exempt u/s 10(4)(ii); shop within 10% tolerance)\nTotal income = 61,24,427, rounded ₹61,24,430\n\nTax liability\n- s.112A: 10% on 38,74,000 (above ₹1 lakh) = 3,87,400\n- s.111A: 15% on 13,45,427 = 2,01,814\n- s.115AC: 10% on 2,97,000 = 29,700\n- s.115A: 20% on debenture interest 1,75,000 = 35,000\n- Slab rates on 3,33,000 (no basic-exemption adjustment against special-rate income for a non-resident; no s.87A) = 1,650\n- Total 6,55,564; add surcharge 10% (income above ₹50 lakh) 65,556 = 7,21,120; add cess 4% 28,845\n- Tax liability = ₹7,49,965, rounded ₹7,49,970\nNote: If Chapter XII-A (s.115E/115F) is applied, total income is ₹52,15,345 and tax ₹6,57,410.",
+          "icai": "Same as ICAI's main answer (₹7,49,970); ICAI also accepted the Chapter XII-A alternative (₹6,57,410).",
+          "flag": "Law change for Nov 2026: for transfers on/after 23.07.2024, s.112A is 12.5% above ₹1.25 lakh, s.111A is 20%, and LTCG u/s 115AC/115E is 12.5%; new-regime slabs also changed - use your attempt's rates.",
+          "trap": "Applying Rule 115A conversion or indexation to the 112A shares, or taxing the Z Ltd GDRs (NR-to-NR outside India is not a transfer).",
+          "minutes": 20
+        },
+        {
+          "q": "1.8(a)",
+          "type": "Descriptive",
+          "marks": 3,
+          "subject": "IDT",
+          "also": null,
+          "chapter": "Input Tax Credit - Rule 43 CGST Rules (capital goods used for taxable and exempt supplies)",
+          "topic": "ITC on capital goods: exclusively taxable, exclusively exempt, common use",
+          "ask": "Correct GSTR-3B treatment for March 2024 of IGST on Machine X (taxable only, ₹9 lakh), Y (both, ₹10.8 lakh) and Z (exempt only, ₹13.5 lakh); taxable supplies ₹1,500 lakh, exempt ₹300 lakh.",
+          "options": null,
+          "clue": "Exclusively for taxable supply ... For exempt as well as taxable supply",
+          "chapter_clear": true,
+          "think": [
+            "Capital goods + 'exclusively taxable / exempt / both' = Rule 43 CGST Rules.",
+            "Chapter clear -> IDT index -> Input Tax Credit -> 'Rule 43', 'capital goods', 'common credit'.",
+            "Exclusive taxable: full credit. Exclusive exempt: not credited at all. Common: full credit to ledger, then reverse (E/F) × (Tc/60) through output tax every month for 60 months."
+          ],
+          "look_up": {
+            "where": "ICAI SM IDT - Input Tax Credit (Rule 43)",
+            "index_keywords": [
+              "Rule 43",
+              "capital goods common credit",
+              "Tc/60",
+              "exempt supplies E/F",
+              "useful life five years"
+            ]
+          },
+          "solve": "Machine X: ₹9,00,000 credited in full. Machine Z: ₹13,50,000 not credited. Machine Y: ₹10,80,000 credited as common credit (Tc). ITC credited in March 2024 = 9,00,000 + 10,80,000 = ₹19,80,000. Tm = 10,80,000 ÷ 60 = 18,000. Te = 18,000 × 300/1,800 = ₹3,000, added to output tax for March 2024.",
+          "answer": "Provision: Rule 43 CGST Rules - ITC on capital goods used only for exempt supplies is not credited to the electronic credit ledger; ITC on capital goods used only for taxable supplies is credited in full; ITC on capital goods used for both is credited in full as common credit, and a monthly share for exempt supplies is added to output tax over a useful life of 5 years (60 months).\nWorking (March 2024)\n- Machine X (exclusively taxable): ITC credited ₹9,00,000\n- Machine Z (exclusively exempt): Nil - ₹13,50,000 not taken\n- Machine Y (common): ITC credited ₹10,80,000\n- Total ITC credited to electronic credit ledger: ₹19,80,000\n- Common credit for the month, Tm = 10,80,000 ÷ 60 = ₹18,000\n- Exempt share, Te = (E ÷ F) × Tm = (300 lakh ÷ 1,800 lakh) × 18,000 = ₹3,000\nConclusion: In GSTR-3B for March 2024, take ITC of ₹19,80,000 and add ₹3,000 to output tax liability. Repeat the Te addition each month of the 60-month life using that month's turnover.",
+          "icai": "Same as ICAI.",
+          "flag": null,
+          "trap": "Reversing the exempt share on the whole ₹10,80,000 at once, or taking credit on Machine Z.",
+          "minutes": 9
+        },
+        {
+          "q": "1.8(b)",
+          "type": "Descriptive",
+          "marks": 3,
+          "subject": "IDT",
+          "also": null,
+          "chapter": "Tax Invoice (s.31(7)) and Refunds (s.54(3), Rule 89(4)) - Circular 108/27/2019-GST",
+          "topic": "Goods sent abroad for exhibition - deemed supply after 6 months, invoice, refund",
+          "ask": "600 units sent abroad for exhibition on 01.09.2023 on delivery challan; 400 returned on 20.02.2024; 200 never returned, no invoice by 31.03.2024. (i) When is supply deemed and is an invoice needed? (ii) Can HCP claim refund?",
+          "options": null,
+          "clue": "sent 600 units of goods outside India for exhibition",
+          "chapter_clear": true,
+          "think": [
+            "Goods sent abroad for exhibition on delivery challan = Circular 108/27/2019-GST: not a supply when sent; treated like goods on approval.",
+            "Chapter clear -> IDT index -> 'goods sent out of India for exhibition' -> s.31(7) 6-month rule; refund -> s.54(3), Rule 89(4).",
+            "Dates: removal 01.09.2023; 400 back on 20.02.2024 (within 6 months, no supply); 200 not back by 01.03.2024 -> deemed supply (export) that day, invoice that day; refund of ITC as zero-rated supply."
+          ],
+          "look_up": {
+            "where": "ICAI SM IDT - Tax Invoice; Refunds; Exports (Circular 108/27/2019-GST)",
+            "index_keywords": [
+              "goods sent out of India for exhibition",
+              "sale on approval basis",
+              "six months from removal",
+              "zero-rated supply",
+              "Rule 89(4)"
+            ]
+          },
+          "solve": "Sending goods abroad for exhibition is not a supply when sent; they must be sold abroad or brought back within 6 months of removal. 400 units back on 20.02.2024 - within 6 months, no supply. 200 units neither sold nor brought back - supply deemed on expiry of 6 months from 01.09.2023, i.e. 01.03.2024; invoice due on that date. These 200 units are an export (zero-rated) -> refund of unutilised ITC u/s 54(3) read with Rule 89(4).",
+          "answer": "(i) Time of supply and invoice\n- Provision: Goods sent out of India for exhibition under a delivery challan are not a supply when sent; like goods sent on approval (s.31(7)), they must be sold or brought back within 6 months of removal. If not, supply is deemed to take place on expiry of 6 months (Circular 108/27/2019-GST).\n- Facts: 600 units sent on 01.09.2023; 400 brought back on 20.02.2024 (within 6 months) - no supply. 200 units not brought back.\n- Conclusion: Supply of the 200 units is deemed on 01.03.2024. HCP must issue a tax invoice for them on 01.03.2024; not raising any invoice is wrong.\n(ii) Refund\n- The 200 units are an export of goods, i.e. a zero-rated supply (s.16 IGST Act).\n- HCP can claim refund of accumulated ITC under s.54(3) of the CGST Act read with Rule 89(4) of the CGST Rules, after issuing the tax invoice dated 01.03.2024.",
+          "icai": "Same as ICAI.",
+          "flag": null,
+          "trap": "Treating all 600 units as supplied on 01.09.2023, or taking 31.03.2024 as the supply date.",
+          "minutes": 9
+        }
+      ]
+    },
+    {
+      "no": 2,
+      "title": "Green Energy Ltd (GEL)",
+      "industry": "Solar panels and power-storage equipment - manufacture and export",
+      "story": "A Chennai solar-equipment maker with a 16-month operating cycle, a defaulted loan the lender agreed not to recall, a 7-year INR ECB, technical services imported from the UK, a ₹20 crore KSEB order and a promoter who day-trades shares and commodities.",
+      "marks_by_subject": {
+        "DT": 3,
+        "Law": 2,
+        "FR": 7,
+        "AFM": 2,
+        "IDT": 6,
+        "Costing": 5
+      },
+      "difficulty": "Moderate",
+      "first15": "Middle pick: 2.6 and 2.7 (10 marks) are textbook Ind AS 1 and import-of-service RCM, but 2.5 has no correct option and 2.8's hours need an assumption.",
+      "questions": [
+        {
+          "q": "2.1",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "DT",
+          "also": null,
+          "chapter": "Profits and Gains of Business or Profession (s.43(5) speculative transaction)",
+          "topic": "Intraday share trading = speculation; commodity derivatives on a recognised exchange = not speculation",
+          "ask": "How is Vijay taxed on day trades (BSE profit ₹7 lakh, NSE loss ₹6 lakh) and commodity derivatives on a recognised exchange (profit ₹2 lakh)?",
+          "options": {
+            "a": "Regular business income (non-speculation income) ₹ 3,00,000",
+            "b": "Business income (non-speculation) from commodities derivative ₹ 2,00,000 and speculation business income from day trade in share ₹ 1,00,000",
+            "c": "₹ 3,00,000 being speculation income consisting of both day trade in shares and commodities derivative trade",
+            "d": "Non-speculation business income from day trade in shares ₹ 1,00,000 and business income being speculation income from commodities derivative ₹ 2,00,000"
+          },
+          "clue": "Day trade transactions in BSE ... Commodity derivative trade in recognized stock exchange",
+          "chapter_clear": true,
+          "think": [
+            "Day trade = settled without delivery = speculative transaction u/s 43(5).",
+            "Chapter clear -> DT index -> 'speculative transaction', s.43(5) and its proviso.",
+            "Commodity derivatives on a recognised exchange are 'eligible transactions' excluded from speculation (proviso (e)). Speculation net = 7L − 6L = 1L; non-speculation = 2L."
+          ],
+          "look_up": {
+            "where": "ICAI SM DT - PGBP (s.43(5)); Set-off of losses (s.73)",
+            "index_keywords": [
+              "speculative transaction",
+              "section 43(5)",
+              "commodity derivative eligible transaction",
+              "section 73 speculation loss"
+            ]
+          },
+          "solve": "Day trades in shares have no delivery -> speculative u/s 43(5). BSE profit ₹7,00,000 and NSE loss ₹6,00,000 are both speculation, so they net off: speculation income ₹1,00,000. Commodity derivatives on a recognised stock exchange fall under clause (e) of the proviso to s.43(5) -> not speculative -> normal business income ₹2,00,000.",
+          "answer": "(B) Business income (non-speculation) from commodities derivative ₹ 2,00,000 and speculation business income from day trade in share ₹ 1,00,000",
+          "icai": "(B)",
+          "flag": null,
+          "trap": "Calling commodity derivatives speculation (option C) - the recognised-exchange exclusion makes them normal business income.",
+          "minutes": 3
+        },
+        {
+          "q": "2.2",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "Law",
+          "also": "AFM",
+          "chapter": "FEMA 1999 - External Commercial Borrowings (RBI ECB framework)",
+          "topic": "ECB end-use negative list, hedging and conversion for an INR-denominated ECB",
+          "ask": "GEL raises a 7-year INR-denominated ECB: ₹2.5 crore to repay ABC Ltd's capex loan, ₹1.5 crore for working capital; no hedge; conversion at settlement-date rate. Which is correct? I: repaying ABC loan not permitted. II: working capital not permitted. III: not hedging breaks the rules. IV: agreement-date rate (20.05.2024) should be used.",
+          "options": {
+            "a": "Only Statement I",
+            "b": "Statement I and III",
+            "c": "Only Statement II",
+            "d": "Statement I, II and IV"
+          },
+          "clue": "External Commercial borrowing (INR denominated) by issuing Non-Convertible Debentures",
+          "chapter_clear": false,
+          "think": [
+            "'ECB (INR denominated)' + uses of proceeds + hedging = ECB framework under FEMA - end-use negative list.",
+            "Unsure where it sits -> A-Z index -> 'External Commercial Borrowings' / 'end-use' (Law - FEMA; AFM IFM has the basics).",
+            "Negative list relaxations: repayment of rupee loans taken for capex allowed with 7-year maturity; working capital needs 10 years -> I false, II true.",
+            "INR ECB: the lender carries the currency risk, so no hedging mandate (III false); the agreement-date rate rule is for converting an FCY ECB into INR, not this case (IV false)."
+          ],
+          "look_up": {
+            "where": "ICAI SPOM Set A Law - FEMA 1999 (ECB); AFM - International Financial Management",
+            "index_keywords": [
+              "external commercial borrowings",
+              "end-use restrictions",
+              "negative list",
+              "minimum average maturity",
+              "INR denominated ECB",
+              "hedging"
+            ]
+          },
+          "solve": "ABC loan = domestic rupee loan for capital expenditure; ECB with a minimum average maturity of 7 years may repay such loans - permitted, so I is false. Working capital and general corporate purposes need a minimum average maturity of 10 years; 7 years is short - not permitted, so II is true. INR-denominated ECB: GEL owes rupees, the currency risk is the lender's; hedging rules are for FCY ECBs - III false. The agreement-date exchange rate applies when an FCY ECB is converted into INR; nothing is converted here - IV false. Only II.",
+          "answer": "(C) Only Statement II",
+          "icai": "(C)",
+          "flag": null,
+          "trap": "Assuming all loan repayment from ECB is banned - repaying a capex rupee loan is allowed with a 7-year maturity.",
+          "minutes": 3
+        },
+        {
+          "q": "2.3",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "FR",
+          "also": null,
+          "chapter": "Ind AS 34 Interim Financial Reporting",
+          "topic": "Interim report content: no extraordinary items, no reversal of goodwill impairment, basic + diluted EPS, only significant changes in contingent liabilities",
+          "ask": "Which of Robin's four objections to GEL's interim report are valid? I: extraordinary item not shown. II: goodwill impairment from an earlier interim period reversed. III: only basic EPS given. IV: insignificant changes in contingent liabilities not disclosed.",
+          "options": {
+            "a": "Only Issue I and IV have been validly raised and required changes in interim financial report",
+            "b": "All the issues raised were valid and the effect of all four issues required changes in interim financial report",
+            "c": "Only Issue II and Issue III have been validly raised and required changes in interim financial report",
+            "d": "Only Issue I have been validly raised and required changes in interim financial report"
+          },
+          "clue": "reversal of impairment loss recognized in a previous interim period in respect of goodwill",
+          "chapter_clear": true,
+          "think": [
+            "'Interim financial report' = Ind AS 34 (plus Ind AS 1 for extraordinary items, Appendix A of Ind AS 34 for goodwill impairment).",
+            "Chapter clear -> FR index -> Ind AS 34 -> 'EPS', 'impairment of goodwill', 'significant events and transactions'.",
+            "I: extraordinary items are banned by Ind AS 1 - not showing one is right (invalid). II: goodwill impairment can't be reversed (valid). III: both EPS needed (valid). IV: only significant changes (invalid)."
+          ],
+          "look_up": {
+            "where": "ICAI SM FR - Ind AS 34 Interim Financial Reporting",
+            "index_keywords": [
+              "interim financial report",
+              "basic and diluted earnings per share",
+              "impairment of goodwill interim period",
+              "contingent liabilities significant changes",
+              "extraordinary items"
+            ]
+          },
+          "solve": "I: Ind AS 1 prohibits presenting any item as extraordinary - not showing it is correct; objection invalid. II: Appendix A to Ind AS 34 - impairment of goodwill recognised in an earlier interim period must not be reversed; objection valid. III: Ind AS 34 para 11 - basic and diluted EPS both presented; objection valid. IV: Ind AS 34 para 15B - only significant changes in contingent liabilities need explanation; objection invalid. Valid = II and III.",
+          "answer": "(C) Only Issue II and Issue III have been validly raised and required changes in interim financial report",
+          "icai": "(C)",
+          "flag": null,
+          "trap": "Accepting Issue I because an 'omitted extraordinary item' sounds like a defect - extraordinary items do not exist under Ind AS.",
+          "minutes": 3
+        },
+        {
+          "q": "2.4",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "AFM",
+          "also": null,
+          "chapter": "Portfolio Management - Alternative Investments (hedge fund fee structure)",
+          "topic": "Management fee + incentive fee above the high-water mark",
+          "ask": "Portfolio = GEL's ₹2 crore KSEB profit. Fee = 0.20% of portfolio + 1% of gross return above the maximum value since inception (₹2.20 crore). If return is 20%, total fee?",
+          "options": {
+            "a": "₹ 60,000",
+            "b": "₹ 2,04,000",
+            "c": "₹ 68,000",
+            "d": "₹ 86,000"
+          },
+          "clue": "linked to gross return in excess of the portfolio maximum value",
+          "chapter_clear": false,
+          "think": [
+            "'In excess of the portfolio maximum value since inception' = high-water mark (hedge fund fee structure).",
+            "Unsure of chapter -> A-Z index -> 'high water mark' -> AFM Portfolio Management / alternative investments.",
+            "Base fee 0.20% × ₹2 crore = 40,000. Value after 20% = ₹2.40 crore; above high-water mark by ₹20 lakh × 1% = 20,000. Total 60,000."
+          ],
+          "look_up": {
+            "where": "ICAI SM AFM - Portfolio Management (alternative investments - hedge funds)",
+            "index_keywords": [
+              "high-water mark",
+              "incentive fee",
+              "management fee",
+              "hedge fund"
+            ]
+          },
+          "solve": "Portfolio = net profit from KSEB supply = ₹2,00,00,000. Management fee = 0.20% × 2,00,00,000 = 40,000. Value after 20% return = 2,40,00,000. High-water mark = 2,20,00,000; excess = 20,00,000. Incentive = 1% × 20,00,000 = 20,000. Total fee = ₹60,000.",
+          "answer": "(A) ₹ 60,000",
+          "icai": "(A)",
+          "flag": null,
+          "trap": "Charging the 0.20% on the closing ₹2.40 crore gives ₹68,000 (option C); the incentive is only on value above ₹2.20 crore.",
+          "minutes": 3
+        },
+        {
+          "q": "2.5",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "IDT",
+          "also": "DT",
+          "chapter": "GST: TDS u/s 51 CGST Act (s.20 IGST Act); Income-tax: TDS u/s 194Q vs 194C",
+          "topic": "TDS by a Government board on an inter-State ₹20 crore supply of goods",
+          "ask": "KSEB (Kerala) buys 'SAT' worth ₹20 crore from GEL (Chennai), withholds ₹2 crore for 12 months and pays the rest after TDS. How much TDS under the Income-tax Act and under GST?",
+          "options": {
+            "a": "₹ 36 lakhs each under the Income tax Act, 1961 and under the IGST Act.",
+            "b": "₹ 40 lakhs under the Income-tax Act, 1961 and, 36 lakhs under the IGST Act.",
+            "c": "₹ 40 lakhs each under the Income tax Act, 1961 and under the IGST Act.",
+            "d": "₹ 36 lakhs under the Income-tax Act, 1961 and, 40 lakhs under the IGST Act."
+          },
+          "clue": "KSEB withheld ₹ 2 Crores ... paid the balance after deducting TDS",
+          "chapter_clear": true,
+          "think": [
+            "Government board paying a supplier + 'TDS under GST' = s.51 CGST; Chennai supplier to a Kerala buyer = inter-State, so 2% under IGST.",
+            "Chapter clear -> IDT index -> 'Tax deduction at source' (s.51). Income-tax side: buying goods, not getting 'work' done -> DT index -> '194Q' and 194C's 'work' exclusion.",
+            "GST: 2% on ₹18 crore actually paid = ₹36 lakh (TDS on the withheld ₹2 crore when paid). Income-tax: 0.1% on value above ₹50 lakh = ₹1,95,000.",
+            "No option has both figures -> write the working and the 194Q point in one line under the MCQ."
+          ],
+          "look_up": {
+            "where": "ICAI SM IDT - TDS and TCS under GST (s.51); ICAI SM DT - Deduction of tax at source (s.194Q, s.194C)",
+            "index_keywords": [
+              "section 51 TDS",
+              "2% IGST",
+              "section 194Q purchase of goods",
+              "section 194C meaning of work",
+              "contract for sale"
+            ]
+          },
+          "solve": "GST: KSEB is a notified Government authority/board; supplier in Tamil Nadu, place of supply Kerala -> inter-State -> TDS 2% under IGST on the payment made: 2% × (20 − 2) crore = ₹36 lakh. Income-tax: 194C covers 'work'; making a product with material not bought from the customer is excluded from 'work', so this is a contract for sale -> s.194Q: buyer (turnover above ₹10 crore) deducts 0.1% on purchases above ₹50 lakh = 0.1% × 19,50,00,000 = ₹1,95,000.",
+          "answer": "No option fits fully. GST TDS = ₹36 lakh under the IGST Act; income-tax TDS = ₹1,95,000 u/s 194Q (not 194C). The options assume 194C at 2% (₹36 lakh), i.e. (A) - in the exam, write the 194Q working beside your answer.",
+          "icai": "ICAI gave no option letter: GST TDS ₹36 lakh under IGST; income-tax TDS u/s 194Q ₹1,95,000.",
+          "flag": "Broken MCQ: every option assumes 2% income-tax TDS (194C), but ICAI's own answer applies 194Q (₹1,95,000), so no option matches.",
+          "trap": "Taking 2% of the full ₹20 crore (₹40 lakh) under GST, or applying 194C to a plain supply of goods.",
+          "minutes": 3
+        },
+        {
+          "q": "2.6",
+          "type": "Descriptive",
+          "marks": 5,
+          "subject": "FR",
+          "also": null,
+          "chapter": "Ind AS 1 Presentation of Financial Statements (current / non-current classification)",
+          "topic": "Operating cycle longer than 12 months; loan in default - para 74 Indian carve-out",
+          "ask": "(i) Are inventory and receivables current when production takes 10 months and credit is 6 months? (ii) Same if 13 and 15 months? (iii) How to classify the ABC Ltd loan in default at 31.03.2024 when the lender agreed in June 2024 not to recall it?",
+          "options": null,
+          "clue": "10 months ... credit period of 6 months ... loan became repayable on demand",
+          "chapter_clear": true,
+          "think": [
+            "Current vs non-current + operating cycle + loan default = Ind AS 1 paras 66-76.",
+            "Chapter clear -> FR index -> Ind AS 1 -> 'operating cycle' (paras 66, 68) and 'breach of loan arrangement' (para 74).",
+            "Assets realised within the normal operating cycle are current even if the cycle is longer than 12 months - 16 or 28 months, both current.",
+            "Loan: para 74 is an Indian carve-out from IAS 1 - lender's waiver after year-end but before approval keeps it non-current."
+          ],
+          "look_up": {
+            "where": "ICAI SM FR - Ind AS 1 Presentation of Financial Statements",
+            "index_keywords": [
+              "operating cycle",
+              "current assets",
+              "para 74 breach of loan",
+              "payable on demand",
+              "carve-out from IAS 1"
+            ]
+          },
+          "solve": "Operating cycle = buying raw material to collecting cash. (i) 10 + 6 = 16 months; para 66: an asset realised, sold or consumed in the normal operating cycle is current; para 68: the cycle may exceed 12 months -> current. (ii) 13 + 15 = 28 months - still the normal cycle -> still current. (iii) Default made the loan payable on demand at 31.03.2024; ABC agreed in June 2024 (after reporting date, before approval) not to demand payment; para 74 (carve-out) -> not classified as current -> non-current.",
+          "answer": "(i) Inventory and trade receivables - current\n- Ind AS 1 para 66: an asset is current if the entity expects to realise it, or intends to sell or consume it, in its normal operating cycle. Para 68: the operating cycle can be longer than 12 months.\n- GEL's cycle = 10 months production + 6 months credit = 16 months.\n- Both are realised within the normal operating cycle, so classify them as current (disclose amounts expected to be realised after 12 months).\n(ii) 13 months + 15 months = 28 months\n- No change. The test is the normal operating cycle, not 12 months. Inventory and receivables remain current.\n(iii) Loan from ABC Ltd - non-current\n- Ind AS 1 para 74 (Indian carve-out from IAS 1): where a breach of a long-term loan on or before the reporting date makes it payable on demand, the liability is not classified as current if the lender agrees, after the reporting period and before the financial statements are approved for issue, not to demand payment because of the breach.\n- Facts: ABC Ltd agreed in June 2024, before approval of the 2023-24 financial statements.\n- Conclusion: Show the ABC Ltd loan as non-current at 31.03.2024.",
+          "icai": "Same conclusion as ICAI.",
+          "flag": null,
+          "trap": "Applying IAS 1 (current) - Ind AS 1 para 74 is a carve-out and gives non-current.",
+          "minutes": 15
+        },
+        {
+          "q": "2.7",
+          "type": "Descriptive",
+          "marks": 5,
+          "subject": "IDT",
+          "also": null,
+          "chapter": "Place of Supply (s.13 IGST Act); Time of Supply (s.13(3) CGST Act); Reverse charge on import of services",
+          "topic": "Import of technical services from the UK - levy, RCM, time of supply",
+          "ask": "Does GST apply on GBP 1,00,000 paid to Mark Ltd, UK for technical services (availed 20.12.2023, invoice 28.12.2023, paid 22.01.2024)? Who pays and in which month?",
+          "options": null,
+          "clue": "availed the technical services of Mark Ltd., UK ... GEL made payment on 22nd January",
+          "chapter_clear": true,
+          "think": [
+            "Foreign supplier + Indian recipient + services = import of services; POS under s.13 IGST (supplier outside India).",
+            "Chapter clear -> IDT index -> 'import of services', 'place of supply s.13(2)', 'time of supply reverse charge s.13(3)'.",
+            "No special rule fits -> POS = recipient's location (Chennai) -> import -> IGST under reverse charge (Notification 10/2017-IT(R)) payable by GEL.",
+            "Time of supply = earlier of payment (22.01.2024) and the day after 60 days from invoice (27.02.2024) -> January 2024 -> pay in cash with GSTR-3B by 20 February 2024."
+          ],
+          "look_up": {
+            "where": "ICAI SM IDT - Place of Supply; Time of Supply; Charge of GST (reverse charge)",
+            "index_keywords": [
+              "import of services",
+              "section 13(2) IGST",
+              "Notification 10/2017-Integrated Tax (Rate)",
+              "time of supply reverse charge",
+              "60 days from date of invoice"
+            ]
+          },
+          "solve": "Supplier in UK, recipient in Chennai. Technical services fit no special clause of s.13 -> s.13(2): POS = location of recipient = Chennai. Supplier outside India + recipient in India + POS in India = import of services (s.2(11) IGST). Import of services for consideration is a supply (s.7(1)(b) CGST) -> IGST under reverse charge (s.5(3) IGST with Notification 10/2017-IT(R)) - GEL pays. Time of supply (s.13(3) CGST) = earlier of payment 22.01.2024 and the date after 60 days from invoice 28.12.2023 (27.02.2024) = 22.01.2024. Liability falls in January 2024; paid in cash through GSTR-3B for January, due 20.02.2024.",
+          "answer": "- Yes, GST applies.\n- Place of supply: The supplier (Mark Ltd) is outside India; technical services are not covered by any specific clause of s.13 of the IGST Act, so POS = location of the recipient = Chennai, India [s.13(2)].\n- Nature: Supplier outside India, recipient in India, POS in India = import of services [s.2(11) IGST]. Import of services for consideration is a supply [s.7(1)(b) CGST] and attracts IGST.\n- Who pays: Under Notification 10/2017-Integrated Tax (Rate), services supplied by a person in a non-taxable territory to a person in the taxable territory (other than a non-taxable online recipient) are taxed under reverse charge. GEL must pay IGST on GBP 1,00,000.\n- When: Time of supply under reverse charge [s.13(3) CGST] = earlier of (a) date of payment, 22.01.2024, and (b) date immediately after 60 days from the invoice dated 28.12.2023, i.e. 27.02.2024. Time of supply = 22.01.2024.\n- Conclusion: The liability arises in January 2024. GEL pays IGST in cash through GSTR-3B for January 2024, i.e. by 20 February 2024 (deposited in February 2024), and can then take ITC of it.",
+          "icai": "Same conclusion as ICAI.",
+          "flag": null,
+          "trap": "Taking the invoice month (December 2023) as time of supply - under reverse charge it is the earlier of payment and the day after 60 days from invoice.",
+          "minutes": 15
+        },
+        {
+          "q": "2.8",
+          "type": "Descriptive",
+          "marks": 5,
+          "subject": "Costing",
+          "also": null,
+          "chapter": "Standard Costing - Planning and Operational Variances (SPOM Set B: Strategic Cost & Performance Management)",
+          "topic": "Labour efficiency and rate variances: traditional vs planning and operational",
+          "ask": "For 3,600 units of SAT in January 2024 (actual rate ₹25/hr, standard ₹30/hr; revised standard 0.75 hr/unit; now 10 units in 10 hours after a 25% productivity gain), compute (i) traditional variances and (ii) operational and planning variances.",
+          "options": null,
+          "clue": "productivity increased by 25% ... revised standard labour requirement is 0.75 hours per unit",
+          "chapter_clear": true,
+          "think": [
+            "'Original standard' vs 'revised standard' columns = planning and operational variances (ex-ante vs ex-post).",
+            "Chapter clear -> SPOM-B index -> Standard Costing -> 'planning variance', 'operational variance'.",
+            "Fix the hours first: actual = 1 hr/unit (10 units in 10 hours); revised = 0.75 hr; original = 1 ÷ 0.75 = 1.333 hr (ICAI's reading). For 3,600 units: 4,800 / 2,700 / 3,600 hours.",
+            "Traditional = original vs actual; operational = revised vs actual; planning = original vs revised. Check: planning + operational = traditional."
+          ],
+          "look_up": {
+            "where": "ICAI SPOM Set B (Strategic Cost & Performance Management) - Standard Costing",
+            "index_keywords": [
+              "planning variance",
+              "operational variance",
+              "ex-ante standard",
+              "ex-post standard",
+              "labour efficiency variance"
+            ]
+          },
+          "solve": "Hours for 3,600 units: original 3,600 × 1.333 = 4,800; revised 3,600 × 0.75 = 2,700; actual 3,600 × 1 = 3,600.\nCost: original 4,800 × 30 = 1,44,000; revised 2,700 × 30 = 81,000; actual 3,600 × 25 = 90,000.\nTraditional: efficiency (4,800 − 3,600) × 30 = 36,000 F; rate (30 − 25) × 3,600 = 18,000 F; total 54,000 F.\nOperational: efficiency (2,700 − 3,600) × 30 = 27,000 A; rate 18,000 F; total 9,000 A.\nPlanning: efficiency (4,800 − 2,700) × 30 = 63,000 F; rate nil; total 63,000 F.\nCheck: 63,000 F + 9,000 A = 54,000 F.",
+          "answer": "Working: Actual time = 10 hours for 10 units = 1 hour per unit. A 25% productivity gain means time is now 75% of the original, so original standard = 1 ÷ 0.75 = 1.333 hours per unit. Revised standard = 0.75 hour per unit.\nHours for 3,600 units: Original 4,800 | Revised 2,700 | Actual 3,600\nCost: Original 4,800 × ₹30 = ₹1,44,000 | Revised 2,700 × ₹30 = ₹81,000 | Actual 3,600 × ₹25 = ₹90,000\n(i) Traditional variances (original standard vs actual)\n- Efficiency = (4,800 − 3,600) × ₹30 = ₹36,000 (F)\n- Rate = (₹30 − ₹25) × 3,600 = ₹18,000 (F)\n- Total = ₹54,000 (F)\n(ii) Operational variances (revised standard vs actual)\n- Efficiency = (2,700 − 3,600) × ₹30 = ₹27,000 (A)\n- Rate = (₹30 − ₹25) × 3,600 = ₹18,000 (F)\n- Total = ₹9,000 (A)\nPlanning variances (original vs revised standard)\n- Efficiency = (4,800 − 2,700) × ₹30 = ₹63,000 (F)\n- Rate = (₹30 − ₹30) × 2,700 = Nil\n- Total = ₹63,000 (F)\nReconciliation: Planning ₹63,000 (F) + Operational ₹9,000 (A) = Traditional ₹54,000 (F).\nNote: Write your assumption on hours in one line - ICAI accepts other reasonable assumptions.",
+          "icai": "Same as ICAI (ICAI notes that alternative assumptions are acceptable).",
+          "flag": "ICAI reads a '25% productivity increase' as 25% less time (original 1.333 hr); strictly 25% more output per hour gives 1.25 hr (original 4,500 hrs: traditional efficiency ₹27,000 F, planning ₹54,000 F).",
+          "trap": "Using 0.75 hr as the actual time - actual is 1 hr per unit (10 units in 10 hours).",
+          "minutes": 15
+        }
+      ]
+    },
+    {
+      "no": 3,
+      "title": "Maximo Ltd",
+      "industry": "Dairy products and fruit concentrates (listed manufacturer)",
+      "story": "A Kolkata listed dairy company importing machinery by air, raising GDRs for an Australian plant, running a TPM packaging subsidiary, facing a minority petition at NCLT, prior-period errors and a GST show cause notice; a group company is in insolvency.",
+      "marks_by_subject": {
+        "AFM": 2,
+        "DT": 4,
+        "IDT": 4,
+        "FR": 5,
+        "Costing": 5,
+        "Law": 5
+      },
+      "difficulty": "Easy",
+      "first15": "Strong pick: five short numerical MCQs plus three standard descriptives (Ind AS 8, OEE, s.244) - few hidden traps and ICAI accepted alternatives where facts were thin.",
+      "questions": [
+        {
+          "q": "3.1",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "AFM",
+          "also": null,
+          "chapter": "International Financial Management - Global Depository Receipts",
+          "topic": "Number of GDRs needed for a net fund requirement after issue costs",
+          "ask": "Maximo needs a net AUD 20 million after issue costs of 5% of gross. Share price ₹300, issued at 10% discount, 2 shares per GDR, AUD 1 = ₹60. How many GDRs?",
+          "options": {
+            "a": "27,21,000",
+            "b": "22,22,222",
+            "c": "23,39,181",
+            "d": "46,78,362"
+          },
+          "clue": "net fund (after fund raising expenses) of 20 million Australian Dollars",
+          "chapter_clear": true,
+          "think": [
+            "GDR issue + shares per GDR + flotation cost = AFM International Financial Management (GDR pricing).",
+            "Chapter clear -> AFM index -> 'GDR' -> number-of-GDRs illustration; replace the figures.",
+            "Gross up for the 5% cost (÷ 0.95), convert to ₹, divide by GDR price (2 × ₹270). The dividend data is a distractor here."
+          ],
+          "look_up": {
+            "where": "ICAI SM AFM - International Financial Management",
+            "index_keywords": [
+              "global depository receipts",
+              "number of GDRs",
+              "flotation cost",
+              "GDR issue price"
+            ]
+          },
+          "solve": "Gross proceeds = 20 million ÷ 0.95 = AUD 21.0526 million × ₹60 = ₹126,31,57,895. Issue price per share = 300 × 90% = ₹270; per GDR = 2 × 270 = ₹540. GDRs = 126,31,57,895 ÷ 540 = 23,39,181.",
+          "answer": "(C) 23,39,181",
+          "icai": "(C)",
+          "flag": null,
+          "trap": "Ignoring the 5% cost (22,22,222) or forgetting 2 shares per GDR (46,78,362).",
+          "minutes": 3
+        },
+        {
+          "q": "3.2",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "DT",
+          "also": null,
+          "chapter": "Deduction of Tax at Source - s.196C (with s.115AC, non-resident taxation)",
+          "topic": "TDS on income from GDRs issued under the notified scheme to non-residents",
+          "ask": "Rate at which Maximo deducts tax on 'interest' on GDRs issued under the Central Government scheme to non-residents (ignore surcharge).",
+          "options": {
+            "a": "5.20%",
+            "b": "10.40%",
+            "c": "4.16%",
+            "d": "20.80%"
+          },
+          "clue": "issued GDRs in accordance with the scheme notified by the Central Government",
+          "chapter_clear": true,
+          "think": [
+            "GDRs under the notified scheme held by non-residents = s.115AC; TDS on that income = s.196C.",
+            "Chapter clear -> DT index -> '196C' / 'GDR'.",
+            "Rate 10%; payee is a non-resident, so add 4% cess on TDS (surcharge ignored): 10% × 1.04 = 10.40%."
+          ],
+          "look_up": {
+            "where": "ICAI SM DT - Deduction of tax at source (s.196C); Non-resident taxation (s.115AC)",
+            "index_keywords": [
+              "section 196C",
+              "section 115AC",
+              "GDR",
+              "foreign currency bonds"
+            ]
+          },
+          "solve": "s.196C: tax on interest or dividend on bonds/GDRs referred to in s.115AC is deducted at 10%. For payments to non-residents, TDS rates are increased by 4% health and education cess. 10% + 4% of 10% = 10.40%.",
+          "answer": "(B) 10.40%",
+          "icai": "(B)",
+          "flag": null,
+          "trap": "Leaving out cess (it applies on TDS for non-residents) or using the 20% s.115A rate (20.80%).",
+          "minutes": 3
+        },
+        {
+          "q": "3.3",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "DT",
+          "also": null,
+          "chapter": "Minimum Alternate Tax - s.115JB (Explanation 1, clause (iih))",
+          "topic": "Book profit reduction for a company admitted to CIRP: aggregate of b/f loss and unabsorbed depreciation",
+          "ask": "Shortspan (P) Ltd's CIRP application was admitted in June 2023. B/f business loss ₹15 lakh and unabsorbed depreciation ₹29 lakh. How much reduces book profit for AY 2024-25?",
+          "options": {
+            "a": "₹ 14,00,000",
+            "b": "₹ 29,00,000",
+            "c": "₹ 15,00,000",
+            "d": "₹ 44,00,000"
+          },
+          "clue": "application for corporate insolvency process has been admitted by the adjudicating authority",
+          "chapter_clear": true,
+          "think": [
+            "Book profit + b/f loss + unabsorbed depreciation = s.115JB Explanation 1 adjustments.",
+            "Chapter clear -> DT index -> '115JB' -> 'lower of brought forward loss or unabsorbed depreciation' and the IBC exception.",
+            "Normal company: the lower of the two. Company whose CIRP application is admitted under IBC: the aggregate. 15L + 29L = 44L."
+          ],
+          "look_up": {
+            "where": "ICAI SM DT - MAT (s.115JB)",
+            "index_keywords": [
+              "section 115JB",
+              "book profit",
+              "unabsorbed depreciation",
+              "Insolvency and Bankruptcy Code",
+              "aggregate of loss and depreciation"
+            ]
+          },
+          "solve": "Business loss b/f = 11 + 0 + 4 = ₹15 lakh. Unabsorbed depreciation = 16 + 10 + 3 = ₹29 lakh. Clause (iih) of Explanation 1 to s.115JB: for a company whose CIRP application is admitted under s.7/9/10 of the IBC, book profit is reduced by the aggregate of b/f loss and unabsorbed depreciation = ₹44 lakh.",
+          "answer": "(D) ₹ 44,00,000",
+          "icai": "(D)",
+          "flag": null,
+          "trap": "Using the normal 'lower of' rule (₹15 lakh, or ₹14 lakh year-wise) - admission under IBC switches it to the aggregate.",
+          "minutes": 3
+        },
+        {
+          "q": "3.4",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "IDT",
+          "also": null,
+          "chapter": "Customs - Valuation (Customs Valuation Rules, 2007) and Levy (s.14 exchange rate, s.15 rate of duty)",
+          "topic": "Air freight cap, renegotiated price, exchange rate on BoE date, duty rate on later of BoE/arrival",
+          "ask": "Machinery imported by air: CIF USD 1,00,000 (air freight 12,000, insurance 8,000), price later renegotiated to USD 95,000. BoE 25.06.2023 (₹84, BCD 8%); aircraft arrived 07.07.2023 (₹82, BCD 10%). Customs duty payable?",
+          "options": {
+            "a": "₹ 8,77,800",
+            "b": "₹ 9,24,000",
+            "c": "₹ 9,02,000",
+            "d": "₹ 6,93,000"
+          },
+          "clue": "imported new machineries from USA by air on CIF basis ... re-negotiated price",
+          "chapter_clear": true,
+          "think": [
+            "Import by air + freight + two dates with two exchange rates and two duty rates = customs valuation plus s.14/s.15.",
+            "Chapter clear -> IDT index -> Customs Valuation -> 'air freight 20% of FOB'; Levy -> 'rate of duty s.15', 'rate of exchange s.14'.",
+            "Exchange rate = BoE filing date (₹84); duty rate = later of BoE and arrival (07.07.2023, 10%); SWS 10% of BCD.",
+            "Freight 12,000 is within 20% of FOB, so no cap. Renegotiated before import -> USD 95,000 (A); if after import -> USD 1,00,000 (B)."
+          ],
+          "look_up": {
+            "where": "ICAI SM IDT - Customs: Valuation; Levy of and Exemptions from Customs Duties",
+            "index_keywords": [
+              "air freight 20% of FOB",
+              "transaction value",
+              "rate of exchange section 14",
+              "rate of duty section 15",
+              "social welfare surcharge"
+            ]
+          },
+          "solve": "Renegotiated before importation: CIF USD 95,000 (FOB 75,000; freight 12,000 < 20% of 75,000 = 15,000; insurance 8,000). Assessable value = 95,000 × ₹84 = ₹79,80,000. BCD 10% = 7,98,000; SWS 10% of BCD = 79,800. Duty = ₹8,77,800.\nIf renegotiated after importation: CIF USD 1,00,000 (FOB 80,000; freight within 16,000 cap) × 84 = ₹84,00,000; BCD 8,40,000 + SWS 84,000 = ₹9,24,000.",
+          "answer": "(A) ₹ 8,77,800 - taking the renegotiated price as agreed before importation. If the renegotiation is taken as after importation, (B) ₹ 9,24,000. Write the assumption in one line.",
+          "icai": "(A) or (B) - ICAI accepted both, depending on whether renegotiation was before or after importation.",
+          "flag": null,
+          "trap": "Using ₹82 (arrival-date rate) or 8% (BoE-date rate) - the exchange rate follows the BoE date, the duty rate follows the later date.",
+          "minutes": 3
+        },
+        {
+          "q": "3.5",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "IDT",
+          "also": null,
+          "chapter": "GST - Demands and Recovery (s.73 CGST Act)",
+          "topic": "Penalty in a non-fraud short-payment case when tax is not paid within 30 days of SCN",
+          "ask": "SCN u/s 73(1) for tax ₹6,00,000 and interest ₹1,08,000; Maximo neither paid nor replied within 30 days. Penalty leviable?",
+          "options": {
+            "a": "₹ 10,000",
+            "b": "₹ 50,000",
+            "c": "₹ 60,000",
+            "d": "₹ 70,800"
+          },
+          "clue": "show cause notice (SCN) was issued under section 73(1)",
+          "chapter_clear": true,
+          "think": [
+            "SCN u/s 73(1) = non-fraud demand; the penalty is fixed in s.73 itself.",
+            "Chapter clear -> IDT index -> Demands and Recovery -> s.73(8)/(9).",
+            "Paid within 30 days of SCN -> no penalty. Not paid -> higher of 10% of tax and ₹10,000 = 10% × 6L = ₹60,000."
+          ],
+          "look_up": {
+            "where": "ICAI SM IDT - Demands and Recovery",
+            "index_keywords": [
+              "section 73",
+              "penalty 10% of tax or ten thousand rupees",
+              "within thirty days of show cause notice",
+              "non-fraud cases"
+            ]
+          },
+          "solve": "s.73(8): no penalty if tax and interest are paid within 30 days of the SCN - not done. s.73(9): penalty = higher of 10% of tax (10% × 6,00,000 = 60,000) and ₹10,000 = ₹60,000. Interest is not part of the base.",
+          "answer": "(C) ₹ 60,000",
+          "icai": "(C)",
+          "flag": "Law change for Nov 2026: demands for FY 2024-25 onwards fall under s.74A - same 10%/₹10,000 penalty in non-fraud cases, but no penalty if tax and interest are paid within 60 days of the SCN.",
+          "trap": "Adding interest to the base, or adding 18% to the penalty (₹70,800).",
+          "minutes": 3
+        },
+        {
+          "q": "3.6",
+          "type": "Descriptive",
+          "marks": 5,
+          "subject": "FR",
+          "also": null,
+          "chapter": "Ind AS 8 Accounting Policies, Changes in Accounting Estimates and Errors (with Ind AS 1 para 40A)",
+          "topic": "Correcting prior period errors; a mis-applied retrospective change in accounting policy",
+          "ask": "Auditors say the 2023-24 statements (not yet approved) are not Ind AS compliant and 2022-23 also had errors. How should Maximo correct them, and what if it is a retrospective policy change that was not applied or disclosed properly?",
+          "options": null,
+          "clue": "errors in the financial statements of preceding account year i.e. 2022-23 also",
+          "chapter_clear": true,
+          "think": [
+            "'Errors in preceding year' + 'retrospective change in accounting policy not followed' = Ind AS 8 prior period errors.",
+            "Chapter clear -> FR index -> Ind AS 8 -> 'prior period errors', 'retrospective restatement' (paras 41-49); Ind AS 1 para 40A for the third balance sheet.",
+            "2023-24 errors: fix before the Board approves. 2022-23 errors: restate comparatives. A mis-applied policy change is itself an error -> same route, plus a 01.04.2022 balance sheet if material."
+          ],
+          "look_up": {
+            "where": "ICAI SM FR - Ind AS 8; Ind AS 1 (third balance sheet)",
+            "index_keywords": [
+              "prior period errors",
+              "retrospective restatement",
+              "para 42",
+              "third balance sheet",
+              "para 40A",
+              "impracticable"
+            ]
+          },
+          "solve": "Prior period errors = omissions or misstatements arising from failure to use, or misuse of, reliable information that was available when those statements were approved and could reasonably have been used; they include mistakes in applying accounting policies. 2023-24 statements are not yet approved -> correct current-period errors now. 2022-23 errors -> para 42: correct retrospectively in the first statements approved after discovery (2023-24) by restating comparatives, or opening balances of the earliest period presented if the error is older; unless impracticable. A policy change that should have been applied retrospectively but was not applied or disclosed properly is also a prior period error -> restate 31.03.2023 comparatives; present a balance sheet at 01.04.2022 if the effect is material (Ind AS 1 para 40A).",
+          "answer": "1. Provision - Ind AS 8\n- Prior period errors are omissions from, or misstatements in, earlier financial statements arising from failure to use, or misuse of, reliable information that was available when those statements were approved and could reasonably have been obtained. They include mathematical mistakes, mistakes in applying accounting policies, oversights, misinterpretation of facts and fraud.\n- Errors can be in recognition, measurement, presentation or disclosure (para 41). Statements with material errors (or immaterial errors made intentionally) do not comply with Ind AS.\n2. Correction\n- 2023-24 (current period): the statements are not yet approved by the Board, so correct these errors before approval.\n- 2022-23 (prior period): correct retrospectively in the 2023-24 statements, the first set approved after discovery, by (a) restating the 2022-23 comparatives, or (b) if the error relates to an earlier period, restating opening balances of assets, liabilities and equity of the earliest period presented - unless impracticable (paras 42-45).\n- Disclose the nature of the error, the correction for each line item and EPS for each prior period, the correction at the start of the earliest period, and reasons if impracticable (para 49).\n3. Finance Manager's claim - retrospective policy change not applied or disclosed properly\n- This is not a fresh change in policy; failing to apply or disclose a retrospective policy change properly is itself a prior period error.\n- Treat it under para 42: restate the 31.03.2023 comparatives as if the policy had been applied correctly from the start, with full disclosure.\n- Present a third balance sheet as at 01.04.2022 if the restatement has a material effect on it (Ind AS 1 para 40A); notes to that opening balance sheet are not needed. Later years need not repeat these disclosures.\nConclusion: Maximo must restate the comparatives (not just pass a correction through 2023-24 profit) before the Board approves the 2023-24 statements.",
+          "icai": "Same conclusion as ICAI.",
+          "flag": null,
+          "trap": "Passing the correction through 2023-24 profit or loss instead of restating the 2022-23 comparatives.",
+          "minutes": 15
+        },
+        {
+          "q": "3.7",
+          "type": "Descriptive",
+          "marks": 5,
+          "subject": "Costing",
+          "also": null,
+          "chapter": "Lean System and Innovation - Total Productive Maintenance (SPOM Set B: Strategic Cost & Performance Management)",
+          "topic": "Overall Equipment Effectiveness = Availability × Performance × Quality vs world-class 85%",
+          "ask": "Per 8-hour shift: 30-min meal and 15-min tea break, 20 min unplanned downtime, 2 min standard cycle per bottle, 200 bottles made, 10% rejected. Has Hi-Quality reached world-class TPM performance?",
+          "options": null,
+          "clue": "world class performance standard under TPM approach",
+          "chapter_clear": true,
+          "think": [
+            "'TPM' + downtime + cycle time + rejects = Overall Equipment Effectiveness (OEE).",
+            "Chapter clear -> SPOM-B index -> 'Total Productive Maintenance' -> 'OEE', 'world class'.",
+            "Planned production time = 480 − 45 = 435 min; run time = 415. A = 415/435, P = 400/415, Q = 180/200.",
+            "Quick check: OEE = good units × cycle time ÷ planned time = 180 × 2 ÷ 435 = 82.76% < 85%."
+          ],
+          "look_up": {
+            "where": "ICAI SPOM Set B (Strategic Cost & Performance Management) - Lean System and Innovation (TPM)",
+            "index_keywords": [
+              "overall equipment effectiveness",
+              "availability ratio",
+              "performance ratio",
+              "quality ratio",
+              "world class OEE 85%"
+            ]
+          },
+          "solve": "Shift = 480 min; planned breaks 45; planned production time = 435. Run time = 435 − 20 = 415. Availability = 415/435 = 95.40%. Performance = (200 × 2)/415 = 400/415 = 96.39%. Quality = (200 − 20)/200 = 90%. OEE = 0.9540 × 0.9639 × 0.90 = 82.76%. World class (Nakajima): availability 90%, performance 95%, quality 99.9%, OEE 85%.",
+          "answer": "Working (per shift)\n- Total time 480 min − planned breaks (30 + 15) 45 min = planned production time 435 min\n- Run time = 435 − 20 (unplanned downtime) = 415 min\n- Availability = 415 ÷ 435 = 95.40%\n- Performance = (200 bottles × 2 min) ÷ 415 = 96.39%\n- Quality = (200 − 20) ÷ 200 = 90.00%\n- OEE = 95.40% × 96.39% × 90.00% = 82.76%\nEvaluation against world class (availability 90%, performance 95%, quality 99.9%, OEE 85%)\n- Availability 95.40% beats 90%: little downtime, maintenance is working.\n- Performance 96.39% beats 95%: the machine runs close to its ideal speed.\n- Quality 90% is far below 99.9%: one in ten bottles is scrap, and this alone pulls OEE under 85%.\nConclusion: OEE of 82.76% is below the 85% world-class benchmark, so Hi-Quality has not achieved world-class TPM performance. It should attack quality losses - root-cause analysis of rejects, checks on input material, operator training and in-line quality checks. At 99.9% quality, OEE would be about 91.9%.",
+          "icai": "Same conclusion as ICAI (ICAI quotes the quality benchmark as 99%; the usual world-class figure is 99.9% - conclusion unchanged).",
+          "flag": null,
+          "trap": "Using 480 min (ignoring planned breaks) as the base for availability.",
+          "minutes": 15
+        },
+        {
+          "q": "3.8",
+          "type": "Descriptive",
+          "marks": 5,
+          "subject": "Law",
+          "also": null,
+          "chapter": "Companies Act, 2013 - Prevention of Oppression and Mismanagement (Sections 241-246)",
+          "topic": "s.244 eligibility to apply; effect of withdrawal of consent after proceedings start",
+          "ask": "90 of 1,000 members holding 10 lakh of 100 lakh shares petition NCLT u/s 241 over ground-water violations. Is it maintainable? Does withdrawal of consent by 40 members (4 lakh shares) after proceedings began affect it?",
+          "options": null,
+          "clue": "90 shareholders holding 10 Lakhs equity shares ... withdrawn their consent",
+          "chapter_clear": true,
+          "think": [
+            "Shareholders petitioning NCLT against how the company is run = oppression and mismanagement, s.241; who can apply = s.244.",
+            "Chapter clear -> Law index -> 'Section 244' -> 100 members / one-tenth of members / one-tenth of issued share capital.",
+            "Number test: lower of 100 and 1/10 of 1,000 = 100 -> 90 fails. Capital test: 10 lakh of 100 lakh shares = 1/10 -> passes. Either test is enough.",
+            "Consent is tested on the filing date; later withdrawal does not end the petition (Rajamundhry Electric Supply case)."
+          ],
+          "look_up": {
+            "where": "ICAI SPOM Set A Law - Companies Act: Prevention of Oppression and Mismanagement",
+            "index_keywords": [
+              "section 241",
+              "section 244 right to apply",
+              "one-tenth of issued share capital",
+              "withdrawal of consent",
+              "Rajamundhry Electric Supply"
+            ]
+          },
+          "solve": "s.244(1)(a): in a company with share capital, an application can be made by not less than 100 members or one-tenth of total members, whichever is less, or by member(s) holding not less than one-tenth of the issued share capital (calls paid). Members 1,000 -> one-tenth = 100 -> lower of 100 and 100 = 100; petitioners 90 -> number test fails. Capital: 10 lakh of 100 lakh shares = 1/10 -> capital test met -> maintainable. Consent of members is reckoned when the petition is filed; withdrawal by 40 members in March 2024, after NCLT started proceedings in February 2024, does not affect maintainability.",
+          "answer": "Provision - s.241 read with s.244(1)(a)\n- In a company with share capital, an application for oppression and mismanagement can be made by (a) at least 100 members or one-tenth of the total members, whichever is less, or (b) any member or members holding at least one-tenth of the issued share capital (with all calls paid).\nFacts and analysis\n- Total members 1,000 -> one-tenth = 100; lower of 100 and 100 = 100. Petitioners = 90, so the number test is not met.\n- Share capital: petitioners hold 10 lakh of 100 lakh shares (₹10 crore of ₹100 crore) = one-tenth, so the capital test is met.\nConclusion 1: The petition is maintainable, since meeting either test is enough. Flouting ground-water norms despite repeated representations is conduct prejudicial to members and public interest - a valid ground u/s 241.\nWithdrawal of consent\n- Eligibility is judged when the petition is filed. Withdrawal of consent by some members after NCLT has started proceedings does not affect maintainability [Rajamundhry Electric Supply Corporation v. A. Nageshwara Rao, SC].\nConclusion 2: Withdrawal by 40 members (4 lakh shares) in March 2024 does not make the petition non-maintainable.\n(Alternative accepted by ICAI: if 'issued' capital is treated as not given, only the 100-member test applies and 90 members fail - petition not maintainable. The withdrawal point stays the same.)",
+          "icai": "Same conclusion as ICAI's main answer; ICAI also accepted the alternative (not maintainable, as 'issued' capital is not stated).",
+          "flag": null,
+          "trap": "Testing only the 100-member limit and missing the one-tenth capital route.",
+          "minutes": 15
+        }
+      ]
+    },
+    {
+      "no": 4,
+      "title": "Welcome Melody Private Limited (WMPL)",
+      "industry": "Retail supermarket chain (75% owned by Melody Inc., USA, with Welcome Industries Ltd)",
+      "story": "A US-controlled retail chain buys POS software on deferred terms, pays interest to its foreign parent, opens a Pune store with a separate GST registration, faces a judgemental inventory-shrinkage audit area, and eyes the securities of near-bankrupt XYZ Ltd.",
+      "marks_by_subject": {
+        "FR": 8,
+        "DT": 2,
+        "AFM": 6,
+        "IDT": 7,
+        "Audit": 2
+      },
+      "difficulty": "Easy",
+      "first15": "Pick first: 15 of 25 marks are list-type theory (Rule 86B + ITC documents, Ind AS 38 disclosures, distressed securities) and every MCQ is a one-step calculation or definition.",
+      "questions": [
+        {
+          "q": "4.1",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "FR",
+          "also": null,
+          "chapter": "Ind AS 38 Intangible Assets",
+          "topic": "Cost of separately acquired software with deferred payment and directly attributable costs",
+          "ask": "POS software costs ₹15 lakh: ₹10 lakh now, ₹5 lakh after one year; legal fees ₹72,000; implementation consultancy ₹1,50,000; cost of capital 10%. Initial cost to capitalise?",
+          "options": {
+            "a": "Total Cost to be capitalised is ₹ 15,26,545",
+            "b": "Total Cost to be capitalised is ₹ 16,04,545",
+            "c": "Total Cost to be capitalised is ₹ 16,76,545",
+            "d": "Total Cost to be capitalised is ₹ 17,22,000"
+          },
+          "clue": "₹ 10,00,000 to be paid immediately and balance ₹ 5,00,000 in one-year time",
+          "chapter_clear": true,
+          "think": [
+            "Software bought + deferred payment + legal/consultancy fees = Ind AS 38 cost of a separately acquired intangible.",
+            "Chapter clear -> FR index -> Ind AS 38 -> 'deferred payment', 'directly attributable cost' (paras 27-32).",
+            "Payment deferred beyond normal credit -> cost = cash price equivalent (PV of ₹5 lakh at 10%); add legal and implementation fees."
+          ],
+          "look_up": {
+            "where": "ICAI SM FR - Ind AS 38 Intangible Assets",
+            "index_keywords": [
+              "separately acquired intangible asset",
+              "deferred payment",
+              "cash price equivalent",
+              "directly attributable cost"
+            ]
+          },
+          "solve": "Cash price equivalent = 10,00,000 + 5,00,000 ÷ 1.10 = 10,00,000 + 4,54,545 = 14,54,545. Add legal fees 72,000 and implementation consultancy 1,50,000 (directly attributable to getting the software ready for use). Cost = ₹16,76,545. The balance ₹45,455 is interest expense over the credit period.",
+          "answer": "(C) Total Cost to be capitalised is ₹ 16,76,545",
+          "icai": "(C)",
+          "flag": null,
+          "trap": "Capitalising the full ₹15 lakh (₹17,22,000) or dropping one of the two fees (₹15,26,545 / ₹16,04,545).",
+          "minutes": 3
+        },
+        {
+          "q": "4.2",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "DT",
+          "also": null,
+          "chapter": "Transfer Pricing and Other Anti-avoidance Measures - s.94B (limitation of interest deduction)",
+          "topic": "Thin capitalisation: interest to a non-resident associated enterprise above 30% of EBITDA",
+          "ask": "WMPL paid ₹2.80 crore interest to its 75% parent Melody Inc. (USA); EBITDA ₹9 crore. Is the full interest deductible? If not, how much is disallowed?",
+          "options": {
+            "a": "No, amount of ₹ 0.40 Cr. will be disallowed as deduction on account of excess interest",
+            "b": "No, amount of ₹ 1.80 Cr. will be disallowed as deduction on account of excess interest",
+            "c": "No, amount of ₹ 0.16 Cr. will be disallowed as deduction on account of excess interest",
+            "d": "No, amount of ₹ 0.10 Cr. will be disallowed as deduction on account of excess interest"
+          },
+          "clue": "borrowed funds from its holding company Melody Inc.",
+          "chapter_clear": true,
+          "think": [
+            "Interest above ₹1 crore paid to a foreign parent = s.94B thin capitalisation.",
+            "Chapter clear -> DT index -> '94B' / 'limitation on interest deduction'.",
+            "Excess interest = total interest − 30% of EBITDA = 2.80 − 2.70 = 0.10 crore; disallow the lower of excess and interest paid to the AE."
+          ],
+          "look_up": {
+            "where": "ICAI SM DT - Transfer Pricing and Other Anti-avoidance Measures (s.94B)",
+            "index_keywords": [
+              "section 94B",
+              "thin capitalisation",
+              "30% of EBITDA",
+              "associated enterprise",
+              "excess interest"
+            ]
+          },
+          "solve": "Melody Inc. holds 75% and is a non-resident -> associated enterprise. Interest ₹2.80 crore > ₹1 crore -> s.94B applies. 30% × EBITDA ₹9 crore = ₹2.70 crore. Excess interest = 2.80 − 2.70 = ₹0.10 crore. Disallowed = lower of excess (0.10) and interest to AE (2.80) = ₹0.10 crore; it can be carried forward for 8 assessment years.",
+          "answer": "(D) No, amount of ₹ 0.10 Cr. will be disallowed as deduction on account of excess interest",
+          "icai": "(D)",
+          "flag": null,
+          "trap": "Using PBT or PAT instead of EBITDA, or disallowing everything above ₹1 crore (₹1.80 crore).",
+          "minutes": 3
+        },
+        {
+          "q": "4.3",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "AFM",
+          "also": null,
+          "chapter": "Portfolio Management - Alternative Investments (distressed securities)",
+          "topic": "Arbitrage strategy in distressed securities",
+          "ask": "Which strategy makes WMPL's investment in securities of near-bankrupt XYZ Ltd profitable?",
+          "options": {
+            "a": "Taking Long Position in Debt and Short Position in Equity",
+            "b": "Taking Long Position in Equity and Short Position in Debt",
+            "c": "Taking Long Position in Debt and Long Position in Equity",
+            "d": "Taking short Position in Debt and short Position in Equity"
+          },
+          "clue": "XYZ Limited which is near bankruptcy ... between debt and equity securities",
+          "chapter_clear": true,
+          "think": [
+            "'Near bankruptcy' + 'debt and equity securities' = distressed securities (alternative investments) in AFM.",
+            "Chapter clear -> AFM index -> 'distressed securities'.",
+            "Debt ranks ahead of equity in a collapse -> go long debt, short equity."
+          ],
+          "look_up": {
+            "where": "ICAI SM AFM - Portfolio Management (alternative investments: distressed securities)",
+            "index_keywords": [
+              "distressed securities",
+              "long position in debt",
+              "short position in equity",
+              "arbitrage"
+            ]
+          },
+          "solve": "Distressed-securities arbitrage: buy (long) the debt, which has priority and earns interest, and sell short the equity, which falls the most if the company fails. If things improve, interest on debt exceeds dividend payable on the short equity; if they worsen, the gain on the short equity outweighs the fall in debt.",
+          "answer": "(A) Taking Long Position in Debt and Short Position in Equity",
+          "icai": "(A)",
+          "flag": null,
+          "trap": "Reversing it (long equity, short debt) - debt is repaid before equity.",
+          "minutes": 3
+        },
+        {
+          "q": "4.4",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "IDT",
+          "also": null,
+          "chapter": "Input Tax Credit - Rule 41A CGST Rules (transfer of credit on separate registration within a State)",
+          "topic": "Apportioning unutilised ITC to a new registration in the ratio of value of assets",
+          "ask": "WMPL takes a separate Pune registration (Pune fixed assets ₹22 crore + current ₹50 crore; whole business ₹400 + ₹500 crore; unutilised ITC ₹25 crore). Accounts says ₹2.50 crore can move (current-asset ratio). Comment.",
+          "options": {
+            "a": "The amount calculated is incorrect as the amount which can be transferred to Pune registration is ₹ 1.375 Crores",
+            "b": "The amount calculated is incorrect as the amount which can be transferred to Pune registration is ₹ 2 Crores",
+            "c": "The amount calculated is incorrect as the amount which can be transferred to Pune registration is ₹ 6.25 Crores",
+            "d": "The amount calculated is correct as output liability will arise on sales and stock is a part of current assets"
+          },
+          "clue": "transfer some part of GST credit ... to electronic credit ledger of separate Pune registration",
+          "chapter_clear": true,
+          "think": [
+            "New registration in the same State + moving credit to it = Rule 41A (FORM GST ITC-02A).",
+            "Chapter clear -> IDT index -> Input Tax Credit -> 'Rule 41A', 'separate registration'.",
+            "Ratio = value of all assets of the new place ÷ all assets of the business, whether or not ITC was taken: (22 + 50) ÷ (400 + 500) = 8% × ₹25 crore = ₹2 crore."
+          ],
+          "look_up": {
+            "where": "ICAI SM IDT - Input Tax Credit (Rule 41A)",
+            "index_keywords": [
+              "Rule 41A",
+              "ITC-02A",
+              "separate registration",
+              "ratio of value of assets"
+            ]
+          },
+          "solve": "Rule 41A: unutilised ITC may be transferred to the newly registered place in the ratio of the value of assets held by it at the time of registration; 'value of assets' means the value of the entire assets of the business, whether or not ITC was availed on them. Pune = 22 + 50 = ₹72 crore; business = 400 + 500 = ₹900 crore; 72/900 = 8%. 8% × 25 = ₹2 crore. File ITC-02A within 30 days of the new registration.",
+          "answer": "(B) The amount calculated is incorrect as the amount which can be transferred to Pune registration is ₹ 2 Crores",
+          "icai": "(B)",
+          "flag": null,
+          "trap": "Using only current assets (₹2.50 crore), only fixed assets (₹1.375 crore) or only ITC-availed assets (₹6.25 crore).",
+          "minutes": 3
+        },
+        {
+          "q": "4.5",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "Audit",
+          "also": null,
+          "chapter": "SA 701 Communicating Key Audit Matters in the Independent Auditor's Report",
+          "topic": "KAM for a listed entity - judgemental inventory-shrinkage allowance",
+          "ask": "If WMPL were listed, how should the inventory-shrinkage allowance (audit focus area, judgemental, controls tested) appear in the audit report?",
+          "options": {
+            "a": "The auditor should report the issue of shrinkages in inventories in 'Emphasis of matter paragraph' and also state how the matter has been dealt with by audit team",
+            "b": "The auditor should report the issue of shrinkages in inventories in 'Other matter paragraph' and also state how the matter has been dealt with by audit team",
+            "c": "The auditor should report the issue of shrinkages in inventories in 'Other matter paragraph'",
+            "d": "The auditor should report the issue of shrinkages in inventories in 'Key Audit matter paragraph' and also state how the matter has been dealt with by audit team"
+          },
+          "clue": "Allowance for inventory shrinkage was an audit focus area ... judgmental factors",
+          "chapter_clear": true,
+          "think": [
+            "'Audit focus area' + 'judgmental' + 'listed company' + 'how the matter was addressed' = Key Audit Matter.",
+            "Chapter clear -> Audit index -> SA 701 -> 'key audit matters', 'listed entity'.",
+            "SA 701 applies to listed entities; a KAM paragraph explains why the matter mattered and how the audit dealt with it. EOM and OM paragraphs do not describe audit work."
+          ],
+          "look_up": {
+            "where": "ICAI SM Audit - SA 701 Key Audit Matters",
+            "index_keywords": [
+              "key audit matters",
+              "listed entity",
+              "significant auditor attention",
+              "how the matter was addressed in the audit"
+            ]
+          },
+          "solve": "SA 701: for audits of listed entities, the auditor communicates matters of most significance - areas of higher risk and significant judgement - as KAMs, explaining why each is a KAM and how it was addressed. The shrinkage allowance involves judgement, counts are only periodic, and the team tested controls -> KAM.",
+          "answer": "(D) The auditor should report the issue of shrinkages in inventories in 'Key Audit matter paragraph' and also state how the matter has been dealt with by audit team",
+          "icai": "(D)",
+          "flag": null,
+          "trap": "Choosing Emphasis of Matter - EOM only points to a matter already disclosed; it does not describe audit procedures.",
+          "minutes": 3
+        },
+        {
+          "q": "4.6",
+          "type": "Descriptive",
+          "marks": 4,
+          "subject": "AFM",
+          "also": null,
+          "chapter": "Portfolio Management - Alternative Investments (distressed securities)",
+          "topic": "How the long-debt / short-equity arbitrage earns profit",
+          "ask": "Explain how WMPL can earn profit by taking positions in the debt and equity of XYZ Ltd.",
+          "options": null,
+          "clue": "proper allocation of amount to be invested between debt and equity securities",
+          "chapter_clear": true,
+          "think": [
+            "Follows from 4.3 - distressed securities arbitrage.",
+            "Chapter clear -> AFM index -> 'distressed securities'; write the two scenarios.",
+            "Recovery: interest on debt > dividend on the short shares. Collapse: equity falls far more than debt, which ranks first - short gain > debt loss."
+          ],
+          "look_up": {
+            "where": "ICAI SM AFM - Portfolio Management (alternative investments: distressed securities)",
+            "index_keywords": [
+              "distressed securities",
+              "long position in debt",
+              "short position in equity",
+              "arbitrage"
+            ]
+          },
+          "solve": "Position: long XYZ debt + short XYZ equity. If XYZ improves: debt pays interest and gains value; interest received exceeds dividend payable on the short position, so any loss on the short equity is covered. If XYZ worsens: equity can go close to zero, giving a large gain on the short; debt also falls but recovers part in liquidation because it ranks first. Right allocation -> profit either way.",
+          "answer": "Strategy: Take a long position in XYZ Ltd's debt and a short position in XYZ Ltd's equity (distressed-securities arbitrage).\nWhy it earns profit:\n- Priority: debt is repaid before equity, so in every outcome debt loses less value than equity.\n- If XYZ's condition improves: WMPL earns interest on the debt, which is more than the dividend it must pay on the shorted shares; the rise in debt value offsets the loss on the short equity.\n- If XYZ's condition worsens or it goes bankrupt: both fall, but equity falls much more and may become worthless. The gain on the short equity exceeds the loss on the debt, which still recovers part of its value in liquidation.\nConclusion: With the right split between debt and equity, WMPL makes an arbitrage profit whichever way XYZ moves - which is why the consultant stressed allocation.",
+          "icai": "Same as ICAI.",
+          "flag": null,
+          "trap": "Writing only 'buy cheap, sell high' - the marks are in explaining both outcomes and debt's priority.",
+          "minutes": 12
+        },
+        {
+          "q": "4.7",
+          "type": "Descriptive",
+          "marks": 5,
+          "subject": "IDT",
+          "also": null,
+          "chapter": "GST - Payment of Tax (Rule 86B); Input Tax Credit (s.16(2)(a), Rule 36 documents)",
+          "topic": "Restriction on paying more than 99% of output tax from the credit ledger; documents for ITC",
+          "ask": "September 2024: taxable supplies ₹50 crore, output tax ₹6.25 crore, ITC ₹7.50 crore, cash ledger ₹75 lakh. Must WMPL use the cash ledger? On what documents would ITC have been taken?",
+          "options": null,
+          "clue": "Whether WMPL is mandatorily required to utilize the balance in the electronic cash ledger",
+          "chapter_clear": true,
+          "think": [
+            "Big monthly taxable turnover + enough ITC + 'mandatorily cash ledger' = Rule 86B (at least 1% in cash).",
+            "Chapter clear -> IDT index -> Payment of Tax -> 'Rule 86B'; ITC -> 'documents for availing ITC', Rule 36.",
+            "₹50 crore > ₹50 lakh in the month and no exception given -> credit ledger can pay only 99%; 1% = ₹6.25 lakh from the cash ledger."
+          ],
+          "look_up": {
+            "where": "ICAI SM IDT - Payment of Tax (Rule 86B); Input Tax Credit (Rule 36)",
+            "index_keywords": [
+              "Rule 86B",
+              "99% of output tax liability",
+              "electronic cash ledger",
+              "Rule 36 documents",
+              "bill of entry"
+            ]
+          },
+          "solve": "Rule 86B applies where taxable supply (other than exempt and zero-rated) in a month exceeds ₹50 lakh: ₹50 crore > ₹50 lakh. No exception is indicated (income tax above ₹1 lakh in each of the last two years, refund of unutilised ITC above ₹1 lakh, cumulative cash payment above 1%, Government/PSU). Credit ledger can pay 99% × 6.25 crore = ₹6.1875 crore; at least 1% = ₹6,25,000 must come from the cash ledger (₹75 lakh available). Documents u/s 16(2)(a) and Rule 36: supplier's invoice; recipient's own invoice under reverse charge with tax paid; debit note; bill of entry; ISD invoice.",
+          "answer": "Part 1 - Use of the cash ledger\n- Provision: Rule 86B of the CGST Rules - where the value of taxable supply (other than exempt and zero-rated) in a month exceeds ₹50 lakh, the electronic credit ledger cannot be used for more than 99% of the output tax liability. Exceptions (income tax above ₹1 lakh in each of the last two FYs, refund of unutilised ITC above ₹1 lakh, cumulative cash payment above 1%, Government departments/PSUs, etc.) are not indicated here.\n- Facts: Taxable supply ₹50 crore > ₹50 lakh; output tax ₹6.25 crore.\n- Working: Maximum from credit ledger = 99% × ₹6.25 crore = ₹6.1875 crore; minimum from cash ledger = 1% × ₹6.25 crore = ₹6,25,000.\n- Conclusion: Yes. WMPL must pay at least ₹6,25,000 from the electronic cash ledger (₹75 lakh available), even though ₹7.50 crore ITC is available.\nPart 2 - Documents for ITC [s.16(2)(a) read with Rule 36]\n(i) Invoice issued by the supplier under s.31\n(ii) Invoice issued by the recipient for reverse-charge supplies (s.31(3)(f)), subject to payment of tax\n(iii) Debit note issued by the supplier under s.34\n(iv) Bill of entry or similar import document under the Customs Act\n(v) Invoice or credit note issued by an Input Service Distributor",
+          "icai": "Same as ICAI.",
+          "flag": null,
+          "trap": "Saying no cash is needed because ITC exceeds the liability - Rule 86B still forces 1% in cash.",
+          "minutes": 15
+        },
+        {
+          "q": "4.8",
+          "type": "Descriptive",
+          "marks": 6,
+          "subject": "FR",
+          "also": null,
+          "chapter": "Ind AS 38 Intangible Assets - Disclosure (para 118) and Retirements and Disposals (paras 112-117)",
+          "topic": "General disclosures for each class of intangible assets; derecognition conditions",
+          "ask": "Guide WMPL's accounts team on general disclosures for intangible assets (including POS software) and the conditions for derecognising them.",
+          "options": null,
+          "clue": "general disclosures to be made in financial statements relating to such intangible assets",
+          "chapter_clear": true,
+          "think": [
+            "Intangibles + disclosures + derecognition = Ind AS 38 - a pure look-up question.",
+            "Chapter clear -> FR index -> Ind AS 38 -> 'Disclosure' (para 118) and 'Retirements and disposals' (para 112).",
+            "Write the 5 headline disclosures (with the reconciliation items) and the 2 derecognition triggers; 6 marks = 18 minutes, don't over-write."
+          ],
+          "look_up": {
+            "where": "ICAI SM FR - Ind AS 38 Intangible Assets",
+            "index_keywords": [
+              "disclosure intangible assets",
+              "each class of intangible assets",
+              "reconciliation of carrying amount",
+              "derecognition",
+              "retirements and disposals"
+            ]
+          },
+          "solve": "Para 118 (for each class, separating internally generated from others): finite or indefinite lives and useful lives/rates; amortisation methods; gross carrying amount and accumulated amortisation (with impairment) at start and end; P&L line item that includes amortisation; reconciliation of opening and closing carrying amount. Para 112: derecognise on disposal, or when no future economic benefits are expected from use or disposal; gain or loss = net disposal proceeds − carrying amount, in P&L, not as revenue (para 113).",
+          "answer": "(i) General disclosures - for each class of intangible assets, separating internally generated assets from others:\n(a) whether useful lives are indefinite or finite and, if finite, the useful lives or amortisation rates used;\n(b) the amortisation methods used for assets with finite lives;\n(c) the gross carrying amount and accumulated amortisation (together with accumulated impairment losses) at the beginning and end of the period;\n(d) the line item(s) of the statement of profit and loss in which amortisation is included;\n(e) a reconciliation of the carrying amount at the beginning and end of the period showing:\n- additions, separately from internal development, separate acquisition (e.g. the POS software) and business combinations;\n- assets classified as held for sale under Ind AS 105, and other disposals;\n- increases or decreases from revaluations and from impairment losses recognised or reversed in OCI;\n- impairment losses recognised in profit or loss;\n- impairment losses reversed in profit or loss;\n- amortisation recognised during the period;\n- net exchange differences on translation into the presentation currency and on translation of foreign operations;\n- other changes in the carrying amount.\n(ii) Derecognition - an intangible asset is derecognised:\n(a) on disposal (for example by sale, by entering into a finance lease, or by donation); or\n(b) when no future economic benefits are expected from its use or disposal.\nThe gain or loss (net disposal proceeds − carrying amount) is recognised in profit or loss when the asset is derecognised; it is not classified as revenue.",
+          "icai": "Same as ICAI (ICAI accepts any 4 of the 8 reconciliation items).",
+          "flag": null,
+          "trap": "Copying Ind AS 16 (PPE) disclosures - stick to Ind AS 38 para 118.",
+          "minutes": 18
+        }
+      ]
+    },
+    {
+      "no": 5,
+      "title": "Royal Enterprises Ltd (REL)",
+      "industry": "Industrial spare parts and railway coach components (listed manufacturer and exporter)",
+      "story": "A Mumbai listed manufacturer's CFO sets a recruitment case study with six issues: a customs refund, job work, a contract with Prism Motors, a s.270A penalty, a euro import hedge, director remuneration, and an assurance report on a project report.",
+      "marks_by_subject": {
+        "IDT": 4,
+        "AFM": 6,
+        "Law": 7,
+        "DT": 2,
+        "Audit": 6
+      },
+      "difficulty": "Moderate",
+      "first15": "Good pick if Law and Audit theory are strong: 5.6 + 5.8 = 11 marks of known provisions, 5.2/5.7 forex is quick for AFM-ready students; MCQs are fact traps (relative, job-work dates, 270A exclusions).",
+      "questions": [
+        {
+          "q": "5.1",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "IDT",
+          "also": null,
+          "chapter": "Customs - Refund (s.27) and unjust enrichment (s.28C/28D), Customs Act, 1962",
+          "topic": "Unjust enrichment on refund of excess duty on imported machinery used in manufacture",
+          "ask": "REL paid 15% duty (should be 12.5%) on machinery imported in June 2023 and used to make goods for sale; product prices unchanged. Refund claimed March 2024 and rejected. Is the rejection correct?",
+          "options": {
+            "a": "Rejection is not justified and authorities should grant the refund of excess import duty paid on machinery, as the machinery was not sold, hence the principle of unjust enrichment will not apply",
+            "b": "Rejection is justified as machinery is used for the manufacture of goods and the duty paid on the import of machinery has gone into the costing of the goods manufactured and sold, and thus passed on to the buyers. The principle of unjust enrichment will apply",
+            "c": "Rejection is not justified as no changes in the prices of products were made. The principle of unjust enrichment will not apply",
+            "d": "Rejection is justified as period for claim of refund has expired and the customs authorities can retain the excess payment of duty"
+          },
+          "clue": "Machinery was used in the factory to produce rail coach components for sale",
+          "chapter_clear": true,
+          "think": [
+            "Refund of excess customs duty = s.27; every refund faces the unjust-enrichment test (s.28C/28D).",
+            "Chapter clear -> IDT index -> Customs Refund -> 'unjust enrichment', 'presumption that incidence has been passed on'.",
+            "Time limit: within 1 year of payment (June 2023 -> March 2024) - in time, so (D) is out.",
+            "Duty on machinery goes into the cost of goods sold; the law presumes it was passed on unless REL proves otherwise - unchanged prices alone don't prove it -> (B)."
+          ],
+          "look_up": {
+            "where": "ICAI SM IDT - Customs: Refund",
+            "index_keywords": [
+              "refund section 27",
+              "unjust enrichment",
+              "section 28D presumption",
+              "duty passed on to buyer",
+              "Consumer Welfare Fund"
+            ]
+          },
+          "solve": "s.28D: every person who has paid duty is presumed to have passed on its full incidence to the buyer unless he proves otherwise. Duty on machinery becomes part of the cost (through depreciation) of components sold, so the incidence is treated as passed on; unchanged prices do not prove that REL bore it. Even if refund is sanctioned, it goes to the Consumer Welfare Fund. The 1-year time limit is met, so rejection rests on unjust enrichment.",
+          "answer": "(B) Rejection is justified as machinery is used for the manufacture of goods and the duty paid on the import of machinery has gone into the costing of the goods manufactured and sold, and thus passed on to the buyers. The principle of unjust enrichment will apply",
+          "icai": "(B)",
+          "flag": null,
+          "trap": "Picking (C) - 'no price change' is not proof that the duty was not passed on.",
+          "minutes": 3
+        },
+        {
+          "q": "5.2",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "AFM",
+          "also": null,
+          "chapter": "Foreign Exchange Exposure and Risk Management",
+          "topic": "Expected loss avoided by a forward cover on an import payable",
+          "ask": "REL must pay €85,000 in 3 months; the rupee is expected to fall 4%. Spot ₹/€ 90.15/90.50; 3-month forward 92.20/92.60. Expected loss avoided by taking forward cover?",
+          "options": {
+            "a": "₹ 3,06,510",
+            "b": "₹ 1,29,200",
+            "c": "₹ 1,32,260",
+            "d": "₹ 1,63,200"
+          },
+          "clue": "anticipated that the exchange rate will decline by 4% over the three months",
+          "chapter_clear": true,
+          "think": [
+            "Import payment in € + forward rates = forex exposure hedging (AFM).",
+            "Chapter clear -> AFM index -> Foreign Exchange Exposure -> 'forward cover' illustration.",
+            "Importer buys € -> use ask rates. Expected spot = 90.50 × 1.04 = 94.12. Unhedged cost − forward cost = loss avoided."
+          ],
+          "look_up": {
+            "where": "ICAI SM AFM - Foreign Exchange Exposure and Risk Management",
+            "index_keywords": [
+              "forward cover",
+              "expected spot rate",
+              "ask rate",
+              "importer payable"
+            ]
+          },
+          "solve": "Rupee falls 4% -> € costs 4% more: expected spot ask = 90.50 × 1.04 = ₹94.12. Unhedged outflow = 85,000 × 94.12 = ₹80,00,200. Forward outflow = 85,000 × 92.60 = ₹78,71,000. Loss avoided = ₹1,29,200.",
+          "answer": "(B) ₹ 1,29,200",
+          "icai": "(B)",
+          "flag": null,
+          "trap": "Using bid rates (₹1,32,260) or comparing expected spot with the forward bid (₹1,63,200) - an importer buys € at the ask rate.",
+          "minutes": 3
+        },
+        {
+          "q": "5.3",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "IDT",
+          "also": null,
+          "chapter": "GST - Job Work (s.143 CGST Act; Rule 45 and FORM GST ITC-04)",
+          "topic": "Time limits for return of capital goods and moulds/dies from a job worker; ITC-04",
+          "ask": "Machine sent directly from port to job worker (received 06.03.2021), back on 04.03.2024; moulds and dies received by job worker 05.03.2021, not back. Which are NOT correct? I: machine back in time, no deemed supply. II: machine not back in time, deemed supply with interest. III: moulds/dies deemed supplied on receipt by job worker. IV: report in ITC-03 by 25.04.2024.",
+          "options": {
+            "a": "I only",
+            "b": "I and III",
+            "c": "I and II",
+            "d": "II, III and IV"
+          },
+          "clue": "sent the machinery directly from the port to JB enterprises for job work",
+          "chapter_clear": true,
+          "think": [
+            "Goods with a job worker + 'received back' + dates = s.143 job work.",
+            "Chapter clear -> IDT index -> Job Work -> '3 years for capital goods', 'moulds and dies', 'ITC-04'.",
+            "Capital goods sent directly: 3 years from the job worker's receipt (06.03.2021) -> 05.03.2024; back on 04.03.2024 -> in time (I right, II wrong).",
+            "Moulds and dies have no time limit (III wrong). Job-work challans go in ITC-04, not ITC-03 (IV wrong)."
+          ],
+          "look_up": {
+            "where": "ICAI SM IDT - Job Work",
+            "index_keywords": [
+              "section 143",
+              "three years capital goods",
+              "moulds and dies",
+              "sent directly to job worker",
+              "ITC-04"
+            ]
+          },
+          "solve": "s.143: capital goods must come back within 3 years; for goods sent directly from the supplier or port, the period runs from the date the job worker receives them (06.03.2021 -> 05.03.2024). Back on 04.03.2024 -> in time; I is correct, II is not. The 1-year/3-year limits do not apply to moulds and dies, jigs and fixtures, or tools -> III not correct. Job-work details are filed in FORM GST ITC-04 (half-yearly by 25 April for AATO above ₹5 crore); ITC-03 is a different form -> IV not correct. Not correct: II, III, IV.",
+          "answer": "(D) II, III and IV",
+          "icai": "(D)",
+          "flag": null,
+          "trap": "Counting 3 years from the import date instead of the job worker's receipt, or applying the time limit to moulds and dies.",
+          "minutes": 3
+        },
+        {
+          "q": "5.4",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "Law",
+          "also": null,
+          "chapter": "Companies Act, 2013 - Related Party Transactions (s.188) with definitions s.2(76) and s.2(77)",
+          "topic": "When a public company is a related party: director + relatives holding more than 2%",
+          "ask": "REL sold spare parts worth ₹82 crore at arm's length to Prism Motors Ltd (public; 40 lakh shares). REL's director Raman (also Prism's director) holds 65,000, his wife 12,000, his brother's wife 4,000 shares; no Board/shareholder approval. Which statement is correct?",
+          "options": {
+            "a": "Contract for sale of goods with Prism Motors Limited is not valid as it is a related party transaction and transaction value exceeds 10% of the turnover of 2022-23 and requires the prior approval of the company by passing an ordinary resolution",
+            "b": "Contract for sale of goods with Prism Motors Limited is valid, though it is a related party transaction but transaction value does not exceed 10% of the turnover of 2023-24, hence does not require the prior approval of the company by passing an ordinary resolution",
+            "c": "Contract for sale of goods with Prism Motors Limited is not valid as it is a related party transaction and requires consent of Board of Directors given by resolution at a meeting of the Board even if entered at arm length's basis",
+            "d": "Contract for sale of goods with Prism Motors Limited is valid as it is not a related party transaction"
+          },
+          "clue": "his wife holds 12,000 and his brother's wife holds 4,000 shares",
+          "chapter_clear": true,
+          "think": [
+            "Director interested in another company + no approvals = s.188, but first test whether Prism is a 'related party' u/s 2(76).",
+            "Chapter clear -> Law index -> 's.2(76) related party', 's.2(77) relative'.",
+            "A public company is a related party only if REL's director is its director AND holds, with relatives, more than 2% of its paid-up capital. Brother's wife is not a relative.",
+            "65,000 + 12,000 = 77,000 ÷ 40,00,000 = 1.925% -> not above 2% -> not a related party -> s.188 doesn't apply."
+          ],
+          "look_up": {
+            "where": "ICAI SPOM Set A Law - Companies Act: definitions s.2(76), s.2(77); s.188",
+            "index_keywords": [
+              "related party",
+              "public company two per cent paid-up share capital",
+              "relative",
+              "section 188"
+            ]
+          },
+          "solve": "s.2(76)(v): a public company in which a director is a director and holds, along with relatives, more than 2% of its paid-up share capital. Relatives (s.2(77)): HUF members, spouse, father, mother, son, son's wife, daughter, daughter's husband, brother, sister - brother's wife is not included. Raman + wife = 77,000 shares = 1.925% of 40,00,000. Not above 2% -> Prism is not a related party; no s.188 approval needed. Raman's interest was disclosed at the Board meeting (s.184).",
+          "answer": "(D) Contract for sale of goods with Prism Motors Limited is valid as it is not a related party transaction",
+          "icai": "(D)",
+          "flag": null,
+          "trap": "Counting the brother's wife's 4,000 shares (81,000 = 2.025%), which wrongly makes Prism a related party.",
+          "minutes": 3
+        },
+        {
+          "q": "5.5",
+          "type": "MCQ",
+          "marks": 2,
+          "subject": "DT",
+          "also": null,
+          "chapter": "Penalties - s.270A (under-reporting and misreporting of income)",
+          "topic": "Penalty: 50% for under-reporting, 200% for misreporting; estimated additions excluded",
+          "ask": "REL's AY 2022-23 return: ₹3.60 crore; 143(1) income ₹3.625 crore. Scrutiny additions: ₹3 lakh estimate (not under-reported), ₹12 lakh under-reported, ₹9 lakh unsupported expenditure. Tax 30%, surcharge 7%, cess 4%. Penalty?",
+          "options": {
+            "a": "₹ 9,51,444",
+            "b": "₹ 7,01,064",
+            "c": "₹ 8,51,292",
+            "d": "₹ 8,01,216"
+          },
+          "clue": "claim of expenditure not supported by any documentary evidence",
+          "chapter_clear": true,
+          "think": [
+            "Scrutiny additions + 'under reported' + 'not supported by evidence' = s.270A penalty.",
+            "Chapter clear -> DT index -> Penalties -> 270A: under-reporting 50%, misreporting 200%, exclusions in 270A(6).",
+            "Base = assessed income − income determined u/s 143(1)(a), so the ₹2.5 lakh 143(1) adjustment is already out. Estimate addition excluded; ₹12 lakh under-reporting; ₹9 lakh misreporting (270A(9)(c)).",
+            "Effective rate = 30% × 1.07 × 1.04 = 33.384%."
+          ],
+          "look_up": {
+            "where": "ICAI SM DT - Penalties (s.270A)",
+            "index_keywords": [
+              "section 270A",
+              "under-reported income",
+              "misreporting of income",
+              "claim of expenditure not substantiated",
+              "estimate excluded 270A(6)"
+            ]
+          },
+          "solve": "Effective tax rate = 30% + 7% surcharge + 4% cess = 33.384%. Under-reported income ₹12,00,000: tax 4,00,608 × 50% = 2,00,304. Misreported income ₹9,00,000 (expenditure claim not substantiated by evidence): tax 3,00,456 × 200% = 6,00,912. Estimated addition ₹3,00,000 (accounts accepted) is excluded u/s 270A(6). The ₹2,50,000 arithmetical adjustment u/s 143(1) is already in the base income. Total penalty = ₹8,01,216.",
+          "answer": "(D) ₹ 8,01,216",
+          "icai": "(D)",
+          "flag": null,
+          "trap": "Penalising the ₹3 lakh estimated addition (₹8,51,292) or the ₹2.5 lakh 143(1) adjustment.",
+          "minutes": 3
+        },
+        {
+          "q": "5.6",
+          "type": "Descriptive",
+          "marks": 5,
+          "subject": "Law",
+          "also": null,
+          "chapter": "Companies Act, 2013 - Appointment and Remuneration of Managerial Personnel (s.197; Rule 4 of the 2014 Rules)",
+          "topic": "MD commission above 5%, professional fees to a director, sitting fee increase",
+          "ask": "Examine: (i) 6% commission on net profits to MD Mr. Srivastav; (ii) extra remuneration to director Mr. Charan for industrial-engineering services; (iii) raising sitting fee from ₹50,000 (Articles cap) to ₹75,000 per meeting for all directors including independent directors.",
+          "options": null,
+          "clue": "commission at the rate of six percent of the net profits to Mr. Srivastav",
+          "chapter_clear": true,
+          "think": [
+            "Commission as % of profits + professional fee to a director + sitting fee = s.197 managerial remuneration.",
+            "Chapter clear -> Law index -> 'Managerial remuneration, s.197' -> 5%/10%/11% limits, s.197(4) professional capacity, s.197(5) + Rule 4 sitting fee ₹1 lakh.",
+            "6% > 5% for a single MD -> needs a special resolution. Professional fee sits outside the limit if services are professional and the NRC certifies qualification. ₹75,000 is within ₹1 lakh, but the Articles cap ₹50,000 -> alter Articles; IDs can't get less than others."
+          ],
+          "look_up": {
+            "where": "ICAI SPOM Set A Law - Companies Act: Appointment and Remuneration of Managerial Personnel",
+            "index_keywords": [
+              "section 197",
+              "5% of net profits",
+              "remuneration in professional capacity",
+              "sitting fees one lakh",
+              "independent directors sitting fee"
+            ]
+          },
+          "solve": "s.197(1) second proviso: without a special resolution in general meeting, one MD/WTD/manager cannot get more than 5% of net profits (10% for all together). 6% > 5% -> special resolution needed. s.197(4): director's remuneration includes payment in any other capacity, except professional services where the NRC (REL is listed, so s.178(1) applies) or the Board opines he holds the requisite qualification -> Charan's fee allowed outside the limit with NRC's opinion. s.197(5) + Rule 4: Board fixes sitting fee up to ₹1 lakh per meeting; independent directors' fee not less than others'. Articles cap ₹50,000 -> alter Articles by special resolution (s.14), then Board resolution for ₹75,000; independent directors get the same.",
+          "answer": "(i) 6% commission to MD Mr. Srivastav\n- Provision: s.197(1), second proviso - except with the approval of the company in general meeting by special resolution, remuneration to any one managing director, whole-time director or manager cannot exceed 5% of net profits (10% for all of them together, within the overall 11% limit).\n- Facts: REL has one MD; proposed commission is 6% of net profits (computed u/s 198).\n- Conclusion: Not valid as proposed; valid only if approved by a special resolution in general meeting.\n(ii) Additional remuneration to Mr. Charan for professional services\n- Provision: s.197(4) - remuneration to a director includes payment for services in any other capacity, except where (a) the services are of a professional nature, and (b) in the opinion of the Nomination and Remuneration Committee (where s.178(1) applies, as for listed REL) or otherwise the Board, he has the requisite qualification to practise the profession.\n- Conclusion: Valid and outside the managerial remuneration limit, provided the NRC gives that opinion on his qualification as an industrial engineer.\n(iii) Sitting fee raised to ₹75,000 per meeting\n- Provision: s.197(5) read with Rule 4 - the Board decides the sitting fee, up to ₹1,00,000 per meeting of the Board or a committee; independent directors' fee cannot be less than that of other directors.\n- Facts: ₹75,000 is within ₹1 lakh, but the Articles cap it at ₹50,000.\n- Conclusion: Valid after (a) altering the Articles by special resolution (s.14) and (b) a Board resolution fixing ₹75,000. Independent directors must also get at least ₹75,000.",
+          "icai": "Same conclusion as ICAI.",
+          "flag": null,
+          "trap": "Calling the 6% commission invalid outright - it is valid with a special resolution.",
+          "minutes": 15
+        },
+        {
+          "q": "5.7",
+          "type": "Descriptive",
+          "marks": 4,
+          "subject": "AFM",
+          "also": null,
+          "chapter": "Foreign Exchange Exposure and Risk Management - money market hedge",
+          "topic": "Forward cover vs money market hedge for an import payable",
+          "ask": "For €85,000 payable in 3 months (spot ask ₹90.50, forward ask ₹92.60; India borrow 8%/deposit 6.5%, Germany borrow 5.5%/deposit 4%), should REL take forward cover or money market cover? When is a money market hedge better?",
+          "options": null,
+          "clue": "either Forward cover or Money market cover ... borrowing rates ... deposit rates",
+          "chapter_clear": true,
+          "think": [
+            "Payable in € + borrowing/deposit rates in both countries = money market hedge vs forward (AFM forex).",
+            "Chapter clear -> AFM index -> Foreign Exchange -> 'money market hedge' illustration; replace the figures.",
+            "Payable: deposit € now at 4% p.a. (1% for 3 months), buy € at spot ask 90.50 with ₹ borrowed at 8% p.a. (2%). Compare ₹ repaid with forward cost."
+          ],
+          "look_up": {
+            "where": "ICAI SM AFM - Foreign Exchange Exposure and Risk Management",
+            "index_keywords": [
+              "money market hedge",
+              "forward cover",
+              "foreign currency payable",
+              "borrow domestic deposit foreign"
+            ]
+          },
+          "solve": "Forward: 85,000 × 92.60 = ₹78,71,000. MMH: € to deposit = 85,000 ÷ 1.01 = €84,158.42; ₹ needed at spot ask 90.50 = ₹76,16,337; borrowed at 8% p.a. for 3 months -> repay 76,16,337 × 1.02 = ₹77,68,664. Saving with MMH = 78,71,000 − 77,68,664 = ₹1,02,336 -> choose MMH.",
+          "answer": "Forward cover\n- €85,000 × ₹92.60 (forward ask) = ₹78,71,000\nMoney market hedge\n- € to deposit now at 4% p.a. for 3 months (1%): 85,000 ÷ 1.01 = €84,158.42\n- ₹ needed at spot ask ₹90.50: 84,158.42 × 90.50 = ₹76,16,337\n- Borrow ₹ at 8% p.a. for 3 months (2%); repay 76,16,337 × 1.02 = ₹77,68,664\nDecision: Money market hedge costs ₹77,68,664 against ₹78,71,000 under the forward - a saving of ₹1,02,336. REL should adopt the money market hedge.\nWhen a money market hedge is better than a forward:\n(i) Forward contracts are not available for that currency or period, or forward rates are unattractive (as here, the forward premium is more than the interest differential).\n(ii) The future rate is fixed the moment the borrow-convert-deposit is done, so downside risk from adverse rate moves is removed.\n(iii) It is more flexible on the amount (and timing) to be covered.",
+          "icai": "Same conclusion as ICAI (money market hedge cheaper by about ₹1,02,336).",
+          "flag": null,
+          "trap": "Using the German borrowing rate (5.5%) or Indian deposit rate (6.5%) - a payable needs ₹ borrowing (8%) and € deposit (4%).",
+          "minutes": 12
+        },
+        {
+          "q": "5.8",
+          "type": "Descriptive",
+          "marks": 6,
+          "subject": "Audit",
+          "also": "Ethics",
+          "chapter": "SAE 3400 The Examination of Prospective Financial Information; Professional Ethics - UDIN Guidelines and Clause (1), Part II, Second Schedule, CA Act 1949",
+          "topic": "Inconsistent, undisclosed accounting policies in a project report; UDIN on assurance reports",
+          "ask": "AKM is reporting on REL's 7-year project report where depreciation is per the Income-tax Act and finished goods are at selling price, with no disclosure. How should AKM deal with this? Is signing without UDIN justified, and what are the consequences?",
+          "options": null,
+          "clue": "depreciation ... in accordance with provisions of Income Tax Act ... without generating the UDIN",
+          "chapter_clear": true,
+          "think": [
+            "Project report + 'assurance report' on future figures = prospective financial information -> SAE 3400. UDIN = Council guidelines -> Ethics.",
+            "Chapter clear -> Audit index -> SAE 3400 -> 'presentation and disclosure', 'consistent with historical financial statements'; Ethics index -> 'UDIN', 'Clause (1) Part II Second Schedule'.",
+            "PFI must use policies consistent with historical statements and disclose them: tax depreciation and stock at selling price, undisclosed -> qualified or adverse opinion, or withdraw.",
+            "UDIN covers all certificates and assurance/attestation reports, not just past figures -> breach of Council guidelines = professional misconduct."
+          ],
+          "look_up": {
+            "where": "ICAI SM Audit - SAE 3400 (Prospective Financial Information); Professional Ethics - UDIN Guidelines",
+            "index_keywords": [
+              "SAE 3400",
+              "prospective financial information",
+              "presentation and disclosure",
+              "UDIN",
+              "Clause (1) Part II Second Schedule"
+            ]
+          },
+          "solve": "SAE 3400: the accountant checks that PFI is prepared on a basis consistent with the historical financial statements, using appropriate accounting principles, and that presentation and disclosure are adequate. Depreciation under the Income-tax Act and finished goods at selling price (instead of lower of cost and NRV) are inconsistent with historical statements and undisclosed -> if not corrected, qualified or adverse opinion, or withdrawal. UDIN Guidelines: a practising member must generate UDIN for all certificates, GST and tax audit reports and other audit, assurance and attestation work he signs - an assurance report on a project report is included. Breach of Council guidelines -> professional misconduct under Clause (1) of Part II of the Second Schedule.",
+          "answer": "(I) Inconsistent accounting policies - SAE 3400\n- Provision: The accountant must check that prospective financial information is prepared on a basis consistent with the historical financial statements, using appropriate accounting principles, and must consider whether:\n(a) presentation is informative and not misleading;\n(b) accounting policies are clearly disclosed in the notes;\n(c) assumptions are adequately disclosed, stating whether they are best estimates or hypothetical, with the uncertainty and sensitivity disclosed where material;\n(d) the date of preparation is disclosed;\n(e) any range is not chosen in a biased or misleading way;\n(f) any change in policy from the latest historical financial statements is disclosed with reasons and effect.\n- Facts: Depreciation as per the Income-tax Act and finished goods at selling price are not consistent with REL's historical financial statements (and stock at selling price breaks the cost-or-NRV rule); nothing is disclosed.\n- Conclusion: AKM should ask REL to correct and disclose. If presentation and disclosure remain inadequate, AKM should give a qualified or adverse opinion, or withdraw from the engagement, as appropriate.\n(II) Not generating UDIN - not justified\n- The view that UDIN is needed only for past figures is wrong. Under ICAI's UDIN Guidelines, a practising member must generate UDIN for all certificates, GST and tax audit reports and all other audit, assurance and attestation functions he signs. An assurance report on a project report is an assurance engagement.\n(III) Consequences\n- Not generating UDIN violates guidelines issued by the Council of ICAI. Under Clause (1) of Part II of the Second Schedule to the Chartered Accountants Act, 1949, a member who contravenes any guidelines issued by the Council is guilty of professional misconduct. The AKM partner who signed the report is liable.",
+          "icai": "Same conclusion as ICAI.",
+          "flag": null,
+          "trap": "Treating UDIN as needed only for audits of historical statements, or citing the First Schedule instead of Part II of the Second Schedule.",
+          "minutes": 18
+        }
+      ]
+    }
+  ]
+}
