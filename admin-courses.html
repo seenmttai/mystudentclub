@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Courses &amp; Payments | MSC Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/scripts/admin-courses.css?v=20261120_1">
+  <script src="/scripts/supabase.js"></script>
+  <script src="/scripts/supabase-init.js"></script>
+</head>
+<body>
+  <!-- Shown until the super-admin check passes -->
+  <main id="gate" class="gate" aria-live="polite">
+    <div class="gate-card">
+      <div class="gate-icon" aria-hidden="true">₹</div>
+      <h1 id="gate-title">Checking your access…</h1>
+      <p id="gate-text">One moment.</p>
+      <a id="gate-action" class="btn btn-primary" href="/login.html?redirect=%2Fadmin-courses.html" hidden>Log in</a>
+    </div>
+  </main>
+
+  <div id="app" class="app" hidden>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <a href="/admin.html" class="back-link">← Admin panel</a>
+          <h1>Courses &amp; payments</h1>
+        </div>
+        <div class="topbar-right">
+          <span class="who" id="who"></span>
+          <button type="button" class="btn btn-ghost" id="refresh-all">Refresh</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="page">
+      <div id="setup-banner" class="banner banner-bad" hidden>
+        <strong>The database part is not installed yet.</strong>
+        Run <code>supabase/migrations/202611200001_payments_course_admin.sql</code> in the Supabase SQL editor, then refresh.
+      </div>
+
+      <section class="stats" aria-label="Summary">
+        <button type="button" class="stat stat-link" id="stat-attention" data-goto="attention">
+          <span class="stat-label">Needs attention</span>
+          <span class="stat-value" data-stat="attention">–</span>
+          <span class="stat-hint">Paid without access, review, or paid twice</span>
+        </button>
+        <div class="stat">
+          <span class="stat-label">Paid, no access after 15 min</span>
+          <span class="stat-value" data-stat="stuck_paid">–</span>
+          <span class="stat-hint">The Worker retries every 10 minutes</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Paid in the last 24 h</span>
+          <span class="stat-value" data-stat="paid_24h">–</span>
+          <span class="stat-hint"><span data-stat="enrolled_24h">–</span> got access</span>
+        </div>
+        <div class="stat stat-wide">
+          <span class="stat-label">Students with access</span>
+          <span class="stat-courses">
+            <span><b data-student="industrial-training-mastery">–</b> Industrial Training</span>
+            <span><b data-student="msc-ca-freshers-program">–</b> CA Freshers</span>
+            <span><b data-student="msc-articleship-program">–</b> Articleship</span>
+          </span>
+        </div>
+      </section>
+
+      <nav class="tabs" role="tablist" aria-label="Sections">
+        <button type="button" role="tab" id="tab-payments" aria-controls="panel-payments" aria-selected="true" data-tab="payments">Payments</button>
+        <button type="button" role="tab" id="tab-students" aria-controls="panel-students" aria-selected="false" data-tab="students" tabindex="-1">Students &amp; access</button>
+        <button type="button" role="tab" id="tab-courses" aria-controls="panel-courses" aria-selected="false" data-tab="courses" tabindex="-1">Course lists</button>
+        <button type="button" role="tab" id="tab-registrations" aria-controls="panel-registrations" aria-selected="false" data-tab="registrations" tabindex="-1">Articleship registrations</button>
+        <button type="button" role="tab" id="tab-log" aria-controls="panel-log" aria-selected="false" data-tab="log" tabindex="-1">Activity log</button>
+      </nav>
+
+      <!-- Payments -->
+      <section class="panel" role="tabpanel" id="panel-payments" aria-labelledby="tab-payments">
+        <div class="panel-head">
+          <p class="panel-intro">Every PayU payment the Worker has seen, and payments added here. A <b>Paid, no access yet</b> row is retried every 10 minutes until the student has access.</p>
+          <button type="button" class="btn btn-primary" id="pay-add">+ Add payment or give access</button>
+        </div>
+        <form class="toolbar" id="pay-form" role="search">
+          <label class="field">
+            <span>Show</span>
+            <select id="pay-filter">
+              <option value="attention" selected>Needs attention</option>
+              <option value="all">All payments</option>
+              <option value="paid">Paid, no access yet</option>
+              <option value="needs_review">Needs review</option>
+              <option value="duplicate">Paid twice?</option>
+              <option value="enrolled">Has access</option>
+              <option value="refunded">Refunded</option>
+              <option value="ignored">Ignored</option>
+              <option value="revoked">Access removed</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Course</span>
+            <select id="pay-course">
+              <option value="">All courses</option>
+            </select>
+          </label>
+          <label class="field field-grow">
+            <span>Search</span>
+            <input id="pay-search" type="search" placeholder="Email, name, phone or transaction ID" autocomplete="off">
+          </label>
+          <button type="submit" class="btn">Search</button>
+        </form>
+        <p class="count" id="pay-count" aria-live="polite"></p>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr><th>Paid</th><th>Student</th><th>Course</th><th>Amount</th><th>Status</th><th>Tries, error, note</th><th><span class="sr-only">Actions</span></th></tr>
+            </thead>
+            <tbody id="pay-rows"></tbody>
+          </table>
+        </div>
+        <p class="empty" id="pay-empty" hidden></p>
+        <button type="button" class="btn btn-ghost more" id="pay-more" hidden>Load more</button>
+      </section>
+
+      <!-- Students & access -->
+      <section class="panel" role="tabpanel" id="panel-students" aria-labelledby="tab-students" hidden>
+        <p class="panel-intro">Find a student by email. See their courses, payments and registrations; give or remove a course.</p>
+        <form class="toolbar" id="stu-form" role="search">
+          <label class="field field-grow">
+            <span>Email</span>
+            <input id="stu-search" type="search" placeholder="Full email, or at least 3 letters of it" autocomplete="off" required minlength="3">
+          </label>
+          <button type="submit" class="btn btn-primary">Find</button>
+        </form>
+        <div id="stu-results" aria-live="polite"></div>
+      </section>
+
+      <!-- Course lists -->
+      <section class="panel" role="tabpanel" id="panel-courses" aria-labelledby="tab-courses" hidden>
+        <p class="panel-intro">Everyone who has a course now, newest first.</p>
+        <form class="toolbar" id="crs-form" role="search">
+          <label class="field">
+            <span>Course</span>
+            <select id="crs-course"></select>
+          </label>
+          <label class="field field-grow">
+            <span>Search</span>
+            <input id="crs-search" type="search" placeholder="Email or transaction ID" autocomplete="off">
+          </label>
+          <button type="submit" class="btn">Search</button>
+          <button type="button" class="btn btn-ghost" id="crs-csv">Download CSV</button>
+        </form>
+        <p class="count" id="crs-count" aria-live="polite"></p>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr><th>Student</th><th>Since</th><th>How</th><th>Last login</th><th><span class="sr-only">Actions</span></th></tr>
+            </thead>
+            <tbody id="crs-rows"></tbody>
+          </table>
+        </div>
+        <p class="empty" id="crs-empty" hidden></p>
+        <button type="button" class="btn btn-ghost more" id="crs-more" hidden>Load more</button>
+      </section>
+
+      <!-- Articleship registrations -->
+      <section class="panel" role="tabpanel" id="panel-registrations" aria-labelledby="tab-registrations" hidden>
+        <p class="panel-intro">Articleship Program payments (registration only, no LMS access). To give LMS access, use <b>Students &amp; access</b>.</p>
+        <form class="toolbar" id="reg-form" role="search">
+          <label class="field">
+            <span>Status</span>
+            <select id="reg-status">
+              <option value="">All</option>
+              <option value="paid">Paid</option>
+              <option value="free">Free (coupon)</option>
+              <option value="pending">Pending</option>
+              <option value="failed">Failed</option>
+            </select>
+          </label>
+          <label class="field field-grow">
+            <span>Search</span>
+            <input id="reg-search" type="search" placeholder="Name, email, phone or transaction ID" autocomplete="off">
+          </label>
+          <button type="submit" class="btn">Search</button>
+        </form>
+        <p class="count" id="reg-count" aria-live="polite"></p>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr><th>Date</th><th>Student</th><th>Amount</th><th>Status</th><th>Transaction</th><th>Confirmation mail</th></tr>
+            </thead>
+            <tbody id="reg-rows"></tbody>
+          </table>
+        </div>
+        <p class="empty" id="reg-empty" hidden></p>
+        <button type="button" class="btn btn-ghost more" id="reg-more" hidden>Load more</button>
+      </section>
+
+      <!-- Activity log -->
+      <section class="panel" role="tabpanel" id="panel-log" aria-labelledby="tab-log" hidden>
+        <p class="panel-intro">Every change a super admin made here.</p>
+        <form class="toolbar" id="log-form" role="search">
+          <label class="field field-grow">
+            <span>Search</span>
+            <input id="log-search" type="search" placeholder="Student email, admin email, transaction ID or action" autocomplete="off">
+          </label>
+          <button type="submit" class="btn">Search</button>
+        </form>
+        <p class="count" id="log-count" aria-live="polite"></p>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr><th>When</th><th>Who</th><th>What</th><th>Student</th><th>Course</th><th>Details</th></tr>
+            </thead>
+            <tbody id="log-rows"></tbody>
+          </table>
+        </div>
+        <p class="empty" id="log-empty" hidden></p>
+        <button type="button" class="btn btn-ghost more" id="log-more" hidden>Load more</button>
+      </section>
+    </div>
+  </div>
+
+  <!-- One dialog, filled for each action -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <form class="modal-card" id="modal-form" role="dialog" aria-modal="true" aria-labelledby="modal-title" novalidate>
+      <h2 id="modal-title"></h2>
+      <div id="modal-body"></div>
+      <p class="modal-error" id="modal-error" role="alert" hidden></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+        <button type="submit" class="btn btn-primary" id="modal-ok">OK</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="/scripts/admin-courses.js?v=20261120_1"></script>
+</body>
+</html>
