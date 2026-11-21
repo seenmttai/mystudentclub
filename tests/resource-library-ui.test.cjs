@@ -613,3 +613,16 @@ test('the Industrial Training toolkit leads each free item to its premium collec
         assertReferenceTargets(doc);
     } finally { dom.window.close(); }
 });
+
+test('enrolled students do not see lock lines, and an empty collection never shows the fallback count', async () => {
+    const dom = await render('ca-industrial-training-resources', async () => ({data:[{program_type:'industrial-training',title:'Form 109',category:'application-tricks',sort_order:50}]}), window => {
+        window.MSCProgramAccess = { getAccess: async () => ({ courses: ['industrial-training'] }), canonicalCourse: course => course };
+    });
+    try {
+        await tick(); await tick();
+        const doc = dom.window.document;
+        assert.ok(doc.body.classList.contains('resource-program-enrolled'));
+        const cv = [...doc.querySelectorAll('.resource-upsell')].find(button => /CV templates/.test(button.textContent));
+        assert.equal(cv.textContent, 'In the Program: CV templates + 1:1 CV review');
+    } finally { dom.window.close(); }
+});

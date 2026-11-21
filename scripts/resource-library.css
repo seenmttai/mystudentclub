@@ -2271,6 +2271,8 @@ h2#resource-premium::before {
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
+.resource-program-enrolled .resource-upsell,
+.resource-program-enrolled .resource-upgrade { display: none; }
 .resource-upsell::after { content: '→'; margin-left: auto; padding-left: 6px; font-weight: 700; }
 .resource-upsell .resource-icon { width: 14px; height: 14px; margin-top: 1px; color: #d97706; }
 .resource-upsell strong { color: #78350f; font-weight: 700; }

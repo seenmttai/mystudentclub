@@ -305,6 +305,8 @@
             const access = await global.MSCProgramAccess.getAccess();
             if (access && access.courses && access.courses.length > 0) {
                 userCourses = access.courses;
+                // Enrolled students already have the full kit: no lock lines or "See the Program" band for them.
+                if (hasProgramEnrollment(userCourses, config.premiumProgram, global.MSCProgramAccess.canonicalCourse)) document.body.classList.add('resource-program-enrolled');
                 renderPremiumResults();
             }
         } catch (_) { /* ignore */ }
@@ -452,7 +454,8 @@
     }
     function syncCount(node, labelled) {
         const live = catalogueLoaded ? countInCategory(premiumRows, node.dataset.countCategory) : 0;
-        node.textContent = fillCount(node.dataset.countLabel, live, node.dataset.countFallback);
+        // The fallback only stands in until the catalogue loads; after that the live count wins, even when it is 0.
+        node.textContent = fillCount(node.dataset.countLabel, live, catalogueLoaded ? null : node.dataset.countFallback);
         const owner = labelled || node.closest('.resource-upsell');
         if (owner) owner.setAttribute('aria-label', owner.textContent.trim() + '. Show in Premium Resources');
     }
