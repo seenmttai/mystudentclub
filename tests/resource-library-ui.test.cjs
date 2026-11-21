@@ -41,12 +41,12 @@ function mockDialog(window) {
 }
 
 test('all four pages retain Free/Premium top-level sections, unchanged free resources, and community at the top', async () => {
-    const slugs = {'ca-industrial-training-resources':6,'ca-fresher-training-resources':5,'articleship-resources':3,'semi-qualified-ca-resources':5};
+    const slugs = {'ca-industrial-training-resources':9,'ca-fresher-training-resources':5,'articleship-resources':3,'semi-qualified-ca-resources':5};
     for (const [slug, freeCount] of Object.entries(slugs)) {
         const dom = await render(slug, async () => ({data:[]}));
         try {
             const doc = dom.window.document;
-            assert.deepEqual([...doc.querySelectorAll('#resources-container .resource-section h2')].map(node => node.textContent), ['Free Resources', 'Premium Resources']);
+            assert.deepEqual([...doc.querySelectorAll('#resources-container .resource-section h2')].map(node => node.textContent), [slug === 'ca-industrial-training-resources' ? 'Free Industrial Training Toolkit' : 'Free Resources', 'Premium Resources']);
             assert.ok(doc.querySelector('.resource-hero').nextElementSibling.matches('.resource-community'));
             assert.ok(doc.querySelector('.resource-community').nextElementSibling.matches('.resource-audience-nav'));
             assert.deepEqual([...doc.querySelectorAll('.resource-jump-nav a')].map(node => node.getAttribute('href')), ['#resource-free','#resource-premium']);
@@ -56,8 +56,8 @@ test('all four pages retain Free/Premium top-level sections, unchanged free reso
             for (const button of doc.querySelectorAll('.resource-free-section button')) assert.ok(button.getAttribute('aria-label').includes(button.textContent));
             if (slug === 'ca-industrial-training-resources') {
                 const sheet = [...doc.querySelectorAll('.resource-card')].find(card => card.textContent.includes('Industrial Training Hiring Companies List'));
-                assert.equal(sheet.querySelectorAll('button').length, 1);
-                assert.equal(sheet.querySelector('button').textContent, 'Open Google Sheet');
+                assert.equal(sheet.querySelectorAll('.resource-actions button').length, 1);
+                assert.equal(sheet.querySelector('.resource-actions button').textContent, 'Open Google Sheet');
                 assert.match(sheet.textContent, /Download availability is managed by the sheet owner/);
             }
             const freeHeader = doc.querySelector('.resource-free-section .resource-section-header');
@@ -210,7 +210,7 @@ test('an unavailable catalogue keeps free resources usable, never falls back on 
     try {
         const doc = dom.window.document;
         assert.deepEqual(calls,['get_public_resource_catalog_v2']);
-        assert.equal(doc.querySelectorAll('.resource-free-section .resource-card').length, 6);
+        assert.equal(doc.querySelectorAll('.resource-free-section .resource-card').length, 9);
         assert.equal(doc.querySelector('#premium-search-results').textContent, 'Premium library unavailable');
         assert.equal(doc.querySelector('#resource-premium-count').textContent, '—');
         assert.ok(doc.querySelector('#premium-resources-empty').hidden);
@@ -578,5 +578,51 @@ test('a category with no premium resources yet still opens Premium with a clear 
         const empty = doc.querySelector('#premium-resources-empty');
         assert.ok(!empty.hidden);
         assert.match(empty.textContent, /No premium WhatsApp Communities resources yet/);
+    } finally { dom.window.close(); }
+});
+
+test('the Industrial Training toolkit leads each free item to its premium collection and compares free vs Program', async () => {
+    const rows = [...rowsForTemplates(), ...Array.from({length:5},(_,i)=>({program_type:'industrial-training',title:'Cover Letter Template '+(i+1),category:'cv-prep',sort_order:10})),
+        {program_type:'industrial-training',title:'Form 109',category:'application-tricks',sort_order:50}];
+    let release; const pending = new Promise(resolve => { release = resolve; });
+    const dom = await render('ca-industrial-training-resources', async () => { await pending; return {data:rows}; });
+    try {
+        const doc = dom.window.document;
+        const upsellFor = title => [...doc.querySelectorAll('.resource-free-section .resource-card')].find(card => card.querySelector('.resource-title').textContent === title)?.querySelector('.resource-upsell');
+        assert.equal(doc.querySelector('.resource-free-section .resource-title').textContent, 'Industrial Training Roadmap');
+        assert.equal(upsellFor('CV Template 3').textContent, 'In the Program: 62 CV templates + 1:1 CV review', 'fallback count before the catalogue loads');
+        release(rows); await tick(); await tick();
+        assert.equal(upsellFor('Cover Letter').textContent, 'In the Program: 5 cover letter templates');
+        assert.equal(upsellFor('CV Template 2'), null, 'one lock line per template family');
+        // The free tools row and the free-vs-Program band sit between the Free and Premium sections.
+        const tools = [...doc.querySelectorAll('.resource-free-section .resource-tool')];
+        assert.equal(tools.length, 6);
+        assert.ok(tools.every(link => link.getAttribute('href')));
+        assert.equal(tools.find(link => link.classList.contains('resource-tool-video')).target, '_blank');
+        const band = doc.querySelector('.resource-upgrade');
+        assert.ok(band.previousElementSibling.matches('.resource-free-section'));
+        assert.ok(band.nextElementSibling.matches('.resource-premium-section'));
+        assert.equal(band.querySelector('.resource-upgrade-cta').getAttribute('href'), '/ca-industrial-training-program/');
+        assert.match(band.querySelector('tbody tr').textContent, /62 CV templates/);
+        assert.equal(band.querySelector('.resource-upgrade-browse').textContent, 'Browse all 68 premium resources');
+        // A lock line opens its collection in Premium Resources.
+        upsellFor('How to Convince Your Principal').click();
+        assert.equal(doc.querySelector('#hubCategorySelectedLabel').textContent, 'Registration & Forms');
+        assert.deepEqual(groupsIn(doc).map(group => group.querySelector('h4').textContent), ['Registration & Forms']);
+        for (const button of doc.querySelectorAll('.resource-free-section button')) assert.ok(button.getAttribute('aria-label').includes(button.textContent));
+        assertReferenceTargets(doc);
+    } finally { dom.window.close(); }
+});
+
+test('enrolled students do not see lock lines, and an empty collection never shows the fallback count', async () => {
+    const dom = await render('ca-industrial-training-resources', async () => ({data:[{program_type:'industrial-training',title:'Form 109',category:'application-tricks',sort_order:50}]}), window => {
+        window.MSCProgramAccess = { getAccess: async () => ({ courses: ['industrial-training'] }), canonicalCourse: course => course };
+    });
+    try {
+        await tick(); await tick();
+        const doc = dom.window.document;
+        assert.ok(doc.body.classList.contains('resource-program-enrolled'));
+        const cv = [...doc.querySelectorAll('.resource-upsell')].find(button => /CV templates/.test(button.textContent));
+        assert.equal(cv.textContent, 'In the Program: CV templates + 1:1 CV review');
     } finally { dom.window.close(); }
 });
