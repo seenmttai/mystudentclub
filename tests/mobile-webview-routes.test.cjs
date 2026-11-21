@@ -22,7 +22,7 @@ const ROUTES = [
   { route: '/contact.html', file: 'contact.html', title: 'Contact Us' },
   { route: '/profile.html', file: 'profile.html', title: 'My Profile' },
   { route: '/ca-fresher-training-resources.html', file: 'ca-fresher-training-resources.html', title: 'CA Fresher Training Resources' },
-  { route: '/ca-industrial-training-resources.html', file: 'ca-industrial-training-resources.html', title: 'CA Industrial Training Resources' },
+  { route: '/ca-industrial-training-resources.html', file: 'ca-industrial-training-resources.html', title: 'CA Industrial Training Toolkit' },
   { route: '/articleship-resources.html', file: 'articleship-resources.html', title: 'Articleship Resources' },
   { route: '/semi-qualified-ca-resources.html', file: 'semi-qualified-ca-resources.html', title: 'Semi-Qualified CA Resources' },
   // /domain-wise-hiring-companies.html was removed from the mobile site on 2026-10-17 (see REMOVED_ROUTES).

@@ -11,7 +11,7 @@ const library = require(path.join(root, 'scripts', 'resource-library.js'));
 
 const PAGES = [
   { file: 'ca-fresher-training-resources.html', stage: 'ca-fresher', h1: 'CA Fresher Training Resources', premium: 'ca-fresher' },
-  { file: 'ca-industrial-training-resources.html', stage: 'industrial-training', h1: 'CA Industrial Training Resources', premium: 'industrial-training' },
+  { file: 'ca-industrial-training-resources.html', stage: 'industrial-training', h1: 'CA Industrial Training Toolkit', premium: 'industrial-training' },
   { file: 'articleship-resources.html', stage: 'articleship', h1: 'Articleship Resources', premium: 'articleship' },
   { file: 'semi-qualified-ca-resources.html', stage: 'semi-qualified', h1: 'Semi-Qualified CA Resources', premium: 'industrial-training' },
 ];
