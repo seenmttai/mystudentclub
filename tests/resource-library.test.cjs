@@ -175,7 +175,7 @@ test('resource sections keep free files before premium titles and sort numbered 
     const before = JSON.stringify({free, premium});
     const sections = library.organizeResources(free, premium);
     assert.deepEqual(Object.keys(sections), ['free', 'premium']);
-    assert.deepEqual(sections.free.slice(0, 3).map(resource => resource.title), ['CV Template 2', 'CV Template 3', 'Cover Letter']);
+    assert.deepEqual(sections.free.slice(0, 3).map(resource => resource.title), ['Industrial Training Roadmap', 'CV Template 2', 'CV Template 3']);
     assert.ok(sections.free.every(resource => !resource.premium));
     assert.ok(sections.premium.every(resource => resource.premium));
     assert.deepEqual(sections.premium.map(resource => resource.title), ['Featured programme guide', ...[1, 2, 3, 10, 11, 20, 62].map(number => 'Industrial CV Template ' + number)]);
@@ -207,4 +207,22 @@ test('premium resources require the matching program, including canonical aliase
     assert.equal(library.hasProgramEnrollment(['industrial-training-mastery'],'semi-qualified',canonical), true);
     assert.equal(library.hasProgramEnrollment(['unknown-course'],'articleship',canonical), false);
     assert.equal(library.hasProgramEnrollment([], 'articleship', canonical), false);
+});
+
+test('every free toolkit file is in the repo, and upsell counts fall back cleanly', () => {
+    for (const page of Object.values(library.pages)) {
+        for (const resource of page.resources.filter(r => r.viewUrl.startsWith('/'))) {
+            assert.ok(fs.existsSync(path.join(__dirname, '..', resource.viewUrl)), resource.viewUrl);
+            assert.ok(fs.existsSync(path.join(__dirname, '..', resource.downloadUrl)), resource.downloadUrl);
+        }
+    }
+    for (const resource of library.pages['industrial-training'].resources.filter(r => r.upsell)) {
+        assert.ok(library.categoryNames.includes(resource.upsell.category), resource.title + ' leads to a real collection');
+    }
+    assert.equal(library.fillCount('{n} CV templates', 64, 62), '64 CV templates');
+    assert.equal(library.fillCount('{n} CV templates', 0, 62), '62 CV templates');
+    assert.equal(library.fillCount('{n} cover letter templates', 0), 'Cover letter templates');
+    assert.equal(library.fillCount('Principal scripts', 9), 'Principal scripts');
+    assert.equal(library.countInCategory([{title:'Industrial CV Template 1'},{title:'Form 104'}], 'CV Templates'), 1);
+    assert.equal(library.countInCategory([{title:'Industrial CV Template 1'},{title:'Form 104'}], '*'), 2);
 });
