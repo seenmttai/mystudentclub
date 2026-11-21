@@ -41,7 +41,7 @@ test('all four pages load the same, new library version', () => {
   for (const page of Object.keys(PAGES)) {
     for (const m of read(page).matchAll(/resource-library\.(?:js|css)\?v=([\w.]+)/g)) versions.add(m[1]);
   }
-  assert.deepEqual([...versions], ['20261106.1']);
+  assert.deepEqual([...versions], ['20261121.1']);
 });
 
 test('premium section has a "What\'s included" overview that jumps to each collection', () => {

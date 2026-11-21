@@ -21,19 +21,51 @@
         pdf('Interview Syllabus', FRESHER_DIR, 'Interview Syllabus', 4),
         pdf('Interview Booklet', FRESHER_DIR, 'Interview Booklet', 5)
     ];
+    // The free Industrial Training Toolkit. Each `upsell` names the premium collection it leads to; `{n}` becomes the live
+    // number of premium resources in that collection (n is the fallback until the catalogue loads).
     const industrialResources = [
-        editable('CV Template 2', INDUSTRIAL_DIR, 'Industrial_Training_CV_Template_2', 1),
-        { ...editable('CV Template 3', INDUSTRIAL_DIR, 'Industrial_Training_CV_Template_1', 2), fileName: 'Industrial Training CV Template 3.docx' },
-        editable('Cover Letter', INDUSTRIAL_DIR, 'Coverletter', 3),
-        pdf('Interview Syllabus', INDUSTRIAL_DIR, 'Syllabus', 4),
-        pdf('Finance Interview Questions', INDUSTRIAL_DIR, 'Finance-interview', 5),
+        { ...pdf('Industrial Training Roadmap', INDUSTRIAL_DIR, 'Industrial_Training_Roadmap', 1), category: 'application-tricks',
+            description: 'When to start, how hiring really works, and the 6 steps from CV to offer letter.',
+            upsell: { category: 'More Resources', label: 'MSCIT Guidebook + domain roadmaps' } },
+        { ...editable('CV Template 2', INDUSTRIAL_DIR, 'Industrial_Training_CV_Template_2', 2) },
+        { ...editable('CV Template 3', INDUSTRIAL_DIR, 'Industrial_Training_CV_Template_1', 3), fileName: 'Industrial Training CV Template 3.docx',
+            upsell: { category: 'CV Templates', label: '{n} CV templates + 1:1 CV review', n: 62 } },
+        { ...editable('Cover Letter', INDUSTRIAL_DIR, 'Coverletter', 4),
+            upsell: { category: 'Cover Letter Templates', label: '{n} cover letter templates', n: 5 } },
+        { ...editable('Application Mail Template', INDUSTRIAL_DIR, 'Application_Mail_Template', 5), category: 'application-tricks',
+            description: 'The subject line, a 3-paragraph application mail and a LinkedIn referral note.',
+            upsell: { category: 'Application & Outreach', label: '7 application mails + follow-up & thank-you mails' } },
+        { ...pdf('How to Convince Your Principal', INDUSTRIAL_DIR, 'Principal_Talk_Guide', 6), category: 'application-tricks',
+            description: 'When to ask, what to say, and what to do if the answer is no.',
+            upsell: { category: 'Registration & Forms', label: 'Principal scripts + Form 104 & 109 kit' } },
+        { ...pdf('Interview Syllabus', INDUSTRIAL_DIR, 'Syllabus', 7),
+            upsell: { category: 'Interview Preparation', label: '6 domain interview booklets + mock interview' } },
+        pdf('Finance Interview Questions', INDUSTRIAL_DIR, 'Finance-interview', 8),
         {
-            title: 'Industrial Training Hiring Companies List', category: 'application-tricks', sort_order: 6,
+            key: 'hiring-companies', title: 'Industrial Training Hiring Companies List', category: 'application-tricks', sort_order: 9,
             viewUrl: 'https://docs.google.com/spreadsheets/d/1yDCBRaadD_qddFyKYRpesyL8h_E91X1dlzA0PfoEdKM/edit?gid=0#gid=0',
             downloadUrl: 'https://docs.google.com/spreadsheets/d/1yDCBRaadD_qddFyKYRpesyL8h_E91X1dlzA0PfoEdKM/export?format=xlsx&gid=0',
             fileName: 'Industrial Training Hiring Companies List.xlsx', format: 'XLSX', downloadUnavailable: true,
-            description: 'Explore hiring companies. Download availability is managed by the sheet owner.'
+            description: 'Explore hiring companies. Download availability is managed by the sheet owner.',
+            upsell: { category: 'Application & Outreach', label: '1,500+ verified HR contacts' }
         }
+    ];
+    // Free tools and sessions shown under the toolkit. Swap the session for the new 2-hour video once it is on YouTube.
+    const industrialTools = [
+        { title: 'AI CV Builder', url: '/cv-builder/', action: 'Build my CV', description: 'Build a one-page CV in minutes. 3 templates are free.' },
+        { title: 'AI CV Reviewer', url: '/cv-reviewer/', action: 'Review my CV', description: 'Upload your CV and get an instant score before you apply.' },
+        { title: 'CA CV Checklist', url: '/cv-checklist', action: 'Open checklist', description: 'Check every line of your CV against what recruiters look for.' },
+        { title: 'LinkedIn Note Generator', url: '/linkedin-connection-message', action: 'Write a note', description: 'Write a referral request note for any trainee, senior CA or HR.' },
+        { title: 'Free Guidance Session', url: 'https://www.youtube.com/watch?v=dMPdv-TrCOE', action: 'Watch on YouTube', video: true, description: 'Everything about CA Industrial Training, by CA Padam Bhansali.' }
+    ];
+    // "Free toolkit vs the Program": what the paid program adds to each free item. `{n}` counts live as above.
+    const industrialCompare = [
+        { topic: 'CV', free: '2 CV templates, AI CV Builder and Reviewer', program: '{n} CV templates, company-wise selected CVs and a 1:1 CV review by CA Padam Bhansali', category: 'CV Templates', n: 62 },
+        { topic: 'Applying', free: '1 application mail, hiring companies list', program: '7 application mails, follow-up and thank-you mails, MSCIT Automail tool and 1,500+ verified HR contacts', category: 'Application & Outreach' },
+        { topic: 'Interviews', free: 'Interview syllabus, finance questions', program: 'FP&A, Investment Banking, Finance, Direct Tax, Indirect Tax and Internal Audit booklets, technical and behavioural questions, a personal mock interview', category: 'Interview Preparation' },
+        { topic: 'Principal & ICAI', free: 'How to convince your principal', program: 'Principal scripts, Form 104 & 109 filing guide, stamp paper and consent letter formats', category: 'Registration & Forms' },
+        { topic: 'Roadmap', free: 'Industrial Training roadmap, guidance session', program: 'MSCIT Guidebook, domain roadmaps, 6-day masterclass and 9 Excel tests', category: 'More Resources' },
+        { topic: 'Support', free: 'WhatsApp community', program: 'Weekly doubt solving with CA Padam Bhansali, exclusive vacancies and referrals', category: null }
     ];
     const programs = {
         'industrial-training': { title: 'MSC Industrial Training Program', url: '/ca-industrial-training-program/', courses: ['industrial-training-mastery', 'industrial-training', 'msc-industrial-training-program', 'ca-industrial-training', 'industrial-training-program', 'msc-ca-industrial-training', 'ca-industrial'] },
@@ -51,7 +83,11 @@
         });
     }
     const pages = {
-        'industrial-training': { resources: industrialResources, premiumProgram: 'industrial-training' },
+        'industrial-training': {
+            resources: industrialResources, premiumProgram: 'industrial-training', tools: industrialTools, compare: industrialCompare,
+            freeTitle: 'Free Industrial Training Toolkit',
+            freeIntro: 'Start with the roadmap, then make the templates yours. Everything here is free.'
+        },
         'ca-fresher': { resources: fresherResources, premiumProgram: 'ca-fresher' },
         'articleship': { resources: fresherResources.filter(r => r.category === 'cv-prep').map(r => ({ ...r, title: r.title === 'Cover Letter CA Fresher' ? 'Cover Letter' : r.title })), premiumProgram: 'articleship' },
         'semi-qualified': { resources: fresherResources.map(r => ({ ...r, title: r.title === 'Cover Letter CA Fresher' ? 'Cover Letter' : r.title })), premiumProgram: 'industrial-training' }
@@ -148,7 +184,15 @@
             }))
         }));
     }
-    const exports = { cleanFileName, sanitizeCatalogue, pages, programs, hasProgramEnrollment, compareResourceTitles, organizeResources, searchResources, inferResourceGroup, groupPremiumResources };
+    // Fills "{n}" in an upsell label: the live count when there is one, else the fallback, else the number is dropped.
+    function fillCount(label, count, fallback) {
+        const n = count > 0 ? count : (Number(fallback) > 0 ? Number(fallback) : null);
+        return String(label).replace(/\{n\}\s?/g, n === null ? '' : n + ' ').replace(/^\s+/, '').replace(/^./, c => c.toUpperCase());
+    }
+    function countInCategory(rows, category) {
+        return category === '*' ? rows.length : rows.filter(row => inferResourceGroup(row).toLocaleLowerCase() === String(category).toLocaleLowerCase()).length;
+    }
+    const exports = { cleanFileName, sanitizeCatalogue, pages, programs, hasProgramEnrollment, compareResourceTitles, organizeResources, searchResources, inferResourceGroup, groupPremiumResources, fillCount, countInCategory };
     if (typeof module !== 'undefined' && module.exports) module.exports = exports;
     global.MSCResourceLibrary = exports;
     if (typeof document === 'undefined') return;
@@ -265,6 +309,8 @@
             const access = await global.MSCProgramAccess.getAccess();
             if (access && access.courses && access.courses.length > 0) {
                 userCourses = access.courses;
+                // Enrolled students already have the full kit: no lock lines or "See the Program" band for them.
+                if (hasProgramEnrollment(userCourses, config.premiumProgram, global.MSCProgramAccess.canonicalCourse)) document.body.classList.add('resource-program-enrolled');
                 renderPremiumResults();
             }
         } catch (_) { /* ignore */ }
@@ -392,9 +438,124 @@
                 actions.append(button);
             });
             card.append(actions);
+            if (resource.upsell) card.append(renderUpsell(resource.upsell));
         }
         return card;
     }
+    // "In the Program: 62 CV templates + 1:1 CV review →" under a free card. Opens that premium collection below.
+    function renderUpsell(upsell) {
+        const button = element('button', 'resource-upsell');
+        button.type = 'button';
+        button.append(icon('lock'), element('span', 'resource-upsell-text'));
+        const text = button.querySelector('.resource-upsell-text');
+        text.append(element('span', 'resource-upsell-label', 'In the Program: '), element('strong', ''));
+        const count = button.querySelector('strong');
+        count.dataset.countLabel = upsell.label;
+        count.dataset.countCategory = upsell.category;
+        if (upsell.n) count.dataset.countFallback = String(upsell.n);
+        button.addEventListener('click', () => jumpToCollection(upsell.category));
+        syncCount(count, button);
+        return button;
+    }
+    function syncCount(node, labelled) {
+        const live = catalogueLoaded ? countInCategory(premiumRows, node.dataset.countCategory) : 0;
+        // The fallback only stands in until the catalogue loads; after that the live count wins, even when it is 0.
+        node.textContent = fillCount(node.dataset.countLabel, live, catalogueLoaded ? null : node.dataset.countFallback);
+        const owner = labelled || node.closest('.resource-upsell');
+        if (owner) owner.setAttribute('aria-label', owner.textContent.trim() + '. Show in Premium Resources');
+    }
+    function syncCounts() {
+        document.querySelectorAll('[data-count-label]').forEach(node => syncCount(node));
+    }
+    function renderTools(tools) {
+        const wrap = element('div', 'resource-tools');
+        const head = element('div', 'resource-tools-header');
+        const heading = element('h3', '', 'Free tools & sessions');
+        heading.id = 'resource-tools-title';
+        wrap.setAttribute('role', 'group');
+        wrap.setAttribute('aria-labelledby', heading.id);
+        head.append(heading, element('p', '', 'Build your CV, check it, write referral notes and prepare for interviews.'));
+        const list = element('div', 'resource-tools-list');
+        tools.forEach(tool => {
+            const link = element('a', 'resource-tool' + (tool.video ? ' resource-tool-video' : ''));
+            link.href = tool.url;
+            if (/^https?:/i.test(tool.url)) { link.target = '_blank'; link.rel = 'noopener noreferrer'; }
+            const badge = element('span', 'resource-tool-icon');
+            badge.setAttribute('aria-hidden', 'true');
+            badge.innerHTML = tool.video
+                ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg>'
+                : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>';
+            const copy = element('span', 'resource-tool-copy');
+            copy.append(element('strong', '', tool.title), element('span', 'resource-tool-desc', tool.description), element('span', 'resource-tool-action', tool.action + ' →'));
+            link.append(badge, copy);
+            list.append(link);
+        });
+        wrap.append(head, list);
+        return wrap;
+    }
+    // Free toolkit vs the Program, with the way in. Sits between the Free and Premium sections.
+    function renderCompare(rows) {
+        const program = programs[config.premiumProgram];
+        const band = element('aside', 'resource-upgrade');
+        band.setAttribute('aria-labelledby', 'resource-upgrade-title');
+        const head = element('div', 'resource-upgrade-head');
+        const heading = element('h2', '', 'The free toolkit gets you started. The Program gets you the offer.');
+        heading.id = 'resource-upgrade-title';
+        head.append(element('span', 'resource-upgrade-eyebrow', 'Free toolkit vs ' + program.title), heading);
+        const table = element('table', 'resource-upgrade-table');
+        const thead = element('thead');
+        const headRow = element('tr');
+        [['', 'What'], ['Free', 'Free toolkit'], ['Program', program.title]].forEach(([key, label]) => {
+            const th = element('th', key ? 'col-' + key.toLowerCase() : '', label);
+            th.scope = 'col';
+            if (!key) th.className = 'resource-visually-hidden-cell';
+            headRow.append(th);
+        });
+        thead.append(headRow);
+        const body = element('tbody');
+        rows.forEach(row => {
+            const tr = element('tr');
+            const topic = element('th', '', row.topic);
+            topic.scope = 'row';
+            const free = element('td', 'col-free');
+            free.dataset.label = 'Free';
+            free.append(element('span', '', row.free));
+            const paid = element('td', 'col-program');
+            paid.dataset.label = 'Program';
+            const text = element('span');
+            if (/\{n\}/.test(row.program)) {
+                text.dataset.countLabel = row.program;
+                text.dataset.countCategory = row.category || '*';
+                if (row.n) text.dataset.countFallback = String(row.n);
+                text.textContent = fillCount(row.program, 0, row.n);
+            } else text.textContent = row.program;
+            const cell = element('span', 'resource-upgrade-cell');
+            cell.append(icon('lock'), text);
+            paid.append(cell);
+            tr.append(topic, free, paid);
+            body.append(tr);
+        });
+        table.append(thead, body);
+        const actions = element('div', 'resource-upgrade-actions');
+        const enroll = element('a', 'resource-action resource-upgrade-cta', 'See the Program →');
+        enroll.href = program.url;
+        const browse = element('button', 'resource-action secondary resource-upgrade-browse');
+        browse.type = 'button';
+        const browseText = element('span');
+        browseText.dataset.countLabel = 'Browse all {n} premium resources';
+        browseText.dataset.countCategory = '*';
+        browseText.textContent = fillCount(browseText.dataset.countLabel, 0);
+        browse.append(browseText);
+        browse.addEventListener('click', () => {
+            const target = document.getElementById('resource-premium');
+            const reduceMotion = global.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+            if (target && typeof target.scrollIntoView === 'function') target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+        });
+        actions.append(enroll, browse);
+        band.append(head, table, actions);
+        return band;
+    }
+
     function sectionHeader(id, title, count, description) {
         const header = element('div', 'resource-section-header');
         const titleRow = element('div', 'resource-section-title');
@@ -574,20 +735,22 @@
             : premiumRows.length ? matches + ' resources · ' + collectionCount + (collectionCount===1 ? ' collection' : ' collections') : 'No premium resources added yet';
         document.querySelector('.resource-search-toolbar').hidden = catalogueLoaded && premiumRows.length === 0;
         if (focusGroup) [...grid.querySelectorAll('[data-group-toggle]')].find(button=>button.dataset.groupToggle===focusGroup)?.focus({preventScroll:true});
+        syncCounts();
     }
     function renderResources() {
         const container = document.getElementById('resources-container');
         container.replaceChildren();
         const free = element('section', 'resource-section resource-free-section');
         free.setAttribute('aria-labelledby', 'resource-free');
-        const freeHeader = sectionHeader('free', 'Free Resources', config.resources.length, config.freeIntro || 'Preview online or download to make it yours.');
+        const freeHeader = sectionHeader('free', config.freeTitle || 'Free Resources', config.resources.length, config.freeIntro || 'Preview online or download to make it yours.');
         free.append(freeHeader);
-        const freeGrid = element('div', 'resources-list');
+        const freeGrid = element('div', 'resources-list' + (config.tools ? ' resources-list-toolkit' : ''));
         freeGrid.id = 'resources-free-list';
         const freeCards = organizeResources(config.resources, []).free.map(resource => renderCard(resource));
         freeCards.forEach(card => freeGrid.append(card));
         free.append(freeGrid);
         setupFreeToggle(freeCards, freeGrid, freeHeader.querySelector('.resource-section-actions'));
+        if (config.tools?.length) free.append(renderTools(config.tools));
 
         const premium = element('section', 'resource-section resource-premium-section');
         premium.setAttribute('aria-labelledby', 'resource-premium');
@@ -637,7 +800,9 @@
         empty.id = 'premium-resources-empty';
         empty.hidden = true;
         premium.append(grid, empty);
-        container.append(free, premium);
+        container.append(free);
+        if (config.compare?.length) container.append(renderCompare(config.compare));
+        container.append(premium);
         renderPremiumResults();
     }
     async function loadCatalogue() {
