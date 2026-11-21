@@ -4245,3 +4245,40 @@ button.fixed-cta-btn {
     display: none;
   }
 }
+
+/* Next batch note under the hero line: students turning eligible in February */
+.hero-next-batch {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  max-width: 600px;
+  margin: -4px 0 18px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: var(--blue-light);
+  border: 1px solid var(--blue-border);
+  color: var(--navy-main);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.hero-next-batch i {
+  color: #2563EB;
+  font-size: 13px;
+}
+
+.hero-next-batch strong {
+  color: #1E40AF;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 880px) {
+  .hero-next-batch {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
