@@ -25,6 +25,7 @@ function completeProfile() {
     name: 'Candidate',
     contact_number: '9999999999',
     current_city: 'Mumbai',
+    gender: 'Female',
     profile_summary: 'Finance professional',
     ca_final_course: 'CA Final',
     total_experience: '2 years',
@@ -55,6 +56,22 @@ test('certification is optional and carries no completion points', () => {
   assert.equal(items.reduce((sum, item) => sum + item.boost, 0), 100);
   assert.match(profilePage, /Key Skills <span class="p2-boost" id="skillsBoost">Add 4%<\/span>/);
   assert.match(profilePage, /Certification <span class="p2-boost-optional">Optional<\/span>/);
+});
+
+test('gender is part of 100%, so a blank gender blocks Easy Apply', () => {
+  const { completion, localStorage } = loadCompletion({ userCVText: 'resume text' });
+  const noGender = { ...completeProfile(), gender: '' };
+  const items = completion.getProfileCompletionItems(noGender, localStorage);
+  const gender = items.find(item => item.label === 'Add gender');
+
+  assert.deepEqual([gender.boost, gender.section, gender.form], [3, 'sec-personal', 'sec-personal-form']);
+  assert.equal(completion.calculateProfileCompletion(noGender, localStorage), 97);
+  assert.deepEqual(Array.from(completion.getMissingProfileItems(noGender, localStorage), item => item.label), ['Add gender']);
+  for (const value of ['Male', 'Female', 'Other']) {
+    assert.equal(completion.calculateProfileCompletion({ ...noGender, gender: value }, localStorage), 100);
+  }
+  const profilePage = fs.readFileSync(path.join(root, 'profile.html'), 'utf8');
+  assert.match(profilePage, /<select id="gender" name="gender">/);
 });
 
 test('adding a certification does not change the completion percentage', () => {
