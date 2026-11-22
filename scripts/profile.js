@@ -531,7 +531,8 @@ const WZ_QUESTION_CONFIGS = {
             { label: 'Female', value: 'Female' },
             { label: 'Other', value: 'Other' }
         ],
-        profileKey: 'gender', optional: true
+        // Not skippable: gender counts towards 100%, which Easy Apply needs (Padam, 22 Nov 2026).
+        profileKey: 'gender', optional: false
     }
 };
 
