@@ -90,7 +90,7 @@ if (mode === 'prepare') {
   const frontend=await fetch(frontendUrl,{cache:'no-store',signal:AbortSignal.timeout(30000)});
   const frontendSource=await frontend.text();
   assert.equal(frontend.status,200,'Published CV Reviewer script is unavailable');
-  assert.ok(frontendSource.includes("'Authorization': `Bearer ${accessToken}`") && frontendSource.includes('body: JSON.stringify({ images: pdfImages })'),'Matching website is not published yet. Worker deployment stopped.');
+  assert.ok(frontendSource.includes("'Authorization': `Bearer ${accessToken}`") && frontendSource.includes('body: JSON.stringify({ images: pdfImages'),'Matching website is not published yet. Worker deployment stopped.');
   const localFrontend=await fs.readFile(path.resolve(moduleDir,'../../cv-reviewer/cv-reviewer.js'),'utf8');
   assert.equal(sha(frontendSource),sha(localFrontend),'Published CV Reviewer differs from the prepared local frontend; inspect release state.');
   const form = new FormData();

@@ -17,7 +17,7 @@ function harness(options={}) {
   if(url.endsWith('/auth/v1/user'))return new Response(JSON.stringify({id:userId,user_metadata:{premium:true}}),{status:options.authStatus||200});
   return new Response(JSON.stringify((options.courses||[]).map(course=>({course}))),{status:options.enrollmentStatus||200});
  },processCV:async()=>{calls.models++;return{ok:true,response:options.report??report,modelUsed:'unchanged',debug_errors:{doNotExpose:'SECRET REPORT'}};}});
- vm.runInContext(prefix+'\nthis.worker=worker;this.partialReport=partialReport;',context);
+ vm.runInContext(prefix+'\nthis.worker=worker;this.partialReport=partialReport;this.todayInIndia=todayInIndia;',context);
  function request(extras={},token,method='POST') {return new Request('https://reviewer.example/',{method,headers:{'Content-Type':'application/json','CF-Connecting-IP':'192.0.2.1',...(token?{Authorization:'Bearer '+token}:{})},...(method==='POST'?{body:JSON.stringify({images:['synthetic'],...extras})}:{})});}
  return {context,calls,env,request};
 }
@@ -62,4 +62,13 @@ test('existing KV quota is enforced without requiring new bindings',async()=>{
 test('preflight permits session authorization and invalid bodies do not consume model quota',async()=>{
  const h=harness();const options=await h.context.worker.fetch(h.request({},null,'OPTIONS'),h.env);assert.equal(options.status,204);assert.match(options.headers.get('Access-Control-Allow-Headers'),/Authorization/);
  assert.equal((await h.context.worker.fetch(h.request({images:[]}),h.env)).status,400);assert.equal(h.calls.models,0);assert.equal(h.calls.kv.length,0);
+});
+test('prompt date is today in India, so real past dates are not called future dates',async()=>{
+ const h=harness();
+ assert.equal(h.context.todayInIndia(new Date('2026-11-22T20:00:00Z')),'23 November 2026');
+ assert.equal(h.context.todayInIndia(new Date('2026-11-22T10:00:00Z')),'22 November 2026');
+ const res=await h.context.worker.fetch(new Request('https://reviewer.example/health'),h.env);const data=await res.json();
+ assert.equal(data.version,'2026-09-27-verified-partial-v1');assert.equal(data.prompt,'2026-11-22-today-date');
+ const src=fs.readFileSync(path.join(__dirname,'../workers/cv-reviewer/index.mjs'),'utf8');
+ assert.ok(src.includes("TODAY'S DATE: ${today}"));assert.ok(!src.includes('en-dashes for dates'));
 });
