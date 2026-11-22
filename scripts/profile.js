@@ -1597,6 +1597,13 @@ function refreshHeader() {
       filled: !!(d.current_location || "").trim(),
       boost: 2,
     },
+    // Gender counts towards 100% here too, as on www, where it gates Easy Apply (Padam, 22 Nov 2026).
+    {
+      label: "Add gender",
+      icon: "fa-venus-mars",
+      filled: !!String(d.gender || "").trim(),
+      boost: 3,
+    },
     {
       label: "Add resume",
       icon: "fa-file-alt",
