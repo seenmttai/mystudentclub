@@ -17,7 +17,7 @@ function harness(options={}) {
   if(url.endsWith('/auth/v1/user'))return new Response(JSON.stringify({id:userId,user_metadata:{premium:true}}),{status:options.authStatus||200});
   return new Response(JSON.stringify((options.courses||[]).map(course=>({course}))),{status:options.enrollmentStatus||200});
  },processCV:async(...args)=>{calls.models++;calls.plans=(calls.plans||[]).concat([args[5]]);return{ok:true,response:options.report??report,modelUsed:options.modelUsed||'unchanged',cacheable:!!options.cacheable,costUsd:options.costUsd||0,debug_errors:{doNotExpose:'SECRET REPORT'}};}});
- vm.runInContext(prefix+'\nthis.worker=worker;this.partialReport=partialReport;this.todayInIndia=todayInIndia;this.CLAUDE=CLAUDE;this.choosePlan=choosePlan;this.isCompleteReport=isCompleteReport;this.callClaude=callClaude;this.spendKey=spendKey;this.opusKey=opusKey;',context);
+ vm.runInContext(prefix+'\nthis.worker=worker;this.partialReport=partialReport;this.todayInIndia=todayInIndia;this.CLAUDE=CLAUDE;this.choosePlan=choosePlan;this.isCompleteReport=isCompleteReport;this.callClaude=callClaude;this.spendKey=spendKey;this.opusKey=opusKey;this.normalizeReport=normalizeReport;this.hasScore=hasScore;',context);
  function request(extras={},token,method='POST') {return new Request('https://reviewer.example/',{method,headers:{'Content-Type':'application/json','CF-Connecting-IP':'192.0.2.1',...(token?{Authorization:'Bearer '+token}:{})},...(method==='POST'?{body:JSON.stringify({images:['synthetic'],...extras})}:{})});}
  return {context,calls,env,request};
 }
@@ -129,4 +129,22 @@ test('image type comes from the bytes, not the data-URL label',async()=>{
  await h.context.callClaude(h.context.CLAUDE.haiku,'s',['data:image/png;base64,/9j/4AAQ','iVBORw0KGgo','/9j/abc'],'review',{ANTHROPIC_API_KEY:'k'});
  assert.deepEqual(sent.messages[0].content.slice(0,3).map(c=>c.source.media_type),['image/jpeg','image/png','image/jpeg']);
  assert.equal(sent.messages[0].content[0].source.data,'/9j/4AAQ');
+});
+
+test('two-bracket and spaced section markers are repaired; POINT markers are left alone',async()=>{
+ const h=harness();
+ const raw='<<<HARD_SKILLS>>>\nx\n<<END_HARD_SKILLS>>\n<<< OVERALL_SCORE >>>\nScore: 71.0/100\n<<END_OVERALL_SCORE>>\n<<POINT>>\nOriginal: "a"\n<<END_POINT>>';
+ const fixed=h.context.normalizeReport(raw);
+ assert.ok(fixed.includes('<<<END_HARD_SKILLS>>>'));assert.ok(fixed.includes('<<<OVERALL_SCORE>>>'));assert.ok(fixed.includes('<<<END_OVERALL_SCORE>>>'));
+ assert.ok(fixed.includes('<<POINT>>')&&fixed.includes('<<END_POINT>>')&&!fixed.includes('<<<END_POINT>>>'));
+ assert.equal(h.context.hasScore(fixed),true);assert.equal(h.context.hasScore(raw),false);
+ assert.equal(h.context.hasScore('<<<OUT_OF_CONTEXT>>> an invoice'),true);
+});
+test('a review with no score is refused with a retry message and never cached',async()=>{
+ const unscored=report.replace(/\*\*<<<OVERALL_SCORE>>>\*\*[\s\S]*?<<<END_OVERALL_SCORE>>>\*\*/,'');
+ const h=harness({report:unscored,cacheable:true,costUsd:0.01});
+ const res=await h.context.worker.fetch(h.request(),h.env);const data=await res.json();
+ assert.equal(res.status,502);assert.equal(data.ok,false);assert.match(data.error,/try again/);
+ assert.equal(h.calls.kv.filter(c=>c.key.startsWith('cv-review-cache')).length,0);
+ assert.equal(h.calls.kv.filter(c=>c.key.startsWith('cv-review-spend')).length,1);
 });
