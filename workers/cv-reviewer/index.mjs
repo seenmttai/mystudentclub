@@ -95,7 +95,10 @@ async function callClaude(plan, systemPrompt, images, userTextPrompt, env) {
   const content = (images || []).map(img => {
     const match = /^data:(image\/[a-z]+);base64,/.exec(img);
     const data = match ? img.slice(match[0].length) : img;
-    return {type: 'image', source: {type: 'base64', media_type: match ? match[1] : (data.startsWith('iVBOR') ? 'image/png' : 'image/jpeg'), data}};
+    // Trust the bytes, not the label: Claude rejects an image whose declared type is wrong.
+    const media_type = data.startsWith('/9j/') ? 'image/jpeg' : data.startsWith('iVBOR') ? 'image/png' :
+      data.startsWith('R0lGOD') ? 'image/gif' : data.startsWith('UklGR') ? 'image/webp' : (match ? match[1] : 'image/jpeg');
+    return {type: 'image', source: {type: 'base64', media_type, data}};
   });
   content.push({type: 'text', text: userTextPrompt});
   const body = {model: plan.model, max_tokens: 32000, stream: true, system: systemPrompt,

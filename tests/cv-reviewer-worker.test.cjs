@@ -122,3 +122,11 @@ test('Claude stream is parsed into text and token usage',async()=>{
  h.context.fetch=async()=>new Response(`data: ${JSON.stringify({type:'message_delta',delta:{stop_reason:'refusal'},usage:{output_tokens:1}})}\n\n`,{status:200});
  await assert.rejects(h.context.callClaude(h.context.CLAUDE.opus,'s',[],'',{ANTHROPIC_API_KEY:'k'}),/declined/);
 });
+
+test('image type comes from the bytes, not the data-URL label',async()=>{
+ const h=harness();let sent;
+ h.context.fetch=async(url,init)=>{sent=JSON.parse(init.body);return new Response(`data: ${JSON.stringify({type:'content_block_delta',delta:{type:'text_delta',text:'x'}})}\n\n`,{status:200});};
+ await h.context.callClaude(h.context.CLAUDE.haiku,'s',['data:image/png;base64,/9j/4AAQ','iVBORw0KGgo','/9j/abc'],'review',{ANTHROPIC_API_KEY:'k'});
+ assert.deepEqual(sent.messages[0].content.slice(0,3).map(c=>c.source.media_type),['image/jpeg','image/png','image/jpeg']);
+ assert.equal(sent.messages[0].content[0].source.data,'/9j/4AAQ');
+});
