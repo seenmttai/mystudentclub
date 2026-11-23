@@ -94,6 +94,10 @@ const postedDate = Number.isFinite(postedAt.getTime())
 const pay = jobPay(job, categorySlug as string);
 const typeLabel = jobTypeLabel(job, categorySlug as string);
 const isExclusive = job.is_exclusive === true;
+// Exclusive vacancies are open only to students who paid for the MSC Program. Google's job posting rules don't
+// allow postings that need payment from applicants, so their pages carry no JobPosting markup, and the sitemap
+// and Indexing API leave them out (they key off the markup).
+const listOnGoogle = !isExclusive;
 const location = job.Location || 'India';
 const roleTitle = jobSeo.jobTitle(job, categorySlug);
 const parsedLocation = jobSeo.parseLocation(job.Location);
@@ -162,6 +166,7 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
     <meta name="description" content={metaDescription}>
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
     <meta name="msc-page" content="job-v2">
+    <meta name="msc-job-posted" content={jsonLd.datePosted} data-job-id={String(job.id)}>
     <link rel="canonical" href={canonicalUrl}>
 
     <!-- Open Graph / WhatsApp / Facebook / LinkedIn -->
@@ -187,7 +192,7 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')}></script>
+    {listOnGoogle && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')}></script>}
     <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c')}></script>
     
     <style is:inline>

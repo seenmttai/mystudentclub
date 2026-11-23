@@ -5,7 +5,9 @@
 //     "company-category-city-id.html" format, or a slug that changed because the job was
 //     edited) into a tiny redirect page pointing at the job's current URL
 //   - deletes pages and redirects of jobs that expired or were removed
-//   - writes dist/new-job-urls.json (newest first) for the Google Indexing API step
+//   - writes dist/new-job-urls.json (newest first) and dist/removed-job-urls.json (jobs removed
+//     before their 15 days were up) for the Google Indexing API step; pages without JobPosting
+//     markup (exclusive vacancies) are never sent to Google
 // A category whose Supabase fetch failed (see dist/jobs-manifest.json) is left untouched.
 // Replaces update-sync-state.js, the copy step, cleanup-folders.js and expire-old-jobs.js.
 
@@ -43,8 +45,23 @@ export function readJobId(content, fileName, category) {
 }
 
 export function readDatePosted(content) {
-    const match = /"datePosted":\s*"([^"]+)"/.exec(content);
+    // Pages without JobPosting markup (exclusive vacancies) carry the date in <meta name="msc-job-posted">.
+    const match = /"datePosted":\s*"([^"]+)"/.exec(content) || /<meta name="msc-job-posted" content="([^"]+)"/.exec(content);
     return match ? match[1] : null;
+}
+
+// Pages Google may list in its job search: they carry JobPosting markup.
+export function hasJobPosting(content) {
+    return /"@type":\s*"JobPosting"/.test(content);
+}
+
+// Google may still list the job as open until validThrough (or 15 days after posting on pages without it).
+function listedAsOpen(content, now) {
+    const validThrough = /"validThrough":\s*"([^"]+)"/.exec(content);
+    const posted = readDatePosted(content);
+    const until = validThrough ? new Date(validThrough[1]).getTime()
+        : posted ? new Date(posted).getTime() + EXPIRY_MS : NaN;
+    return Number.isFinite(until) && until > now.getTime();
 }
 
 export function redirectPage(jobId, targetPath) {
@@ -71,6 +88,7 @@ export function syncJobPages({ distDir, liveDir, log = console.log, now = new Da
     }
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
     const newUrls = [];
+    const removedUrls = [];
     const summary = {};
 
     for (const category of CATEGORIES) {
@@ -121,6 +139,13 @@ export function syncJobPages({ distDir, liveDir, log = console.log, now = new Da
                 if (content !== stub) fs.writeFileSync(filePath, stub);
                 redirected++;
             } else {
+                // Filled, hidden or deleted before its 15 days were up: Google may still list it as
+                // open, so the Indexing API step tells Google it is gone. Expired pages need no notice
+                // (validThrough is already past and the page now returns 404).
+                if (hasJobPosting(content) && listedAsOpen(content, now)) {
+                    const canonical = /<link rel="canonical" href="([^"]+)"/.exec(content);
+                    removedUrls.push(canonical ? canonical[1] : `${jobSeo.DOMAIN}/jobs/${category}/${file.replace(/\.html$/, '')}`);
+                }
                 fs.unlinkSync(filePath);
                 deleted++;
             }
@@ -134,8 +159,9 @@ export function syncJobPages({ distDir, liveDir, log = console.log, now = new Da
                 fs.writeFileSync(filePath, page.content);
                 written++;
             }
-            // New job, or a job whose URL changed because it was edited.
-            if (!liveFilesBefore.has(page.file)) {
+            // New job, or a job whose URL changed because it was edited. Exclusive vacancies (no
+            // JobPosting markup) are not sent to Google.
+            if (!liveFilesBefore.has(page.file) && hasJobPosting(page.content)) {
                 newUrls.push({
                     url: `${jobSeo.DOMAIN}/jobs/${category}/${page.file.replace(/\.html$/, '')}`,
                     datePosted: page.datePosted || ''
@@ -149,8 +175,9 @@ export function syncJobPages({ distDir, liveDir, log = console.log, now = new Da
 
     newUrls.sort((a, b) => String(b.datePosted).localeCompare(String(a.datePosted)));
     fs.writeFileSync(path.join(distDir, 'new-job-urls.json'), JSON.stringify(newUrls.map(item => item.url), null, 2));
-    log(`🆕 ${newUrls.length} new job URLs for the Indexing API`);
-    return { summary, newUrls: newUrls.map(item => item.url) };
+    fs.writeFileSync(path.join(distDir, 'removed-job-urls.json'), JSON.stringify(removedUrls, null, 2));
+    log(`🆕 ${newUrls.length} new job URLs and 🗑️  ${removedUrls.length} removed before expiry, for the Indexing API`);
+    return { summary, newUrls: newUrls.map(item => item.url), removedUrls };
 }
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);

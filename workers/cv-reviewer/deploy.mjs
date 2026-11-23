@@ -51,7 +51,7 @@ async function requestJson(suffix, options = {}) {
 async function snapshot(label) {
   const settings = (await requestJson('/settings')).result;
   assert.ok(settings.bindings?.some(binding => binding.name === 'RATE_LIMITS' && binding.type === 'kv_namespace'), 'Existing rate-limit KV binding missing');
-  for (const name of ['OPENAI_API_KEY','GEMINI_API_KEY']) assert.ok(settings.bindings?.some(binding => binding.name === name && binding.type === 'secret_text'), 'Existing model secret binding missing: '+name);
+  for (const name of ['ANTHROPIC_API_KEY','GEMINI_API_KEY']) assert.ok(settings.bindings?.some(binding => binding.name === name && binding.type === 'secret_text'), 'Existing model secret binding missing: '+name);
   const response = await fetch(api, {headers:authHeaders, signal:AbortSignal.timeout(45000)});
   if (!response.ok) throw new Error(`Worker source snapshot failed (${response.status})`);
   const bytes = Buffer.from(await response.arrayBuffer());

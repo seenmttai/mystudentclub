@@ -1,7 +1,8 @@
 // generate-sitemap.js
 // Writes jobs-sitemap.xml: every live job page (one per job posted in the last 15 days),
 // at its canonical extensionless URL, with lastmod = the date the job was posted.
-// Redirect pages (old URLs) are left out. Run after: sync-job-pages.js
+// Redirect pages (old URLs) and pages without JobPosting markup (exclusive vacancies, which need a paid
+// MSC Program to apply) are left out. Run after: sync-job-pages.js
 
 import fs from 'fs';
 import path from 'path';
@@ -26,7 +27,7 @@ export function buildJobsSitemap(liveDir, now = new Date()) {
         if (!fs.existsSync(folderPath)) continue;
         for (const file of fs.readdirSync(folderPath).filter(f => f.endsWith('.html'))) {
             const content = fs.readFileSync(path.join(folderPath, file), 'utf8');
-            if (!content.includes(V2_MARKER)) continue;
+            if (!content.includes(V2_MARKER) || !/"@type":\s*"JobPosting"/.test(content)) continue;
             const posted = /"datePosted":\s*"([^"]+)"/.exec(content);
             const validThrough = /"validThrough":\s*"([^"]+)"/.exec(content);
             if (validThrough && new Date(validThrough[1]) < now) continue;
