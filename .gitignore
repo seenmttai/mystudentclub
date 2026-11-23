@@ -15,3 +15,8 @@ pr.md
 
 # Old handover folders from the maintainer process (ended 31 Oct 2026); keep any local leftovers out of git
 handover/
+
+# Kept local, never pushed (Aniket, 2026-11-07): new test files and Supabase migrations.
+# Files already tracked before this stay tracked; this only stops new ones being added.
+tests/
+supabase/migrations/

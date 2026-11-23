@@ -34,6 +34,188 @@
             interests: 'Interests & Hobbies',
             skills: 'Skills'
         };
+        // The route decides the mode once; each mode owns its own draft and history keys.
+        const CV_MODE_API = window.MSCCvBuilderMode;
+        const CV_MODE = CV_MODE_API.resolve(window.location.search);
+        const DRAFT_KEY = CV_MODE_API.storageKey(CV_MODE);
+        // Articleship mode keeps its CV in the programme's progress store (scripts/articleship-progress.js) under DRAFT_KEY:
+        // on this device at once and, for a signed-in student, in their account, so it follows them to another device. The
+        // store also starts empty when another student signs in on this browser. The normal CV stays on this device only.
+        let articleshipDraftStore = null;
+
+        // The normal Builder's draft and both Builders' saved versions sync through cv-builder/cv-sync.js (see its header):
+        // a slot is the device copy plus one row in the student's account. DRAFT_KEY stays a plain copy of the CV on this
+        // device because other pages (AI interview, Work Simulation) read it.
+        const CV_SYNC = window.MSCCvSync;
+        const SYNC_TABLES = { normal: 'cv_builder_progress', articleship: 'articleship_tool_progress' };
+        const SYNC_KEYS = { draft: 'msc.cv-builder.draft', history: { normal: 'msc.cv-builder.history', articleship: 'msc.cv-builder.history.articleship' } };
+        const LEGACY_OWNER_KEY = 'msc.cv-builder.legacy-owner';
+        // The Articleship table rejects a row above 256 KB; the normal table allows 512 KB.
+        const HISTORY_BYTES = CV_MODE === 'articleship' ? CV_SYNC.HISTORY_MAX_BYTES_ARTICLESHIP : CV_SYNC.HISTORY_MAX_BYTES;
+        let draftSlot = null;
+        let historySlot = null;
+        // CVs that lost a two-device conflict; they become saved versions once the page is ready.
+        const conflictLosers = [];
+
+        function syncClient() {
+            return window.mscSupabase || window.supabaseClient || null;
+        }
+
+        function readDraft() {
+            if (CV_MODE !== 'articleship') {
+                const saved = draftSlot ? draftSlot.get().cv : null;
+                return saved ? JSON.stringify(saved) : null;
+            }
+            const saved = articleshipDraftStore ? articleshipDraftStore.get().cv : null;
+            return saved ? JSON.stringify(saved) : null;
+        }
+
+        function writeDraft(data) {
+            if (CV_MODE !== 'articleship') {
+                if (!draftSlot) return;
+                // An unchanged CV is not saved again, so opening the page never outdates a newer copy from another device.
+                if (JSON.stringify(draftSlot.get().cv) === JSON.stringify(data)) return;
+                draftSlot.set({ cv: data, at: Date.now() });
+                return;
+            }
+            if (!articleshipDraftStore) return;
+            if (JSON.stringify(articleshipDraftStore.get().cv) === JSON.stringify(data)) return;
+            articleshipDraftStore.set({ cv: data });
+        }
+
+        function clearDraft() {
+            if (CV_MODE !== 'articleship') { if (draftSlot) draftSlot.set({ cv: null, at: Date.now() }); }
+            else if (articleshipDraftStore) articleshipDraftStore.set({ cv: null });
+        }
+        // The Articleship catalog exists only after the gate allowed access, so a template belongs to Articleship
+        // only in Articleship mode; the normal Builder has a single catalog.
+        const IS_ARTICLESHIP_MODE = CV_MODE === 'articleship';
+
+        function getTemplateRenderFile(file) {
+            return (IS_ARTICLESHIP_MODE && window.MSCArticleship?.resolveRenderFile(file)) || file;
+        }
+
+        function isArticleshipTemplate(file = getSelectedTemplateFile()) {
+            return IS_ARTICLESHIP_MODE && !!window.MSCArticleship?.getTemplate(file);
+        }
+
+        function hasArticleshipDraftData(data) {
+            function hasValue(value) {
+                if (typeof value === 'string') return Boolean(value.trim());
+                if (Array.isArray(value)) return value.some(hasValue);
+                if (value && typeof value === 'object') return Object.values(value).some(hasValue);
+                return false;
+            }
+            // A Work Simulation line added before there was any CV is not a draft: the articleship stage opens its blank
+            // starter and keeps the line (articleship-program/cv-builder/stage.js blankCv).
+            const logic = window.MSCArticleshipCvBuilder;
+            const mscLine = item => logic?.classifyCertification?.(item) === 'msc-simulation';
+            const ownWork = data && Array.isArray(data.certifications) && data.certifications.some(mscLine)
+                ? { ...data, certifications: data.certifications.filter(item => !mscLine(item)) } : data;
+            return hasValue(data?.personal) || hasUserEnteredData(ownWork);
+        }
+
+        // Articleship mode lists only the Articleship catalog in the template select.
+        function addArticleshipTemplateOptions() {
+            const select = document.getElementById('template-select');
+            if (!select || !IS_ARTICLESHIP_MODE) return;
+            Array.from(select.options).forEach(option => {
+                if (!window.MSCArticleship?.getTemplate(option.value)) option.remove();
+            });
+            (window.MSCArticleship?.templates || []).forEach(template => {
+                if (Array.from(select.options).some(option => option.value === template.file)) return;
+                const option = document.createElement('option');
+                option.value = template.file;
+                option.textContent = template.name;
+                select.appendChild(option);
+            });
+        }
+
+        function initializeArticleshipTemplates() {
+            const catalog = window.MSCArticleship;
+            const select = document.getElementById('template-select');
+            if (!IS_ARTICLESHIP_MODE || !catalog?.templates.length || !select) return;
+            addArticleshipTemplateOptions();
+            if (!hasArticleshipDraftData(cvData)) {
+                cvData = window.MSCArticleshipStage?.blankCv?.(cvData, getDefaultTableSettings())
+                    || catalog.createStarter(catalog.templates[0].file, getDefaultTableSettings());
+            }
+        }
+
+        // The articleship stage's panel (articleship-program/cv-builder/stage.js) works on the CV through this host.
+        function articleshipStageHost() {
+            return {
+                mode: CV_MODE,
+                access: 'allow',
+                getCv: () => cvData,
+                setCv(next, options = {}) {
+                    cvData = next;
+                    ensureCvDataShape();
+                    normalizeSectionOrder();
+                    renderEditor();
+                    updateProgress();
+                    const select = document.getElementById('template-select');
+                    if (options.templateFile && select && options.templateFile !== select.value) {
+                        select.value = options.templateFile;
+                        changeTemplate();
+                    } else {
+                        updateArticleshipEditor();
+                        postToFrame();
+                    }
+                },
+                templateFile: () => getSelectedTemplateFile(),
+                useTemplate(file) {
+                    const select = document.getElementById('template-select');
+                    if (!select || select.value === file) return;
+                    select.value = file;
+                    changeTemplate();
+                },
+                choose: (file, name) => selectTemplate(file, name),
+                isLocked: file => isTemplateLocked(file),
+                accessChecked: () => Boolean(templateAccess.checked),
+                gallery: () => (window.MSCArticleship?.templates || []).filter(template => template.kind === 'gallery'),
+                openTemplates: () => toggleTemplateSidebar(true),
+                closeTemplates: () => toggleTemplateSidebar(false),
+                renderCards: () => renderTemplateCards(),
+                syncName: () => syncCurrentTemplateName(),
+                setFont: key => updateThemeFont(key),
+                // True when the CV no longer fits one A4 page at its own size: the layout has shrunk its text to fit
+                // (--content-scale under 0.92), or the page runs past A4 (every layout is 1414 px high, whatever its
+                // width).
+                overflow() {
+                    try {
+                        const doc = document.getElementById('cv-frame')?.contentDocument;
+                        const page = doc?.getElementById('cv-page');
+                        if (!page || !page.offsetWidth) return false;
+                        const scale = parseFloat(doc.documentElement.style.getPropertyValue('--content-scale'));
+                        if (Number.isFinite(scale) && scale < 0.92) return true;
+                        return Math.max(page.scrollHeight, page.offsetHeight) > 1414 * 1.02;
+                    } catch (_) {
+                        return false;
+                    }
+                },
+                toast: message => showToast(message)
+            };
+        }
+
+        function applyArticleshipStarter(file) {
+            const catalog = window.MSCArticleship;
+            if (!catalog?.getTemplate(file)) return false;
+            if (hasArticleshipDraftData(cvData) && !catalog.hasUnchangedStarterContent(cvData)) return false;
+            const personal = hasArticleshipDraftData(cvData) ? { ...cvData.personal } : null;
+            cvData = catalog.createStarter(file, getDefaultTableSettings());
+            if (personal) cvData.personal = personal;
+            return true;
+        }
+
+        function updateArticleshipEditor() {
+            const active = isArticleshipTemplate();
+            const experience = document.querySelector('details[data-section="experience"]');
+            if (experience && active && !hasContentInList(cvData.experience)) experience.open = false;
+            document.body.classList.toggle('articleship-mode', IS_ARTICLESHIP_MODE);
+            const tagline = document.getElementById('inp-tagline');
+            if (tagline) tagline.placeholder = active ? 'CA Intermediate | Both groups cleared' : 'e.g. CA Final | Flipkart';
+        }
 
         function getDefaultTableSettings() {
             return {
@@ -73,13 +255,13 @@
 
         const DEMO_PREVIEW_DATA = {
             personal: {
-                name: "Padam Bhansali",
+                name: "[Your name]",
                 tagline: "CA Intermediate",
                 contact: "",
-                phone: "+91 7228881182",
-                email: "capadambhansali@gmail.com",
-                linkedin: "linkedin.com/in/ca-padam-bhansali",
-                location: "Kandivali West, Mumbai",
+                phone: "",
+                email: "",
+                linkedin: "",
+                location: "[City]",
                 socialLinks: []
             },
             summary: "Detail-oriented articled trainee with strong exposure to GST compliance, internal controls, and audit support. Looking to contribute in a high-impact finance and compliance role.",
@@ -163,7 +345,7 @@
         const WORKER_URL = "https://cv-maker.bhansalimanan55.workers.dev";
         // PDF Worker URL — update this after deploying cv-pdf-worker
         const FILE_WORKER_URL = window.localStorage.getItem('cv_file_worker_url') || "https://cv-pdf-worker.bhansalimanan55.workers.dev";
-        const HISTORY_KEY = 'cv_maker_history_v1';
+        const HISTORY_KEY = CV_MODE_API.historyKey(CV_MODE);
         let history = [];
         const UNDO_LIMIT = 120;
         let undoStack = [];
@@ -178,8 +360,151 @@
         let summaryLinkRange = null;
         const inlineRichEditors = new Map();
 
-        // Initialization
-        window.onload = () => {
+        // ---- Account sync: slots, device copies from before sync existed, first pull ----
+        const legacyCopies = { draft: null, history: null, owner: null };
+
+        function whenSyncClient(timeoutMs) {
+            if (syncClient()) return Promise.resolve(syncClient());
+            return new Promise(resolve => {
+                const done = () => { window.removeEventListener('msc-supabase-ready', done); clearTimeout(timer); resolve(syncClient()); };
+                const timer = setTimeout(done, timeoutMs);
+                window.addEventListener('msc-supabase-ready', done);
+            });
+        }
+
+        function mirrorDraft(cv) {
+            try {
+                if (cv) {
+                    localStorage.setItem(DRAFT_KEY, JSON.stringify(cv));
+                    const id = CV_SYNC.sessionUserId();
+                    if (id) localStorage.setItem(LEGACY_OWNER_KEY, id);
+                } else {
+                    localStorage.removeItem(DRAFT_KEY);
+                }
+            } catch (_) { /* storage blocked: the slot still holds the CV */ }
+        }
+
+        function setupCvSync() {
+            if (historySlot) return;
+            try {
+                legacyCopies.owner = localStorage.getItem(LEGACY_OWNER_KEY);
+                if (CV_MODE !== 'articleship') legacyCopies.draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+                legacyCopies.history = JSON.parse(localStorage.getItem(HISTORY_KEY) || 'null');
+            } catch (_) { /* a damaged old copy is ignored */ }
+            if (CV_MODE !== 'articleship') {
+                draftSlot = CV_SYNC.createSlot({
+                    table: SYNC_TABLES.normal, tool: 'cv-draft', key: SYNC_KEYS.draft, getClient: syncClient,
+                    defaults: { cv: null, at: 0 }, maxBytes: CV_SYNC.DRAFT_MAX_BYTES,
+                    merge: (local, remote) => {
+                        const merged = CV_SYNC.mergeDrafts(local, remote, value => !hasUserEnteredData(value));
+                        if (merged.loser) conflictLosers.push(merged.loser);
+                        return merged.data;
+                    }
+                });
+                draftSlot.subscribe(data => mirrorDraft(data.cv));
+            }
+            historySlot = CV_SYNC.createSlot({
+                table: SYNC_TABLES[CV_MODE], tool: 'cv-history', key: SYNC_KEYS.history[CV_MODE], getClient: syncClient,
+                defaults: { items: [], deleted: [] }, maxBytes: HISTORY_BYTES + 12000,
+                merge: (local, remote) => CV_SYNC.mergeHistory(local, remote, HISTORY_BYTES)
+            });
+            adoptDeviceCopies();
+            applyConflictLosers();
+        }
+
+        /**
+         * Draft and versions that this device made before sync existed move into the slots, once. They are skipped when
+         * they belong to another student who used this browser (the slots reset for a new account, and so do these).
+         */
+        function adoptDeviceCopies() {
+            const userId = CV_SYNC.sessionUserId();
+            const foreign = Boolean(userId && legacyCopies.owner && legacyCopies.owner !== userId)
+                || Boolean(draftSlot && draftSlot.ownerChanged()) || historySlot.ownerChanged();
+            if (foreign) {
+                try { localStorage.removeItem(HISTORY_KEY); } catch (_) { /* ignore */ }
+                if (draftSlot) mirrorDraft(draftSlot.get().cv);
+                return;
+            }
+            const doneKey = 'msc.cv-builder.legacy-done:' + (userId || 'device');
+            let done = false;
+            try { done = Boolean(localStorage.getItem(doneKey)); } catch (_) { /* ignore */ }
+            const old = legacyCopies.draft;
+            if (draftSlot && !done && old && hasUserEnteredData(old)) {
+                const current = draftSlot.get().cv;
+                if (!hasUserEnteredData(current)) draftSlot.set({ cv: old, at: Date.now() }, 'legacy');
+                else if (JSON.stringify(current) !== JSON.stringify(old)) conflictLosers.push({ cv: old, at: 0 });
+                try { localStorage.setItem(doneKey, '1'); } catch (_) { /* ignore */ }
+            }
+            const oldVersions = legacyCopies.history;
+            if (Array.isArray(oldVersions) && oldVersions.length) {
+                // The newest 10 sync. The rest stay on this device, out of sight, so nothing is deleted.
+                const sorted = CV_SYNC.trimHistory(oldVersions, Infinity, Infinity);
+                const extra = sorted.slice(CV_SYNC.HISTORY_LIMIT);
+                try {
+                    if (extra.length) {
+                        const archiveKey = HISTORY_KEY + '_archive';
+                        const archived = JSON.parse(localStorage.getItem(archiveKey) || '[]');
+                        localStorage.setItem(archiveKey, JSON.stringify(CV_SYNC.trimHistory([...(Array.isArray(archived) ? archived : []), ...extra], Infinity, Infinity)));
+                    }
+                } catch (_) { /* archive is best effort */ }
+                historySlot.set(CV_SYNC.mergeHistory(historySlot.get(), { items: sorted.slice(0, CV_SYNC.HISTORY_LIMIT), deleted: [] }, HISTORY_BYTES));
+                try { localStorage.removeItem(HISTORY_KEY); } catch (_) { /* ignore */ }
+            }
+        }
+
+        /** The CV that lost a two-device conflict is kept as a saved version. */
+        function applyConflictLosers() {
+            conflictLosers.splice(0).forEach((loser, index) => {
+                if (!loser || !hasUserEnteredData(loser.cv)) return;
+                historySlot.set(CV_SYNC.withVersion(historySlot.get(), {
+                    id: Date.now() + index,
+                    at: new Date(loser.at || Date.now()).toISOString(),
+                    source: 'other-device',
+                    title: normalizeImportedString(loser.cv.personal?.name || '') || 'Untitled CV',
+                    data: JSON.parse(JSON.stringify(loser.cv))
+                }, HISTORY_BYTES));
+            });
+        }
+
+        async function runAccountSync() {
+            // Signed out: nothing to fetch, and the page must not wait for a client it will not use.
+            if (!CV_SYNC.sessionUserId()) return ['local', 'local'];
+            await whenSyncClient(3000);
+            const draftAction = draftSlot ? await draftSlot.pull() : 'none';
+            applyConflictLosers();
+            const historyAction = await historySlot.pull();
+            return [draftAction, historyAction];
+        }
+
+        function reloadForAccountCopy() {
+            try {
+                const last = Number(sessionStorage.getItem('msc.cv-sync.reloaded')) || 0;
+                if (Date.now() - last < 60000) return;
+                sessionStorage.setItem('msc.cv-sync.reloaded', String(Date.now()));
+            } catch (_) { /* no session storage: reload once anyway */ }
+            showToast('Updated from your account');
+            setTimeout(() => window.location.reload(), 900);
+        }
+
+        // The page waits a moment for the account copy so a CV made on another device opens here. When the account is
+        // slow, the page opens with this device's copy and reloads if the account copy turns out to be different.
+        async function prepareCvSync() {
+            setupCvSync();
+            const work = runAccountSync();
+            const finished = await Promise.race([work.then(() => true, () => true), new Promise(resolve => setTimeout(() => resolve(false), 3500))]);
+            if (!finished) work.then(actions => { if (actions.some(action => action === 'pull' || action === 'merge')) reloadForAccountCopy(); }).catch(() => {});
+        }
+
+        function flushCvSync() {
+            if (draftSlot) draftSlot.flush();
+            if (historySlot) historySlot.flush();
+        }
+        window.addEventListener('pagehide', flushCvSync);
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushCvSync(); });
+        window.addEventListener('online', flushCvSync);
+
+        // Initialization: the normal Builder starts at once; Articleship mode starts only from the gate's onAllow.
+        function startBuilder() {
             if ('scrollRestoration' in window.history) {
                 window.history.scrollRestoration = 'manual';
             }
@@ -191,7 +516,7 @@
                 return;
             }
 
-            const saved = localStorage.getItem('cv_maker_data');
+            const saved = readDraft();
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
@@ -206,6 +531,12 @@
                 }
                 catch (e) { console.error('Load failed', e); }
             }
+            cvData = CV_MODE_API.normaliseDraft(CV_MODE, cvData, {
+                normal: Array.from(document.querySelectorAll('#template-select option')).map(option => option.value),
+                articleship: (window.MSCArticleship?.templates || []).map(template => template.file),
+                articleshipDefault: window.MSCArticleship?.getTemplate('articleship-layout-classic') ? 'articleship-layout-classic' : undefined
+            });
+            initializeArticleshipTemplates();
             const templateSelect = document.getElementById('template-select');
             const initialTemplateFile = getPreferredTemplateFile(
                 cvData.templateFile,
@@ -214,10 +545,10 @@
             cvData.templateFile = initialTemplateFile;
             if (templateSelect) templateSelect.value = initialTemplateFile;
             const initialFrame = document.getElementById('cv-frame');
-            if (initialFrame) initialFrame.src = initialTemplateFile;
+            if (initialFrame) initialFrame.src = getTemplateRenderFile(initialTemplateFile);
             syncCurrentTemplateName();
             ensureCvDataShape();
-            if (!cvData.experience || cvData.experience.length === 0) {
+            if (!isArticleshipTemplate(initialTemplateFile) && (!cvData.experience || cvData.experience.length === 0)) {
                 const artEntry = buildArticleshipEntryFromProfile();
                 if (artEntry) cvData.experience = [artEntry];
             }
@@ -227,6 +558,7 @@
             initSummaryEditor();
             initSkillsEditor();
             renderEditor();
+            updateArticleshipEditor();
             renderCustomSectionEditors();
             updateProgress();
             initializeUndoRedoHistory();
@@ -269,6 +601,135 @@
             initResizeHandle();
             resetEditorScrollToTop();
             requestAnimationFrame(() => resetEditorScrollToTop());
+            if (IS_ARTICLESHIP_MODE) window.MSCArticleshipStage?.init?.(articleshipStageHost());
+            document.documentElement.classList.remove('cv-gating');
+            document.getElementById('cv-mode-shell')?.remove();
+        }
+
+        // ---- Articleship route: gate first, then lazy-load the feature, then boot ----
+        const GATE_ASSETS = [
+            { type: 'style', src: '/articleship-program/shared/articleship-tools.css?v=20261030-r1' },
+            // The site's shared Supabase client, as every other Articleship tool page loads it, so the gate can check enrolment.
+            { type: 'script', src: '/scripts/supabase.js?v=20261028-r2' },
+            { type: 'script', src: '/scripts/supabase-init.js?v=20261028-r2' },
+            { type: 'script', src: '/scripts/articleship-gate.js?v=20261028-r2' }
+        ];
+        const ARTICLESHIP_FEATURE_ASSETS = [
+            { type: 'script', src: '/cv-builder/cv-articleship.js?v=20261110-r1' },
+            { type: 'script', src: '/scripts/articleship-progress.js?v=20261110-r1' },
+            { type: 'script', src: '/scripts/articleship-cv-builder.js?v=20261110-r1' },
+            { type: 'style', src: '/articleship-program/cv-builder/stage.css?v=20261110-r1' },
+            { type: 'script', src: '/articleship-program/cv-builder/stage.js?v=20261110-r1' }
+        ];
+        const loadedAssets = new Set();
+        let articleshipFeaturePromise = null;
+
+        function loadAsset(asset) {
+            if (loadedAssets.has(asset.src)) return Promise.resolve();
+            return new Promise((resolve, reject) => {
+                const el = document.createElement(asset.type === 'style' ? 'link' : 'script');
+                if (asset.type === 'style') {
+                    el.rel = 'stylesheet';
+                    el.href = asset.src;
+                } else {
+                    el.src = asset.src;
+                    el.async = false;
+                }
+                el.onload = () => { loadedAssets.add(asset.src); resolve(); };
+                el.onerror = () => { el.remove(); reject(new Error('Could not load ' + asset.src)); };
+                document.head.appendChild(el);
+            });
+        }
+
+        async function loadAssets(assets) {
+            for (const asset of assets) await loadAsset(asset);
+        }
+
+        // Appends the Articleship catalog, progress, logic, stage script and stylesheet. Called only after the gate allowed.
+        function loadArticleshipFeature() {
+            if (!articleshipFeaturePromise) {
+                articleshipFeaturePromise = (async () => {
+                    await loadAssets(ARTICLESHIP_FEATURE_ASSETS);
+                    if (!window.MSCArticleship || !window.MSCArticleshipStage || !window.MSCArticleshipProgress) throw new Error('Articleship CV Builder is unavailable');
+                    articleshipDraftStore = window.MSCArticleshipProgress.open('cv-builder', { defaults: { cv: null } });
+                    // The account copy first, so a CV made on another device opens here; never wait long for it.
+                    await Promise.race([articleshipDraftStore.ready, new Promise(resolve => setTimeout(resolve, 5000))]);
+                    window.MSCArticleship.templates.forEach(template => {
+                        if (!TEMPLATES.some(existing => existing.file === template.file)) TEMPLATES.push(template);
+                    });
+                    return window.MSCArticleshipStage;
+                })().catch(error => { articleshipFeaturePromise = null; throw error; });
+            }
+            return articleshipFeaturePromise;
+        }
+
+        function showModeShell(state, retry) {
+            let shell = document.getElementById('cv-mode-shell');
+            if (!shell) {
+                shell = document.createElement('div');
+                shell.id = 'cv-mode-shell';
+                shell.className = 'ap-gate';
+                shell.setAttribute('role', 'dialog');
+                shell.setAttribute('aria-modal', 'true');
+                document.body.appendChild(shell);
+            }
+            shell.textContent = '';
+            shell.dataset.state = state;
+            const card = document.createElement('div');
+            card.className = 'ap-gate-card';
+            if (state === 'loading') {
+                const spinner = document.createElement('div');
+                spinner.className = 'ap-spinner';
+                spinner.setAttribute('aria-label', 'Loading');
+                card.appendChild(spinner);
+            } else {
+                const title = document.createElement('h1');
+                title.textContent = 'The Articleship CV Builder could not load';
+                const text = document.createElement('p');
+                text.textContent = 'Check your internet connection and try again.';
+                const again = document.createElement('button');
+                again.type = 'button';
+                again.className = 'ap-btn is-block';
+                again.textContent = 'Try again';
+                again.addEventListener('click', retry);
+                card.append(title, text, again);
+            }
+            shell.appendChild(card);
+        }
+
+        async function bootArticleship() {
+            showModeShell('loading');
+            try {
+                await loadArticleshipFeature();
+            } catch (error) {
+                console.error(error);
+                showModeShell('unavailable', bootArticleship);
+                return;
+            }
+            await prepareCvSync();
+            startBuilder();
+        }
+
+        async function bootNormal() {
+            await prepareCvSync();
+            startBuilder();
+        }
+
+        async function startArticleshipRoute() {
+            try {
+                await loadAssets(GATE_ASSETS);
+            } catch (error) {
+                console.error(error);
+                showModeShell('unavailable', startArticleshipRoute);
+                return;
+            }
+            const gate = window.MSCArticleshipGate;
+            gate.protect({ presentation: gate.builderPresentation(), location: window.location, document, onAllow: bootArticleship });
+        }
+
+        window.onload = () => {
+            if (IS_ARTICLESHIP_MODE) startArticleshipRoute();
+            else bootNormal();
         };
 
         function showNoticeModal(title, message, isError = true, onDismiss = null) {
@@ -369,7 +830,7 @@
                     }
                     
                     // Save to standard CV Builder local storage key
-                    localStorage.setItem('cv_maker_data', JSON.stringify(cvData));
+                    writeDraft(cvData);
                     
                     // Clear temporary values
                     localStorage.removeItem('import_cv_images');
@@ -1754,10 +2215,12 @@
             setEditorScrollTop(preservedScrollTop);
 
             const frame = document.getElementById('cv-frame');
-            if (frame && frame.getAttribute('src') !== targetTemplate) {
+            const renderFile = getTemplateRenderFile(targetTemplate);
+            updateArticleshipEditor();
+            if (frame && frame.getAttribute('src') !== renderFile) {
                 const overlay = document.querySelector('.loading-overlay');
                 if (overlay) overlay.classList.add('active');
-                frame.src = targetTemplate;
+                frame.src = renderFile;
                 frame.onload = () => {
                     setTimeout(() => {
                         postToFrame({ skipHistory: true });
@@ -2978,7 +3441,7 @@
             { file: 'matrix-grid-ledger.html', name: 'Matrix Grid Ledger', accent: '#185FA5', style: 'matrixgridledger' },
             { file: 'clean-line-executive.html', name: 'Clean Line Executive', accent: '#0B3052', style: 'cleanlineexecutive' },
             { file: 'minimalist-executive.html', name: 'Minimalist Executive', accent: '#0E2C55', style: 'minimalistexecutive' },
-            { file: 'accent-split-summary.html', name: 'Accent Split Summary', accent: '#1A365D', style: 'accentsplitsummary' }
+            { file: 'accent-split-summary.html', name: 'Accent Split Summary', accent: '#1A365D', style: 'accentsplitsummary' },
         ];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 
@@ -3007,7 +3470,7 @@
         let landingLoginPromptShown = false;
 
         function isFreeTemplate(file) {
-            return FREE_TEMPLATES.includes(file);
+            return FREE_TEMPLATES.includes(getTemplateRenderFile(file));
         }
         function hasTemplateAccess() {
             return !!templateAccess.hasAccess;
@@ -3047,7 +3510,7 @@
             if (grid && grid.children.length) renderTemplateCards();
 
             // On landing, invite logged-out users to sign in (dismissible).
-            if (!templateAccess.loggedIn && !landingLoginPromptShown) {
+            if (!templateAccess.loggedIn && !landingLoginPromptShown && !IS_ARTICLESHIP_MODE) {
                 landingLoginPromptShown = true;
                 openTemplateLoginModal({
                     title: 'Welcome to the MSC CV Builder',
@@ -3070,7 +3533,7 @@
         }
 
         const TPL_LOGIN_DEFAULTS = {
-            title: 'Log in to unlock premium templates',
+            title: 'Log in for premium templates',
             text: "This template is part of MSC's premium collection. Sign in to your MSC account to continue."
         };
         function openTemplateLoginModal(opts = {}) {
@@ -3344,13 +3807,18 @@
         function renderTemplateCards() {
             const grid = document.getElementById('template-grid');
             const currentTemplate = document.getElementById('template-select').value;
+            if (IS_ARTICLESHIP_MODE && window.MSCArticleshipStage?.renderTemplateCards?.(grid, currentTemplate)) {
+                initLazyLoading();
+                return;
+            }
             
-            grid.innerHTML = TEMPLATES.map(t => {
+            const templates = TEMPLATES.filter(t => isArticleshipTemplate(t.file) === IS_ARTICLESHIP_MODE);
+            grid.innerHTML = templates.map(t => {
                 const locked = isTemplateLocked(t.file);
                 return `
                 <div class="template-card ${t.file === currentTemplate ? 'active' : ''} ${locked ? 'locked' : ''}" onclick="selectTemplate('${t.file}', '${t.name}')">
                     <div class="template-card-preview">
-                        <iframe data-src="${t.file}" data-template="${t.file}"></iframe>
+                        <iframe data-src="${getTemplateRenderFile(t.file)}" data-template="${t.file}"></iframe>
                         <div class="template-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:#9ca3af;">Loading...</div>
                         ${locked ? `
                         <div class="template-lock-scrim"></div>
@@ -3362,7 +3830,7 @@
                             PREMIUM
                         </div>` : ''}
                     </div>
-                    <div class="template-card-name">${t.name}</div>
+                    <div class="template-card-name">${t.name}${t.file === 'articleship-classic-academic' ? ' <span class="articleship-pick">My pick</span>' : ''}</div>
                 </div>`;
             }).join('');
             
@@ -3497,14 +3965,27 @@
         function buildPreviewPayload(options = {}) {
             const useDemoFallback = !!options.useDemoFallback;
             normalizeSectionOrder();
-            const source = (useDemoFallback && !hasUserEnteredData(cvData)) ? DEMO_PREVIEW_DATA : cvData;
+            const templateFile = options.templateFile || getSelectedTemplateFile();
+            const hasDraft = isArticleshipTemplate(templateFile) ? hasArticleshipDraftData(cvData) : hasUserEnteredData(cvData);
+            const useArticleshipDemo = useDemoFallback && isArticleshipTemplate(templateFile)
+                && (!hasDraft || window.MSCArticleship.hasUnchangedStarterContent(cvData));
+            const stageSource = useDemoFallback && IS_ARTICLESHIP_MODE
+                ? window.MSCArticleshipStage?.previewSource?.(templateFile) : null;
+            const source = stageSource || (useArticleshipDemo
+                ? window.MSCArticleship.createStarter(templateFile, getDefaultTableSettings())
+                : ((useDemoFallback && !hasDraft) ? DEMO_PREVIEW_DATA : cvData));
             const payload = JSON.parse(JSON.stringify(source));
+            const articleshipTemplate = window.MSCArticleship?.getTemplate(templateFile);
+            payload.articleshipApplicant = Boolean(articleshipTemplate);
+            payload.articleshipGallery = articleshipTemplate?.kind === 'gallery';
+            payload.articleshipLayoutName = window.MSCArticleshipStage?.layoutName?.(templateFile) || articleshipTemplate?.name || '';
             if (!payload.sectionOrder || !payload.sectionOrder.length) payload.sectionOrder = [...BASE_SECTION_ORDER];
             if (!payload.personal) payload.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
             if (!payload.personal.socialLinks) payload.personal.socialLinks = [];
             payload.themeAccent = normalizeHexColor(payload.themeAccent || cvData.themeAccent || '');
             payload.themeFont = String(payload.themeFont || cvData.themeFont || '').trim();
-            payload.sectionTitles = cvData.sectionTitles || {};
+            window.MSCArticleshipStage?.theme?.(templateFile, payload);
+            payload.sectionTitles = (stageSource || useArticleshipDemo) ? (source.sectionTitles || {}) : (cvData.sectionTitles || {});
             applyFormattedContact(payload);
             return payload;
         }
@@ -3512,7 +3993,7 @@
         function injectPreviewData(iframe) {
             try {
                 if (iframe.contentWindow) {
-                    const payload = buildPreviewPayload({ useDemoFallback: true });
+                    const payload = buildPreviewPayload({ useDemoFallback: true, templateFile: iframe.dataset.template });
                     iframe.contentWindow.postMessage({ type: 'update-cv', payload }, '*');
                 }
             } catch (e) {
@@ -3525,10 +4006,10 @@
             if (!grid) return;
             const iframes = grid.querySelectorAll('iframe');
             if (!iframes || !iframes.length) return;
-            const payload = buildPreviewPayload({ useDemoFallback: true });
             iframes.forEach(iframe => {
                 try {
                     if (iframe.contentWindow && iframe.src) {
+                        const payload = buildPreviewPayload({ useDemoFallback: true, templateFile: iframe.dataset.template });
                         iframe.contentWindow.postMessage({ type: 'update-cv', payload }, '*');
                     }
                 } catch (e) {}
@@ -3536,6 +4017,8 @@
         }
 
         function selectTemplate(file, name) {
+            // A template outside the active mode's catalog can never be selected.
+            if (isArticleshipTemplate(file) !== IS_ARTICLESHIP_MODE) return;
             // Gate premium templates: don't switch — prompt to log in or unlock.
             if (isTemplateLocked(file)) {
                 if (!templateAccess.loggedIn) openTemplateLoginModal();
@@ -3548,6 +4031,12 @@
 
             select.value = file;
             if (nameSpan) nameSpan.textContent = name;
+            if (applyArticleshipStarter(file)) {
+                ensureCvDataShape();
+                normalizeSectionOrder();
+                renderEditor();
+                updateProgress();
+            }
             
             changeTemplate();
             toggleTemplateSidebar(false);
@@ -3569,10 +4058,11 @@
             if (!skipSave) saveLocal();
             if (!skipHistory) pushUndoStateFromCurrent();
             updateUndoRedoControls();
+            window.MSCArticleshipStage?.onChange?.();
         }
 
         function updateTemplateSpecificPanels() {
-            const file = getSelectedTemplateFile();
+            const file = getTemplateRenderFile(getSelectedTemplateFile());
             const panel = document.getElementById('highlights-panel');
             if (panel) panel.style.display = file === 'clean-ledger.html' ? '' : 'none';
         }
@@ -3583,9 +4073,10 @@
             const skipHistory = !!options.skipHistory;
             if (select) cvData.templateFile = select.value || DEFAULT_TEMPLATE_FILE;
             updateTemplateSpecificPanels();
+            updateArticleshipEditor();
 
             document.querySelector('.loading-overlay').classList.add('active');
-            frame.src = select.value;
+            frame.src = getTemplateRenderFile(select.value);
             syncCurrentTemplateName();
             frame.onload = () => {
                 setTimeout(() => {
@@ -3603,7 +4094,9 @@
             if (getPlainTextFromHTML(cvData.skills || '').trim()) filled++;
             if (hasContentInList(cvData.education)) filled += 1.5;
             if (hasContentInList(cvData.experience)) filled += 1.5;
-            const pct = Math.min((filled / total) * 100, 100);
+            const pct = isArticleshipTemplate()
+                ? window.MSCArticleship.getProgress(cvData)
+                : Math.min((filled / total) * 100, 100);
             document.getElementById('progress-fill').style.width = pct + '%';
             const percentEl = document.getElementById('progress-percent');
             if (percentEl) percentEl.textContent = `${Math.round(pct)}%`;
@@ -3625,7 +4118,7 @@
 
         function saveLocal() {
             cvData.templateFile = getSelectedTemplateFile();
-            localStorage.setItem('cv_maker_data', JSON.stringify(cvData));
+            writeDraft(cvData);
         }
 
         function manualSave() {
@@ -3683,7 +4176,7 @@
                     sectionOrder: [...BASE_SECTION_ORDER],
                     tableSettings: getDefaultTableSettings()
                 };
-                localStorage.removeItem('cv_maker_data');
+                clearDraft();
                 renderEditor();
                 updateCV();
                 showToast('Form cleared. Saved versions preserved.');
@@ -3794,7 +4287,7 @@ async function downloadCvFile(format = 'pdf') {
         // We grab the entire <html>...</html> including <head> (styles/fonts)
         // and <body> (content). This way the Worker's Chromium renders it
         // with the exact same styling the user sees in the preview.
-        const fullHTML = '<!DOCTYPE html>' + doc.documentElement.outerHTML;
+        const fullHTML = '<!DOCTYPE html>' + (window.MSCArticleshipStage?.exportHtml?.(doc) || doc.documentElement.outerHTML);
 
         // ── Step 2: POST the HTML to our Cloudflare Worker ───────────
         // Includes a retry mechanism to gracefully handle high traffic (429 errors).
@@ -3865,12 +4358,16 @@ async function downloadCvFile(format = 'pdf') {
             if (!trimmed) throw new Error('Nothing to refine');
 
             const templateFile = document.getElementById('template-select')?.value || 'classic.html';
-            const templateId = 'template_' + templateFile.replace('cv', '').replace('-', '').replace('.html', '');
+            const renderFile = getTemplateRenderFile(templateFile);
+            const templateId = 'template_' + renderFile.replace('cv', '').replace('-', '').replace('.html', '');
+            const prompt = isArticleshipTemplate(templateFile)
+                ? window.MSCArticleship.buildAiPrompt(customPrompt)
+                : (customPrompt || '');
 
             const response = await fetch(`${WORKER_URL}/refine-section`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: trimmed, field_type: fieldType, template_id: templateId, custom_prompt: customPrompt || '' })
+                body: JSON.stringify({ text: trimmed, field_type: fieldType, template_id: templateId, custom_prompt: prompt })
             });
             const res = await response.json();
             if (!res.ok || !res.refined_text) {
@@ -4606,27 +5103,16 @@ async function downloadCvFile(format = 'pdf') {
         }
 
         // ---- Snapshot History (Local Storage) ----
+        // The newest 10 versions, synced to the account (cv-builder/cv-sync.js). A new save pushes out the oldest.
         function loadHistory() {
-            try {
-                const raw = localStorage.getItem(HISTORY_KEY);
-                if (!raw) {
-                    history = [];
-                } else {
-                    history = JSON.parse(raw) || [];
-                }
-            } catch (e) {
-                console.error('Failed to load history', e);
-                history = [];
-            }
+            history = historySlot ? CV_SYNC.normaliseHistory(historySlot.get(), HISTORY_BYTES).items : [];
             renderHistory();
         }
 
-        function saveHistory() {
-            try {
-                localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-            } catch (e) {
-                console.error('Failed to save history', e);
-            }
+        function commitHistory(next) {
+            if (!historySlot) return;
+            historySlot.set(next);
+            history = CV_SYNC.normaliseHistory(historySlot.get(), HISTORY_BYTES).items;
         }
 
         function createSnapshot(source) {
@@ -4637,11 +5123,7 @@ async function downloadCvFile(format = 'pdf') {
                 title: normalizeImportedString(cvData.personal.name || '') || 'Untitled CV',
                 data: JSON.parse(JSON.stringify(cvData))
             };
-            history.unshift(snapshot);
-            if (history.length > 25) {
-                history = history.slice(0, 25);
-            }
-            saveHistory();
+            commitHistory(CV_SYNC.withVersion(historySlot ? historySlot.get() : {}, snapshot, HISTORY_BYTES));
             renderHistory();
         }
 
@@ -4674,9 +5156,10 @@ async function downloadCvFile(format = 'pdf') {
 
         function deleteSnapshot(id) {
             const before = history.length;
-            history = history.filter(h => h.id !== id);
+            if (history.some(h => h.id === id)) {
+                commitHistory(CV_SYNC.withoutVersion(historySlot ? historySlot.get() : {}, id));
+            }
             if (history.length !== before) {
-                saveHistory();
                 renderHistory();
                 showToast('Snapshot deleted');
             }
@@ -4909,7 +5392,7 @@ async function downloadCvFile(format = 'pdf') {
             setTimeout(() => {
                 // Don't collide with the landing login prompt shown to logged-out users.
                 const loginOpen = document.getElementById('template-login-overlay')?.classList.contains('active');
-                if (!localStorage.getItem('cv_tour_completed') && !loginOpen) {
+                if (!localStorage.getItem('cv_tour_completed') && !loginOpen && !IS_ARTICLESHIP_MODE) {
                     startTour();
                 }
             }, 1200); // Delay to ensure page is fully loaded

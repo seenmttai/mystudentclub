@@ -1,8 +1,11 @@
-import { getDaysAgo, isJobExpired } from './date-utils.js';
+import { getDaysAgo, isJobExpired, getPostedLabel, JOB_EXPIRATION_DAYS } from './date-utils.js?v=20261118_1';
 import './job-seo.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
+import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, renderLockScreen, showExclusiveAppliedPopup, fetchMyProgramRegistrations, applyExclusiveDemo, ensureExclusiveStyles } from './exclusive-vacancy.js';
+import { portalFor, extraSelectColumns, companyTypeFilter, applyJobFilters, describeJobFilters, withoutFilterValue, renderJobFilters, syncJobFilters, formatPayRange, formatDeadline, FIRM_TIERS } from './job-filters.js';
+import { assessmentGate } from './apply-assessment.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -109,21 +112,85 @@ const TABLE_SLUG_MAP = {
     'Articleship Jobs': 'articleship'
 };
 
+// Locations are stored with one name per city (migration 202611060004: Bangalore = Bengaluru, Gurgaon = Gurugram...).
+// A student typing the other name still finds them, and older rows that kept the other name still match.
+const CITY_ALIASES = [
+    ['bengaluru', 'bangalore'], ['gurugram', 'gurgaon'], ['mumbai', 'bombay'], ['kolkata', 'calcutta'],
+    ['chennai', 'madras'], ['vadodara', 'baroda'], ['kochi', 'cochin'], ['mysuru', 'mysore'],
+    ['mangaluru', 'mangalore'], ['thiruvananthapuram', 'trivandrum'], ['delhi', 'new delhi'],
+];
+
+function expandLocationTerms(locations) {
+    const terms = [];
+    const add = (t) => { if (t && !terms.some(x => x.toLowerCase() === t.toLowerCase())) terms.push(t); };
+    for (const loc of locations) {
+        add(loc);
+        const low = String(loc).trim().toLowerCase();
+        for (const group of CITY_ALIASES) {
+            if (group.includes(low)) group.forEach(add);
+        }
+    }
+    return terms;
+}
+
 function getPublicJobSelectColumns(tableName) {
     // Keep recruiter metadata available for shared /job.html links.  The
     // Application ID remains protected, but without these fields a shared
     // Easy Apply vacancy is incorrectly rendered as an ordinary vacancy.
-    let columns = 'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain", posted_by, hirer_email';
+    let columns = 'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain", posted_by, hirer_email, reposted_at';
     if (tableName === 'Fresher Jobs') {
         columns += ', Experience, yoe, "Secondary Domain", Tags, "Company Type", "Industry Type", "CTC Range"';
     } else if (tableName === 'Semi Qualified Jobs') {
         columns += ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"';
     } else if (tableName === 'Industrial Training Job Portal') {
-        columns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
+        columns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive, joining_label';
     } else if (tableName === 'Articleship Jobs') {
-        columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+        columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
     }
     return columns;
+}
+
+// Hidden vacancies (third-party reposts and the like) stay in the table but never show on the site.
+// hiddenFilterOff covers the time before the `hidden` column exists (or can't be read): show everything rather
+// than nothing.
+let hiddenFilterOff = false;
+
+function excludeHidden(query) {
+    return hiddenFilterOff ? query : query.not('hidden', 'is', true);
+}
+
+// Only an error about the `hidden` column itself turns the filter off (missing, or not readable for this visitor).
+function isHiddenColumnError(error) {
+    const message = (error && error.message) || '';
+    return /\bhidden\b/i.test(message) && /does not exist|could not find|permission denied/i.test(message);
+}
+
+// Runs a public job select. Callers wrap their query in excludeHidden(). If a newer column isn't in the database yet
+// (or can't be read), retries without it, so shared links and lists keep working.
+async function runPublicJobSelect(build) {
+    let cols = getPublicJobSelectColumns(currentTable);
+    let result = await build(cols);
+    // reposted_at arrives with migration 202611170001; until then, drop it like is_exclusive.
+    for (let retry = 0; retry < 4 && result && result.error; retry++) {
+        const message = result.error.message || '';
+        // Retry on the error itself, not on the flag: another query may already have turned the filter off
+        // while this one was in flight with the filter on.
+        if (isHiddenColumnError(result.error)) {
+            console.warn('hidden column not available; showing all vacancies.', message);
+            hiddenFilterOff = true;
+        } else if (/reposted_at/.test(message) && cols.includes(', reposted_at')) {
+            cols = cols.replace(', reposted_at', '');
+        } else if (/joining_label/.test(message) && cols.includes(', joining_label')) {
+            // joining_label (migration 202611060002) missing or not readable: show the list without the pill.
+            cols = cols.replace(', joining_label', '');
+        } else if (/is_exclusive/.test(message) && cols.includes(', is_exclusive')) {
+            cols = cols.replace(', is_exclusive', '');
+        } else {
+            break;
+        }
+        result = await build(cols);
+    }
+    return result;
 }
 
 // Job page URLs ("/jobs/industrial/dbs-hiring-ca-industrial-trainee-finance-pune-10651")
@@ -136,6 +203,8 @@ let profileHydrationPromise = null;
 let appliedJobIds = new Set();
 let debounceTimeout = null;
 let firmReviewsMap = new Map();
+// Articleship exclusives shown pinned on top of page 1; later pages skip them so they don't show twice.
+let pinnedExclusiveIds = new Set();
 let allLocations = [];
 let allCategories = {};
 let currentFcmToken = null;
@@ -158,7 +227,8 @@ const JOB_TYPES_NOTIF = [
     { value: "industrial", label: "Industrial Training" },
     { value: "semi", label: "Semi Qualified" },
     { value: "fresher", label: "Fresher" },
-    { value: "articleship", label: "Articleship" }
+    { value: "articleship", label: "Articleship" },
+    { value: "experienced", label: "Experienced CA" }
 ];
 const LOCATIONS_NOTIF = ["mumbai", "bangalore", "gurgaon", "pune", "kolkata", "delhi", "noida", "hyderabad", "ahmedabad", "chennai", "jaipur"];
 
@@ -169,6 +239,7 @@ function getTypeWideTopicForJobType(jobType) {
     if (jobType === 'industrial') return 'Industrial-all';
     if (jobType === 'fresher') return 'fresher-all';
     if (jobType === 'semi') return 'semi-all';
+    if (jobType === 'experienced') return 'experienced-all';
     if (jobType === 'articleship') return 'articleship-all';
     return null;
 }
@@ -186,8 +257,65 @@ const state = {
     applicationStatus: 'all',
     companyType: '',
     industryType: '',
-    firmType: ''
+    firmType: '',
+    // Structured filters from scripts/job-filters.js, keyed by filter key.
+    extra: {}
 };
+
+// False once the database answers that the filter columns are missing (migration
+// 202611060003 not run yet): the portal then falls back to its older filters.
+let jobFilterColumnsAvailable = true;
+
+function currentPortal() {
+    return portalFor(currentTable, isExperiencedFresherPortal());
+}
+
+function isAnnualPayTable() {
+    return currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs';
+}
+
+// The structured filter block, once in the desktop sidebar and once in the phone filter sheet.
+function ensureJobFilterContainers() {
+    const hosts = [
+        { root: document.querySelector('.filter-sidebar'), id: 'jobFiltersDesktop', mobile: false },
+        { root: document.querySelector('.filter-modal-content'), id: 'jobFiltersMobile', mobile: true }
+    ];
+    return hosts.map(h => {
+        if (!h.root) return null;
+        let el = document.getElementById(h.id);
+        if (!el) {
+            el = document.createElement('div');
+            el.id = h.id;
+            el.className = 'jf-container';
+            const before = h.root.querySelector('.application-status-filter-group');
+            if (before && before.parentElement) before.parentElement.insertBefore(el, before);
+            else h.root.appendChild(el);
+        }
+        return { el, mobile: h.mobile };
+    }).filter(Boolean);
+}
+
+function renderStructuredFilters() {
+    const portal = currentPortal();
+    ensureJobFilterContainers().forEach(({ el, mobile }) => {
+        if (!jobFilterColumnsAvailable || !portal) {
+            el.innerHTML = '';
+            el.style.display = 'none';
+            return;
+        }
+        el.style.display = '';
+        renderJobFilters(el, portal, {
+            idPrefix: mobile ? 'jfm' : 'jfd',
+            payKind: isAnnualPayTable() ? 'annual' : 'monthly',
+            getValues: () => state.extra,
+            onChange: (next) => {
+                state.extra = next;
+                // Desktop applies at once; the phone sheet applies on "Show Jobs".
+                if (mobile) syncFiltersUI(); else syncAndFetch();
+            }
+        });
+    });
+}
 
 const dom = {};
 
@@ -246,7 +374,7 @@ function setActivePortalTab() {
         activeSelector = 'a[href="/"]';
     }
 
-    if (currentTable === 'Industrial Training Job Portal') {
+    if (currentTable === 'Industrial Training Job Portal' && !jobFilterColumnsAvailable) {
         state.companyType = '';
     }
 
@@ -281,8 +409,13 @@ function adjustFiltersForPortal() {
     const hide = (el) => { if (el) el.style.display = 'none'; };
 
     if (currentTable === 'Industrial Training Job Portal') {
-        hide(companyTypeGroupDesktop);
-        hide(companyTypeGroupMobile);
+        if (jobFilterColumnsAvailable) {
+            show(companyTypeGroupDesktop);
+            show(companyTypeGroupMobile);
+        } else {
+            hide(companyTypeGroupDesktop);
+            hide(companyTypeGroupMobile);
+        }
         show(industryTypeGroupDesktop);
         show(industryTypeGroupMobile);
         hide(firmTypeGroupDesktop);
@@ -343,6 +476,7 @@ function adjustFiltersForPortal() {
     }
 
     populateSalaryFilter();
+    renderStructuredFilters();
 }
 
 const SAVED_JOBS_KEY = 'msc_saved_jobs';
@@ -386,7 +520,7 @@ function renderJobCard(job) {
 
     if (currentTable === 'Articleship Jobs') {
         ratingInfo = firmReviewsMap.get(companyKey);
-        if (ratingInfo && ratingInfo.count > 5) {
+        if (hasReviewRating(ratingInfo)) {
             // Show gold star rating badge beside company name
             ratingHtml = `
                 <span class="job-card-rating-inline" style="
@@ -410,13 +544,13 @@ function renderJobCard(job) {
         }
     }
 
+    const exclusiveKind = getExclusiveKind(job, currentTable);
     const jobCard = document.createElement('article');
-    jobCard.className = 'job-card' + (job.is_exclusive ? ' job-card-exclusive' : '');
+    jobCard.className = 'job-card' + ((job.is_exclusive || exclusiveKind) ? ' job-card-exclusive' : '');
     jobCard.dataset.jobId = job.id;
 
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const isExpired = isJobExpired(job.Created_At);
-    const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'N/A');
     const isApplied = appliedJobIds.has(job.id);
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';
@@ -427,8 +561,9 @@ function renderJobCard(job) {
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
     const secondaryDomain = (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') ? job['Secondary Domain'] : null;
     const companyType = job['Company Type'];
-    const firmType = job['Firm Type'];
+    const firmType = job['Firm Type'] || (job.firm_size && job.firm_size !== 'Other' ? job.firm_size : '');
     const industryType = job['Industry Type'];
+    const deadlineText = formatDeadline(job);
     const compLabel = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs') ? 'Salary' : 'Stipend';
     const roleLabel = job.Role || (currentTable === 'Industrial Training Job Portal' ? 'Industrial Trainee' : currentTable === 'Articleship Jobs' ? 'Articleship' : 'Professional');
 
@@ -439,6 +574,9 @@ function renderJobCard(job) {
         compText = job['Stipend Range'] || (job.Salary ? `₹${job.Salary}` : '');
     } else {
         compText = job.Salary ? `₹${job.Salary}` : '';
+    }
+    if (!isSalaryDisclosed(compText)) {
+        compText = formatPayRange(job, isAnnualPayTable());
     }
 
     const isRecent = job.Created_At && (Date.now() - new Date(job.Created_At).getTime()) < 3 * 24 * 60 * 60 * 1000;
@@ -462,7 +600,9 @@ function renderJobCard(job) {
             </div>`);
     const infoRowHtml = infoRowItems.length ? `<div class="job-card-info-row">${infoRowItems.join('')}</div>` : '';
     const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
-    const isLocked = isExclusive && !isEnrolledSync(currentTable);
+    const joiningLabel = currentTable === 'Industrial Training Job Portal' ? (job.joining_label || '') : '';
+    const isLocked = isExclusiveLocked(job, currentTable, isEnrolledSync(currentTable));
+    const exclusiveNoteHtml = renderCardNote(job, currentTable, isEnrolledSync(currentTable));
     let applyButtonHtml = '';
     if (isLocked) {
         applyButtonHtml = `
@@ -487,9 +627,9 @@ function renderJobCard(job) {
         <div class="job-card-top-row">
             <div class="job-card-logo">${companyInitial}</div>
             <div class="job-card-header">
-                <h3 class="job-card-role-title">${roleLabel} <span class="job-card-role-posted ${postedClass}" style="color: var(--text-muted); font-weight: 400; margin-left: 4px;">| ${isExpired ? 'Expired' : `Posted ${postedDate}`}</span></h3>
+                <h3 class="job-card-role-title">${roleLabel} <span class="job-card-role-posted ${postedClass}" style="color: var(--text-muted); font-weight: 400; margin-left: 4px;">| ${getPostedLabel(job)}</span></h3>
                 <h3 class="job-card-company" style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;"><span>${job.Company || "N/A"}</span>${ratingHtml}</h3>
-                <p class="job-card-posted ${postedClass}">${isExpired ? 'Expired' : `Posted ${postedDate}`}</p>
+                <p class="job-card-posted ${postedClass}">${getPostedLabel(job)}</p>
             </div>
             <button class="job-card-bookmark" title="Save job" aria-label="Bookmark job">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
@@ -500,16 +640,19 @@ function renderJobCard(job) {
         </div>
         <div class="job-card-tags">
             ${isExpired ? `<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>` : ""}
-            ${isExclusive ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> Exclusive</span>` : ""}
+            ${(isExclusive || exclusiveKind) ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> Exclusive</span>` : ""}
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ""}
+            ${deadlineText && !isExpired ? `<span class="job-tag tag-deadline"><i class="far fa-calendar-alt"></i> ${deadlineText}</span>` : ""}
             <span class="job-tag job-tag-location">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 ${job.Location || "N/A"}
             </span>
             ${job.Experience ? `<span class="job-tag job-tag-exp"><i class="far fa-clock"></i> ${job.Experience}</span>` : ""}
             <span class="job-tag tag-primary"><i class="fas fa-briefcase"></i> ${primaryDomain}</span>
+            ${joiningLabel ? `<span class="job-tag tag-joining"><i class="far fa-calendar-check"></i> ${joiningLabel}</span>` : ""}
             ${companyType ? `<span class="job-tag"><i class="fas fa-building"></i> ${companyType}</span>` : ""}
             ${firmType ? `<span class="job-tag"><i class="fas fa-file-alt"></i> ${firmType}</span>` : ""}
+            ${job.transfer_accepted === true ? `<span class="job-tag"><i class="fas fa-exchange-alt"></i> Transfer cases welcome</span>` : ""}
             ${industryType ? `<span class="job-tag job-tag-industry"><i class="fas fa-chart-line"></i> ${industryType}</span>` : ""}
             ${secondaryDomain ? `<span class="job-tag tag-secondary">${secondaryDomain}</span>` : ""}
         </div>
@@ -518,7 +661,8 @@ function renderJobCard(job) {
         <div class="job-card-actions">
             ${applyButtonHtml}
             <a href="${jobPagePath}" class="view-details-card-btn secondary" onclick="event.preventDefault();">View Details ›</a>
-        </div>`;
+        </div>
+        ${exclusiveNoteHtml}`;
 
     const applyBtn = jobCard.querySelector('.apply-now-card-btn.primary');
     if (applyBtn) {
@@ -547,7 +691,7 @@ function renderJobCard(job) {
     }
 
     jobCard.addEventListener('click', (e) => {
-        if (!e.target.closest('.apply-now-card-btn.primary') && !e.target.closest('.job-card-bookmark')) {
+        if (!e.target.closest('.apply-now-card-btn.primary') && !e.target.closest('.job-card-bookmark') && !e.target.closest('a.msc-excl-note')) {
             showModal(job);
         }
     });
@@ -631,10 +775,10 @@ URL - ${jobUrl}
 Do turn on notifications to stay updated with all such opportunites and ensure joining the whatsapp group below
 mystudentclub.com/links`;
 
+    // No separate url: the link is already in the text, and WhatsApp & co. would add it again at the end.
     const shareData = {
         title: `Job at ${job.Company}`,
-        text: shareText,
-        url: jobUrl
+        text: shareText
     };
 
     // Simple mobile detection
@@ -676,6 +820,13 @@ function checkConnectLink(job) {
 }
 
 async function recordApplication(job, btnElement) {
+    if (job.__exclusiveDemo) {
+        // Preview demo only (?exclusive-demo on localhost / pages.dev): no database write.
+        btnElement.classList.add('applied');
+        btnElement.innerHTML = '<i class="fas fa-check"></i> Applied';
+        if (getExclusiveKind(job, currentTable) === 'partial') showExclusiveAppliedPopup(job);
+        return true;
+    }
     if (!currentSession) {
         window.location.href = `/login.html?redirect=${encodeURIComponent(window.location.href)}`;
         return false;
@@ -699,6 +850,16 @@ async function recordApplication(job, btnElement) {
         if ('disabled' in btnElement) btnElement.disabled = true;
     }
     btnElement.innerHTML = '<div class="loader-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
+
+    // The recruiter's mandatory assessment, when the vacancy has one: taken before the application is saved.
+    if (recruiterPosted && !(await assessmentGate({ table: currentTable, job, supabaseClient, session: currentSession }))) {
+        pendingRecruiterApplications.delete(applicationKey);
+        btnElement.style.pointerEvents = '';
+        if ('disabled' in btnElement) btnElement.disabled = false;
+        btnElement.innerHTML = originalText;
+        showToast('Your application is not sent yet. Complete the assessment to apply.', 'info');
+        return false;
+    }
 
     try {
         let dbJobId = job.id;
@@ -742,7 +903,11 @@ async function recordApplication(job, btnElement) {
             btnElement.style.pointerEvents = '';
             if ('disabled' in btnElement) btnElement.disabled = false;
         }
-        showToast('Application submitted to the hirer dashboard.', 'success');
+        if (recruiterPosted && getExclusiveKind(job, currentTable) === 'partial' && !isEnrolledSync(currentTable)) {
+            showExclusiveAppliedPopup(job);
+        } else {
+            showToast('Application submitted to the hirer dashboard.', 'success');
+        }
         return true;
     } catch (e) {
         console.error('Application exception:', e);
@@ -758,6 +923,13 @@ async function recordApplication(job, btnElement) {
 }
 
 function showExclusiveLockedModal(job) {
+    if (currentTable === ARTICLESHIP_TABLE) {
+        ensureExclusiveStyles();
+        dom.modalBody.innerHTML = renderLockScreen(job, { signedIn: Boolean(currentSession) });
+        dom.modalOverlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        return;
+    }
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
 
@@ -835,10 +1007,13 @@ function showModal(job) {
     const isExclusive = Boolean(job.is_exclusive);
 
     // --- Exclusive vacancy gate ---
-    if (isExclusive && !isEnrolledSync(currentTable)) {
+    // Articleship: only MSC-posted exclusives lock; outside recruiters' vacancies stay open (exclusive-vacancy.js).
+    if (isExclusiveLocked(job, currentTable, isEnrolledSync(currentTable))) {
         showExclusiveLockedModal(job);
         return;
     }
+    const exclusiveModalNoteHtml = renderModalNote(job, currentTable, isEnrolledSync(currentTable));
+    if (exclusiveModalNoteHtml) ensureExclusiveStyles();
 
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
@@ -876,8 +1051,8 @@ function showModal(job) {
     if (currentTable === 'Articleship Jobs') {
         const compKey = companyName.toLowerCase();
         const ratingInfo = firmReviewsMap.get(compKey);
-        if (ratingInfo) {
-            if (ratingInfo.count > 5) {
+        if (ratingInfo && ratingInfo.count > 0) {
+            if (hasReviewRating(ratingInfo)) {
                 modalRatingHtml = `
                     <div class="job-card-rating-inline" style="display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.25rem;">
                         <span class="rating-value" style="font-weight: 700; color: #1e293b; font-size: 0.8rem; background: #fef08a; padding: 1px 6px; border-radius: 6px; display: inline-flex; align-items: center; gap: 2px;">
@@ -888,8 +1063,9 @@ function showModal(job) {
                     </div>
                 `;
             }
+            modalRatingHtml += buildReviewFactsHtml(ratingInfo);
             modalReviewButtonHtml = `
-                <a href="/articleship-firm-review.html?firm=${encodeURIComponent(companyName)}" target="_blank" class="btn btn-secondary btn-modal-secondary" style="border-color: #2563eb; color: #2563eb; display: inline-flex; align-items: center; gap: 0.3rem;">
+                <a href="/articleship-firm-review.html?firm=${encodeURIComponent(ratingInfo.firmName || companyName)}" target="_blank" class="btn btn-secondary btn-modal-secondary" style="border-color: #2563eb; color: #2563eb; display: inline-flex; align-items: center; gap: 0.3rem;">
                     <i class="fas fa-comments"></i>
                     Read Reviews
                 </a>
@@ -977,7 +1153,7 @@ function showModal(job) {
     // Compensation display range parsing for modal
     const compRange = currentTable === 'Fresher Jobs' ? job['CTC Range'] : (currentTable === 'Articleship Jobs' || currentTable === 'Industrial Training Job Portal') ? job['Stipend Range'] : null;
     const compLabel = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs') ? 'Salary' : 'Stipend';
-    const compDisplay = compRange || (job.Salary ? `₹${job.Salary}` : null);
+    const compDisplay = compRange || (job.Salary ? `₹${job.Salary}` : null) || formatPayRange(job, isAnnualPayTable()) || null;
 
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
 
@@ -1000,8 +1176,8 @@ function showModal(job) {
         tagsSectionsHtml += renderPillSection("Functional Competencies", job["Functional Tags"], "#eff6ff", "#1e40af", "#bfdbfe");
         tagsSectionsHtml += renderPillSection("Tech Stack & Tools", job["Technology Tags"], "#f5f3ff", "#5b21b6", "#ddd6fe");
     } else if (currentTable === "Articleship Jobs") {
-        tagsSectionsHtml += renderPillSection("Areas of Exposure", job["Exposure Tags"], "#ecfdf5", "#065f46", "#a7f3d0");
-        tagsSectionsHtml += renderPillSection("Client Sector Exposure", job["Client Exposure Tags"], "#fff7ed", "#9a3412", "#ffedd5");
+        tagsSectionsHtml += renderPillSection("Areas of Exposure", (job["Exposure Tags"] && job["Exposure Tags"].length) ? job["Exposure Tags"] : job.exposure_areas, "#ecfdf5", "#065f46", "#a7f3d0");
+        tagsSectionsHtml += renderPillSection("Client Sector Exposure", (job["Client Exposure Tags"] && job["Client Exposure Tags"].length) ? job["Client Exposure Tags"] : job.client_types, "#fff7ed", "#9a3412", "#ffedd5");
     }
 
     const rawDesc = effectiveDescription
@@ -1065,15 +1241,19 @@ function showModal(job) {
         <div class="modal-meta-tags" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
             ${isExpired ? '<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>' : ''}
             ${isSalaryDisclosed(compDisplay) ? `<span class="job-tag">${compLabel}: ${compDisplay}</span>` : ''}
-            <span class="job-tag">Posted: ${postedDate}</span>
+            <span class="job-tag">${job.reposted_at && !isExpired ? 'Reposted' : 'Posted'}: ${postedDate}</span>
             <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">Category: ${primaryDomain}</span>
+            ${currentTable === 'Industrial Training Job Portal' && job.joining_label ? `<span class="job-tag tag-joining"><i class="far fa-calendar-check" style="margin-right: 4px;"></i>${job.joining_label}</span>` : ''}
             ${job['Secondary Domain'] ? `<span class="job-tag" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Secondary: ${job['Secondary Domain']}</span>` : ''}
             ${job['Company Type'] ? `<span class="job-tag"><i class="fas fa-building" style="margin-right: 4px;"></i>${job['Company Type']}</span>` : ''}
-            ${job['Firm Type'] ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job['Firm Type']}</span>` : ''}
+            ${(job['Firm Type'] || (job.firm_size && job.firm_size !== 'Other' ? job.firm_size : '')) ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job['Firm Type'] || job.firm_size}</span>` : ''}
+            ${job.transfer_accepted === true ? `<span class="job-tag"><i class="fas fa-exchange-alt" style="margin-right: 4px;"></i>Transfer cases welcome</span>` : ''}
+            ${formatDeadline(job) ? `<span class="job-tag tag-deadline"><i class="far fa-calendar-alt" style="margin-right: 4px;"></i>${formatDeadline(job)}</span>` : ''}
             ${job['Industry Type'] ? `<span class="job-tag"><i class="fas fa-industry" style="margin-right: 4px;"></i>${job['Industry Type']}</span>` : ''}
         </div>
         <div id="modalPrimaryActionsContainer">
             ${primaryActionsHtml}
+            ${exclusiveModalNoteHtml}
         </div>
         ${secondaryActionsHtml}
         ${tagsSectionsHtml}
@@ -1295,50 +1475,93 @@ function updateFilterCache() {
 
 }
 
+function hasReviewRating(info) {
+    return Boolean(info && info.count > 0 && typeof info.avgOverall === 'number' && !Number.isNaN(info.avgOverall));
+}
+
+// One short line of what students reported about a firm, built from review counts (no review text).
+// A fact shows only when at least 60% of the answers agree.
+function buildReviewFactsHtml(info) {
+    if (!info || !(info.count > 0)) return '';
+    const facts = [];
+    if (info.stipendMedian) facts.push(`Stipend ~₹${Number(info.stipendMedian).toLocaleString('en-IN')}`);
+    if (info.stipendAnswers > 0) {
+        if (info.stipendOnTime / info.stipendAnswers >= 0.6) facts.push('Stipend paid on time');
+        else if (info.stipendDelayed / info.stipendAnswers >= 0.6) facts.push('Stipend delays reported');
+    }
+    if (info.leaveAnswers > 0) {
+        if (info.leaveEasy / info.leaveAnswers >= 0.6) facts.push('Leave easy to get');
+        else if (info.leaveDifficult / info.leaveAnswers >= 0.6) facts.push('Leave hard to get');
+    }
+    if (facts.length === 0) return '';
+    const who = `${info.count} student review${info.count > 1 ? 's' : ''}`;
+    const safe = (t) => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    return `<p class="job-card-review-facts"><i class="fas fa-comments" aria-hidden="true"></i> <span>From ${safe(who)}: ${facts.map(safe).join(' · ')}</span></p>`;
+}
+
+function toReviewInfo(name, row) {
+    if (!row) return { firmName: name, avgOverall: null, count: 0 };
+    const num = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
+    return {
+        firmName: row.firm_name || name,
+        avgOverall: num(row.avg_overall),
+        count: Number(row.review_count) || 0,
+        stipendMedian: num(row.stipend_median),
+        stipendAnswers: Number(row.stipend_answers) || 0,
+        stipendOnTime: Number(row.stipend_on_time) || 0,
+        stipendDelayed: Number(row.stipend_delayed) || 0,
+        leaveAnswers: Number(row.leave_answers) || 0,
+        leaveEasy: Number(row.leave_easy) || 0,
+        leaveDifficult: Number(row.leave_difficult) || 0
+    };
+}
+
+// False after get_firm_review_summaries fails once (e.g. before its migration): use exact names after that.
+let reviewSummaryRpcAvailable = true;
+
 async function fetchFirmRatingsForVisibleJobs(jobs) {
     if (currentTable !== 'Articleship Jobs' || !Array.isArray(jobs) || jobs.length === 0) return;
 
-    const uncached = [];
-    jobs.forEach(j => {
-        const name = (j.Company || '').trim();
-        if (name && !firmReviewsMap.has(name.toLowerCase())) {
-            uncached.push(name);
-        }
-    });
-
-    if (uncached.length === 0) return;
-    const uniqueNames = Array.from(new Set(uncached));
+    const uniqueNames = Array.from(new Set(jobs
+        .map(j => (j.Company || '').trim())
+        .filter(name => name && !firmReviewsMap.has(name.toLowerCase()))));
+    if (uniqueNames.length === 0) return;
 
     try {
-        const { data, error } = await supabaseClient
-            .from('articleship_firm_reviews_public')
-            .select('firm_name, overall_rating')
-            .in('firm_name', uniqueNames);
-        if (error) throw error;
+        // Matches spellings of the same firm ("K K & Co." = "K K and Company"; S R Batliboi = EY).
+        const rpc = reviewSummaryRpcAvailable
+            ? await supabaseClient.rpc('get_firm_review_summaries', { p_names: uniqueNames })
+            : { error: true };
+        if (rpc.error) reviewSummaryRpcAvailable = false;
+        if (!rpc.error && Array.isArray(rpc.data)) {
+            const byName = new Map(rpc.data.map(r => [String(r.name || '').trim().toLowerCase(), r]));
+            uniqueNames.forEach(name => {
+                firmReviewsMap.set(name.toLowerCase(), toReviewInfo(name, byName.get(name.toLowerCase())));
+            });
+        } else {
+            // Before the review-summary function exists: exact firm names only, as before.
+            const { data, error } = await supabaseClient
+                .from('articleship_firm_reviews_public')
+                .select('firm_name, overall_rating')
+                .in('firm_name', uniqueNames);
+            if (error) throw error;
 
-        const groups = {};
-        (data || []).forEach(r => {
-            if (!r.firm_name) return;
-            const key = r.firm_name.trim().toLowerCase();
-            if (!groups[key]) {
-                groups[key] = { firmName: r.firm_name.trim(), ratings: [], count: 0 };
-            }
-            if (typeof r.overall_rating === 'number') {
-                groups[key].ratings.push(r.overall_rating);
-            }
-            groups[key].count++;
-        });
-
-        uniqueNames.forEach(name => {
-            const key = name.toLowerCase();
-            const g = groups[key];
-            if (g && g.ratings.length > 0) {
-                const avg = g.ratings.reduce((a, b) => a + b, 0) / g.ratings.length;
-                firmReviewsMap.set(key, { firmName: g.firmName, avgOverall: avg, count: g.count });
-            } else {
-                firmReviewsMap.set(key, { firmName: name, avgOverall: null, count: 0 });
-            }
-        });
+            const groups = {};
+            (data || []).forEach(r => {
+                if (!r.firm_name) return;
+                const key = r.firm_name.trim().toLowerCase();
+                if (!groups[key]) groups[key] = { firmName: r.firm_name.trim(), ratings: [], count: 0 };
+                if (typeof r.overall_rating === 'number') groups[key].ratings.push(r.overall_rating);
+                groups[key].count++;
+            });
+            uniqueNames.forEach(name => {
+                const g = groups[name.toLowerCase()];
+                const avg = g && g.ratings.length ? g.ratings.reduce((a, b) => a + b, 0) / g.ratings.length : null;
+                firmReviewsMap.set(name.toLowerCase(), g
+                    ? { firmName: g.firmName, avgOverall: avg, count: g.count }
+                    : { firmName: name, avgOverall: null, count: 0 });
+            });
+        }
 
         // Update rating badges on visible cards
         updateVisibleJobRatings();
@@ -1352,11 +1575,12 @@ function updateVisibleJobRatings() {
     const cards = document.querySelectorAll('.job-card');
     cards.forEach(card => {
         const compEl = card.querySelector('.job-card-company');
-        if (!compEl || card.querySelector('.job-card-rating-inline')) return;
+        if (!compEl) return;
         const nameSpan = compEl.querySelector('span');
         const companyName = nameSpan ? nameSpan.textContent.trim().toLowerCase() : '';
         const ratingInfo = firmReviewsMap.get(companyName);
-        if (ratingInfo && ratingInfo.count > 5 && ratingInfo.avgOverall != null) {
+        if (!ratingInfo) return;
+        if (hasReviewRating(ratingInfo) && !card.querySelector('.job-card-rating-inline')) {
             const ratingSpan = document.createElement('span');
             ratingSpan.className = 'job-card-rating-inline';
             ratingSpan.style.cssText = `
@@ -1419,7 +1643,9 @@ function getFilterFingerprint() {
         applicationStatus: state.applicationStatus,
         companyType: state.companyType,
         industryType: state.industryType,
-        firmType: state.firmType
+        firmType: state.firmType,
+        extra: state.extra,
+        jobFilterColumnsAvailable
     });
 }
 
@@ -1464,19 +1690,22 @@ async function fetchJobs() {
     }
 
     try {
-        let selectColumns = 'id, Company, Location, Salary, Created_At, Category, application_count, posts_link, "Primary Domain", posted_by, hirer_email';
+        let selectColumns = 'id, Company, Location, Salary, Created_At, Category, application_count, posts_link, "Primary Domain", posted_by, hirer_email, reposted_at';
         if (currentTable === "Fresher Jobs") {
             selectColumns += ', Experience, yoe, "Secondary Domain", Tags, "Company Type", "Industry Type", "CTC Range"';
         } else if (currentTable === "Semi Qualified Jobs") {
             selectColumns += ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"';
         } else if (currentTable === "Industrial Training Job Portal") {
-            selectColumns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
+            selectColumns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive, joining_label';
         } else if (currentTable === "Articleship Jobs") {
-            selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+            selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
+        }
+        if (jobFilterColumnsAvailable) {
+            selectColumns += extraSelectColumns(currentTable);
         }
 
-        const buildQuery = (cols) => {
-            let q = supabaseClient.from(currentTable).select(cols);
+        const buildQuery = (cols, useFilterColumns = jobFilterColumnsAvailable) => {
+            let q = excludeHidden(supabaseClient.from(currentTable).select(cols));
 
             // Optimize keyword query building - pre-process terms once
             if (state.keywords.length > 0) {
@@ -1515,8 +1744,8 @@ async function fetchJobs() {
 
             if (state.locations.length > 0) {
                 const locationOr = [];
-                for (let i = 0; i < state.locations.length; i++) {
-                    locationOr.push(`Location.ilike."%${state.locations[i]}%"`);
+                for (const term of expandLocationTerms(state.locations)) {
+                    locationOr.push(`Location.ilike."%${term}%"`);
                 }
                 q = q.or(locationOr.join(','));
             }
@@ -1536,25 +1765,29 @@ async function fetchJobs() {
                 q = q.or(categoryOr.join(','));
             }
 
+            // pay_min / pay_max hold the stipend (per month) or salary (per year) read from the
+            // vacancy, so a range matches every job whose pay range overlaps it.
+            const payLow = useFilterColumns ? 'pay_max' : 'Salary';
+            const payHigh = useFilterColumns ? 'pay_min' : 'Salary';
             if (state.salaryMin != null && state.salaryMin !== '') {
                 const min = Number(state.salaryMin);
                 if (!isNaN(min) && min > 0) {
-                    q = q.gte('Salary', min);
+                    q = q.gte(payLow, min);
                 }
             }
             if (state.salaryMax != null && state.salaryMax !== '') {
                 const max = Number(state.salaryMax);
                 if (!isNaN(max) && max > 0) {
-                    q = q.lte('Salary', max);
+                    q = q.lte(payHigh, max);
                 }
             }
             if ((state.salaryMin == null || state.salaryMin === '') && (state.salaryMax == null || state.salaryMax === '') && state.salary) {
                 if (state.salary.endsWith('+')) {
                     const minValue = parseInt(state.salary);
-                    if (!isNaN(minValue)) q = q.gte('Salary', minValue);
+                    if (!isNaN(minValue)) q = q.gte(payLow, minValue);
                 } else if (state.salary.includes('-')) {
                     const [min, max] = state.salary.split('-').map(Number);
-                    if (!isNaN(min) && !isNaN(max)) q = q.gte('Salary', min).lte('Salary', max);
+                    if (!isNaN(min) && !isNaN(max)) q = q.gte(payLow, min).lte(payHigh, max);
                 }
             }
 
@@ -1570,15 +1803,23 @@ async function fetchJobs() {
                 q = q.eq('Experience', state.experience);
             }
 
-            // Apply new Company Type, Industry Type and Firm Type filters
-            if (state.companyType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
+            // Apply new Company Type, Industry Type and Firm Type filters.
+            // employer_type is "Company Type" in the filter's own labels, filled in where it was empty.
+            if (state.companyType && useFilterColumns && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" || currentTable === "Industrial Training Job Portal")) {
+                q = q.or(companyTypeFilter(state.companyType));
+            } else if (state.companyType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
                 q = q.eq('Company Type', state.companyType);
             }
             if (state.industryType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" || currentTable === "Industrial Training Job Portal")) {
                 q = q.eq('Industry Type', state.industryType);
             }
             if (state.firmType && currentTable === "Articleship Jobs") {
-                q = q.eq('Firm Type', state.firmType);
+                const tierCol = useFilterColumns ? 'firm_size' : 'Firm Type';
+                q = FIRM_TIERS[state.firmType] ? q.in(tierCol, FIRM_TIERS[state.firmType]) : q.eq(tierCol, state.firmType);
+            }
+
+            if (useFilterColumns) {
+                q = applyJobFilters(q, currentPortal(), state.extra);
             }
 
             if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
@@ -1589,8 +1830,8 @@ async function fetchJobs() {
 
             let sortCol = 'Created_At';
             let isAsc = false;
-            if (state.sortBy === 'salary_asc') { sortCol = 'Salary'; isAsc = true; }
-            else if (state.sortBy === 'salary_desc') { sortCol = 'Salary'; isAsc = false; }
+            if (state.sortBy === 'salary_asc') { sortCol = useFilterColumns ? 'pay_min' : 'Salary'; isAsc = true; }
+            else if (state.sortBy === 'salary_desc') { sortCol = useFilterColumns ? 'pay_max' : 'Salary'; isAsc = false; }
 
             q = q.order(sortCol, {
                 ascending: isAsc,
@@ -1615,18 +1856,56 @@ async function fetchJobs() {
         let query = buildQuery(selectColumns);
         let { data, error } = await query;
 
-        // Failsafe Fallback: If is_exclusive does not exist yet on the table, strip it and retry.
-        if (error && error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
-            console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
-            selectColumns = selectColumns.replace(', is_exclusive', '');
+        // Failsafes for columns the database does not have yet. Either can come first, so retry
+        // until neither applies.
+        for (let retry = 0; retry < 5 && error; retry++) {
+            if (isHiddenColumnError(error)) {
+                // The hidden column is missing or not readable: show every vacancy rather than none. (Retry on the
+                // error, not the flag: trending may have turned the filter off while this query was in flight.)
+                console.warn('hidden column not available; showing all vacancies.', error.message);
+                hiddenFilterOff = true;
+            } else if (error.message && error.message.includes('reposted_at') && selectColumns.includes(', reposted_at')) {
+                // The repost column is not in the database yet (migration 202611170001).
+                selectColumns = selectColumns.replace(', reposted_at', '');
+            } else if (error.message && error.message.includes('joining_label') && selectColumns.includes(', joining_label')) {
+                // joining_label (migration 202611060002) missing or not readable: list without the joining pill.
+                selectColumns = selectColumns.replace(', joining_label', '');
+            } else if (jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
+                // The filter columns are not in the database yet (migration 202611060003): use the older filters.
+                console.warn('Structured filter columns are not available yet; using the basic filters.', error.message);
+                disableStructuredFilters();
+                selectColumns = selectColumns.replace(extraSelectColumns(currentTable), '');
+            } else if (error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
+                console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
+                selectColumns = selectColumns.replace(', is_exclusive', '');
+            } else {
+                break;
+            }
             query = buildQuery(selectColumns);
             const fallbackResult = await query;
             data = fallbackResult.data;
             error = fallbackResult.error;
         }
 
+        // Rows the database returned for this page, before pinning or keyword filtering: decides paging.
+        const dbPageLength = (!error && Array.isArray(data)) ? data.length : 0;
+
         if (!error && data && state.sortBy === 'popular') {
             data.sort((a, b) => (b.application_count || 0) - (a.application_count || 0));
+        }
+
+        // Articleship: exclusive vacancies sit on top of page 1; later pages skip them.
+        if (!error && data) {
+            if (page === 0) pinnedExclusiveIds = new Set();
+            if (page === 0 && currentTable === 'Articleship Jobs' && selectColumns.includes('is_exclusive')) {
+                const pinned = await fetchPinnedExclusives(buildQuery, selectColumns);
+                if (pinned.length > 0) {
+                    pinned.forEach(job => pinnedExclusiveIds.add(job.id));
+                    data = [...pinned, ...data.filter(job => !pinnedExclusiveIds.has(job.id))];
+                }
+            } else if (page > 0 && pinnedExclusiveIds.size > 0) {
+                data = data.filter(job => !pinnedExclusiveIds.has(job.id));
+            }
         }
 
         if (!error && data && state.keywords.length > 0) {
@@ -1669,6 +1948,8 @@ async function fetchJobs() {
 
         if (error) throw error;
 
+        if (page === 0) applyExclusiveDemo(data, currentTable);
+
         if (data && data.length > 0) {
             // Batch DOM operations using DocumentFragment for better performance
             const fragment = document.createDocumentFragment();
@@ -1698,7 +1979,7 @@ async function fetchJobs() {
             }
 
             page++;
-            hasMoreData = data.length === limit;
+            hasMoreData = dbPageLength === limit;
 
             if (currentTable === 'Articleship Jobs') {
                 fetchFirmRatingsForVisibleJobs(data);
@@ -1749,6 +2030,44 @@ async function fetchJobs() {
             // Fallback for very old browsers
             setTimeout(updateUI, 0);
         }
+    }
+}
+
+// PostgREST answers a missing column with 42703 / PGRST204 and "column <table>.<name> does not exist".
+const FILTER_COLUMN_NAMES = ['pay_min', 'pay_max', 'apply_methods', 'deadline', 'company_key', 'is_pan_india', 'work_mode',
+    'immediate_joining', 'joining_month', 'notice_days', 'attempt_from', 'attempt_to', 'duration_min_months', 'duration_max_months',
+    'exam_criteria', 'employer_type', 'inter_requirement', 'itt_oc_required', 'transfer_accepted', 'firm_size', 'exposure_areas',
+    'client_types', 'outstation_audits', 'work_types', 'shift', 'pqe_required', 'tools', 'working_days', 'yoe'];
+
+function isMissingFilterColumnError(error) {
+    if (!error) return false;
+    const message = String(error.message || '');
+    const missing = error.code === '42703' || error.code === 'PGRST204' || /does not exist|could not find .* column/i.test(message);
+    if (!missing) return false;
+    const named = message.match(/'([a-z_]+)' column/i) || message.match(/column\s+(?:[^\n]*\.)?"?([a-z_]+)"?\s+does not exist/i);
+    return Boolean(named && FILTER_COLUMN_NAMES.includes(named[1]));
+}
+
+function disableStructuredFilters() {
+    jobFilterColumnsAvailable = false;
+    state.extra = {};
+    if (currentTable === 'Industrial Training Job Portal') state.companyType = '';
+    adjustFiltersForPortal();
+}
+
+// Exclusive articleship vacancies that match the current filters and are under 15 days old.
+async function fetchPinnedExclusives(buildQuery, selectColumns) {
+    try {
+        const cutoff = new Date(Date.now() - JOB_EXPIRATION_DAYS * 24 * 60 * 60 * 1000).toISOString();
+        // MSC's exclusives plus MSC's own Easy Apply posts (recruit@ on hire.msc), e.g. the open Grant Thornton
+        // India vacancy (Padam, 10 Nov 2026: "make the gt one above").
+        const { data, error } = await buildQuery(selectColumns)
+            .or('is_exclusive.eq.true,hirer_email.eq."recruit@mystudentclub.com"')
+            .gte('Created_At', cutoff);
+        // buildQuery already orders them by the sort the student picked (newest first by default).
+        return (error || !Array.isArray(data)) ? [] : data;
+    } catch (e) {
+        return [];
     }
 }
 
@@ -1804,16 +2123,17 @@ function getSalaryConfig() {
         };
     } else if (currentTable === "Semi Qualified Jobs") {
         return {
+            // Per year: Semi Qualified salaries are stored as annual CTC (median about ₹6 LPA).
             label: 'Salary',
             minBound: 0,
-            maxBound: 100000,
-            step: 2500,
+            maxBound: 2000000,
+            step: 50000,
             presets: [
                 { value: '', label: 'Any Salary', min: null, max: null },
-                { value: '0-25000', label: 'Below ₹25k', min: null, max: 25000 },
-                { value: '25000-35000', label: '₹25k - ₹35k', min: 25000, max: 35000 },
-                { value: '35000-50000', label: '₹35k - ₹50k', min: 35000, max: 50000 },
-                { value: '50000+', label: 'Above ₹50k', min: 50000, max: null }
+                { value: '0-400000', label: 'Below ₹4 LPA', min: null, max: 400000 },
+                { value: '400000-600000', label: '₹4-6 LPA', min: 400000, max: 600000 },
+                { value: '600000-1000000', label: '₹6-10 LPA', min: 600000, max: 1000000 },
+                { value: '1000000+', label: '₹10+ LPA', min: 1000000, max: null }
             ]
         };
     } else if (currentTable === "Fresher Jobs") {
@@ -2069,6 +2389,12 @@ function renderActiveFilterPills() {
     state.keywords.forEach(item => createPill(item, 'keywords'));
     state.locations.forEach(item => createPill(item, 'locations'));
     state.categories.forEach(item => createPill(item, 'categories'));
+    if (jobFilterColumnsAvailable) {
+        describeJobFilters(currentPortal(), state.extra).forEach(p => createPill(p.label, `extra:${p.key}`, () => {
+            state.extra = withoutFilterValue(state.extra, p.key, p.value);
+            syncAndFetch();
+        }));
+    }
 
     // Salary / Stipend Active Pill
     const isSalary = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs');
@@ -2173,6 +2499,9 @@ function syncFiltersUI() {
     document.querySelectorAll('.application-status-filter-group .pill-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.value === state.applicationStatus);
     });
+
+    syncJobFilters(document.getElementById('jobFiltersDesktop'), state.extra);
+    syncJobFilters(document.getElementById('jobFiltersMobile'), state.extra);
 
     renderActiveFilterPills();
 }
@@ -2502,10 +2831,13 @@ async function fetchUserEnrollmentsOnce(userId) {
         userEnrollmentsCache = [];
     }
     const hasAny = userEnrollmentsCache.length > 0;
+    // Articleship registrations are paid through PayU with no LMS enrolment row, so check them by login email.
+    const programRegistrations = currentTable === ARTICLESHIP_TABLE ? await fetchMyProgramRegistrations(supabaseClient) : [];
     enrollmentStatusCache = {
         any: hasAny,
         industrialTraining: userEnrollmentsCache.includes('industrial-training-mastery'),
-        freshers: userEnrollmentsCache.includes('msc-ca-freshers-program')
+        freshers: userEnrollmentsCache.includes('msc-ca-freshers-program'),
+        articleship: userEnrollmentsCache.includes('msc-articleship-program') || programRegistrations.includes('msc-articleship-program')
     };
     return userEnrollmentsCache;
 }
@@ -2534,6 +2866,7 @@ async function prefetchEnrollmentStatus(userId) {
 function isEnrolledSync(tableName) {
     if (!enrollmentStatusCache) return false;
     if (tableName === 'Industrial Training Job Portal') return enrollmentStatusCache.industrialTraining;
+    if (tableName === ARTICLESHIP_TABLE) return enrollmentStatusCache.any || Boolean(enrollmentStatusCache.articleship);
     return enrollmentStatusCache.any;
 }
 
@@ -2907,11 +3240,12 @@ async function loadBanners() {
     const bannerSection = document.querySelector('.banner-section');
     if (!carousel || !bannerSection) return;
     try {
-        const { data, error } = await supabaseClient.from('Banners').select('Image, Hyperlink, Type, visible_to_unenrolled');
+        const { data, error } = await supabaseClient.from('Banners').select('Image, Hyperlink, Type, visible_to_unenrolled').order('id', { ascending: true });
         if (error) throw error;
         const banners = data;
         carousel.innerHTML = '';
-        const currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" : currentTable === "Fresher Jobs" ? "Freshers" : currentTable.split(' ')[0];
+        // Banner Type per page. Experienced CA shares the Fresher table but gets its own Type, so CA Fresher banners stay off it.
+        const currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" : currentTable === "Fresher Jobs" ? (isExperiencedFresherPortal() ? "Experienced" : "Freshers") : currentTable.split(' ')[0];
 
         // Determine if current user is enrolled in any course
         let isEnrolled = false;
@@ -3041,6 +3375,7 @@ function formatTopicForDisplay(topic) {
     if (topic === 'fresher-all') return { location: 'All India', jobType: 'Fresher' };
     if (topic === 'semi-all') return { location: 'All India', jobType: 'Semi Qualified' };
     if (topic === 'articleship-all') return { location: 'All India', jobType: 'Articleship' };
+    if (topic === 'experienced-all') return { location: 'All India', jobType: 'Experienced CA' };
 
     const parts = topic.split('-');
     if (parts.length < 2) return { location: topic, jobType: '' };
@@ -3051,6 +3386,72 @@ function formatTopicForDisplay(topic) {
 }
 
 function updateSpecificTopicAreaVisibility() { if (dom.specificSubscriptionForm) dom.specificSubscriptionForm.style.display = dom.topicAllCheckbox.checked ? 'none' : 'block'; }
+// ---- Per-browser topic sync ------------------------------------------------------------------------------------
+// Firebase subscribes a device token, not a person. The header list ('subscribedTopics') is the account's list: it is
+// saved on the profile and shared by every browser and the app. So this browser also remembers which topics ITS OWN
+// token is really subscribed to ('mscDeviceTopics'), and reconciles the two: a topic turned off on another device is
+// unsubscribed here too, and one turned on elsewhere is subscribed. Without this, a browser could keep receiving a
+// topic its header no longer shows, with no way to turn it off.
+const MSC_TOPIC_URL = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription';
+const MSC_DEVICE_TOPICS_KEY = 'mscDeviceTopics';
+const MSC_TYPE_WIDE_TOPICS = { industrial: 'Industrial-all', fresher: 'fresher-all', semi: 'semi-all', articleship: 'articleship-all' };
+// Every job topic a browser can hold: used once per browser token to clear subscriptions made before this sync existed.
+const MSC_ALL_JOB_TOPICS = ['all']
+    .concat(JOB_TYPES_NOTIF.map(type => MSC_TYPE_WIDE_TOPICS[type.value]).filter(Boolean))
+    .concat(LOCATIONS_NOTIF.flatMap(location => JOB_TYPES_NOTIF.map(type => `${location}-${type.value}`)));
+
+function mscReadDeviceTopics() {
+    try { return JSON.parse(localStorage.getItem(MSC_DEVICE_TOPICS_KEY) || 'null'); } catch (_) { return null; }
+}
+function mscWriteDeviceTopics(token, topics) {
+    try { localStorage.setItem(MSC_DEVICE_TOPICS_KEY, JSON.stringify({ token, topics })); } catch (_) {}
+}
+async function mscFcmTopicCall(token, topic, action) {
+    const response = await fetch(MSC_TOPIC_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, topic, action }),
+    });
+    if (!response.ok) throw new Error(await response.text());
+}
+// One subscribe/unsubscribe for this browser's token; keeps this browser's own list in step. Throws on failure.
+async function mscTopicRequest(token, topic, action) {
+    await mscFcmTopicCall(token, topic, action);
+    const saved = mscReadDeviceTopics();
+    let topics = saved && saved.token === token ? saved.topics : [];
+    topics = action === 'subscribe' ? Array.from(new Set(topics.concat(topic))) : topics.filter(t => t !== topic);
+    mscWriteDeviceTopics(token, topics);
+}
+// Make this browser's token hold exactly the account's topics ([wanted]). resubscribeAll repeats every subscribe
+// (the old once-a-day refresh). Returns how many calls failed; failures are retried on the next page load.
+async function mscReconcileTopics(token, wanted, resubscribeAll) {
+    wanted = Array.isArray(wanted) ? wanted : [];
+    const saved = mscReadDeviceTopics();
+    let failures = 0;
+    const run = async (list, action, call) => {
+        for (let i = 0; i < list.length; i += 8) {
+            await Promise.all(list.slice(i, i + 8).map(topic => call(topic, action).catch(() => { failures++; })));
+        }
+    };
+    // The browser got a new token: the old one keeps its topics until told otherwise, so release them.
+    if (saved && saved.token && saved.token !== token && Array.isArray(saved.topics) && saved.topics.length) {
+        await run(saved.topics, 'unsubscribe', (topic, action) => mscFcmTopicCall(saved.token, topic, action));
+        failures = 0; // an expired old token cannot be released; never retry that forever
+    }
+    const known = saved && saved.token === token && Array.isArray(saved.topics) ? saved.topics : null;
+    // First time with this token: clear every job topic it might hold from before; afterwards only what it added.
+    const toRemove = (known === null ? MSC_ALL_JOB_TOPICS : known).filter(topic => !wanted.includes(topic));
+    const toAdd = resubscribeAll || known === null ? wanted : wanted.filter(topic => !known.includes(topic));
+    if (known === null) mscWriteDeviceTopics(token, []);
+    const call = (topic, action) => mscTopicRequest(token, topic, action);
+    await run(toRemove, 'unsubscribe', call);
+    await run(toAdd, 'subscribe', call);
+    // A first clean-up that did not fully succeed runs again next time.
+    if (known === null && failures > 0) { try { localStorage.removeItem(MSC_DEVICE_TOPICS_KEY); } catch (_) {} }
+    return failures;
+}
+// ---- end per-browser topic sync --------------------------------------------------------------------------------
+
 async function manageTopicSubscription(topic, action) {
     // Actively try to get token if missing
     if (!currentFcmToken) {
@@ -3077,15 +3478,7 @@ async function manageTopicSubscription(topic, action) {
         return false;
     }
     try {
-        const response = await fetch(
-            'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription',
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token: currentFcmToken, topic, action }),
-            }
-        );
-        if (!response.ok) throw new Error(await response.text());
+        await mscTopicRequest(currentFcmToken, topic, action);
         let topics = getSubscribedTopics();
         if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic);
         else if (action === 'unsubscribe')
@@ -3158,10 +3551,13 @@ async function requestTokenAndSync() {
 }
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
 async function syncNotificationTopics() {
-    currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
-    if (!currentFcmToken || !shouldSync()) return;
-    await Promise.all(getSubscribedTopics().map(topic => manageTopicSubscription(topic, 'subscribe')));
-    localStorage.setItem('notificationSyncTimestamp', Date.now().toString());
+    // Inside the MSC app the app manages its own topics natively.
+    if (window.flutter_app && window.flutter_app.isReady) return;
+    currentFcmToken = currentFcmToken || (window.flutter_app && window.flutter_app.fcmToken);
+    if (!currentFcmToken) return;
+    const daily = shouldSync();
+    await mscReconcileTopics(currentFcmToken, getSubscribedTopics(), daily);
+    if (daily) localStorage.setItem('notificationSyncTimestamp', Date.now().toString());
 }
 
 async function initializeUserFeatures() {
@@ -3250,9 +3646,22 @@ function setupEventListeners() {
     dom.menuButton.addEventListener('click', () => dom.expandedMenu.classList.add('active'));
     dom.menuCloseBtn.addEventListener('click', () => dom.expandedMenu.classList.remove('active'));
 
-    dom.openFilterModalBtn.addEventListener('click', () => dom.filterModalOverlay.classList.add('show'));
-    dom.closeFilterModalBtn.addEventListener('click', () => dom.filterModalOverlay.classList.remove('show'));
-    dom.filterModalOverlay.addEventListener('click', (e) => { if (e.target === dom.filterModalOverlay) dom.filterModalOverlay.classList.remove('show'); });
+    // The structured filters in the phone sheet apply on "Show Jobs"; closing the sheet any other way
+    // throws those changes away.
+    let extraBeforeSheet = null;
+    const discardSheetChanges = () => {
+        if (extraBeforeSheet) {
+            state.extra = extraBeforeSheet;
+            extraBeforeSheet = null;
+            syncFiltersUI();
+        }
+    };
+    dom.openFilterModalBtn.addEventListener('click', () => {
+        extraBeforeSheet = { ...state.extra };
+        dom.filterModalOverlay.classList.add('show');
+    });
+    dom.closeFilterModalBtn.addEventListener('click', () => { discardSheetChanges(); dom.filterModalOverlay.classList.remove('show'); });
+    dom.filterModalOverlay.addEventListener('click', (e) => { if (e.target === dom.filterModalOverlay) { discardSheetChanges(); dom.filterModalOverlay.classList.remove('show'); } });
 
     dom.applyFiltersBtn.addEventListener('click', () => {
         const mobMinInput = document.querySelector('#salaryFilterMobileWrapper .stipend-min-input');
@@ -3271,6 +3680,12 @@ function setupEventListeners() {
         if (dom.companyTypeFilterMobile) state.companyType = dom.companyTypeFilterMobile.value;
         if (dom.industryTypeFilterMobile) state.industryType = dom.industryTypeFilterMobile.value;
         if (dom.firmTypeFilterMobile) state.firmType = dom.firmTypeFilterMobile.value;
+        document.querySelectorAll('#jobFiltersMobile .jf-text').forEach(input => {
+            const text = input.value.trim();
+            if (text) state.extra = { ...state.extra, [input.dataset.key]: text };
+            else state.extra = withoutFilterValue(state.extra, input.dataset.key);
+        });
+        extraBeforeSheet = null;
         syncAndFetch();
         dom.filterModalOverlay.classList.remove('show');
     });
@@ -3290,6 +3705,7 @@ function setupEventListeners() {
             state.companyType = '';
             state.industryType = '';
             state.firmType = '';
+            state.extra = {};
             if (dom.searchInputMobile) dom.searchInputMobile.value = '';
             if (currentTable === 'Fresher Jobs') {
                 state.experience = isExperiencedFresherPortal() ? 'Experienced' : 'Freshers';
@@ -3677,15 +4093,10 @@ async function initializePage() {
             profile = await fetchAndCacheProfileData();
         }
 
-        // Show onboarding segment modal if looking_for is not set on the homepage
-        if (!profile || !profile.looking_for) {
-            const path = window.location.pathname;
-            if (path === '/' || path === '/index.html') {
-                setTimeout(() => {
-                    showOnboardingSegmentModal();
-                }, 800); // Small pleasant delay after load
-            }
-        } else {
+        // The old 4-option "What are you looking for?" questionnaire is retired (8 Nov 2026). New accounts are asked by
+        // the required portal popup (scripts/career-profile.js), which also fills looking_for; nobody else is asked.
+        const newSignup = Boolean(currentSession?.user?.user_metadata?.msc_signup_consent);
+        if (profile?.looking_for || newSignup) {
             // User has a default portal set — redirect if arriving from an external link/bookmark
             const lookingForToPreference = {
                 'CA Industrial Training Default': 'industrial',
@@ -3693,7 +4104,7 @@ async function initializePage() {
                 'CA Fresher': 'fresher_fresher',
                 'Semi Qualified CA': 'semi_fresher'
             };
-            const pref = getJobPreference() || lookingForToPreference[profile.looking_for];
+            const pref = getJobPreference() || lookingForToPreference[profile?.looking_for];
             if (pref) {
                 redirectToPreferredPortal(pref);
             }
@@ -3766,21 +4177,24 @@ function checkAndOpenSharedJob() {
 // Fetch a specific shared job and open modal
 async function fetchSharedJob(jobId) {
     try {
-        let query = supabaseClient
-            .from(currentTable)
-            .select(getPublicJobSelectColumns(currentTable));
-        // Semi-qualified job URLs carry only the first 8 characters of the job's UUID.
-        if (currentTable === 'Semi Qualified Jobs' && /^[0-9a-f]{8}$/i.test(jobId)) {
-            const prefix = jobId.toLowerCase();
-            query = query
-                .gte('id', `${prefix}-0000-0000-0000-000000000000`)
-                .lte('id', `${prefix}-ffff-ffff-ffff-ffffffffffff`)
-                .order('Created_At', { ascending: false })
-                .limit(1);
-        } else {
-            query = query.eq('id', jobId);
-        }
-        const { data, error } = await query.maybeSingle();
+        // A shared link to a hidden vacancy opens nothing.
+        const { data, error } = await runPublicJobSelect(cols => {
+            let query = excludeHidden(supabaseClient
+                .from(currentTable)
+                .select(cols));
+            // Semi-qualified job URLs carry only the first 8 characters of the job's UUID.
+            if (currentTable === 'Semi Qualified Jobs' && /^[0-9a-f]{8}$/i.test(jobId)) {
+                const prefix = jobId.toLowerCase();
+                query = query
+                    .gte('id', `${prefix}-0000-0000-0000-000000000000`)
+                    .lte('id', `${prefix}-ffff-ffff-ffff-ffffffffffff`)
+                    .order('Created_At', { ascending: false })
+                    .limit(1);
+            } else {
+                query = query.eq('id', jobId);
+            }
+            return query.maybeSingle();
+        });
 
         if (!error && data) {
             setTimeout(() => showModal(data), 300);
@@ -4186,6 +4600,9 @@ async function fetchAndCacheProfileData() {
 
             if (profileObj.notification_subscriptions && Array.isArray(profileObj.notification_subscriptions)) {
                 localStorage.setItem('subscribedTopics', JSON.stringify(profileObj.notification_subscriptions));
+                if (currentFcmToken && !(window.flutter_app && window.flutter_app.isReady)) {
+                    mscReconcileTopics(currentFcmToken, profileObj.notification_subscriptions, false).catch(() => {});
+                }
                 updateNotificationBadge();
             }
 
@@ -4438,17 +4855,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ==========================================
 // ONBOARDING QUESTIONNAIRE SEGMENT MODAL
 // ==========================================
-
-// Show Onboarding Segment Modal with premium transition
-function showOnboardingSegmentModal() {
-    const modal = document.getElementById('onboardingSegmentModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        // Trigger reflow for animation
-        modal.offsetHeight;
-        modal.classList.add('show-modal');
-    }
-}
 
 // Hide Onboarding Segment Modal with premium transition
 function hideOnboardingSegmentModal() {
@@ -4825,11 +5231,11 @@ async function dv2PopulateTrending() {
     const list = document.getElementById('dv2TrendingList');
     if (!card || !list) return;
     try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await runPublicJobSelect(cols => excludeHidden(supabaseClient
             .from(currentTable)
-            .select(getPublicJobSelectColumns(currentTable))
+            .select(cols))
             .order('Created_At', { ascending: false, nullsFirst: false })
-            .limit(5);
+            .limit(5));
         if (error || !data || data.length === 0) return;
 
         list.innerHTML = '';

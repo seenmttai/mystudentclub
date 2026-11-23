@@ -5,7 +5,9 @@ import {
   JOB_TITLE_MAP,
   JOB_EXPIRATION_DAYS,
   getPublicJobSelectColumns,
-  renderMarkdown,
+  renderJobDescription,
+  jobPay,
+  jobTypeLabel,
   generateJobSlug,
   generateJsonLd,
   jobSeo
@@ -29,10 +31,18 @@ export async function getStaticPaths() {
     const jobs: any[] = [];
     let ok = true;
     for (let from = 0; ; from += PAGE_SIZE) {
-      const { data, error } = await supabase
+      let query = supabase
         .from(tableName)
         .select(getPublicJobSelectColumns(tableName))
         .gt('Created_At', since)
+        // Hidden vacancies (third-party reposts) get no page; sync-job-pages.js then deletes any old one.
+        .not('hidden', 'is', true);
+      // MSC's own exclusive articleship cards (applications collected by MSC) get no public job page,
+      // so Google for Jobs never lists them as postings by the named firm.
+      if (tableName === 'Articleship Jobs') {
+        query = query.or('hirer_email.is.null,hirer_email.neq.recruit@mystudentclub.com');
+      }
+      const { data, error } = await query
         .order('Created_At', { ascending: false })
         .order('id', { ascending: false })
         .range(from, from + PAGE_SIZE - 1);
@@ -81,18 +91,16 @@ const postedAt = new Date(job.Created_At);
 const postedDate = Number.isFinite(postedAt.getTime())
   ? postedAt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })
   : '';
-const salary = job.Salary
-  ? (/^\d+$/.test(String(job.Salary).trim()) ? `₹${Number(job.Salary).toLocaleString('en-IN')}` : `₹${job.Salary}`)
-  : '';
+const pay = jobPay(job, categorySlug as string);
+const typeLabel = jobTypeLabel(job, categorySlug as string);
+const isExclusive = job.is_exclusive === true;
 const location = job.Location || 'India';
-const category = job.Category || 'General';
 const roleTitle = jobSeo.jobTitle(job, categorySlug);
 const parsedLocation = jobSeo.parseLocation(job.Location);
 const city = parsedLocation.places[0]?.city || (parsedLocation.remote ? 'Remote' : 'India');
 
 // Full description with emails, links and phone numbers masked (same as the portal popup).
 const maskedDescription = jobSeo.maskContacts(job.Description);
-const descriptionHtml = renderMarkdown(maskedDescription || 'No description available');
 const snippet = maskedDescription.replace(/\s+/g, ' ').replace(/[*_#>`]/g, '').trim();
 const metaSnippet = snippet.length > 110 ? snippet.slice(0, 110).replace(/\s+\S*$/, '') + '…' : snippet;
 
@@ -109,16 +117,14 @@ const backLinkUrl = jobSeo.CATEGORY_PORTAL[categorySlug as string] || '/';
 const categoryLabel = jobSeo.CATEGORY_LABEL[categorySlug as string] || 'CA Jobs';
 const targetPortalUrl = `${backLinkUrl}?id=${encodeURIComponent(job.id)}&type=${categorySlug}`;
 
-// Protected Apply Button
-const applyButtonsHtml = `
-  <div class="email-apply-buttons">
-    <a href="${targetPortalUrl}" class="btn-large btn-primary-large">
-      <i class="fas fa-paper-plane"></i> View Application Details & Apply
-    </a>
-  </div>
-`;
+// Masked contacts in the description become "Email shown on MSC" chips that open the vacancy on the portal.
+const descriptionHtml = renderJobDescription(maskedDescription, targetPortalUrl);
 
 const jsonLd = generateJsonLd(job, categorySlug);
+const openTillAt = new Date(jsonLd.validThrough);
+const openTill = Number.isFinite(openTillAt.getTime())
+  ? openTillAt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })
+  : '';
 const breadcrumbLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -150,6 +156,8 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-itunes-app" content="app-id=6756720522">
+    <script is:inline src="/scripts/app-banner.js?v=20261110" defer></script>
     <title>{pageTitle}</title>
     <meta name="description" content={metaDescription}>
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
@@ -183,702 +191,302 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
     <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c')}></script>
     
     <style is:inline>
-        /* Professional Job Details Design - Migrated from jobs-test.html */
+        /* Job page design (Nov 2026): header with title and fact pills, the description on the left,
+           Apply in a sticky card on the right; on phones Apply sits in a bar at the bottom. */
         :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --accent-color: #f59e0b;
-            --background-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-secondary: #475569;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --transition: all 0.2s ease;
+            --paper: #F4F6FB;
+            --surface: #FFFFFF;
+            --ink: #0F1A33;
+            --ink-2: #33405C;
+            --muted: #5B6680;
+            --rule: #E3E8F2;
+            --blue: #1F55E8;
+            --blue-press: #1744C2;
+            --blue-tint: #EEF3FF;
+            --amber: #9A6200;
+            --amber-tint: #FFF4DC;
+            color-scheme: light;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-
+        *, *::before, *::after { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; }
         body {
-            background-color: var(--background-color);
-            color: var(--text-main);
-            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'Poppins', system-ui, sans-serif;
+            font-size: 16px;
             line-height: 1.6;
-            display: flex;
-            flex-direction: column;
         }
-
-        /* Fixed Header */
-        header {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            padding: 1rem 1.25rem;
-            box-shadow: var(--shadow);
-            z-index: 100;
-            flex-shrink: 0;
-            position: sticky;
-            top: 0;
-        }
-
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 100%;
-        }
-
-        .logo {
-            height: 35px;
-        }
-
-        .back-link {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.85rem;
-            transition: var(--transition);
-        }
-
-        .back-link:hover {
-            color: var(--primary-color);
-        }
-
-        /* Scrollable Main Content Area */
-        .main-content-area {
-            flex: 1 !important;
-            overflow-y: auto !important;
-            padding: 0.5rem !important;
-            max-width: none !important;
-            margin: 0 !important;
-        }
-
-        .job-details-container {
-            background: var(--card-bg);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            width: 100% !important;
-            max-width: none !important;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Professional Job Header */
-        .job-header-section {
-            background: linear-gradient(135deg, #2c53bf 0%, #2c56de 100%);
-            color: white;
-            padding: 2rem 2rem 1.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .job-header-content {
-            display: flex;
-            gap: 1.5rem;
-            align-items: flex-start;
-        }
-
-        .company-logo-large {
-            width: 64px;
-            height: 64px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(8px);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            flex-shrink: 0;
-        }
-
-        .job-title-block {
-            flex: 1;
-        }
-
-        .job-title-block h1 {
-            font-size: 1.75rem;
-            margin: 0 0 0.5rem 0;
-            line-height: 1.2;
-            font-weight: 600;
-        }
-
-        .job-meta-row {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 0.75rem 1.25rem;
-            font-size: 0.875rem;
-            opacity: 0.9;
-            margin-top: 0.75rem;
-        }
-
-        .job-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .job-meta-item i {
-            opacity: 0.8;
-        }
-
-        .job-expired-status {
-            color: #fecaca;
-            font-weight: 700;
-        }
-
-        /* Body Layout */
-        .job-body {
-            padding: 1.75rem 2rem;
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 2.5rem;
-            align-items: start;
-        }
-
-        /* Main Column - Scrollable when content exceeds height */
-        .main-column {
-            max-height: calc(100vh - 100px);
-            overflow-y: auto;
-            padding-right: 1rem;
-        }
-
-        /* Custom scrollbar for main column */
-        .main-column::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .main-column::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 3px;
-        }
-
-        .main-column::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-
-        .main-column::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        /* Action Sidebar - Fixed/Sticky */
-        .action-sidebar {
-            position: sticky;
-            top: 0;
-            align-self: start;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            min-width: 0;
-        }
-
-        .action-card {
-            min-width: 0;
-            overflow: hidden;
-        }
-
-        /* Dense Info Grid - In Sidebar */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0.75rem;
-            margin-bottom: 1.25rem;
-            min-width: 0;
-            overflow: hidden;
-        }
-
-        .info-card {
-            background: #f8fafc;
-            padding: 1rem;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            transition: all 0.2s;
-            min-width: 0;
-            overflow: hidden;
-        }
-
-        .info-card:hover {
-            border-color: var(--primary-color);
-            background: #eff6ff;
-        }
-
-        .info-label {
-            display: block;
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-            margin-bottom: 0.35rem;
-        }
-
-        .info-value {
-            font-weight: 600;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .info-value i {
-            color: var(--primary-color);
-            font-size: 1rem;
-        }
-
-        .info-value-container {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: #f8fafc;
-            border-radius: 6px;
-            padding: 0.5rem;
-            max-width: 100%;
-        }
-
-        .info-value-scroll {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            overflow-x: auto;
-            overflow-y: hidden;
-            white-space: nowrap;
-            min-width: 0;
-        }
-
-        .info-value-scroll::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        .info-value-scroll::-webkit-scrollbar-track {
-            background: #e2e8f0;
-            border-radius: 2px;
-        }
-
-        .info-value-scroll::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: 2px;
-        }
-
-        .apply-link-text {
-            font-weight: 600;
-            color: var(--text-main);
-            font-size: 0.95rem;
-        }
-
-        .copy-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 0.4rem 0.6rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-
-        .copy-btn:hover {
-            background: #1e40af;
-            transform: scale(1.05);
-        }
-
-        .copy-btn i {
-            font-size: 0.9rem;
-        }
-
-        /* Markdown Description Styling */
-        .description-content {
-            line-height: 1.7;
-        }
-
-        .description-content p {
-            margin-bottom: 1rem;
-        }
-
-        .description-content h1,
-        .description-content h2,
-        .description-content h3 {
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-        }
-
-        .description-content h1 {
-            font-size: 1.5rem;
-        }
-
-        .description-content h2 {
-            font-size: 1.25rem;
-        }
-
-        .description-content h3 {
-            font-size: 1.1rem;
-        }
-
-        .description-content strong {
-            font-weight: 600;
-            color: var(--text-main);
-        }
-
-        .description-content em {
-            font-style: italic;
-        }
-
-        .description-content a {
-            color: var(--primary-color);
-            text-decoration: underline;
-        }
-
-        .description-content a:hover {
-            color: #1e40af;
-        }
-
-        /* Description */
-        .description-section {
-            background: white;
-        }
-
-        .description-section h2 {
-            font-size: 1.15rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-main);
-            font-weight: 600;
-        }
-
-        .description-section h2 i {
-            color: var(--primary-color);
-            font-size: 1rem;
-        }
-
-        .description-content {
-            line-height: 1.7;
-            color: var(--text-secondary);
-            white-space: pre-wrap;
-            font-size: 0.925rem;
-        }
-
-        /* Action Card */
-        .action-card {
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.25rem;
-        }
-
-        .action-card h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-main);
-        }
-
-        .action-card > p {
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-            font-size: 0.825rem;
-            line-height: 1.5;
-        }
-
-        .btn-large {
-            display: flex;
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-            font-size: 0.875rem;
-            text-decoration: none;
-            margin-bottom: 1rem;
-        }
-
-        .btn-primary-large {
-            background: var(--primary-color);
-            color: white;
-            box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
-        }
-
-        .btn-primary-large:hover {
-            background: var(--secondary-color);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.25);
-        }
-
-        /* Secondary button for Simple Apply */
-        .btn-secondary-large {
-            background: #f1f5f9;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            margin-bottom: 0rem;
-        }
-
-        .btn-secondary-large:hover {
-            background: #e2e8f0;
-            transform: translateY(-1px);
-        }
-
-        .btn-linkedin {
-            background: #0077b5;
-            color: white;
-            box-shadow: 0 1px 2px rgba(0, 119, 181, 0.2);
-        }
-
-        .btn-linkedin:hover {
-            background: #006097;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgba(0, 119, 181, 0.25);
-        }
-
-        /* Email action buttons container */
-        .email-apply-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .job-h1-company {
-            font-weight: 500;
-            opacity: 0.9;
-        }
-
-        .job-breadcrumb {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            padding: 0.25rem 0.5rem 0.6rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.35rem;
-        }
-
-        .job-breadcrumb a {
-            color: var(--secondary-color);
-            text-decoration: none;
-        }
-
-        .job-more-links {
-            margin-top: 1rem;
-            font-size: 0.85rem;
-        }
-
-        .job-more-links a {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        .job-related ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.45rem;
-            font-size: 0.85rem;
-        }
-
-        .job-related a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 968px) {
-            .job-body {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
+        a { color: var(--blue); }
+        a:focus-visible, button:focus-visible { outline: 3px solid rgba(31, 85, 232, 0.35); outline-offset: 2px; border-radius: 8px; }
+        .wrap { max-width: 1440px; margin: 0 auto; padding: 0 32px; }
+
+        /* Top bar */
+        .topbar { background: var(--surface); border-bottom: 1px solid var(--rule); }
+        .topbar .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+        .topbar img { height: 34px; display: block; }
+        .topbar nav { display: flex; gap: 8px; }
+        .topbar nav a {
+            font-size: 14px; font-weight: 500; color: var(--ink-2); text-decoration: none;
+            padding: 8px 12px; border-radius: 10px;
+        }
+        .topbar nav a:hover { background: var(--paper); color: var(--ink); }
+        .topbar nav .short { display: none; }
+
+        /* Header: title and facts on the left, LinkedIn on the right in the same column as the Apply card below. */
+        .hero { background: var(--surface); border-bottom: 1px solid var(--rule); }
+        .hero .wrap { padding-top: 20px; padding-bottom: 36px; }
+        .crumbs { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 24px; }
+        .crumbs a { color: var(--muted); text-decoration: none; }
+        .crumbs a:hover { color: var(--blue); text-decoration: underline; }
+        .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 72px; align-items: center; }
+        .hero-peers {
+            display: flex; gap: 14px; align-items: flex-start;
+            border: 1px solid var(--rule); border-radius: 18px; padding: 20px 22px; background: var(--surface);
+        }
+        .hero-peers > i { color: #0A66C2; font-size: 30px; line-height: 1; margin-top: 2px; }
+        .hero-peers h2 { font-size: 15.5px; margin: 0 0 2px; }
+        .hero-peers p { font-size: 14px; color: var(--muted); margin: 0 0 10px; line-height: 1.5; }
+        .hero-peers a {
+            display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; text-decoration: none;
+            color: #0A66C2; border: 1px solid #C7DBF0; border-radius: 999px; padding: 7px 14px;
+        }
+        .hero-peers a:hover { background: #F0F6FC; }
+        .hero-peers a i { font-size: 11px; }
+        .side-peers { display: none; }
+        .company { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+        .monogram {
+            width: 52px; height: 52px; flex: none; border-radius: 14px;
+            background: var(--ink); color: #fff;
+            display: grid; place-items: center; font-size: 22px; font-weight: 700;
+        }
+        .company-name { font-size: 16px; font-weight: 600; color: var(--ink-2); line-height: 1.35; }
+        .exclusive {
+            display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;
+            font-size: 12.5px; font-weight: 600; color: var(--amber); background: var(--amber-tint);
+            padding: 3px 10px; border-radius: 999px;
+        }
+        h1 {
+            font-size: clamp(28px, 2.8vw, 40px); line-height: 1.15; letter-spacing: -0.022em;
+            font-weight: 700; margin: 0 0 20px;
+        }
+
+        /* Facts: small pills under the title on laptops, a 2 x 2 grid on phones */
+        .facts { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+        .facts div {
+            display: inline-flex; align-items: center;
+            font-size: 13.5px; line-height: 1; color: var(--ink-2);
+            background: var(--paper); border: 1px solid var(--rule); border-radius: 999px; padding: 8px 14px;
+        }
+        .facts i { color: var(--muted); font-size: 13px; }
+        .facts dt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+        .facts dd { margin: 0; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; }
+        .facts .pre { color: var(--muted); font-weight: 400; margin-right: -3px; }
+
+        .btn {
+            display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
+            font: inherit; font-size: 15.5px; font-weight: 600; text-decoration: none; cursor: pointer;
+            border-radius: 12px; padding: 13px 16px; border: 1px solid transparent;
+        }
+        .btn-primary { background: var(--blue); color: #fff; }
+        .btn-primary:hover { background: var(--blue-press); }
+        .btn-quiet { background: var(--surface); color: var(--ink); border-color: var(--rule); margin-top: 10px; }
+        .btn-quiet:hover { border-color: #C9D3E6; background: var(--paper); }
+
+        /* Body */
+        .layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 72px; padding-top: 40px; padding-bottom: 64px; }
+        .about h2 { font-size: 22px; letter-spacing: -0.01em; margin: 0 0 16px; }
+        .about h3 { font-size: 16px; margin: 28px 0 10px; }
+        .prose { max-width: 74ch; color: var(--ink-2); overflow-wrap: anywhere; }
+        .prose p { margin: 0 0 16px; }
+        .prose .lead { font-size: 17px; color: var(--ink); font-weight: 500; }
+        .prose ul { list-style: none; padding: 0; margin: 0 0 18px; display: grid; gap: 10px; }
+        .prose li { display: grid; grid-template-columns: 28px 1fr; align-items: start; }
+        .prose li .mark { font-size: 16px; line-height: 1.6; }
+        .prose li .mark.dot { display: flex; align-items: center; height: 1.6em; }
+        .prose li .mark.dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+        .prose strong { color: var(--ink); font-weight: 600; }
+        .locked {
+            display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+            font-size: 13.5px; font-weight: 600; text-decoration: none;
+            color: var(--blue); background: var(--blue-tint); padding: 1px 10px; border-radius: 999px;
+        }
+        .locked:hover { background: #E1EAFF; }
+        .report { max-width: 74ch; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--muted); }
+
+        /* Right card: Apply, then where to find more vacancies */
+        .side {
+            position: sticky; top: 24px; align-self: start;
+            background: var(--surface); border: 1px solid var(--rule); border-radius: 18px; padding: 24px;
+            box-shadow: 0 18px 40px -26px rgba(15, 26, 51, 0.28);
+        }
+        .side .posted { font-size: 13px; color: var(--muted); text-align: center; margin: 12px 0 0; }
+        .side h2 { font-size: 16px; margin: 0 0 6px; }
+        .side p { font-size: 14px; color: var(--ink-2); margin: 0; }
+        .side .peers { display: flex; gap: 10px; align-items: flex-start; }
+        .side .peers i { color: #0A66C2; font-size: 18px; margin-top: 2px; }
+        .side .peers a { font-weight: 600; text-decoration: none; }
+        .side hr { border: 0; border-top: 1px solid var(--rule); margin: 20px 0 18px; }
+        .side ul { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 10px; }
+        .side ul a { font-size: 14.5px; font-weight: 500; text-decoration: none; display: inline-flex; gap: 10px; align-items: center; }
+        .side ul a:hover { text-decoration: underline; }
+        .side ul i { width: 18px; text-align: center; color: var(--muted); }
+
+        footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--rule); background: var(--surface); }
+        footer .wrap { padding-top: 24px; padding-bottom: 32px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+        footer a { color: var(--muted); }
+
+        /* Tablet: one column; Apply moves to a bar at the bottom */
+        .apply-bar { display: none; }
+        @media (max-width: 900px) {
+            .hero-grid { display: block; }
+            .hero-peers { display: none; }
+            .side-peers { display: block; }
+            .layout { grid-template-columns: 1fr; gap: 32px; padding-top: 28px; }
+            .side { position: static; box-shadow: none; }
+            .side .apply-top { display: none; }
+            body { padding-bottom: 84px; }
+            .apply-bar {
+                display: flex; gap: 10px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+                padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+                background: rgba(255, 255, 255, 0.96); border-top: 1px solid var(--rule);
+                backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
             }
-
-            .main-column {
-                max-height: none;
-                overflow-y: visible;
-                padding-right: 0;
-            }
-
-            .action-sidebar {
-                position: static;
-            }
+            .apply-bar .btn-primary { flex: 1; }
+            .apply-bar .btn-quiet { margin: 0; width: 52px; flex: none; padding: 13px 0; }
         }
-
+        /* Phone */
         @media (max-width: 640px) {
-            header {
-                padding: 0.75rem 1rem;
-            }
-
-            .logo {
-                height: 31px;
-            }
-
-            .back-link {
-                font-size: 0.75rem;
-                gap: 0.3rem;
-            }
-
-            .main-content-area {
-                padding: 0.75rem !important;
-            }
-
-            .job-header-section {
-                padding: 1.5rem 1rem;
-            }
-
-            .job-header-content {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                gap: 1rem;
-            }
-
-            .job-meta-row {
-                justify-content: center;
-                font-size: 0.8rem;
-            }
-
-            .job-body {
-                padding: 1.25rem 1rem;
-            }
-
-            .description-section h2 {
-                font-size: 1rem;
-            }
-
-            .description-content {
-                font-size: 0.875rem;
-            }
-
-            .btn-large {
-                padding: 0.65rem 0.75rem;
-                font-size: 0.8rem;
-            }
+            .wrap { padding: 0 16px; }
+            .topbar .wrap { height: 56px; }
+            .topbar img { height: 30px; }
+            .topbar nav a.app, .topbar nav .long { display: none; }
+            .topbar nav .short { display: inline; }
+            .hero .wrap { padding-bottom: 32px; }
+            .crumbs { margin-bottom: 20px; }
+            .monogram { width: 44px; height: 44px; font-size: 19px; border-radius: 12px; }
+            .company-name { font-size: 14.5px; }
+            h1 { font-size: 28px; line-height: 1.12; letter-spacing: -0.025em; }
+            .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); border-radius: 14px; }
+            .facts div { display: block; background: none; border: 0; border-radius: 0; padding: 12px 14px; line-height: 1.6; }
+            .facts div:nth-child(even) { border-left: 1px solid var(--rule); }
+            .facts div:nth-child(n+3) { border-top: 1px solid var(--rule); }
+            .facts div:last-child:nth-child(odd) { grid-column: 1 / -1; }
+            .facts i, .facts .pre { display: none; }
+            .facts dt { position: static; width: auto; height: auto; overflow: visible; clip: auto; font-size: 13px; color: var(--muted); }
+            .facts dd { display: block; font-size: 14.5px; font-weight: 600; color: var(--ink); }
+            .prose { font-size: 15.5px; }
         }
+        @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a href={backLinkUrl}>
-                <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="logo">
-            </a>
-            <a href={backLinkUrl} class="back-link">
-                <i class="fas fa-arrow-left"></i>
-                <span>Back to Jobs</span>
-            </a>
+    <header class="topbar">
+        <div class="wrap">
+            <a href={backLinkUrl} aria-label="My Student Club"><img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club"></a>
+            <nav aria-label="Main">
+                <a href={backLinkUrl}><span class="long">All {categoryLabel}</span><span class="short">All vacancies</span></a>
+                <a href="/links" class="app">Get vacancy alerts</a>
+            </nav>
         </div>
     </header>
 
-    <main class="main-content-area">
-        <nav class="job-breadcrumb" aria-label="Breadcrumb">
-            {backLinkUrl !== '/' && <Fragment><a href="/">Home</a> <span aria-hidden="true">›</span></Fragment>}
-            <a href={backLinkUrl}>{categoryLabel}</a> <span aria-hidden="true">›</span>
-            <span>{companyName}</span>
-        </nav>
-        <div class="job-details-container">
-            <div class="job-header-section">
-                <div class="job-header-content">
-                    <div class="company-logo-large">{companyInitial}</div>
-                    <div class="job-title-block">
-                        <h1>{roleTitle} <span class="job-h1-company">at {companyName}</span></h1>
-                        <div class="job-meta-row">
-                            <div class="job-meta-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>{location}</span>
+    <main>
+        <section class="hero">
+            <div class="wrap">
+                <nav class="crumbs" aria-label="Breadcrumb">
+                    {backLinkUrl !== '/' && <Fragment><a href="/">Home</a><span aria-hidden="true">›</span></Fragment>}
+                    <a href={backLinkUrl}>{categoryLabel}</a><span aria-hidden="true">›</span>
+                    <span>{companyName}</span>
+                </nav>
+                <div class="hero-grid">
+                    <div>
+                        <div class="company">
+                            <div class="monogram" aria-hidden="true">{companyInitial}</div>
+                            <div>
+                                <div class="company-name">{companyName}</div>
+                                {isExclusive && <span class="exclusive"><i class="fas fa-star" aria-hidden="true"></i> Exclusive to MSC Program members</span>}
                             </div>
-                            {salary && (
-                                <div class="job-meta-item">
-                                    <i class="fas fa-rupee-sign"></i>
-                                    <span>{salary}</span>
-                                </div>
-                            )}
-                            {postedDate && (
-                                <div class="job-meta-item">
-                                    <i class="far fa-clock"></i>
-                                    <span>Posted <time datetime={jsonLd.datePosted}>{postedDate}</time></span>
-                                </div>
-                            )}
-                            {category && (
-                                <div class="job-meta-item">
-                                    <i class="fas fa-tag"></i>
-                                    <span>{category}</span>
-                                </div>
-                            )}
+                        </div>
+                        <h1>{roleTitle}</h1>
+                        <dl class="facts">
+                            <div><dt>Location</dt><dd><i class="fas fa-location-dot" aria-hidden="true"></i>{location}</dd></div>
+                            <div><dt>Type</dt><dd><i class="fas fa-briefcase" aria-hidden="true"></i>{typeLabel}</dd></div>
+                            {pay.text && <div><dt>{pay.label}</dt><dd><i class="fas fa-indian-rupee-sign" aria-hidden="true"></i>{pay.text}</dd></div>}
+                            {postedDate && <div><dt>Posted</dt><dd><i class="far fa-calendar" aria-hidden="true"></i><span class="pre">Posted</span> <time datetime={jsonLd.datePosted}>{postedDate}</time></dd></div>}
+                            {openTill && <div><dt>Open till</dt><dd><i class="far fa-hourglass-half" aria-hidden="true"></i><span class="pre">Open till</span> <time datetime={jsonLd.validThrough}>{openTill}</time></dd></div>}
+                        </dl>
+                    </div>
+                    <div class="hero-peers">
+                        <i class="fab fa-linkedin" aria-hidden="true"></i>
+                        <div>
+                            <h2>Ask people who work there</h2>
+                            <p>Talk to someone at {companyName} before you apply.</p>
+                            <a href={connectLink} target="_blank" rel="noopener">Find them on LinkedIn <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div class="job-body">
-                <div class="main-column">
-                    <div class="description-section">
-                        <h2><i class="fas fa-file-lines"></i> Job Description</h2>
-                        <div class="description-content" set:html={descriptionHtml}></div>
-                        <p class="job-more-links">
-                            <a href={targetPortalUrl}>See recruiter contact details and apply &rsaquo;</a>
-                        </p>
-                    </div>
+        <div class="wrap layout">
+            <article class="about">
+                <h2>About the role</h2>
+                <div class="prose" set:html={descriptionHtml}></div>
+                <p class="report">Something wrong with this vacancy? <a href="/contact.html">Report it</a></p>
+            </article>
+
+            <aside class="side" aria-label="Apply and more">
+                <div class="apply-top">
+                    <a class="btn btn-primary" href={targetPortalUrl}><i class="fas fa-paper-plane" aria-hidden="true"></i> Apply on My Student Club</a>
+                    <button class="btn btn-quiet" type="button" data-share><i class="fas fa-share-nodes" aria-hidden="true"></i> Share with a friend</button>
+                    {postedDate && <p class="posted">Posted on My Student Club on {postedDate}</p>}
+                    <hr>
                 </div>
-
-                <aside class="action-sidebar">
-                    <div class="action-card">
-                        <h3>Ready to Apply?</h3>
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5;">
-                            Apply directly to this opening with verified recruiter contact details.
-                        </p>
-                        
-                        <div set:html={applyButtonsHtml}></div>
-
-                        <a href={connectLink} target="_blank" class="btn-large btn-linkedin">
-                            <i class="fab fa-linkedin"></i> Connect with Peers
-                        </a>
-                        
-                        <div class="action-card-footer" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); text-align: center;">
-                            False job vacancy? <a href="/contact.html" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Report it</a>
-                        </div>
-                    </div>
-
-                    <div class="action-card job-related">
-                        <h3>More {categoryLabel}</h3>
-                        <ul>
-                            <li><a href={backLinkUrl}>All latest {categoryLabel}</a></li>
-                            <li><a href="/jobs-by-email">Get new jobs by email</a></li>
-                        </ul>
-                    </div>
-                </aside>
-            </div>
+                <div class="side-peers">
+                    <h2>Ask people who work there</h2>
+                    <p class="peers"><i class="fab fa-linkedin" aria-hidden="true"></i><span>Talk to someone at {companyName} before you apply. <a href={connectLink} target="_blank" rel="noopener">Find them on LinkedIn</a></span></p>
+                    <hr>
+                </div>
+                <h2>Never miss a vacancy</h2>
+                <ul>
+                    <li><a href="/links"><i class="fab fa-whatsapp" aria-hidden="true"></i> Vacancy alerts on WhatsApp</a></li>
+                    <li><a href="/jobs-by-email"><i class="far fa-envelope" aria-hidden="true"></i> New vacancies by email</a></li>
+                    <li><a href={backLinkUrl}><i class="fas fa-briefcase" aria-hidden="true"></i> All {categoryLabel}</a></li>
+                </ul>
+            </aside>
         </div>
     </main>
+
+    <footer>
+        <div class="wrap">
+            <span>My Student Club: articleship, industrial training and CA jobs in one place.</span>
+            <a href="/contact.html">Contact us</a>
+        </div>
+    </footer>
+
+    <div class="apply-bar">
+        <a class="btn btn-primary" href={targetPortalUrl}><i class="fas fa-paper-plane" aria-hidden="true"></i> Apply on My Student Club</a>
+        <button class="btn btn-quiet" type="button" data-share aria-label="Share this vacancy"><i class="fas fa-share-nodes" aria-hidden="true"></i></button>
+    </div>
+
+    <script is:inline>
+        document.querySelectorAll('[data-share]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var url = document.querySelector('link[rel="canonical"]').href;
+                var text = document.title.replace(/ \| My Student Club$/, '');
+                if (navigator.share) {
+                    navigator.share({ title: text, text: text, url: url }).catch(function () {});
+                } else if (navigator.clipboard) {
+                    navigator.clipboard.writeText(text + '\n' + url).then(function () {
+                        var old = button.innerHTML;
+                        button.textContent = 'Link copied';
+                        setTimeout(function () { button.innerHTML = old; }, 1800);
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

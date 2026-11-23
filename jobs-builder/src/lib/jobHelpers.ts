@@ -89,6 +89,101 @@ export function renderMarkdown(markdown: any): string {
     return html;
 }
 
+// Pay pill on the job page. Industrial and Articleship store a monthly stipend (20000), Fresher and Semi Qualified
+// a yearly CTC (1200000); text values ("₹30,000 per month") are shown as they are.
+export function jobPay(job: any, categorySlug: string): { label: string; text: string } {
+    const monthly = categorySlug === 'industrial' || categorySlug === 'articleship';
+    const label = monthly ? 'Stipend' : 'Salary';
+    const raw = job && job.Salary;
+    const amount = Number(String(raw ?? '').replace(/[,\s₹]/g, ''));
+    if (String(raw ?? '').trim() !== '' && Number.isFinite(amount) && amount > 0) {
+        if (monthly) return { label, text: `₹${amount.toLocaleString('en-IN')} / month` };
+        if (amount >= 100000) return { label, text: `₹${Math.round(amount / 10000) / 10} LPA` };
+        return { label, text: `₹${amount.toLocaleString('en-IN')}` };
+    }
+    const text = String(raw || (job && (job['Stipend Range'] || job['CTC Range'])) || '').trim();
+    if (!text) return { label, text: '' };
+    return { label, text: /₹|\brs\.?|\binr\b/i.test(text) ? text : `₹${text}` };
+}
+
+export function jobTypeLabel(job: any, categorySlug: string): string {
+    if (categorySlug === 'fresher') {
+        return String((job && job.Experience) || '').toLowerCase() === 'experienced' ? 'Experienced CA' : 'CA fresher';
+    }
+    const labels: Record<string, string> = { industrial: 'Industrial training', 'semi-qualified': 'Semi-qualified CA', articleship: 'Articleship' };
+    return labels[categorySlug] || 'CA job';
+}
+
+// A line that starts with an emoji ("🔹 ...", "📍 ...") or a bullet ("- ", "• ", "1. ").
+const EMOJI_START = /^((?:\p{Extended_Pictographic}|[#*0-9]️?⃣)(?:️|‍\p{Extended_Pictographic}|\p{Emoji_Modifier})*)\s*/u;
+const BULLET_START = /^([-*•●▪◦‣–✓]|\d{1,2}[.)])\s+/;
+
+function describeInline(text: string, applyUrl: string): string {
+    return escapeHtml(text)
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        // Contacts masked by jobSeo.maskContacts become a chip that opens the vacancy on MSC.
+        .replace(/\[(email|link|phone) protected\]/g, (_match, kind) =>
+            `<a class="locked" href="${escapeHtml(applyUrl)}"><i class="fas fa-lock" aria-hidden="true"></i> ${kind.charAt(0).toUpperCase()}${kind.slice(1)} shown on MSC</a>`);
+}
+
+// The job page's description: blank lines split paragraphs; lines that start with an emoji or a bullet become a list
+// (the emoji stays as the bullet); a short line ending in ":" becomes a small heading; "Label: text" items get a
+// bold label. A one-line opening becomes the lead. The text is expected to be masked already.
+export function renderJobDescription(text: any, applyUrl: string): string {
+    const source = String(text || '').replace(/\r\n?/g, '\n').trim();
+    if (!source) return '<p>No description available.</p>';
+    const out: string[] = [];
+    let list: string[] = [];
+    let para: string[] = [];
+    let paraRaw = 0;
+    const flushList = () => { if (list.length) out.push(`<ul>${list.join('')}</ul>`); list = []; };
+    const flushPara = () => {
+        if (!para.length) return;
+        const lead = out.length === 0 && para.length === 1 && paraRaw < 200;
+        out.push(`<p${lead ? ' class="lead"' : ''}>${para.join('<br>')}</p>`);
+        para = [];
+        paraRaw = 0;
+    };
+
+    source.split('\n').forEach((rawLine, index) => {
+        const line = rawLine.trim();
+        if (!line) { flushList(); flushPara(); return; }
+
+        const heading = /^#{1,6}\s+(.+)$/.exec(line) || (line.length <= 60 && /^(.*\S)\s*:$/.exec(line));
+        if (heading) {
+            flushList(); flushPara();
+            out.push(`<h3>${describeInline(heading[1], applyUrl)}</h3>`);
+            return;
+        }
+
+        const emoji = EMOJI_START.exec(line);
+        const bullet = emoji ? null : BULLET_START.exec(line);
+        // The opening line keeps its emoji as part of the lead ("💼 CA Industrial Trainee at ...").
+        if ((emoji && index > 0) || bullet) {
+            flushPara();
+            const match = (emoji || bullet) as RegExpExecArray;
+            const marker = match[1];
+            const rest = line.slice(match[0].length);
+            const mark = /^[-*•●▪◦‣–]$/.test(marker)
+                ? '<span class="mark dot" aria-hidden="true"></span>'
+                : `<span class="mark" aria-hidden="true">${escapeHtml(marker)}</span>`;
+            const label = /^([^:]{2,50}):\s+(\S.*)$/.exec(rest);
+            const body = label && label[1].trim().split(/\s+/).length <= 7 && !/protected|https?$/i.test(label[1])
+                ? `<strong>${describeInline(label[1], applyUrl)}:</strong> ${describeInline(label[2], applyUrl)}`
+                : describeInline(rest, applyUrl);
+            list.push(`<li>${mark}<span>${body}</span></li>`);
+            return;
+        }
+
+        flushList();
+        para.push(describeInline(line, applyUrl));
+        paraRaw += line.length;
+    });
+    flushList();
+    flushPara();
+    return out.join('\n');
+}
+
 export function getApplicationLink(applicationId: any): { link: string; isEmail: boolean } {
     if (!applicationId) {
         return { link: '#', isEmail: false };

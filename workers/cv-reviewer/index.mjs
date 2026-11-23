@@ -23,6 +23,12 @@ function isEligibleCourse(course) {
 
 
 const ACCESS_VERSION = '2026-09-27-verified-partial-v1';
+const PROMPT_VERSION = '2026-11-22-today-date';
+// The models' own sense of "now" is their training cutoff, so without this they call real
+// 2025/2026 dates "future dates" and dock the score. Always tell them today's date in India.
+function todayInIndia(now = new Date()) {
+  return new Intl.DateTimeFormat('en-GB', {timeZone: 'Asia/Kolkata', day: 'numeric', month: 'long', year: 'numeric'}).format(now);
+}
 const FREE_SECTIONS = new Set(['OVERALL_SCORE', 'RECRUITER_TIPS', 'MEASURABLE_RESULTS', 'EDUCATION_QUALIFICATION', 'ARTICLESHIP_EXPERIENCE']);
 function json(data, status = 200, extraHeaders = {}) {
   return new Response(status === 204 ? null : JSON.stringify(data), {status, headers: {
@@ -101,7 +107,7 @@ async function checkRateLimit(request, env) {
 export default {
   async fetch(request,env,ctx) {
     if (request.method === 'OPTIONS') return json(null,204);
-    if (request.method === 'GET' && new URL(request.url).pathname === '/health') return json({ok:true,version:ACCESS_VERSION,reportAccess:'server-verified'});
+    if (request.method === 'GET' && new URL(request.url).pathname === '/health') return json({ok:true,version:ACCESS_VERSION,prompt:PROMPT_VERSION,reportAccess:'server-verified'});
     if (request.method !== 'POST') return json({ok:false,error:'Method not allowed'},405);
     try {
       let body;
@@ -129,7 +135,15 @@ async function processCV(images, pdfText, domain, specialization, env) {
       ocrTextPrefix = `**Extracted PDF Text (OCR). The ocr might be inaccurate, as in it might have spelling mistakes, ignore those spelling mistakes. Trust the image sent to you more.:**\n${pdfText}\n\n---\n\n`;
   }
 
+  const today = todayInIndia();
   const systemPrompt = `You are an elite Career Strategist and Forensic Resume Auditor specializing in **${domain}** for **${specialization}** roles (CA/Finance focus).
+
+## **TODAY'S DATE: ${today}**
+Today is ${today} (India). Your own idea of the current year is out of date; use this date for every date and duration check.
+- Any date on or before ${today} is in the past and valid. Never call it a "future date", a typo or an error, and never deduct points for it.
+- "Present", "Current", "Till date" or "Ongoing" means the role runs up to ${today}; work out durations up to ${today}.
+- Only flag a date as an issue if it is after ${today} and is not clearly marked as expected or upcoming (e.g. "Expected May 2027", "Appearing Nov 2026"), or if a range ends before it starts.
+- Hyphen vs en-dash in date ranges is not an issue (ATS reads both). Mention date format only if the formats genuinely clash (e.g. "Dec 2025" vs "12/2025"), and only as Low severity.
 
 ## **CORE DIRECTIVES**
 1. **Scope Check:** If the uploaded document is not a CV/resume or is outside CA/Finance/Accounting, output ONLY: \`<<<OUT_OF_CONTEXT>>> [Reason]\`.
@@ -142,7 +156,7 @@ async function processCV(images, pdfText, domain, specialization, env) {
 
 **<<<RECRUITER_TIPS>>>**
 * **Contact Information:** [Analyze email, LinkedIn vanity URL, phone format]
-* **Visual Alignment & Formatting:** [Forensic check: grid alignment, dash consistency (en-dashes for dates), margins, widows/orphans]
+* **Visual Alignment & Formatting:** [Forensic check: grid alignment, consistent date format, margins, widows/orphans]
 * **Word Count & Length:** [Assess density & page count]
 * **LinkedIn Profile:** [URL check]
 * **Summary/Objective:** [Hook check: replace generic objective with professional value proposition]

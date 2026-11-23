@@ -33,6 +33,12 @@ jobs:
     - name: Sync Job Pages
       run: cd jobs-builder && npm run sync
 
+    - name: Delete Pages Of Hidden Jobs
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      run: cd jobs-builder && npm run hide
+
     - name: Generate Sitemap
       run: cd jobs-builder && npm run sitemap
 

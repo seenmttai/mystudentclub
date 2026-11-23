@@ -1,0 +1,2609 @@
+{
+ "id": "dt-4",
+ "domain": "direct-tax",
+ "number": 4,
+ "title": "Computation and advance tax",
+ "minutes": 40,
+ "learn": [
+  "How book profit becomes taxable income, line by line",
+  "Which costs the Act never allows, and which wait for payment",
+  "How the advance-tax instalments and their interest work"
+ ],
+ "do": [
+  "Check ten projection lines for tax adjustments",
+  "Work out the year’s advance tax and December’s instalment",
+  "Draft the mail to the client"
+ ],
+ "case": {
+  "role": "First-year article assistant on the direct-tax team",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers; it pays tax under the 22% company option",
+  "team": "Kunal Mehrotra (tax senior); Mahesh Kadam (GM Finance at Tamhini, sent the projection); Amol Joglekar (MD at Tamhini, asks two questions through Mahesh); Pallavi Shinde (accounts executive at Tamhini, made the tax depreciation working)",
+  "goal": "Take Tamhini’s projected profit for the year to taxable income, work out the year’s advance tax and the December instalment, and draft the mail to Mahesh.",
+  "period": "Tax year 2026–27 (year ending 31 March 2027)",
+  "where": "Tax desk, Prabhat Road office · Tuesday 1 December 2026"
+ },
+ "brief": {
+  "from": "kunal",
+  "time": "10:05 am",
+  "messages": [
+   "Mahesh sent Tamhini’s projection last night, with replies to my ten queries. Tell me which of those lines change taxable income, and by how much.",
+   "Then the year’s advance tax, the December instalment and a mail to Mahesh. By Thursday, please; the challan has to go by the 15th."
+  ]
+ },
+ "documents": [
+  {
+   "id": "mail-proj",
+   "type": "letter",
+   "style": "email",
+   "title": "Mahesh’s mail · Projection and two questions",
+   "tab": "Mahesh’s mail",
+   "from": {
+    "name": "Mahesh Kadam",
+    "email": "mahesh.kadam@email.com"
+   },
+   "to": [
+    {
+     "name": "Kunal Mehrotra",
+     "email": "kunal.mehrotra@email.com"
+    }
+   ],
+   "cc": [
+    {
+     "name": "Pallavi Shinde",
+     "email": "pallavi.shinde@email.com"
+    }
+   ],
+   "date": "Mon, 30 Nov 2026, 11:14 pm",
+   "subject": "Projection 2026–27 for the December advance tax",
+   "body": [
+    "Dear Kunal,",
+    "Our projection for 2026–27 is attached: actuals to October, budget for November to March. My replies to your ten queries are on your sheet, and Pallavi’s tax depreciation working and the June and September challans are attached too.",
+    "Two questions from Amol sir. Our customers and the bank will deduct about ₹9.90 lakh of TDS from us this year. We also deduct about ₹57 lakh from vendors and staff and deposit it every month: can that come off the advance tax too?",
+    "And cash is tight after the Diwali shutdown. He would like to pay ₹60 lakh on 15 December and the rest in March, if there is no harm.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Mahesh Kadam",
+    "role": "GM, Finance and Accounts",
+    "for": "Tamhini Drivetech Private Limited"
+   },
+   "attachments": [
+    "Projection_2026-27_Nov.xlsx",
+    "Tax_dep_2026-27.xlsx",
+    "Advance_tax_challans_Jun_Sep.pdf"
+   ]
+  },
+  {
+   "id": "pl-proj",
+   "type": "table",
+   "style": "statement",
+   "title": "Projected P&L, 2026–27",
+   "tab": "P&L",
+   "kindLabel": "Projection",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "heading": "Projected statement of profit and loss for the year ending 31 March 2027",
+   "subtitle": "₹ lakh · actual April–October 2026, budget November 2026–March 2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "note",
+     "label": "Note"
+    },
+    {
+     "key": "cy",
+     "label": "2026–27 projected",
+     "format": "num"
+    },
+    {
+     "key": "py",
+     "label": "2025–26 actual",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "rev",
+     "part": "Revenue from operations",
+     "note": "",
+     "cy": 12053.32,
+     "py": 10436.0
+    },
+    {
+     "_id": "oi",
+     "part": "Other income",
+     "note": "",
+     "cy": 7.2,
+     "py": 5.04
+    },
+    {
+     "_id": "ti",
+     "part": "Total income",
+     "note": "",
+     "cy": 12060.52,
+     "py": 10441.04,
+     "_class": "subtotal",
+     "_sumOf": [
+      "rev",
+      "oi"
+     ]
+    },
+    {
+     "_id": "hd",
+     "part": "Expenses",
+     "note": "",
+     "cy": null,
+     "py": null,
+     "_class": "head"
+    },
+    {
+     "_id": "comc",
+     "part": "Cost of materials consumed",
+     "note": "",
+     "cy": 5852.4,
+     "py": 5092.4,
+     "_indent": 1
+    },
+    {
+     "_id": "sit",
+     "part": "Purchases of stock-in-trade",
+     "note": "",
+     "cy": 1486.0,
+     "py": 1286.0,
+     "_indent": 1
+    },
+    {
+     "_id": "inv",
+     "part": "Changes in inventories of finished goods, work-in-progress and stock-in-trade",
+     "note": "",
+     "cy": -60.0,
+     "py": -32.0,
+     "_indent": 1
+    },
+    {
+     "_id": "emp",
+     "part": "Employee benefits expense",
+     "note": "A",
+     "cy": 1070.2,
+     "py": 958.6,
+     "_indent": 1
+    },
+    {
+     "_id": "fin",
+     "part": "Finance costs",
+     "note": "B",
+     "cy": 167.93,
+     "py": 188.4,
+     "_indent": 1
+    },
+    {
+     "_id": "dep",
+     "part": "Depreciation and amortisation expense",
+     "note": "",
+     "cy": 312.24,
+     "py": 286.2,
+     "_indent": 1
+    },
+    {
+     "_id": "oth",
+     "part": "Other expenses",
+     "note": "C",
+     "cy": 2224.0,
+     "py": 1883.6,
+     "_indent": 1
+    },
+    {
+     "_id": "te",
+     "part": "Total expenses",
+     "note": "",
+     "cy": 11052.77,
+     "py": 9663.2,
+     "_class": "subtotal",
+     "_sumOf": [
+      "comc",
+      "sit",
+      "inv",
+      "emp",
+      "fin",
+      "dep",
+      "oth"
+     ]
+    },
+    {
+     "_id": "pbt",
+     "part": "Profit before tax",
+     "note": "",
+     "cy": 1007.75,
+     "py": 777.84,
+     "_class": "total",
+     "_sumOf": [
+      "ti",
+      "-te"
+     ]
+    }
+   ],
+   "notes": [
+    "Notes A, B and C break up three of these lines; they are on the notes sheet.",
+    "Prepared by Mahesh Kadam, 30-11-2026. Not audited."
+   ]
+  },
+  {
+   "id": "pl-notes",
+   "type": "table",
+   "style": "statement",
+   "title": "Notes A–C to the projection",
+   "tab": "Notes A–C",
+   "kindLabel": "Projection",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "heading": "Notes to the projected statement of profit and loss for the year ending 31 March 2027",
+   "subtitle": "₹ lakh · actual April–October 2026, budget November 2026–March 2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "cy",
+     "label": "2026–27 projected",
+     "format": "num"
+    },
+    {
+     "key": "py",
+     "label": "2025–26 actual",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "ah",
+     "part": "A · Employee benefits expense",
+     "cy": null,
+     "py": null,
+     "_class": "head"
+    },
+    {
+     "_id": "a1",
+     "part": "Salaries and wages – staff",
+     "cy": 281.4,
+     "py": 258.2,
+     "_indent": 1
+    },
+    {
+     "_id": "a2",
+     "part": "Wages – workers",
+     "cy": 462.0,
+     "py": 409.6,
+     "_indent": 1
+    },
+    {
+     "_id": "a3",
+     "part": "Directors’ remuneration",
+     "cy": 72.0,
+     "py": 66.0,
+     "_indent": 1
+    },
+    {
+     "_id": "a4",
+     "part": "Bonus",
+     "cy": 76.8,
+     "py": 68.0,
+     "_indent": 1
+    },
+    {
+     "_id": "a5",
+     "part": "Contribution to PF and ESI",
+     "cy": 46.0,
+     "py": 41.4,
+     "_indent": 1
+    },
+    {
+     "_id": "a6",
+     "part": "Gratuity",
+     "cy": 24.0,
+     "py": 22.0,
+     "_indent": 1
+    },
+    {
+     "_id": "a7",
+     "part": "Leave encashment",
+     "cy": 10.8,
+     "py": 9.6,
+     "_indent": 1
+    },
+    {
+     "_id": "a8",
+     "part": "Staff welfare",
+     "cy": 97.2,
+     "py": 83.8,
+     "_indent": 1
+    },
+    {
+     "_id": "at",
+     "part": "Total, as in the P&L",
+     "cy": 1070.2,
+     "py": 958.6,
+     "_class": "subtotal",
+     "_sumOf": [
+      "a1",
+      "a2",
+      "a3",
+      "a4",
+      "a5",
+      "a6",
+      "a7",
+      "a8"
+     ]
+    },
+    {
+     "_id": "bh",
+     "part": "B · Finance costs",
+     "cy": null,
+     "py": null,
+     "_class": "head"
+    },
+    {
+     "_id": "b1",
+     "part": "Interest on term loans",
+     "cy": 78.83,
+     "py": 102.4,
+     "_indent": 1
+    },
+    {
+     "_id": "b2",
+     "part": "Interest on cash credit",
+     "cy": 88.6,
+     "py": 85.2,
+     "_indent": 1
+    },
+    {
+     "_id": "b3",
+     "part": "Other borrowing costs",
+     "cy": 0.5,
+     "py": 0.8,
+     "_indent": 1
+    },
+    {
+     "_id": "bt",
+     "part": "Total, as in the P&L",
+     "cy": 167.93,
+     "py": 188.4,
+     "_class": "subtotal",
+     "_sumOf": [
+      "b1",
+      "b2",
+      "b3"
+     ]
+    },
+    {
+     "_id": "ch",
+     "part": "C · Other expenses",
+     "cy": null,
+     "py": null,
+     "_class": "head"
+    },
+    {
+     "_id": "c1",
+     "part": "Stores and spares consumed",
+     "cy": 272.4,
+     "py": 242.0,
+     "_indent": 1
+    },
+    {
+     "_id": "c2",
+     "part": "Packing materials consumed",
+     "cy": 131.2,
+     "py": 116.0,
+     "_indent": 1
+    },
+    {
+     "_id": "c3",
+     "part": "Power and fuel",
+     "cy": 532.0,
+     "py": 462.0,
+     "_indent": 1
+    },
+    {
+     "_id": "c4",
+     "part": "Job work charges",
+     "cy": 348.0,
+     "py": 266.0,
+     "_indent": 1
+    },
+    {
+     "_id": "c5",
+     "part": "Contract labour charges",
+     "cy": 270.0,
+     "py": 220.0,
+     "_indent": 1
+    },
+    {
+     "_id": "c6",
+     "part": "Repairs and maintenance",
+     "cy": 151.2,
+     "py": 132.0,
+     "_indent": 1
+    },
+    {
+     "_id": "c7",
+     "part": "Freight outward",
+     "cy": 208.4,
+     "py": 162.0,
+     "_indent": 1
+    },
+    {
+     "_id": "c8",
+     "part": "Rates and taxes",
+     "cy": 11.8,
+     "py": 11.0,
+     "_indent": 1
+    },
+    {
+     "_id": "c9",
+     "part": "CSR expenditure",
+     "cy": 13.5,
+     "py": 12.0,
+     "_indent": 1
+    },
+    {
+     "_id": "c10",
+     "part": "Payment to auditors",
+     "cy": 19.5,
+     "py": 18.0,
+     "_indent": 1
+    },
+    {
+     "_id": "c11",
+     "part": "Legal and professional fees",
+     "cy": 44.2,
+     "py": 36.0,
+     "_indent": 1
+    },
+    {
+     "_id": "c12",
+     "part": "Rent, insurance, travel, security and other costs",
+     "cy": 221.8,
+     "py": 206.6,
+     "_indent": 1
+    },
+    {
+     "_id": "ct",
+     "part": "Total, as in the P&L",
+     "cy": 2224.0,
+     "py": 1883.6,
+     "_class": "subtotal",
+     "_sumOf": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10",
+      "c11",
+      "c12"
+     ]
+    }
+   ],
+   "notes": [
+    "Gratuity and leave encashment are the year’s provisions; payments to leavers come out of the provisions, not this note.",
+    "Rates and taxes: property tax, licence fees and the April compounding fee."
+   ]
+  },
+  {
+   "id": "q1",
+   "type": "card",
+   "style": "slip",
+   "title": "Line 1 · Query and reply",
+   "tab": "Query and reply",
+   "group": "i1",
+   "kindLabel": "Query sheet",
+   "issuer": "Bapat Venkatesh & Co. · Tax queries · Tamhini, 2026–27",
+   "heading": "Line 1 · Depreciation as per books",
+   "fields": [
+    {
+     "label": "Where",
+     "value": "P&L: depreciation and amortisation expense"
+    },
+    {
+     "label": "Projected",
+     "value": "₹312.24 lakh"
+    },
+    {
+     "label": "Kunal’s query",
+     "value": "Book figure for the year?"
+    },
+    {
+     "label": "Mahesh’s reply",
+     "value": "Yes, the books’ depreciation for the year, the ERP software’s ₹3.60 lakh included."
+    },
+    {
+     "label": "Replied",
+     "value": "30-11-2026"
+    }
+   ]
+  },
+  {
+   "id": "q2",
+   "type": "card",
+   "style": "slip",
+   "title": "Line 2 · Query and reply",
+   "tab": "Query and reply",
+   "group": "i2",
+   "kindLabel": "Query sheet",
+   "issuer": "Bapat Venkatesh & Co. · Tax queries · Tamhini, 2026–27",
+   "heading": "Line 2 · Tax depreciation",
+   "fields": [
+    {
+     "label": "Where",
+     "value": "Pallavi’s working, sent with the projection"
+    },
+    {
+     "label": "Projected",
+     "value": "₹382.92 lakh"
+    },
+    {
+     "label": "Kunal’s query",
+     "value": "Tax depreciation for the year, block by block?"
+    },
+    {
+     "label": "Mahesh’s reply",
+     "value": "Pallavi’s working is attached: the new CNC, and the CMM and VMC-10 due in January and March, are all in it."
+    },
+    {
+     "label": "Replied",
+     "value": "30-11-2026"
+    }
+   ]
+  },
+  {
+   "id": "taxdep",
+   "type": "table",
+   "style": "sheet",
+   "title": "Line 2 · Pallavi’s tax depreciation working",
+   "tab": "Pallavi’s working",
+   "group": "i2",
+   "kindLabel": "Client’s sheet",
+   "sheetName": "Tax dep 26-27",
+   "otherSheets": [
+    "Additions"
+   ],
+   "formula": "=C6+SUM(C7:C9)",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "blk",
+     "label": "Block of assets"
+    },
+    {
+     "key": "rate",
+     "label": "Rate"
+    },
+    {
+     "key": "dep",
+     "label": "Depreciation (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "wdv",
+     "label": "WDV 1 April 2026 (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "a1",
+     "label": "Added, 180+ days (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "a2",
+     "label": "Added, <180 days (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "sold",
+     "label": "Sold (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "b1",
+     "blk": "Buildings",
+     "rate": "10%",
+     "wdv": 60200000,
+     "a1": 4260000,
+     "a2": null,
+     "sold": null,
+     "dep": 6446000
+    },
+    {
+     "_id": "b2",
+     "blk": "Furniture and fittings",
+     "rate": "10%",
+     "wdv": 2140000,
+     "a1": null,
+     "a2": null,
+     "sold": null,
+     "dep": 214000
+    },
+    {
+     "_id": "b3",
+     "blk": "Plant and machinery (cars included)",
+     "rate": "15%",
+     "wdv": 180500000,
+     "a1": 9416000,
+     "a2": 7350000,
+     "sold": 45000,
+     "dep": 29031900
+    },
+    {
+     "_id": "b4",
+     "blk": "Computers and software",
+     "rate": "40%",
+     "wdv": 810000,
+     "a1": 432000,
+     "a2": null,
+     "sold": null,
+     "dep": 496800
+    },
+    {
+     "_id": "bt",
+     "blk": "Depreciation on the blocks",
+     "rate": "",
+     "wdv": null,
+     "a1": null,
+     "a2": null,
+     "sold": null,
+     "dep": 36188700,
+     "_class": "subtotal",
+     "_sumOf": [
+      "b1",
+      "b2",
+      "b3",
+      "b4"
+     ]
+    },
+    {
+     "_id": "x1",
+     "blk": "Additional dep: CNC TC-35, 20% of ₹68,40,000",
+     "rate": "",
+     "wdv": null,
+     "a1": null,
+     "a2": null,
+     "sold": null,
+     "dep": 1368000
+    },
+    {
+     "_id": "x2",
+     "blk": "Additional dep: CMM, 10% of ₹18,90,000",
+     "rate": "",
+     "wdv": null,
+     "a1": null,
+     "a2": null,
+     "sold": null,
+     "dep": 189000
+    },
+    {
+     "_id": "x3",
+     "blk": "Additional dep: VMC-10, 10% of ₹54,60,000",
+     "rate": "",
+     "wdv": null,
+     "a1": null,
+     "a2": null,
+     "sold": null,
+     "dep": 546000
+    },
+    {
+     "_id": "tt",
+     "blk": "Tax depreciation for 2026–27",
+     "rate": "",
+     "wdv": null,
+     "a1": null,
+     "a2": null,
+     "sold": null,
+     "dep": 38291700,
+     "_class": "total",
+     "_sumOf": [
+      "bt",
+      "x1",
+      "x2",
+      "x3"
+     ]
+    }
+   ],
+   "notes": [
+    "Used 180 days or more: shed extension ₹42,60,000 (buildings); sedan ₹25,76,000 and CNC TC-35 ₹68,40,000, in use from 1 October (plant); six laptops ₹4,32,000 (computers).",
+    "Under 180 days, half the rate: CMM ₹18,90,000 due in January, VMC-10 ₹54,60,000 due in March.",
+    "Sold: the 2008 lathe, buyer found, about ₹45,000 in December.",
+    "Prepared by Pallavi Shinde, 28-11-2026, on the same sheet as earlier years."
+   ]
+  },
+  {
+   "id": "q3",
+   "type": "card",
+   "style": "slip",
+   "title": "Line 3 · Query and reply",
+   "tab": "Query and reply",
+   "group": "i3",
+   "kindLabel": "Query sheet",
+   "issuer": "Bapat Venkatesh & Co. · Tax queries · Tamhini, 2026–27",
+   "heading": "Line 3 · CSR expenditure",
+   "fields": [
+    {
+     "label": "Where",
+     "value": "Note C: CSR expenditure"
+    },
+    {
+     "label": "Projected",
+     "value": "₹13.50 lakh"
+    },
+    {
+     "label": "Kunal’s query",
+     "value": "What is the CSR spend, and when?"
+    },
+    {
+     "label": "Mahesh’s reply",
+     "value": "The science lab at the Mahalunge Zilla Parishad school, through the education trust, to be spent in February."
+    },
+    {
+     "label": "Replied",
+     "value": "30-11-2026"
+    }
+   ]
+  },
+  {
+   "id": "q4",
+   "type": "card",
+   "style": "slip",
+   "title": "Line 4 · Query and reply",
+   "tab": "Query and reply",
+   "group": "i4",
+   "kindLabel": "Query sheet",
+   "issuer": "Bapat Venkatesh & Co. · Tax queries · Tamhini, 2026–27",
+   "heading": "Line 4 · Gratuity",
+   "fields": [
+    {
+     "label": "Where",
+     "value": "Note A: gratuity"
+    },
+    {
+     "label": "Projected",
+     "value": "₹24.00 lakh"
+    },
+    {
+     "label": "Kunal’s query",
+     "value": "Gratuity: a fund or a provision? Anything paid this year?"
+    },
+    {
+     "label": "Mahesh’s reply",
+     "value": "No gratuity fund. The actuary’s ₹24.00 lakh is provided for the year, and we pay leavers out of the provision: ₹6.10 lakh so far, about ₹3.22 lakh more by March, ₹9.32 lakh in all."
+    },
+    {
+     "label": "Replied",
+     "value": "30-11-2026"
+    }
+   ]
+  },
+  {
+   "id": "led-grat",
+   "type": "table",
+   "style": "tally",
+   "title": "Line 4 · Ledger, provision for gratuity",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Provision for gratuity",
+   "subtitle": "Monthly summary · group: Provisions",
+   "period": "1-Apr-2026 to 30-Nov-2026",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Closing Cr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "cr",
+      "minus": "dr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "m": "Opening balance",
+     "dr": null,
+     "cr": null,
+     "bal": 11200000,
+     "_class": "muted"
+    },
+    {
+     "m": "April 2026",
+     "dr": null,
+     "cr": 200000,
+     "bal": 11400000
+    },
+    {
+     "m": "May 2026",
+     "dr": null,
+     "cr": 200000,
+     "bal": 11600000
+    },
+    {
+     "m": "June 2026",
+     "dr": 172000,
+     "cr": 200000,
+     "bal": 11628000
+    },
+    {
+     "m": "July 2026",
+     "dr": null,
+     "cr": 200000,
+     "bal": 11828000
+    },
+    {
+     "m": "August 2026",
+     "dr": 146000,
+     "cr": 200000,
+     "bal": 11882000
+    },
+    {
+     "m": "September 2026",
+     "dr": null,
+     "cr": 200000,
+     "bal": 12082000
+    },
+    {
+     "m": "October 2026",
+     "dr": 292000,
+     "cr": 200000,
+     "bal": 11990000
+    },
+    {
+     "m": "November 2026",
+     "dr": null,
+     "cr": 200000,
+     "bal": 12190000
+    },
+    {
+     "m": "Total",
+     "dr": 610000,
+     "cr": 1600000,
+     "bal": null,
+     "_class": "total",
+     "_check": false
+    }
+   ],
+   "notes": [
+    "Credits: monthly journal, Gratuity (expense) Dr, Provision for gratuity Cr, ₹2,00,000: the actuary’s ₹24,00,000 for the year.",
+    "Debits: gratuity in full and final settlements, paid by bank: PV 1931 (30-06-2026), PV 3152 (31-08-2026), PV 3764 (31-10-2026)."
+   ],
+   "group": "i4"
+  },
+  {
+   "id": "q5",
+   "type": "card",
+   "style": "slip",
+   "title": "Line 5 · Query and reply",
+   "tab": "Query and reply",
+   "group": "i5",
+   "kindLabel": "Query sheet",
+   "issuer": "Bapat Venkatesh & Co. · Tax queries · Tamhini, 2026–27",
+   "heading": "Line 5 · Leave encashment",
+   "fields": [
+    {
+     "label": "Where",
+     "value": "Note A: leave encashment"
+    },
+    {
+     "label": "Projected",
+     "value": "₹10.80 lakh"
+    },
+    {
+     "label": "Kunal’s query",
+     "value": "Leave encashment: what is paid, and when?"
+    },
+    {
+     "label": "Mahesh’s reply",
+     "value": "We settle it once a year, in March, for the year’s leavers; Shabana in HR expects ₹4.60 lakh this March. After that, nothing until the March 2028 settlement."
+    },
+    {
+     "label": "Replied",
+     "value": "30-11-2026"
+    }
+   ]
+  },
+  {
+   "id": "led-leave",
+   "type": "table",
+   "style": "tally",
+   "title": "Line 5 · Ledger, provision for leave encashment",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Provision for leave encashment",
+   "subtitle": "Monthly summary · group: Provisions",
+   "period": "1-Apr-2026 to 30-Nov-2026",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Closing Cr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "cr",
+      "minus": "dr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "m": "Opening balance",
+     "dr": null,
+     "cr": null,
+     "bal": 4600000,
+     "_class": "muted"
+    },
+    {
+     "m": "April 2026",
+     "dr": null,
+     "cr": 90000,
+     "bal": 4690000
+    },
+    {
+     "m": "May 2026",
+     "dr": null,
+     "cr": 90000,
+     "bal": 4780000
+    },
+    {
+     "m": "June 2026",
+     "dr": null,
+     "cr": 90000,
+     "bal": 4870000
+    },
+    {
+     "m": "July 2026",
+     "dr": null,
+     "cr": 90000,
+     "bal": 4960000
+    },
+    {
+     "m": "August 2026",
+     "dr": null,
+     "cr": 90000,
+     "bal": 5050000
+    },
+    {
+     "m": "September 2026",
+     "dr": null,
+     "cr": 90000,
+     "bal": 5140000
+    },
+    {
+     "m": "October 2026",
+     "dr": null,
+     "cr": 90000,
+     "bal": 5230000
+    },
+    {
+     "m": "November 2026",
+     "dr": null,
+     "cr": 90000,
+     "bal": 5320000
+    },
+    {
+     "m": "Total",
+     "dr": null,
+     "cr": 720000,
+     "bal": null,
+     "_class": "total",
+     "_check": false
+    }
+   ],
+   "notes": [
+    "Credits: monthly journal, Leave encashment (expense) Dr, Provision for leave encashment Cr, ₹90,000.",
+    "No payments so far: leave is settled once a year, in March, for the year’s leavers."
+   ],
+   "group": "i5"
+  },
+  {
+   "id": "q6",
+   "type": "card",
+   "style": "slip",
+   "title": "Line 6 · Query and reply",
+   "tab": "Query and reply",
+   "group": "i6",
+   "kindLabel": "Query sheet",
+   "issuer": "Bapat Venkatesh & Co. · Tax queries · Tamhini, 2026–27",
+   "heading": "Line 6 · Bonus",
+   "fields": [
+    {
+     "label": "Where",
+     "value": "Note A: bonus"
+    },
+    {
+     "label": "Projected",
+     "value": "₹76.80 lakh"
+    },
+    {
+     "label": "Kunal’s query",
+     "value": "When is the 2026–27 bonus paid?"
+    },
+    {
+     "label": "Mahesh’s reply",
+     "value": "With the October payroll. Last year’s ₹68.00 lakh went in two parts: the workmen’s ₹61.20 lakh on 21 October 2026 and the staff’s ₹6.80 lakh on 27 November, after the appraisals. This year the appraisals close in September, so all of 2026–27’s ₹76.80 lakh goes on 20 October 2027."
+    },
+    {
+     "label": "Replied",
+     "value": "30-11-2026"
+    }
+   ]
+  },
+  {
+   "id": "led-bonus",
+   "type": "table",
+   "style": "tally",
+   "title": "Line 6 · Ledger, bonus payable",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Bonus payable",
+   "subtitle": "Monthly summary · group: Current liabilities",
+   "period": "1-Apr-2026 to 30-Nov-2026",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Closing Cr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "cr",
+      "minus": "dr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "m": "Opening balance",
+     "dr": null,
+     "cr": null,
+     "bal": 6800000,
+     "_class": "muted"
+    },
+    {
+     "m": "April 2026",
+     "dr": null,
+     "cr": 640000,
+     "bal": 7440000
+    },
+    {
+     "m": "May 2026",
+     "dr": null,
+     "cr": 640000,
+     "bal": 8080000
+    },
+    {
+     "m": "June 2026",
+     "dr": null,
+     "cr": 640000,
+     "bal": 8720000
+    },
+    {
+     "m": "July 2026",
+     "dr": null,
+     "cr": 640000,
+     "bal": 9360000
+    },
+    {
+     "m": "August 2026",
+     "dr": null,
+     "cr": 640000,
+     "bal": 10000000
+    },
+    {
+     "m": "September 2026",
+     "dr": null,
+     "cr": 640000,
+     "bal": 10640000
+    },
+    {
+     "m": "October 2026",
+     "dr": 6120000,
+     "cr": 640000,
+     "bal": 5160000
+    },
+    {
+     "m": "November 2026",
+     "dr": 680000,
+     "cr": 640000,
+     "bal": 5120000
+    },
+    {
+     "m": "Total",
+     "dr": 6800000,
+     "cr": 5120000,
+     "bal": null,
+     "_class": "total",
+     "_check": false
+    }
+   ],
+   "notes": [
+    "Opening balance: bonus for 2025–26. Debits: 21-10-2026, PV 3671, workmen’s bonus for 2025–26; 27-11-2026, PV 3961, staff bonus for 2025–26.",
+    "Credits: monthly journal, Bonus (expense) Dr, Bonus payable Cr, ₹6,40,000 for 2026–27."
+   ],
+   "group": "i6"
+  },
+  {
+   "id": "q7",
+   "type": "card",
+   "style": "slip",
+   "title": "Line 7 · Query and reply",
+   "tab": "Query and reply",
+   "group": "i7",
+   "kindLabel": "Query sheet",
+   "issuer": "Bapat Venkatesh & Co. · Tax queries · Tamhini, 2026–27",
+   "heading": "Line 7 · Employees’ PF for September",
+   "fields": [
+    {
+     "label": "Where",
+     "value": "Employees’ share, deducted from salaries"
+    },
+    {
+     "label": "Amount",
+     "value": "₹3.23 lakh"
+    },
+    {
+     "label": "Kunal’s query",
+     "value": "Any PF or ESI deposited late this year?"
+    },
+    {
+     "label": "Mahesh’s reply",
+     "value": "Only September’s PF, deposited on 27 October, twelve days after the date in our register; the employees’ share in it is ₹3.23 lakh. Do we lose it?"
+    },
+    {
+     "label": "Replied",
+     "value": "30-11-2026"
+    }
+   ]
+  },
+  {
+   "id": "pf-reg",
+   "type": "table",
+   "style": "sheet",
+   "title": "Line 7 · Provident fund register, April–October",
+   "tab": "PF register",
+   "group": "i7",
+   "kindLabel": "Client’s sheet",
+   "sheetName": "PF 26-27",
+   "otherSheets": [
+    "ESI",
+    "PT"
+   ],
+   "formula": "=C7-B7",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "m",
+     "label": "Wage month"
+    },
+    {
+     "key": "due",
+     "label": "Due date"
+    },
+    {
+     "key": "paid",
+     "label": "Paid on"
+    },
+    {
+     "key": "late",
+     "label": "Days after register date",
+     "format": "int"
+    },
+    {
+     "key": "ee",
+     "label": "Employees’ share (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "er",
+     "label": "Employer’s share (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "tot",
+     "label": "Total paid (₹)",
+     "format": "inr",
+     "check": "ee + er"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2026",
+     "due": "15-05-2026",
+     "paid": "15-05-2026",
+     "late": null,
+     "ee": 293290,
+     "er": 317736,
+     "tot": 611026
+    },
+    {
+     "m": "May 2026",
+     "due": "15-06-2026",
+     "paid": "15-06-2026",
+     "late": null,
+     "ee": 294638,
+     "er": 319196,
+     "tot": 613834
+    },
+    {
+     "m": "Jun 2026",
+     "due": "15-07-2026",
+     "paid": "15-07-2026",
+     "late": null,
+     "ee": 293810,
+     "er": 318300,
+     "tot": 612110
+    },
+    {
+     "m": "Jul 2026",
+     "due": "15-08-2026",
+     "paid": "15-08-2026",
+     "late": null,
+     "ee": 317026,
+     "er": 343449,
+     "tot": 660475
+    },
+    {
+     "m": "Aug 2026",
+     "due": "15-09-2026",
+     "paid": "15-09-2026",
+     "late": null,
+     "ee": 318495,
+     "er": 345040,
+     "tot": 663535
+    },
+    {
+     "m": "Sep 2026",
+     "due": "15-10-2026",
+     "paid": "27-10-2026",
+     "late": 12,
+     "ee": 322829,
+     "er": 349736,
+     "tot": 672565
+    },
+    {
+     "m": "Oct 2026",
+     "due": "15-11-2026",
+     "paid": "15-11-2026",
+     "late": null,
+     "ee": 321378,
+     "er": 348165,
+     "tot": 669543
+    },
+    {
+     "m": "Total",
+     "due": "",
+     "paid": "",
+     "late": null,
+     "ee": 2161466,
+     "er": 2341622,
+     "tot": 4503088,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "HR’s sheet (Shabana Shaikh). Due date as per our register: 15th of the next month.",
+    "Employer’s share includes the charges paid with it."
+   ]
+  },
+  {
+   "id": "q8",
+   "type": "card",
+   "style": "slip",
+   "title": "Line 8 · Query and reply",
+   "tab": "Query and reply",
+   "group": "i8",
+   "kindLabel": "Query sheet",
+   "issuer": "Bapat Venkatesh & Co. · Tax queries · Tamhini, 2026–27",
+   "heading": "Line 8 · Compounding fee",
+   "fields": [
+    {
+     "label": "Where",
+     "value": "Note C: rates and taxes"
+    },
+    {
+     "label": "Projected",
+     "value": "₹11.80 lakh, of which ₹0.45 lakh is this"
+    },
+    {
+     "label": "Kunal’s query",
+     "value": "Anything in rates and taxes besides taxes and fees?"
+    },
+    {
+     "label": "Mahesh’s reply",
+     "value": "₹0.45 lakh paid on 22 April to compound the offence found at the March factory inspection: the licence renewal was filed late."
+    },
+    {
+     "label": "Replied",
+     "value": "30-11-2026"
+    }
+   ]
+  },
+  {
+   "id": "pv-comp",
+   "type": "card",
+   "style": "voucher",
+   "title": "Line 8 · Payment voucher, compounding fee",
+   "tab": "Voucher",
+   "group": "i8",
+   "issuer": "Tamhini Drivetech Private Limited",
+   "heading": "Bank payment voucher",
+   "number": "PV 0461",
+   "fields": [
+    {
+     "label": "Date",
+     "value": "22-04-2026"
+    },
+    {
+     "label": "Paid to",
+     "value": "Government treasury (online challan), on the compounding order of 15-04-2026"
+    },
+    {
+     "label": "Towards",
+     "value": "Compounding of the offence found at the factory inspection of 18-03-2026: licence renewal filed late"
+    },
+    {
+     "label": "Amount",
+     "value": "₹45,000 (Rupees forty-five thousand only)"
+    },
+    {
+     "label": "Debit",
+     "value": "Rates and taxes"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PAID · 22 APR 2026",
+     "color": "red",
+     "at": "top-right",
+     "rotate": -6
+    },
+    {
+     "kind": "sign",
+     "text": "P. Shinde",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -4
+    },
+    {
+     "kind": "sign",
+     "text": "M. Kadam",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "q9",
+   "type": "card",
+   "style": "slip",
+   "title": "Line 9 · Query and reply",
+   "tab": "Query and reply",
+   "group": "i9",
+   "kindLabel": "Query sheet",
+   "issuer": "Bapat Venkatesh & Co. · Tax queries · Tamhini, 2026–27",
+   "heading": "Line 9 · Interest on term loans",
+   "fields": [
+    {
+     "label": "Where",
+     "value": "Note B: interest on term loans"
+    },
+    {
+     "label": "Projected",
+     "value": "₹78.83 lakh"
+    },
+    {
+     "label": "Kunal’s query",
+     "value": "When is the term-loan interest paid?"
+    },
+    {
+     "label": "Mahesh’s reply",
+     "value": "On the last day of every month: Vindhya sends its interest statement, and we transfer the amount the same day from our Satpura Bank current account."
+    },
+    {
+     "label": "Replied",
+     "value": "30-11-2026"
+    }
+   ]
+  },
+  {
+   "id": "led-tlint",
+   "type": "table",
+   "style": "tally",
+   "title": "Line 9 · Ledger, interest on term loans",
+   "tab": "Ledger",
+   "group": "i9",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Interest on term loans",
+   "subtitle": "Group: Finance costs",
+   "period": "1-Apr-2026 to 30-Nov-2026",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vt",
+     "label": "Vch type"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "30-04-2026",
+     "part": "Satpura Bank",
+     "vt": "Payment",
+     "dr": 720000,
+     "cr": null
+    },
+    {
+     "date": "31-05-2026",
+     "part": "Satpura Bank",
+     "vt": "Payment",
+     "dr": 720000,
+     "cr": null
+    },
+    {
+     "date": "30-06-2026",
+     "part": "Satpura Bank",
+     "vt": "Payment",
+     "dr": 720000,
+     "cr": null
+    },
+    {
+     "date": "31-07-2026",
+     "part": "Satpura Bank",
+     "vt": "Payment",
+     "dr": 660000,
+     "cr": null
+    },
+    {
+     "date": "31-08-2026",
+     "part": "Satpura Bank",
+     "vt": "Payment",
+     "dr": 700399,
+     "cr": null
+    },
+    {
+     "date": "30-09-2026",
+     "part": "Satpura Bank",
+     "vt": "Payment",
+     "dr": 700399,
+     "cr": null
+    },
+    {
+     "date": "31-10-2026",
+     "part": "Satpura Bank",
+     "vt": "Payment",
+     "dr": 640399,
+     "cr": null
+    },
+    {
+     "date": "30-11-2026",
+     "part": "Satpura Bank",
+     "vt": "Payment",
+     "dr": 640399,
+     "cr": null
+    },
+    {
+     "date": "",
+     "part": "Total",
+     "vt": "",
+     "dr": 5501596,
+     "cr": null,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Paid by transfer from the Satpura Bank current account on the last day of each month, against Vindhya’s interest statement: term loan I to July, term loans I and II from August, after the July drawdown."
+   ]
+  },
+  {
+   "id": "q10",
+   "type": "card",
+   "style": "slip",
+   "title": "Line 10 · Query and reply",
+   "tab": "Query and reply",
+   "group": "i10",
+   "kindLabel": "Query sheet",
+   "issuer": "Bapat Venkatesh & Co. · Tax queries · Tamhini, 2026–27",
+   "heading": "Line 10 · Audit fees",
+   "fields": [
+    {
+     "label": "Where",
+     "value": "Note C: payment to auditors"
+    },
+    {
+     "label": "Projected",
+     "value": "₹19.50 lakh"
+    },
+    {
+     "label": "Kunal’s query",
+     "value": "How are the audit fees booked?"
+    },
+    {
+     "label": "Mahesh’s reply",
+     "value": "The year’s audit and tax-audit fees will be booked in March as payable, as we told your review team in October."
+    },
+    {
+     "label": "Replied",
+     "value": "30-11-2026"
+    }
+   ]
+  },
+  {
+   "id": "ch-jun",
+   "type": "card",
+   "style": "challan",
+   "title": "Challan · June advance tax",
+   "tab": "Challan",
+   "kindLabel": "Challan receipt",
+   "issuer": "Vindhya Commercial Bank · Chakan branch · BSR code 6390417",
+   "heading": "Challan receipt · Income tax",
+   "number": "04118",
+   "fields": [
+    {
+     "label": "Taxpayer",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "PAN",
+     "value": "ZHDCT5940H"
+    },
+    {
+     "label": "Tax year",
+     "value": "2026–27"
+    },
+    {
+     "label": "Type of payment",
+     "value": "Advance tax"
+    },
+    {
+     "label": "Amount",
+     "value": "₹33,00,000"
+    },
+    {
+     "label": "In words",
+     "value": "Rupees Thirty-three Lakh only"
+    },
+    {
+     "label": "Date of deposit",
+     "value": "15-06-2026"
+    },
+    {
+     "label": "Paid by",
+     "value": "Net banking, Vindhya cash credit account"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "15% of ₹220 L est. · P.S.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "ch-sep",
+   "type": "card",
+   "style": "challan",
+   "title": "Challan · September advance tax",
+   "tab": "Challan",
+   "kindLabel": "Challan receipt",
+   "issuer": "Vindhya Commercial Bank · Chakan branch · BSR code 6390417",
+   "heading": "Challan receipt · Income tax",
+   "number": "07362",
+   "fields": [
+    {
+     "label": "Taxpayer",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "PAN",
+     "value": "ZHDCT5940H"
+    },
+    {
+     "label": "Tax year",
+     "value": "2026–27"
+    },
+    {
+     "label": "Type of payment",
+     "value": "Advance tax"
+    },
+    {
+     "label": "Amount",
+     "value": "₹59,00,000"
+    },
+    {
+     "label": "In words",
+     "value": "Rupees Fifty-nine Lakh only"
+    },
+    {
+     "label": "Date of deposit",
+     "value": "15-09-2026"
+    },
+    {
+     "label": "Paid by",
+     "value": "Net banking, Vindhya cash credit account"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Cum. ₹92 L = 40% of ₹230 L est. · P.S.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Check the ten queried lines",
+   "prompt": "Kunal queried ten lines of Mahesh’s projection, and Mahesh has replied. For each line, decide what it does to taxable income: add back, deduct, or no change. If it changes, pick the reason and enter the amount in ₹ lakh. The P&L and its notes are under Other papers.",
+   "weight": 2,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your ten line calls to Kunal?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Kunal. You can read your calls but not change them."
+   },
+   "hints": [
+    "Each reply holds the fact that decides its line: when it is paid, a fund or a provision, a fee to settle an offence. Read Pallavi’s sheet row by row too: one kind of row does not belong to a 22% company.",
+    "A paid-only item still counts for this year if it is paid by 31 October 2027, the return due date. Set what is paid against what is provided, last year’s items included."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "fig"
+    }
+   ],
+   "fields": [
+    {
+     "id": "call",
+     "kind": "choice",
+     "label": "Taxable income",
+     "gate": true,
+     "neutral": true,
+     "options": [
+      {
+       "id": "add",
+       "label": "Add back",
+       "short": "Add back"
+      },
+      {
+       "id": "deduct",
+       "label": "Deduct",
+       "short": "Deduct"
+      },
+      {
+       "id": "none",
+       "label": "No change",
+       "short": "No change"
+      }
+     ]
+    },
+    {
+     "id": "why",
+     "kind": "choice",
+     "label": "The reason",
+     "showIf": {
+      "call": [
+       "add",
+       "deduct"
+      ]
+     },
+     "options": [
+      {
+       "id": "dep",
+       "label": "Tax depreciation replaces the books’ figure",
+       "short": "depreciation rule"
+      },
+      {
+       "id": "never",
+       "label": "Not allowed by the Act at all",
+       "short": "never allowed"
+      },
+      {
+       "id": "paid",
+       "label": "Allowed only when paid",
+       "short": "only when paid"
+      }
+     ]
+    },
+    {
+     "id": "amt",
+     "kind": "number",
+     "label": "By how much",
+     "prefix": "₹",
+     "unit": "lakh",
+     "tolerance": 0.01,
+     "sign": false,
+     "weight": 2,
+     "chip": true,
+     "showIf": {
+      "call": [
+       "add",
+       "deduct"
+      ]
+     }
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: Note C, ₹2.40 lakh, the Act says not allowed"
+    }
+   ],
+   "items": [
+    {
+     "id": "i1",
+     "label": "Line 1 · Depreciation as per books",
+     "fig": "₹312.24 lakh",
+     "docs": [
+      "q1"
+     ],
+     "prompt": "Mahesh’s reply; the P&L itself is under Other papers.",
+     "answer": {
+      "call": "add",
+      "why": "dep",
+      "amt": 312.24
+     },
+     "note": "Line 1: add back all ₹312.24 lakh. The books’ depreciation, the ERP’s amortisation with it, has no place in a tax computation. The Act gives its own figure on the blocks, and that comes in at line 2."
+    },
+    {
+     "id": "i2",
+     "label": "Line 2 · Tax depreciation (Pallavi’s working)",
+     "fig": "₹382.92 lakh",
+     "docs": [
+      "q2",
+      "taxdep"
+     ],
+     "prompt": "Mahesh’s reply, and Pallavi’s working behind the figure.",
+     "answer": {
+      "call": "deduct",
+      "why": "dep",
+      "amt": 361.89
+     },
+     "note": "Line 2: deduct ₹361.89 lakh, not ₹382.92 lakh. Pallavi’s sheet still adds ₹21.03 lakh of additional depreciation, and a company on the 22% option gets none (section 200). The blocks themselves are right.",
+     "weight": 3
+    },
+    {
+     "id": "i3",
+     "label": "Line 3 · CSR expenditure",
+     "fig": "₹13.50 lakh",
+     "docs": [
+      "q3"
+     ],
+     "prompt": "Mahesh’s reply; Note C is under Other papers.",
+     "answer": {
+      "call": "add",
+      "why": "never",
+      "amt": 13.5
+     },
+     "note": "Line 3: add back ₹13.50 lakh. The Companies Act makes Tamhini spend it, and the Income-tax Act still keeps CSR out of business expenses. Being required does not make it allowed."
+    },
+    {
+     "id": "i4",
+     "label": "Line 4 · Gratuity",
+     "fig": "₹24.00 lakh",
+     "docs": [
+      "q4",
+      "led-grat"
+     ],
+     "prompt": "Mahesh’s reply, and the provision ledger behind it.",
+     "answer": {
+      "call": "add",
+      "why": "paid",
+      "amt": 14.68
+     },
+     "note": "Line 4: add back ₹14.68 lakh. With no approved fund, the ₹24.00 lakh provision is not allowed, but the ₹9.32 lakh for the year’s leavers is: that gratuity falls due this year."
+    },
+    {
+     "id": "i5",
+     "label": "Line 5 · Leave encashment",
+     "fig": "₹10.80 lakh",
+     "docs": [
+      "q5",
+      "led-leave"
+     ],
+     "prompt": "Mahesh’s reply, and the provision ledger behind it.",
+     "answer": {
+      "call": "add",
+      "why": "paid",
+      "amt": 6.2
+     },
+     "note": "Line 5: add back ₹6.20 lakh. Leave encashment counts when paid. March’s ₹4.60 lakh will be paid in the year; the rest of the ₹10.80 lakh will not be paid by 31 October 2027."
+    },
+    {
+     "id": "i6",
+     "label": "Line 6 · Bonus",
+     "fig": "₹76.80 lakh",
+     "docs": [
+      "q6",
+      "led-bonus"
+     ],
+     "prompt": "Mahesh’s reply, and the bonus ledger behind it.",
+     "answer": {
+      "call": "deduct",
+      "why": "paid",
+      "amt": 6.8
+     },
+     "note": "Line 6: deduct ₹6.80 lakh. Last year’s staff bonus went on 27 November 2026, after that year’s due date, so it counts in the year it was paid: this one. This year’s ₹76.80 lakh goes by 20 October 2027, in time."
+    },
+    {
+     "id": "i7",
+     "label": "Line 7 · Employees’ PF for September",
+     "fig": "₹3.23 lakh",
+     "docs": [
+      "q7",
+      "pf-reg"
+     ],
+     "prompt": "Mahesh’s reply, and HR’s PF register.",
+     "answer": {
+      "call": "none"
+     },
+     "note": "Line 7: no change. From this year, employees’ PF counts if it reaches the fund by the return due date, 31 October 2027, whatever date the PF register used."
+    },
+    {
+     "id": "i8",
+     "label": "Line 8 · Compounding fee",
+     "fig": "₹0.45 lakh",
+     "docs": [
+      "q8",
+      "pv-comp"
+     ],
+     "prompt": "Mahesh’s reply, and the payment voucher.",
+     "answer": {
+      "call": "add",
+      "why": "never",
+      "amt": 0.45
+     },
+     "note": "Line 8: add back ₹0.45 lakh. Money paid to compound an offence is not a business expense, however small, and the Act says so in so many words."
+    },
+    {
+     "id": "i9",
+     "label": "Line 9 · Interest on term loans",
+     "fig": "₹78.83 lakh",
+     "docs": [
+      "q9",
+      "led-tlint"
+     ],
+     "prompt": "Mahesh’s reply, and the interest ledger.",
+     "answer": {
+      "call": "none"
+     },
+     "note": "Line 9: no change. Bank interest counts when paid, and Tamhini pays it every month from its current account. Only interest turned into a new loan, payable later, would count as unpaid."
+    },
+    {
+     "id": "i10",
+     "label": "Line 10 · Audit fees",
+     "fig": "₹19.50 lakh",
+     "docs": [
+      "q10"
+     ],
+     "prompt": "Mahesh’s reply; Note C is under Other papers.",
+     "answer": {
+      "call": "none"
+     },
+     "note": "Line 10: no change. The year’s audit fee is owed for the year, and it is not on the paid-only list. Our own fee, as it happens."
+    }
+   ],
+   "docs": [
+    "pl-proj",
+    "pl-notes",
+    "mail-proj",
+    "q1",
+    "q2",
+    "taxdep",
+    "q3",
+    "q4",
+    "led-grat",
+    "q5",
+    "led-leave",
+    "q6",
+    "led-bonus",
+    "q7",
+    "pf-reg",
+    "q8",
+    "pv-comp",
+    "q9",
+    "led-tlint",
+    "q10"
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "From profit to the December instalment",
+   "prompt": "Kunal has been through your calls; his adjustments are below. Work out taxable income, the year’s tax at 22% with surcharge and cess, and the advance tax after TDS. Then the December instalment from the two challans, and what is left for March. In ₹ lakh, to two decimals.",
+   "weight": 1.5,
+   "noun": [
+    "figure",
+    "figures"
+   ],
+   "layout": "table",
+   "lockOnLeave": {
+    "ask": "Hand your computation to Kunal?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Kunal. You can read your figures but not change them."
+   },
+   "hints": [
+    "Under the 22% option the tax is 22%, plus 10% of it as surcharge, plus 4% cess on both: multiply the three, don’t add them.",
+    "Only TDS deducted from Tamhini’s own income comes off. Each instalment is a cumulative target less what is already paid."
+   ],
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "amt",
+     "label": "₹ lakh",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "id": "g0",
+     "cells": {
+      "line": "Profit before tax, as projected",
+      "amt": 1007.75
+     }
+    },
+    {
+     "id": "g1",
+     "cells": {
+      "line": "Add: depreciation as per books",
+      "amt": 312.24
+     }
+    },
+    {
+     "id": "g2",
+     "cells": {
+      "line": "Add: CSR expenditure",
+      "amt": 13.5
+     }
+    },
+    {
+     "id": "g3",
+     "cells": {
+      "line": "Add: gratuity provided less paid",
+      "amt": 14.68
+     }
+    },
+    {
+     "id": "g4",
+     "cells": {
+      "line": "Add: leave encashment provided less paid",
+      "amt": 6.2
+     }
+    },
+    {
+     "id": "g5",
+     "cells": {
+      "line": "Add: compounding fee",
+      "amt": 0.45
+     }
+    },
+    {
+     "id": "g6",
+     "cells": {
+      "line": "Less: tax depreciation on the blocks",
+      "amt": 361.89
+     }
+    },
+    {
+     "id": "g7",
+     "cells": {
+      "line": "Less: 2025–26 staff bonus",
+      "amt": 6.8
+     }
+    },
+    {
+     "id": "r1",
+     "cells": {
+      "line": "Taxable income",
+      "amt": {
+       "input": true,
+       "answer": 986.13,
+       "tolerance": 0.01,
+       "working": "1,007.75 + 347.07 − 361.89 − 6.80",
+       "sign": false
+      }
+     },
+     "_class": "total"
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "line": "Tax at 22%, with 10% surcharge and 4% cess",
+      "amt": {
+       "input": true,
+       "answer": 248.19,
+       "tolerance": 0.03,
+       "working": "986.13 × 22% × 1.10 × 1.04 = 986.13 × 25.168%",
+       "sign": false,
+       "follow": "{r1.amt} × 25.168 ÷ 100"
+      }
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "line": "Less: TDS for the year",
+      "amt": {
+       "input": true,
+       "answer": 9.9,
+       "tolerance": 0,
+       "working": "Deducted from Tamhini’s own income: customers and the bank",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "line": "Advance tax for the year",
+      "amt": {
+       "input": true,
+       "answer": 238.29,
+       "tolerance": 0.03,
+       "working": "248.19 − 9.90",
+       "sign": false,
+       "follow": "{r2.amt} − {r3.amt}"
+      }
+     },
+     "_class": "total"
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "line": "Due by 15 December: 75% of it",
+      "amt": {
+       "input": true,
+       "answer": 178.72,
+       "tolerance": 0.03,
+       "working": "238.29 × 75%",
+       "sign": false,
+       "follow": "{r4.amt} × 75 ÷ 100"
+      }
+     }
+    },
+    {
+     "id": "r6",
+     "cells": {
+      "line": "Less: paid on 15 June and 15 September",
+      "amt": {
+       "input": true,
+       "answer": 92.0,
+       "tolerance": 0,
+       "working": "33.00 + 59.00",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r7",
+     "cells": {
+      "line": "December instalment",
+      "amt": {
+       "input": true,
+       "answer": 86.72,
+       "tolerance": 0.03,
+       "working": "178.72 − 92.00",
+       "sign": false,
+       "follow": "{r5.amt} − {r6.amt}"
+      }
+     },
+     "_class": "total"
+    },
+    {
+     "id": "r8",
+     "cells": {
+      "line": "March instalment, if the projection holds",
+      "amt": {
+       "input": true,
+       "answer": 59.57,
+       "tolerance": 0.03,
+       "working": "238.29 − 178.72",
+       "sign": false,
+       "follow": "{r4.amt} − {r5.amt}"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r1.amt": "Profit, plus ₹347.07 lakh of add-backs, less ₹361.89 lakh of tax depreciation and last year’s ₹6.80 lakh staff bonus. This year’s bonus, PF, interest and audit fees stay inside the profit.",
+    "r2.amt": "22% × 1.10 × 1.04 is 25.168%. Cess on the 22% alone gives 25.08%, and 22 + 10 + 4 gives 36%: both wrong.",
+    "r3.amt": "Only TDS deducted from Tamhini’s own income counts: ₹9.90 lakh. The ₹57 lakh it deducts from vendors and staff is their tax, deposited for them.",
+    "r4.amt": "Advance tax is the year’s tax less the TDS that will be deducted from Tamhini’s income during the year. The Act writes it A = B − C: A the advance tax, B the tax, C that TDS.",
+    "r5.amt": "75% is cumulative: it is the target for June, September and December together, not for December alone.",
+    "r6.amt": "The two challans only, ₹33.00 lakh and ₹59.00 lakh. TDS is already out of the year’s figure; it doesn’t count again here.",
+    "r7.amt": "₹86.72 lakh is December’s challan. Paying the whole ₹178.72 lakh would pay June and September twice.",
+    "r8.amt": "March clears the year. If the projection moves by February, this is the figure that changes."
+   },
+   "note": "Kunal’s list after your calls. This year’s bonus, September’s PF, the term-loan interest and the audit fees stay as they are.",
+   "noteAt": "top",
+   "docs": [
+    "ch-jun",
+    "ch-sep",
+    "mail-proj",
+    "pl-proj"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Draft the mail to Mahesh",
+   "prompt": "Kunal has checked your computation: advance tax for the year is ₹238.29 lakh after TDS. He wants one mail to Mahesh: the December figure, the answer to Amol sir’s TDS question, how to pay, a word on June and September, and the answer on his ₹60 lakh. Pick the right line for each point.",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "hints": [
+    "Each line needs the figure from your computation and the rule behind it. Test the ₹60 lakh against December’s own target, not against March."
+   ],
+   "previewLabel": "Your mail to Mahesh",
+   "slots": [
+    {
+     "id": "dec",
+     "label": "The December figure",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "On your projection, advance tax for 2026–27 comes to ₹238.29 lakh after TDS. 75% of it is due by 15 December; ₹92.00 lakh is paid, so please deposit ₹86.72 lakh by then.",
+       "why": "The cumulative target less what is paid, and Mahesh can tick both figures against his own challans."
+      },
+      {
+       "id": "b",
+       "text": "On your projection, advance tax for 2026–27 comes to ₹238.29 lakh after TDS. Each instalment is a quarter of the year’s figure, so please deposit ₹59.57 lakh by 15 December.",
+       "why": "The instalments are cumulative targets of 15%, 45%, 75% and 100%, not equal quarters. ₹59.57 lakh would leave December ₹27.15 lakh short."
+      },
+      {
+       "id": "c",
+       "text": "On your projection, advance tax for 2026–27 comes to ₹238.29 lakh after TDS. 75% of it is due by 15 December, so please deposit ₹178.72 lakh by then, apart from June and September.",
+       "why": "75% is the target for June, September and December together. The two challans count towards it, so ₹86.72 lakh is all December needs."
+      }
+     ]
+    },
+    {
+     "id": "tds",
+     "label": "Amol sir’s TDS question",
+     "options": [
+      {
+       "id": "a",
+       "text": "On TDS: the ₹57 lakh Tamhini deducts from vendors and staff also comes off, as it is tax Tamhini deposits every month, so the December figure falls below ₹86.72 lakh.",
+       "why": "That TDS belongs to the vendors and the staff and is credited to them. Tamhini only deducts it and deposits it."
+      },
+      {
+       "id": "b",
+       "text": "On TDS: neither comes off now. The ₹9.90 lakh and the ₹57 lakh are both set off only in the return next October, so the year’s figure is the tax itself.",
+       "why": "The TDS expected on Tamhini’s own income comes off the advance tax now: the year’s tax less that TDS. The vendors’ TDS never does."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "On TDS: only the ₹9.90 lakh your customers and the bank deduct from Tamhini comes off; the ₹57 lakh deducted from vendors and staff is their tax, deposited for them.",
+       "why": "Advance tax is the year’s tax less TDS on the company’s own income. TDS deposited for others is credited to their PANs."
+      }
+     ]
+    },
+    {
+     "id": "challan",
+     "label": "How to pay it",
+     "options": [
+      {
+       "id": "a",
+       "text": "Please pay the instalment as advance tax with assessment year 2027–28 selected on the challan, the year after the year of income, as Tamhini has always done till now.",
+       "why": "That was the old way. For income of April 2026 to March 2027 the challan takes tax year 2026–27, and a wrong pick can put the credit in the wrong year."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "Please pay the instalment as advance tax with tax year 2026–27 selected on the challan, as in June and September; assessment years cover income up to 2025–26.",
+       "why": "Under the new Act the year of income is the tax year. A wrong pick can put the credit in the wrong year."
+      },
+      {
+       "id": "c",
+       "text": "Please pay the instalment as self-assessment tax with tax year 2026–27 selected on the challan, since Tamhini works out the figure itself and no notice has come.",
+       "why": "Instalments during the year are advance tax, as in June and September. Self-assessment tax is what is still payable on the return, paid before it is filed."
+      }
+     ]
+    },
+    {
+     "id": "early",
+     "label": "June and September",
+     "options": [
+      {
+       "id": "a",
+       "text": "June and September were below 15% and 45% of ₹238.29 lakh, so 3% interest on the two shortfalls, about ₹54,000, should go on the December challan with the tax.",
+       "why": "Both clear the 12% and 36% marks on these figures, so nothing is due. And any such interest is paid before the return is filed, not with December’s challan."
+      },
+      {
+       "id": "b",
+       "text": "June and September were below 15% and 45% of ₹238.29 lakh, but no interest can arise, because each was paid on the estimate Tamhini had at the time.",
+       "why": "The test is against the tax on the income finally returned, not the estimate of the day. Here they are safe only because they clear 12% and 36%."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "June and September were below 15% and 45% of ₹238.29 lakh, but no interest arises on these numbers: ₹33.00 lakh is over 12% and ₹92.00 lakh over 36%.",
+       "why": "The Act lets June stand at 12% and September at 36% of the tax due on the returned income. If the year ends higher, we test again."
+      }
+     ]
+    },
+    {
+     "id": "amol",
+     "label": "Amol sir’s ₹60 lakh",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "On paying ₹60 lakh now: December would fall ₹26.72 lakh short of 75%, which costs 3% interest, about ₹80,000, and leaves ₹86.29 lakh for March. We suggest paying ₹86.72 lakh now.",
+       "why": "December’s shortfall carries 3%, and unlike June and September it has no lower mark. About ₹80,000 is what the wait would cost."
+      },
+      {
+       "id": "b",
+       "text": "On paying ₹60 lakh now: there is no cost as long as the whole ₹238.29 lakh is in by 15 March, since only the last instalment is tested against the year’s tax.",
+       "why": "Each instalment date is tested on its own. Paying in full by March clears March, not the 3% on December’s shortfall."
+      },
+      {
+       "id": "c",
+       "text": "On paying ₹60 lakh now: the ₹26.72 lakh short carries 1% a month until the return is processed, so the cost runs well past ₹1 lakh, whatever March brings.",
+       "why": "That 1% a month is for paying less than 90% of the year’s tax by 31 March. With March paid in full, only December’s 3% applies."
+      }
+     ]
+    }
+   ],
+   "template": "Subject: Advance tax, tax year 2026–27: December instalment\n\nMahesh sir,\n\nWe have been through the projection you sent on 30 November; our working is attached.\n\n{dec}\n\n{tds}\n\n{challan}\n\n{early}\n\n{amol}\n\nIf the projection holds, the last ₹59.57 lakh goes on 15 March. If it moves, please send us the revised figures in the first week of March and we will rework the year.\n\n{_free}\n\nPlease send us the challan copy once it is paid.\n\nRegards,\nTax team, Bapat Venkatesh & Co.",
+   "freeText": {
+    "label": "Your own line for the mail"
+   },
+   "docs": [
+    "mail-proj",
+    "ch-jun",
+    "ch-sep"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "kunal",
+  "text": "The line that hid was Pallavi’s additional depreciation, carried over from her old sheet; six more of the ten move taxable income. December is ₹86.72 lakh, and the mail puts a number on Amol sir’s wait: about ₹80,000. It goes to Mahesh today."
+ },
+ "wrapPartial": {
+  "from": "kunal",
+  "text": "December is ₹86.72 lakh, but some of this is not ready to go. Read my notes against the papers behind them, and bring me the mail again before it goes to Mahesh."
+ },
+ "wrapRetry": {
+  "from": "kunal",
+  "text": "Take each line to the Act before the books, and ask what the Act does with it. Then the tax at 22% with surcharge and cess, less only Tamhini’s own TDS, and each instalment as a target less what is paid."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.7,
+   "note": "Get more of the ten line calls right, with the reason and the amount, before this passes."
+  },
+  {
+   "task": "t2",
+   "min": 0.5,
+   "note": "The computation needs more figures right, or following your figures, before this passes."
+  }
+ ],
+ "model": {
+  "intro": "Seven of the ten lines change taxable income: five add back ₹347.07 lakh, tax depreciation takes off ₹361.89 lakh and last year’s staff bonus ₹6.80 lakh, so ₹1,007.75 lakh of profit becomes ₹986.13 lakh of taxable income. Advance tax for the year is ₹238.29 lakh, and December needs ₹86.72 lakh.",
+  "blocks": [
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "l",
+      "label": "Computation"
+     },
+     {
+      "key": "v",
+      "label": "₹ lakh",
+      "format": "amount"
+     }
+    ],
+    "rows": [
+     {
+      "l": "Profit before tax, as projected",
+      "v": 1007.75
+     },
+     {
+      "l": "Add: depreciation as per books",
+      "v": 312.24
+     },
+     {
+      "l": "Add: CSR expenditure",
+      "v": 13.5
+     },
+     {
+      "l": "Add: gratuity provided less paid",
+      "v": 14.68
+     },
+     {
+      "l": "Add: leave encashment provided less paid",
+      "v": 6.2
+     },
+     {
+      "l": "Add: compounding fee",
+      "v": 0.45
+     },
+     {
+      "l": "Less: tax depreciation on the blocks",
+      "v": 361.89
+     },
+     {
+      "l": "Less: 2025–26 staff bonus",
+      "v": 6.8
+     },
+     {
+      "l": "Taxable income",
+      "v": 986.13,
+      "_class": "total"
+     },
+     {
+      "l": "Tax at 25.168%",
+      "v": 248.19
+     },
+     {
+      "l": "Less: TDS for the year",
+      "v": 9.9
+     },
+     {
+      "l": "Advance tax for the year",
+      "v": 238.29,
+      "_class": "total"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "No change: this year’s bonus (to be paid on 20 October 2027, before the return is due), September’s employees’ PF (in the fund on 27 October 2026), the term-loan interest (paid every month) and the audit fees (owed for the year). Last year’s staff bonus, paid on 27 November 2026 after that year’s due date, comes off this year."
+   },
+   {
+    "type": "text",
+    "text": "The instalments, in ₹ lakh. Each share is cumulative: the target by that date."
+   },
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "d",
+      "label": "By"
+     },
+     {
+      "key": "p",
+      "label": "Share"
+     },
+     {
+      "key": "t",
+      "label": "Target",
+      "format": "amount"
+     },
+     {
+      "key": "i",
+      "label": "Paid or due",
+      "format": "amount"
+     }
+    ],
+    "rows": [
+     {
+      "d": "15 June",
+      "p": "15%",
+      "t": 35.74,
+      "i": 33.0
+     },
+     {
+      "d": "15 September",
+      "p": "45%",
+      "t": 107.23,
+      "i": 59.0
+     },
+     {
+      "d": "15 December",
+      "p": "75%",
+      "t": 178.72,
+      "i": 86.72
+     },
+     {
+      "d": "15 March",
+      "p": "100%",
+      "t": 238.29,
+      "i": 59.57
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "June’s ₹33.00 lakh is 13.85% and September’s cumulative ₹92.00 lakh is 38.61% of ₹238.29 lakh: short of 15% and 45%, but over the 12% and 36% the Act accepts, so no interest on these figures. December has no such mark: paying ₹60 lakh in December would leave it ₹26.72 lakh short and cost 3%, about ₹80,000."
+   },
+   {
+    "type": "text",
+    "text": "Interviewers still say 115BAA, 43B, 234B and 234C. For tax year 2026–27 these are section 200 (the 22% option), section 37 (allowed only when paid) and sections 424 and 425 (interest on advance tax)."
+   },
+   {
+    "type": "note",
+    "from": "kunal",
+    "text": "We work on the real projection. If Amol sir wants a smaller December, the answer is a lower profit with reasons, not a lower tax."
+   }
+  ]
+ },
+ "principles": [
+  "Start from book profit and test each line against the Act: never allowed, allowed only when paid, or replaced by tax depreciation.",
+  "Advance tax is the year’s tax less TDS on the company’s own income, paid against cumulative targets of 15, 45, 75 and 100%.",
+  "Each instalment date is tested on its own: a December shortfall costs 3%, whatever March brings."
+ ],
+ "earned": {
+  "clause": "computed taxable income from a projected P&L{ti|}, checking {lines} lines against the Income-tax Act[[ and adjusting {adj} of them]][[, then worked out the year’s advance tax and its instalments{adv|}{dec|}{mar|}]]",
+  "fallback": "checked {lines} lines of a projected P&L against the Income-tax Act[[ and adjusted {adj} of them]][[, then worked out the year’s advance tax and its instalments{adv|}{dec|}{mar|}]]",
+  "counts": {
+   "lines": {
+    "kind": "items",
+    "task": "t1",
+    "answered": "gate"
+   },
+   "adj": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "call",
+    "equals": [
+     "add",
+     "deduct"
+    ],
+    "withRight": [
+     "why",
+     "amt"
+    ]
+   },
+   "ti": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "r1",
+    "col": "amt"
+   },
+   "adv": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "r4",
+    "col": "amt"
+   },
+   "dec": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "r7",
+    "col": "amt"
+   },
+   "mar": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "r8",
+    "col": "amt"
+   }
+  }
+ },
+ "interview": [
+  {
+   "q": "Why is a company’s taxable income different from its book profit?",
+   "checking": "Whether you can name the kinds of adjustment and the reason for each, with an example.",
+   "outline": [
+    "The Act has its own rules: some costs are never allowed, others only once they are paid.",
+    "Depreciation follows the tax blocks, so the books’ figure comes out and tax depreciation goes in.",
+    "In the simulation I checked {lines} lines that way[[ and adjusted {adj}]]; CSR, for one, is added back."
+   ]
+  },
+  {
+   "q": "How do you work out a company’s advance tax?",
+   "checking": "Whether you know the formula, the cumulative instalments and what a short instalment costs.",
+   "outline": [
+    "Estimate the year’s taxable income, apply the rate and take off TDS on the company’s own income.",
+    "Pay 15%, 45%, 75% and 100% of it by 15 June, September, December and March.",
+    "Interest is 3% of each shortfall, 1% in March; June is safe at 12%, September at 36%."
+   ]
+  }
+ ]
+}

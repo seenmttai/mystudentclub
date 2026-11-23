@@ -116,3 +116,35 @@ test('onboarding dismissal is remembered for the matching email only', () => {
   assert.equal(state.wasOnboardingDismissed('person@example.com'), true);
   assert.equal(state.wasOnboardingDismissed('other@example.com'), false);
 });
+
+test('saves merge over the server: app edits made after the page loaded survive', () => {
+  const { state } = createState();
+  const baseline = { name: 'Aniket', profile_summary: '', project_title: '', city: 'Pune' };
+  const server = { name: 'Aniket', profile_summary: 'Saved in the app', project_title: 'RAG app', city: 'Pune', current_industry: 'IT' };
+  const tab = { name: 'Aniket', profile_summary: '', project_title: '', city: 'Mumbai' };
+  const merged = state.mergeProfileForSave(server, tab, baseline);
+  assert.equal(merged.profile_summary, 'Saved in the app');
+  assert.equal(merged.project_title, 'RAG app');
+  assert.equal(merged.city, 'Mumbai');
+  assert.equal(merged.current_industry, 'IT');
+});
+
+test('a field cleared in this tab is cleared on the server', () => {
+  const { state } = createState();
+  const merged = state.mergeProfileForSave({ headline: 'Old' }, { headline: '' }, { headline: 'Old' });
+  assert.equal(merged.headline, '');
+});
+
+test('keys the server lacks take the tab value; no baseline means the tab wins but server-only keys stay', () => {
+  const { state } = createState();
+  assert.equal(state.mergeProfileForSave({}, { key_skills: 'GST' }, { key_skills: 'GST' }).key_skills, 'GST');
+  const merged = state.mergeProfileForSave({ a: '1', only_server: 'x' }, { a: '2' }, null);
+  assert.equal(merged.a, '2');
+  assert.equal(merged.only_server, 'x');
+});
+
+test('profilesDiffer treats missing and empty as the same', () => {
+  const { state } = createState();
+  assert.equal(state.profilesDiffer({ a: '', b: 'x' }, { b: 'x' }), false);
+  assert.equal(state.profilesDiffer({ a: 'y' }, { a: 'x' }), true);
+});
