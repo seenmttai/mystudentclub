@@ -2,7 +2,7 @@ import { getDaysAgo, isJobExpired, getPostedLabel } from './date-utils.js?v=2026
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 import { ARTICLESHIP_TABLE, isExclusiveLocked, showExclusiveLockPopup } from './exclusive-vacancy.js';
-import { assessmentGate } from './apply-assessment.js';
+import { assessmentGate, stoppedByCriteria } from './apply-assessment.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -454,7 +454,7 @@ async function recordApplication(job, btnElement) {
         btnElement.style.pointerEvents = '';
         if ('disabled' in btnElement) btnElement.disabled = false;
         btnElement.innerHTML = originalText;
-        showToast('Your application is not sent yet. Complete the assessment to apply.', 'info');
+        if (!stoppedByCriteria()) showToast('Your application is not sent yet. Complete the assessment to apply.', 'info');
         return false;
     }
 

@@ -55,3 +55,10 @@ export async function assessmentGate({ table, job, supabaseClient, session }) {
     return true;
   }
 }
+
+// Easy Apply criteria (hire docs; Padam, 23 Nov 2026): the gate can also say no because the student misses the
+// vacancy's criteria. It then shows its own "Sorry, you miss this one" dialog, so the caller must not add the
+// "complete the assessment" toast. True when the last assessmentGate() said no for that reason.
+export function stoppedByCriteria() {
+  try { return window.MscAssessment?.lastOutcome === 'criteria'; } catch (_) { return false; }
+}

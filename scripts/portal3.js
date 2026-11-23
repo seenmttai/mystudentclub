@@ -4,7 +4,7 @@ import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, renderLockScreen, showExclusiveAppliedPopup, fetchMyProgramRegistrations, applyExclusiveDemo, ensureExclusiveStyles } from './exclusive-vacancy.js';
 import { portalFor, extraSelectColumns, companyTypeFilter, applyJobFilters, describeJobFilters, withoutFilterValue, renderJobFilters, syncJobFilters, formatPayRange, formatDeadline, FIRM_TIERS } from './job-filters.js';
-import { assessmentGate } from './apply-assessment.js';
+import { assessmentGate, stoppedByCriteria } from './apply-assessment.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -878,7 +878,7 @@ async function recordApplication(job, btnElement) {
         btnElement.style.pointerEvents = '';
         if ('disabled' in btnElement) btnElement.disabled = false;
         btnElement.innerHTML = originalText;
-        showToast('Your application is not sent yet. Complete the assessment to apply.', 'info');
+        if (!stoppedByCriteria()) showToast('Your application is not sent yet. Complete the assessment to apply.', 'info');
         return false;
     }
 
