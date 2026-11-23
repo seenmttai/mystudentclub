@@ -46,6 +46,16 @@ const CACHE_TTL_SECONDS = 30 * 86400;
 const REPORT_SECTIONS = ['RECRUITER_TIPS', 'MEASURABLE_RESULTS', 'PHRASES_SUGGESTIONS', 'HARD_SKILLS', 'SOFT_SKILLS', 'ACTION_VERBS',
   'GRAMMAR_CHECK', 'FORMATTING_READABILITY', 'EDUCATION_QUALIFICATION', 'ARTICLESHIP_EXPERIENCE', 'INTERVIEW_QUESTIONS',
   'FINAL_RECOMMENDATIONS', 'OVERALL_SCORE'];
+// Models sometimes write a section marker with two brackets (copying <<END_POINT>>) or with spaces;
+// repair those before checking or sending, so a good review isn't thrown away or shown half-empty.
+const MARKER_REPAIR = new RegExp(`<{2,3}\\s*(END_)?(${[...REPORT_SECTIONS, 'OUT_OF_CONTEXT'].join('|')})\\s*>{2,3}`, 'g');
+function normalizeReport(text) {
+  return String(text || '').replace(MARKER_REPAIR, (_, end, name) => `<<<${end || ''}${name}>>>`);
+}
+function hasScore(text) {
+  const report = String(text || '');
+  return report.includes('<<<OUT_OF_CONTEXT>>>') || /<<<OVERALL_SCORE>>>[\s\S]*?Score:\s*\**\s*\d[\s\S]*?<<<END_OVERALL_SCORE>>>/.test(report);
+}
 function isCompleteReport(text) {
   const report = String(text || '');
   if (report.includes('<<<OUT_OF_CONTEXT>>>')) return true;
@@ -145,7 +155,7 @@ async function callClaude(plan, systemPrompt, images, userTextPrompt, env) {
   if (stopReason === 'refusal') throw fail('Claude declined the request');
   if (stopReason === 'max_tokens') throw fail('Claude report was cut off');
   if (!text.trim()) throw fail('Claude returned no text');
-  return {text, inputTokens, outputTokens, model};
+  return {text: normalizeReport(text), inputTokens, outputTokens, model};
 }
 const FREE_SECTIONS = new Set(['OVERALL_SCORE', 'RECRUITER_TIPS', 'MEASURABLE_RESULTS', 'EDUCATION_QUALIFICATION', 'ARTICLESHIP_EXPERIENCE']);
 function json(data, status = 200, extraHeaders = {}) {
@@ -248,6 +258,13 @@ export default {
       const plan = await choosePlan(access,env);
       const result = await processCV(body.images,body.pdf_text,domain,specialization,env,plan);
       if (!result.ok) return json({ok:false,error:'Unable to process your CV. Please try again.'},result.status || 502);
+      // A review without its score would be saved as 0/100 in the student's history: ask for a retry instead.
+      if (!hasScore(result.response)) {
+        console.warn('CV review had no score section; model', result.modelUsed);
+        const unscored = recordReview(env,access,plan,{...result,cacheable:false},null);
+        if (ctx?.waitUntil) ctx.waitUntil(unscored); else await unscored;
+        return json({ok:false,error:'We could not finish your review this time. Please try again in a minute.'},502);
+      }
       const bookkeeping = recordReview(env,access,plan,result,access.premium ? premiumKey : freeKey);
       if (ctx?.waitUntil) ctx.waitUntil(bookkeeping); else await bookkeeping;
       return reply(result.response,result.modelUsed,false);
@@ -395,7 +412,7 @@ Justification: [2-3 sentence summary explaining the calculated score based on al
         const claude = await callClaude(plan, systemPrompt, images, userTextPrompt, env);
         claudeCostUsd += costOf(claude);
         const complete = isCompleteReport(claude.text);
-        if (complete || (attempt === 2 && claude.text.includes('<<<OVERALL_SCORE>>>'))) {
+        if (complete || (attempt === 2 && hasScore(claude.text))) {
           return {ok: true, response: claude.text, status: 200, modelUsed: claude.model, cacheable: complete,
             usage: {input: claude.inputTokens, output: claude.outputTokens},
             costUsd: claudeCostUsd};
@@ -430,7 +447,7 @@ Justification: [2-3 sentence summary explaining the calculated score based on al
       contents: [ { parts: [...geminiImageParts, { text: fullPrompt }] } ],
       generationConfig: {
         temperature: 0.2,
-        maxOutputTokens: 8192,
+        maxOutputTokens: 32768,
         responseMimeType: "text/plain",
       },
       safetySettings: [
@@ -463,7 +480,7 @@ Justification: [2-3 sentence summary explaining the calculated score based on al
     if (responseText) {
       return {
         ok: true,
-        response: responseText,
+        response: normalizeReport(responseText),
         status: 200,
         modelUsed: secondaryModel, costUsd: claudeCostUsd,
         debug_errors: { claude: claudeErrorMessage }
@@ -506,7 +523,7 @@ Justification: [2-3 sentence summary explaining the calculated score based on al
     if (replyText) {
       return {
         ok: true,
-        response: replyText,
+        response: normalizeReport(replyText),
         status: 200,
         modelUsed: tertiaryModel, costUsd: claudeCostUsd,
         debug_errors: { claude: claudeErrorMessage, gemini: geminiErrorMessage } // THIS TELLS YOU WHY IT FELL BACK TO GEMMA
