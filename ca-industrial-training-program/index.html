@@ -221,7 +221,8 @@
 </div>
 <div class="expanded-menu-backdrop" id="menuBackdrop"></div>
 
-<!-- Registration live since 14 Nov 2026 (Aniket's go): Register Now -> PayU ₹2499 link, same as www. Payment opens in the phone browser from the app. -->
+<!-- Registration closed 24 Nov 2026 (Padam: "close registrations now"): Notify Me waitlist, same as www. To reopen, revert this commit
+       (the open version is 7afb41c7e: Register Now -> PayU ₹2499 link, opens in the phone browser from the app). -->
   <main>
     <!-- ─── HERO SECTION ─── -->
     <section class="hero-section" id="hero">
@@ -231,7 +232,7 @@
           <div class="hero-status-row">
             <div class="eyebrow-pill">
               <span class="eyebrow-dot"></span>
-              <span>REGISTRATION LIVE • LIMITED SEATS</span>
+              <span>REGISTRATION CLOSED</span>
             </div>
           </div>
 
@@ -250,10 +251,10 @@
           </p>
 
           <div class="hero-cta-group">
-            <a href="https://payu.in/web/7E80331D7E5F8BB45DA0DE0AA870BB70" class="btn-blue-primary" id="heroPrimaryCta">
-              <span>Register Now • ₹2499</span>
-              <i class="fas fa-arrow-right"></i>
-            </a>
+            <button type="button" class="btn-blue-primary js-notify-btn" id="heroPrimaryCta">
+              <span>Notify Me When Open</span>
+              <i class="fas fa-bell" aria-hidden="true"></i>
+            </button>
             <a href="#curriculum-section" class="btn-outline-secondary">
               <i class="far fa-file-alt"></i>
               <span>View 6-Day Curriculum</span>
@@ -981,7 +982,7 @@
       </div>
     </section>
 
-    <!-- ─── LIVE PRICING & ENROLLMENT SECTION ─── -->
+    <!-- ─── PROGRAM DETAILS & NEXT BATCH WAITLIST ─── -->
     <section class="enrollment-section" id="enrollment">
       <div class="pricing-container-wide" data-aos="fade-up">
         <div class="pricing-card-split">
@@ -989,7 +990,7 @@
           <!-- Top Accent Most Popular Ribbon -->
           <div class="pricing-split-ribbon">
             <i class="fas fa-crown" style="font-size: 10px; margin-right: 5px;"></i>
-            <span>MOST POPULAR • 50% LIMITED DISCOUNT</span>
+            <span>MOST POPULAR • REGISTRATION CLOSED</span>
           </div>
 
           <!-- Left Column: Deliverables & Value -->
@@ -997,7 +998,7 @@
             <div class="pricing-split-header">
               <div class="limited-seats-badge">
                 <span class="badge-pulse-dot"></span>
-                <span>LIMITED SEATS FOR NEXT BATCH</span>
+                <span>NEXT BATCH COMING SOON</span>
               </div>
               <h2 class="pricing-split-title">
                 MSC CA Industrial <span class="highlight-blue">Training Program</span>
@@ -1045,12 +1046,12 @@
 
             <div class="pricing-trust-inline">
               <div class="trust-inline-item">
-                <i class="fas fa-lock" style="color: #10B981;"></i>
-                <span>256-Bit Encrypted PayU</span>
+                <i class="fas fa-bell" style="color: #10B981;"></i>
+                <span>Get Notified When Seats Open</span>
               </div>
               <div class="trust-inline-item">
                 <i class="fas fa-bolt" style="color: #F59E0B;"></i>
-                <span>Instant LMS Access</span>
+                <span>Next Batch Updates</span>
               </div>
               <div class="trust-inline-item">
                 <i class="fas fa-comments" style="color: var(--primary-blue);"></i>
@@ -1063,7 +1064,7 @@
           <div class="pricing-split-right">
             <div class="pricing-action-box">
               <div class="pricing-box-top">
-                <span class="pricing-box-tag">ALL-IN-ONE ACCESS</span>
+                <span class="pricing-box-tag">REGISTRATION CLOSED</span>
                 <div class="pricing-amount-row">
                   <span class="currency">₹</span>
                   <span class="price-discounted">2499</span>
@@ -1076,20 +1077,15 @@
               </div>
 
               <div class="pricing-cta-wrap">
-                <a href="https://payu.in/web/7E80331D7E5F8BB45DA0DE0AA870BB70" id="registerButtonWorkshop"
-                  class="btn-blue-primary btn-split-cta">
-                  <span>Register Now • ₹2499</span>
-                  <i class="fas fa-arrow-right"></i>
-                </a>
+                <button type="button" id="notifyMeBtn" class="btn-blue-primary btn-split-cta js-notify-btn">
+                  <span>Notify Me When Open</span>
+                  <i class="fas fa-bell" aria-hidden="true"></i>
+                </button>
               </div>
 
-              <div class="pricing-payment-methods">
-                <span class="pay-method-pill">UPI</span>
-                <span class="pay-method-pill">Google Pay</span>
-                <span class="pay-method-pill">PhonePe</span>
-                <span class="pay-method-pill">Cards</span>
-                <span class="pay-method-pill">NetBanking</span>
-              </div>
+              <p id="notifyStatus" class="waitlist-status" role="status" aria-live="polite">
+                Join the waitlist to hear when the next batch opens.
+              </p>
 
               <div class="pricing-guarantee-micro">
                 <i class="fas fa-shield-alt" style="color: var(--primary-blue);"></i>
@@ -1193,23 +1189,20 @@
     </footer>
   </main>
 
-  <!-- ─── FIXED BOTTOM CTA BAR (LIVE REGISTRATION) ─── -->
+  <!-- ─── FIXED BOTTOM CTA BAR (REGISTRATION CLOSED) ─── -->
   <div class="fixed-cta" id="cta-footer">
     <div class="timer-container">
-      <span class="status-live-text">
-        <span class="status-live-dot"></span>
-        <span>REGISTRATION LIVE • LIMITED SEATS</span>
-      </span>
+      <span class="status-closed-text">REGISTRATION CLOSED</span>
     </div>
     <div class="fixed-cta-right">
       <div class="price-container">
         <span class="original">₹4999</span>
         <span class="discounted">₹2499</span>
       </div>
-      <a href="https://payu.in/web/7E80331D7E5F8BB45DA0DE0AA870BB70" id="registerFooterBtn" class="fixed-cta-btn">
-        <span>Register Now</span>
-        <i class="fas fa-arrow-right"></i>
-      </a>
+      <button type="button" id="notifyMeFooterBtn" class="fixed-cta-btn js-notify-btn">
+        <span>Notify Me</span>
+        <i class="fas fa-bell" aria-hidden="true"></i>
+      </button>
     </div>
   </div>
 
