@@ -16,7 +16,7 @@ function harness(options={}) {
   calls.fetch.push({url,init});if(options.outage)throw new Error('offline');
   if(url.endsWith('/auth/v1/user'))return new Response(JSON.stringify({id:userId,user_metadata:{premium:true}}),{status:options.authStatus||200});
   return new Response(JSON.stringify((options.courses||[]).map(course=>({course}))),{status:options.enrollmentStatus||200});
- },processCV:async(...args)=>{calls.models++;calls.plans=(calls.plans||[]).concat([args[5]]);return{ok:true,response:options.report??report,modelUsed:'unchanged',cacheable:!!options.cacheable,costUsd:options.costUsd||0,debug_errors:{doNotExpose:'SECRET REPORT'}};}});
+ },processCV:async(...args)=>{calls.models++;calls.plans=(calls.plans||[]).concat([args[5]]);return{ok:true,response:options.report??report,modelUsed:options.modelUsed||'unchanged',cacheable:!!options.cacheable,costUsd:options.costUsd||0,debug_errors:{doNotExpose:'SECRET REPORT'}};}});
  vm.runInContext(prefix+'\nthis.worker=worker;this.partialReport=partialReport;this.todayInIndia=todayInIndia;this.CLAUDE=CLAUDE;this.choosePlan=choosePlan;this.isCompleteReport=isCompleteReport;this.callClaude=callClaude;this.spendKey=spendKey;this.opusKey=opusKey;',context);
  function request(extras={},token,method='POST') {return new Request('https://reviewer.example/',{method,headers:{'Content-Type':'application/json','CF-Connecting-IP':'192.0.2.1',...(token?{Authorization:'Bearer '+token}:{})},...(method==='POST'?{body:JSON.stringify({images:['synthetic'],...extras})}:{})});}
  return {context,calls,env,request};
@@ -86,7 +86,7 @@ test('paid students get Opus, free users Haiku, with a daily cap and a monthly s
  assert.equal(await choosePlan(paid,{RATE_LIMITS:{get:async()=>{throw new Error('kv down');}}}),CLAUDE.opus);
 });
 test('the same CV is served from cache: one model call, same review, spend recorded once',async()=>{
- const h=harness({courses:['industrial-training-mastery'],cacheable:true,costUsd:0.2});
+ const h=harness({courses:['industrial-training-mastery'],cacheable:true,costUsd:0.2,modelUsed:'claude-opus-5-5'});
  const first=await (await h.context.worker.fetch(h.request({},'verified'),h.env)).json();
  const second=await (await h.context.worker.fetch(h.request({},'verified'),h.env)).json();
  assert.equal(h.calls.models,1);assert.equal(first.response,second.response);assert.equal(first.cached,false);assert.equal(second.cached,true);
