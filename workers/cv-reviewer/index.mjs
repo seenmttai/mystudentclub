@@ -82,7 +82,7 @@ async function recordReview(env, access, plan, result, cacheKey) {
     const key = spendKey();
     writes.push(kvNumber(env, key).then(spent => env.RATE_LIMITS.put(key, String(Math.round(spent + result.costUsd * 1e6)), {expirationTtl: 70 * 86400})));
   }
-  if (plan === CLAUDE.opus && access.userId) {
+  if (String(result.modelUsed || '').startsWith('claude-opus') && access.userId) {
     const key = opusKey(access.userId);
     writes.push(kvNumber(env, key).then(used => env.RATE_LIMITS.put(key, String(used + 1), {expirationTtl: 2 * 86400})));
   }
@@ -138,9 +138,10 @@ async function callClaude(plan, systemPrompt, images, userTextPrompt, env) {
     }
     if (done) break;
   }
-  if (stopReason === 'refusal') throw new Error('Claude declined the request');
-  if (stopReason === 'max_tokens') throw new Error('Claude report was cut off');
-  if (!text.trim()) throw new Error('Claude returned no text');
+  const fail = message => Object.assign(new Error(message), {usage: {inputTokens, outputTokens}});
+  if (stopReason === 'refusal') throw fail('Claude declined the request');
+  if (stopReason === 'max_tokens') throw fail('Claude report was cut off');
+  if (!text.trim()) throw fail('Claude returned no text');
   return {text, inputTokens, outputTokens, model};
 }
 const FREE_SECTIONS = new Set(['OVERALL_SCORE', 'RECRUITER_TIPS', 'MEASURABLE_RESULTS', 'EDUCATION_QUALIFICATION', 'ARTICLESHIP_EXPERIENCE']);
@@ -382,19 +383,24 @@ Justification: [2-3 sentence summary explaining the calculated score based on al
 
   // --- ATTEMPT 1: CLAUDE (Opus for paid students, Haiku for free users) ---
   // A report missing sections is retried once, because the page shows each section on its own.
+  // Every paid Claude attempt counts toward the monthly guard, including ones we discard.
+  let claudeCostUsd = 0;
+  const costOf = usage => (usage?.inputTokens || 0) * plan.price[0] / 1e6 + (usage?.outputTokens || 0) * plan.price[1] / 1e6;
   if (env.ANTHROPIC_API_KEY) {
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
         const claude = await callClaude(plan, systemPrompt, images, userTextPrompt, env);
+        claudeCostUsd += costOf(claude);
         const complete = isCompleteReport(claude.text);
         if (complete || (attempt === 2 && claude.text.includes('<<<OVERALL_SCORE>>>'))) {
           return {ok: true, response: claude.text, status: 200, modelUsed: claude.model, cacheable: complete,
             usage: {input: claude.inputTokens, output: claude.outputTokens},
-            costUsd: claude.inputTokens * plan.price[0] / 1e6 + claude.outputTokens * plan.price[1] / 1e6};
+            costUsd: claudeCostUsd};
         }
         claudeErrorMessage = `Claude report incomplete on attempt ${attempt}`;
       } catch (err) {
         claudeErrorMessage = err.message || String(err);
+        claudeCostUsd += costOf(err.usage);
         console.warn(`Claude ${plan.model} attempt ${attempt} failed:`, claudeErrorMessage);
         // A timed-out review is not retried, so a student never waits twice as long.
         if (err.noRetry || err.name === 'TimeoutError' || err.name === 'AbortError') break;
@@ -456,7 +462,7 @@ Justification: [2-3 sentence summary explaining the calculated score based on al
         ok: true,
         response: responseText,
         status: 200,
-        modelUsed: secondaryModel,
+        modelUsed: secondaryModel, costUsd: claudeCostUsd,
         debug_errors: { claude: claudeErrorMessage }
       };
     } else {
@@ -499,7 +505,7 @@ Justification: [2-3 sentence summary explaining the calculated score based on al
         ok: true,
         response: replyText,
         status: 200,
-        modelUsed: tertiaryModel,
+        modelUsed: tertiaryModel, costUsd: claudeCostUsd,
         debug_errors: { claude: claudeErrorMessage, gemini: geminiErrorMessage } // THIS TELLS YOU WHY IT FELL BACK TO GEMMA
       };
     } else {
