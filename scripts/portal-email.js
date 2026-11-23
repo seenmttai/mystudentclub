@@ -1,5 +1,5 @@
 import { getDaysAgo } from './date-utils.js';
-import { assessmentGate } from './apply-assessment.js';
+import { assessmentGate, stoppedByCriteria } from './apply-assessment.js';
 import { ensureCvAvailable, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
@@ -377,7 +377,7 @@ function checkConnectLink(job) {
 async function recordApplication(job, btnElement) {
     if (!currentSession) return true; // Allow default navigation if not logged in
     if (!(await assessmentGate({ table: job.source_table || state.portalType, job, supabaseClient, session: currentSession }))) {
-        showToast('Your application is not sent yet. Complete the assessment to apply.', 'info');
+        if (!stoppedByCriteria()) showToast('Your application is not sent yet. Complete the assessment to apply.', 'info');
         return false;
     }
 
