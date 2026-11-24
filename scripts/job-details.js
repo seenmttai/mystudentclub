@@ -1,6 +1,7 @@
 
 import { getDaysAgo, getPostedLabel } from './date-utils.js?v=20261118_1';
 import { ensureCvAvailable, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
+import { getApplyUrls, openApplyLinks, openQueuedApplyLink } from './apply-links.js';
 
 const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
@@ -246,6 +247,15 @@ function renderJob(job, tableName) {
     loadingState.style.display = 'none';
     container.style.display = 'block';
 
+    // Several comma-separated apply links: each opens in its own tab.
+    if (!applyInfo.isEmail && getApplyUrls(job['Application ID']).length > 1) {
+        container.querySelectorAll('.js-external-apply').forEach(btn => btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (openQueuedApplyLink(btn)) return;
+            openApplyLinks(job['Application ID'], applyInfo.link, btn);
+        }));
+    }
+
     if (applyInfo.isEmail) {
         const aiApplyButtons = container.querySelectorAll('.btn-ai-apply');
         aiApplyButtons.forEach(btn => {
@@ -261,7 +271,10 @@ function renderJob(job, tableName) {
 
 function getApplicationLink(id) {
     if (!id) return { link: '#', isEmail: false };
-    const trimmedId = id.trim();
+    let trimmedId = id.trim();
+    // Several comma-separated links: the button's own link is the first one.
+    const firstPart = trimmedId.split(/,\s*(?=https?:\/\/)/i)[0].trim();
+    if (trimmedId.includes(',') && /^https?:\/\//i.test(firstPart)) trimmedId = firstPart;
 
     if (trimmedId.toLowerCase().startsWith('http')) {
         try {
@@ -320,7 +333,7 @@ function generateApplyButtons(applyInfo, job) {
         `;
     } else {
         return `
-            <a href="${applyInfo.link}" target="_blank" class="btn-large btn-primary-large">
+            <a href="${applyInfo.link}" target="_blank" class="btn-large btn-primary-large js-external-apply">
                 <i class="fas fa-external-link-alt"></i> Apply Now
             </a>
         `;
