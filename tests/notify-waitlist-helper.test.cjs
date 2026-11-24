@@ -8,7 +8,8 @@ const test = require('node:test');
 const root = path.resolve(__dirname, '..');
 const helperSrc = fs.readFileSync(path.join(root, 'scripts', 'notify-waitlist.js'), 'utf8');
 // Articleship: registrations open 9 Nov 2026, closed again 16 Nov 2026 (back to the waitlist); see the test at the end.
-const PAGES = [['msc-ca-fresher-program', 'ca-fresher'], ['articleship-program', 'articleship']];
+// CA Fresher: registrations open 24 Nov 2026 (₹2799, Nov'26 pre-result batch); see tests/fresher-registration.test.cjs.
+const PAGES = [['articleship-program', 'articleship']];
 
 function load(storage = {}) {
   const logged = [];

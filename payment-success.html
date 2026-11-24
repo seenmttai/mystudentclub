@@ -1090,10 +1090,10 @@
               Hey <span id="user-display-name">there</span> 👋
             </div>
             <div class="greeting-text-body">
-              Firstly, thank you for enrolling in the <strong>MSC Industrial Training Program!</strong> ❤️ Welcome to the family.
+              Firstly, thank you for enrolling in the <strong id="greeting-program">MSC Industrial Training Program!</strong> ❤️ Welcome to the family.
             </div>
           </div>
-          <a href="https://chat.whatsapp.com/CC89CXevGso5XLsEHch5qv" target="_blank" rel="noopener" class="btn-action-primary btn-whatsapp">
+          <a href="https://chat.whatsapp.com/CC89CXevGso5XLsEHch5qv" target="_blank" rel="noopener" class="btn-action-primary btn-whatsapp" data-it-only>
             <i class="fab fa-whatsapp"></i> Join Community Group
           </a>
         </div>
@@ -1109,7 +1109,7 @@
           <div class="stepper-steps-wrapper">
 
             <!-- Step 1: WhatsApp Community -->
-            <div class="stepper-item-card">
+            <div class="stepper-item-card" id="step-community">
               <div class="step-number-badge badge-whatsapp">1</div>
               <div class="step-content-body">
                 <div class="step-card-header">
@@ -1119,10 +1119,10 @@
                   </h3>
                   <span class="step-urgency-tag">Crucial</span>
                 </div>
-                <p class="step-card-desc">
+                <p class="step-card-desc" id="step-community-desc">
                   Please join the community below and make sure you join <strong>both groups</strong> inside it. All important announcements, vacancy drops, resources, and live session updates are shared here first.
                 </p>
-                <a href="https://chat.whatsapp.com/CC89CXevGso5XLsEHch5qv" target="_blank" rel="noopener" class="btn-action-primary btn-whatsapp">
+                <a href="https://chat.whatsapp.com/CC89CXevGso5XLsEHch5qv" target="_blank" rel="noopener" class="btn-action-primary btn-whatsapp" data-it-only>
                   <i class="fab fa-whatsapp"></i> Join WhatsApp Community
                 </a>
               </div>
@@ -1133,16 +1133,16 @@
               <div class="step-number-badge badge-lms">2</div>
               <div class="step-content-body">
                 <div class="step-card-header">
-                  <h3 class="step-card-title">
+                  <h3 class="step-card-title" id="step-lms-title">
                     <i class="fas fa-calendar-check" style="color: #6366f1;"></i>
                     What Next? (Live Masterclass &amp; LMS Access)
                   </h3>
                 </div>
-                <p class="step-card-desc">
+                <p class="step-card-desc" id="step-lms-desc">
                   We will connect on <strong>22nd Nov</strong> for a live session to discuss the Complete Roadmap Ahead. Session details and Google Meet link will be posted in the WhatsApp group.
                 </p>
 
-                <div class="articleship-hint-box">
+                <div class="articleship-hint-box" data-it-only>
                   <div class="articleship-hint-title">
                     Already completed 11 months of Articleship?
                   </div>
@@ -1161,7 +1161,7 @@
             </div>
 
             <!-- Step 3: Weekly Doubt Solving Sessions -->
-            <div class="stepper-item-card">
+            <div class="stepper-item-card" data-it-only>
               <div class="step-number-badge badge-doubt">3</div>
               <div class="step-content-body">
                 <div class="step-card-header">
@@ -1194,7 +1194,7 @@
             Guys, again I am saying it's going to be a long journey requiring a lot of patience. There will be days when you feel nothing is happening. That's normal.
           </p>
           <p>
-            You will surely cross the line, but it's important to not give up in between and put in the efforts consistently throughout — make the perfect CV, connect with as many people as possible, apply the right way and together <strong>Let's Crack IT</strong>.
+            You will surely cross the line, but it's important to not give up in between and put in the efforts consistently throughout — make the perfect CV, connect with as many people as possible, apply the right way and together <strong id="letter-crack">Let's Crack IT</strong>.
           </p>
           <p>
             From my side, I'll do everything I possibly can to help you get placed. All I expect from you is your <strong>100% effort, consistency, and patience.</strong>
@@ -1205,7 +1205,7 @@
           </div>
 
           <p>
-            I genuinely can't wait to like, comment on, and repost your Industrial Training joining post.
+            I genuinely can't wait to like, comment on, and repost your <span id="letter-joining">Industrial Training joining</span> post.
           </p>
 
           <div class="founder-footer-sign">
@@ -1281,7 +1281,7 @@
             <i class="fas fa-handshake"></i> Our One Commitment:
           </div>
           <div class="commitment-tagline">Patience &amp; Consistent Efforts.</div>
-          <p>
+          <p id="commitment-text">
             This is a <strong>3-month journey</strong>. Most students receive interview calls during the final weeks of their 1st year of Articleship. Trust the process and increase your daily efforts.
           </p>
         </div>
@@ -1311,7 +1311,7 @@
 
         <!-- Sticky Action Buttons -->
         <div class="sidebar-sticky-actions">
-          <a href="https://chat.whatsapp.com/CC89CXevGso5XLsEHch5qv" target="_blank" rel="noopener" class="btn-action-primary btn-whatsapp btn-sidebar-full">
+          <a href="https://chat.whatsapp.com/CC89CXevGso5XLsEHch5qv" target="_blank" rel="noopener" class="btn-action-primary btn-whatsapp btn-sidebar-full" data-it-only>
             <i class="fab fa-whatsapp"></i> Join WhatsApp Community
           </a>
           <a href="/" class="back-home-btn">
@@ -1328,12 +1328,43 @@
   <script>
     const supabaseClient = window.supabaseClient;
 
+    // CA Fresher Program (Nov'26 pre-result batch, opened 24 Nov 2026): recorded sessions in the LMS by 29th Nov,
+    // no batch WhatsApp group yet (Padam), so no group link and no live-session date here.
+    function showFresherNextSteps() {
+      const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+      const setHtml = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+      document.querySelectorAll('[data-it-only]').forEach((el) => { el.style.display = 'none'; });
+      setText('greeting-program', 'MSC CA Fresher Program!');
+      setText('receipt-course-title', 'MSC CA Fresher Program');
+      const communityTitle = document.querySelector('#step-community .step-card-title');
+      if (communityTitle) communityTitle.innerHTML = '<i class="fab fa-whatsapp" style="color: #25D366; font-size: 1.25rem;"></i> Your Batch WhatsApp Group';
+      const urgency = document.querySelector('#step-community .step-urgency-tag');
+      if (urgency) urgency.textContent = 'Coming soon';
+      setHtml('step-community-desc', 'You are in the <strong>Exclusive Pre Result Batch for Nov’26 CAs</strong>. We will share your batch WhatsApp group link with you on WhatsApp soon. All announcements, vacancy drops and resources will be shared there.');
+      const lmsTitle = document.getElementById('step-lms-title');
+      if (lmsTitle) lmsTitle.innerHTML = '<i class="fas fa-play-circle" style="color: #6366f1;"></i> What Next? (Recorded Sessions on the LMS)';
+      setHtml('step-lms-desc', 'All sessions are <strong>recorded</strong> and will be on the LMS <strong>by 29th Nov</strong>. Watch them at your own pace and follow every step: CV, LinkedIn, Naukri, applying the right way and interviews.');
+      setText('letter-crack', 'Let’s Crack It');
+      setText('letter-joining', 'first job offer');
+      setHtml('commitment-text', 'Your results are a few weeks away. Use this time to <strong>finish the recorded sessions</strong>, make the perfect CV and start applying. Trust the process and increase your daily efforts.');
+      document.title = 'Enrollment Confirmed: MSC CA Fresher Program | My Student Club';
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const fragmentParams = new URLSearchParams(window.location.hash.slice(1));
       const queryParams = new URLSearchParams(window.location.search);
       const params = fragmentParams.size ? fragmentParams : queryParams;
       const accountStatus = params.get('status');
       const enrollmentStatus = params.get('enrollment');
+
+      // Which programme was bought (checkpayment adds course= since 24 Nov 2026). Kept for a reload,
+      // because the hash is cleared below.
+      let paidCourse = params.get('course') || '';
+      try {
+        if (paidCourse) sessionStorage.setItem('msc_paid_course', paidCourse);
+        else paidCourse = sessionStorage.getItem('msc_paid_course') || '';
+      } catch (e) {}
+      if (paidCourse === 'msc-ca-freshers-program') showFresherNextSteps();
 
       if (window.location.hash || window.location.search) {
         window.history.replaceState({}, document.title, window.location.pathname);
