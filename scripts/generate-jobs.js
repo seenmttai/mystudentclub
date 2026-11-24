@@ -85,7 +85,7 @@ function getApplicationLink(id) {
     if (!id) return { link: '#', isEmail: false };
     let trimmedId = String(id).trim();
     // Several comma-separated links: the button's own link is the first one.
-    const firstPart = trimmedId.split(',')[0].trim();
+    const firstPart = trimmedId.split(/,\s*(?=https?:\/\/)/i)[0].trim();
     if (trimmedId.includes(',') && /^https?:\/\//i.test(firstPart)) trimmedId = firstPart;
 
     if (trimmedId.toLowerCase().startsWith('http')) {
@@ -187,7 +187,7 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
     const category = job.Category || 'General';
     const descriptionHtml = renderMarkdown(job.Description);
     const applyInfo = getApplicationLink(job['Application ID']);
-    const applyUrls = String(job['Application ID'] || '').split(',').map(part => part.trim())
+    const applyUrls = String(job['Application ID'] || '').split(/,\s*(?=https?:\/\/)/i).map(part => part.trim())
         .filter(part => /^https?:\/\/\S+$/i.test(part));
     const recruiterPosted = isRecruiterPostedJob(job);
 

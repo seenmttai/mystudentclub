@@ -1688,7 +1688,7 @@ function getApplicationLink(id, companyName = 'the company') {
     let trimmedId = id.trim();
     // Several comma-separated links: the button's own link is the first one
     // (openApplyLinks opens all of them on click).
-    const firstPart = trimmedId.split(',')[0].trim();
+    const firstPart = trimmedId.split(/,\s*(?=https?:\/\/)/i)[0].trim();
     if (trimmedId.includes(',') && /^https?:\/\//i.test(firstPart)) trimmedId = firstPart;
     if (trimmedId.startsWith('http')) {
         try {

@@ -2,9 +2,10 @@
 // Apply Now must open each one in its own tab, never one tab with both glued together.
 
 // The web links in an Application ID, in order. Emails and plain text are left out.
+// Splits only where a new link starts, so a comma inside one link (?loc=Mumbai,Pune) stays.
 export function getApplyUrls(applicationId) {
     return String(applicationId || '')
-        .split(',')
+        .split(/,\s*(?=https?:\/\/)/i)
         .map(part => part.trim())
         .filter(part => {
             if (!/^https?:\/\//i.test(part)) return false;

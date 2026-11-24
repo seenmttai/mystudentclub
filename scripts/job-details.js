@@ -427,7 +427,7 @@ function getApplicationLink(id) {
     if (!id) return { link: '#', isEmail: false };
     let trimmedId = id.trim();
     // Several comma-separated links: the button's own link is the first one.
-    const firstPart = trimmedId.split(',')[0].trim();
+    const firstPart = trimmedId.split(/,\s*(?=https?:\/\/)/i)[0].trim();
     if (trimmedId.includes(',') && /^https?:\/\//i.test(firstPart)) trimmedId = firstPart;
 
     if (trimmedId.toLowerCase().startsWith('http')) {

@@ -36,6 +36,10 @@ test('splits comma-separated links, ignores emails and junk', async () => {
   assert.deepEqual(getApplyUrls('hr@example.com'), []);
   assert.deepEqual(getApplyUrls(''), []);
   assert.deepEqual(getApplyUrls(null), []);
+  // A comma inside one link is part of that link.
+  const oneLink = 'https://jobs.example.com/search?loc=Mumbai,Pune';
+  assert.deepEqual(getApplyUrls(oneLink), [oneLink]);
+  assert.deepEqual(getApplyUrls(`${oneLink}, ${B}`), [oneLink, B]);
 });
 
 test('opens every link in its own tab when the browser allows it', async () => {
