@@ -4246,7 +4246,7 @@ button.fixed-cta-btn {
   }
 }
 
-/* Next batch note under the hero line: students turning eligible in February */
+/* Next batch note at the top of the hero */
 .hero-next-batch {
   display: inline-flex;
   align-items: baseline;
@@ -4262,6 +4262,11 @@ button.fixed-cta-btn {
   font-weight: 500;
   line-height: 1.45;
   text-align: left;
+}
+
+/* Same note at the top of the hero, above the status pill */
+.hero-next-batch--top {
+  margin: 0 0 14px;
 }
 
 .hero-next-batch i {
