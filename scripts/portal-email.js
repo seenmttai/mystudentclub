@@ -1,5 +1,6 @@
 import { getDaysAgo } from './date-utils.js';
 import { assessmentGate } from './apply-assessment.js';
+import { openApplyLinks, openQueuedApplyLink } from './apply-links.js';
 import { ensureCvAvailable, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
@@ -548,9 +549,13 @@ function showModal(job) {
         if (modalExternalApplyBtn) {
             modalExternalApplyBtn.addEventListener('click', async (e) => {
                 e.preventDefault(); // Prevent default navigation initially
-                const shouldProceed = await recordApplication(job, e.currentTarget);
+                const button = e.currentTarget;
+                // A 2nd/3rd link the browser held back: this tap only opens it.
+                if (openQueuedApplyLink(button)) return;
+                const shouldProceed = await recordApplication(job, button);
                 if (shouldProceed) {
-                    window.open(applyLink, '_blank'); // Open external link
+                    // Several comma-separated links: each opens in its own tab.
+                    openApplyLinks(job['Application ID'], applyLink, button);
                 }
             });
         }
@@ -1303,7 +1308,11 @@ function openMailtoLink(mailtoUrl) {
 
 function getApplicationLink(id, companyName = 'the company') {
     if (!id) return '#';
-    const trimmedId = id.trim();
+    let trimmedId = id.trim();
+    // Several comma-separated links: the button's own link is the first one
+    // (openApplyLinks opens all of them on tap).
+    const firstPart = trimmedId.split(/,\s*(?=https?:\/\/)/i)[0].trim();
+    if (trimmedId.includes(',') && /^https?:\/\//i.test(firstPart)) trimmedId = firstPart;
     if (trimmedId.startsWith('http')) {
         try {
             new URL(trimmedId);
