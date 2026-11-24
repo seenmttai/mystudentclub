@@ -3534,4 +3534,81 @@ button.notify-me-footer-btn,
     justify-content: center;
     font-size: 12px;
   }
-}
+}}
+/* ─── Registrations open (24 Nov 2026): batch line on top + live bottom bar ─── */
+.hero-promo-banner.hero-batch-top {
+  margin-bottom: 14px;
+  padding: 11px 18px;
+}
+
+.hero-batch-top .hero-promo-text {
+  font-size: 16px;
+  letter-spacing: 0.01em;
+}
+
+.banner-batch-note {
+  color: #FDE68A;
+}
+
+.fixed-cta .status-live-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #10B981;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.fixed-cta .status-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10B981;
+  box-shadow: 0 0 10px #10B981;
+  animation: pulse-dot 1.8s infinite;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .hero-batch-top .hero-promo-text {
+    font-size: 14px;
+  }
+  .fixed-cta .status-live-text {
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fixed-cta .status-live-text {
+    font-size: 9.5px;
+    letter-spacing: 0;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 360px) {
+  .fixed-cta .status-live-text {
+    font-size: 8.5px;
+  }
+}
+
+.hero-left .eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10B981;
+  box-shadow: 0 0 8px #10B981;
+  animation: pulse-dot 1.8s infinite;
+  flex-shrink: 0;
+}
+
+/* App / mobile.msc: the bottom bar is white in light mode, dark in dark mode (program-mobile.css). */
+.fixed-cta .status-live-text { color: #047857; font-size: clamp(10px, 2.9vw, 12px); letter-spacing: 0.03em; }
+:root[data-theme="dark"] .fixed-cta .status-live-text { color: #34D399; }
+:root[data-theme="dark"] .banner-batch-note { color: #FDE68A; }

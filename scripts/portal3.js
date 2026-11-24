@@ -6,6 +6,7 @@ import {
   showToast,
 } from "./ai-helper.js";
 import { unlockJobDetails, getCachedUnlockedJob } from "./browser-guard.js";
+import { openApplyLinks, openQueuedApplyLink } from "./apply-links.js";
 import {
   portalFor,
   extraSelectColumns,
@@ -1611,7 +1612,8 @@ function showJobDetail(job) {
         if (targetApplyLink.startsWith("mailto:")) {
           openMailtoLink(targetApplyLink);
         } else {
-          window.open(targetApplyLink, "_blank");
+          // Several comma-separated links: each opens in its own tab.
+          openApplyLinks(unlocked.applicationId, targetApplyLink, document.getElementById("jdExternalApplyBtn"));
         }
       }
     } catch (error) {
@@ -1663,7 +1665,10 @@ function showJobDetail(job) {
         .getElementById("jdExternalApplyBtn")
         ?.addEventListener("click", async (e) => {
           e.preventDefault();
-          if (await recordApplication(unlockedJob, e.currentTarget)) window.open(applyLink, "_blank");
+          const button = e.currentTarget;
+          // A 2nd/3rd link the browser held back: this tap only opens it.
+          if (openQueuedApplyLink(button)) return;
+          if (await recordApplication(unlockedJob, button)) openApplyLinks(effectiveApplicationId, applyLink, button);
         });
     }
   }
@@ -1701,7 +1706,11 @@ function hideJobDetail() {
 
 function getApplicationLink(id, companyName = "the company") {
   if (!id) return "#";
-  const trimmedId = id.trim();
+  let trimmedId = id.trim();
+  // Several comma-separated links: the button's own link is the first one
+  // (openApplyLinks opens all of them on tap).
+  const firstPart = trimmedId.split(/,\s*(?=https?:\/\/)/i)[0].trim();
+  if (trimmedId.includes(",") && /^https?:\/\//i.test(firstPart)) trimmedId = firstPart;
   if (trimmedId.startsWith("http")) {
     try {
       new URL(trimmedId);

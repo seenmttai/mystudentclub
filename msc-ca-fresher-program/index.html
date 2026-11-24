@@ -30,17 +30,15 @@
 
   <!-- Site styles (synced from master) -->
   <link rel="stylesheet" href="style.css?v=20261008.1">
-  <link rel="stylesheet" href="sections.css?v=20261008.21">
+  <link rel="stylesheet" href="sections.css?v=20261124.fresher-open">
   <link rel="stylesheet" href="footer.css?v=20261006.16">
   <!-- Mobile WebView layer: Airy Flow header/drawer, responsive + dark-mode overrides -->
   <link rel="stylesheet" href="header.css?v=20261016.1">
   <link rel="stylesheet" href="dark.css?v=20261016.1">
   <link rel="stylesheet" href="/scripts/program-mobile.css?v=20261016.2">
 
-  <!-- Supabase & Firebase -->
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
 </head>
 
 <body class="program-page" data-program="fresher">
@@ -228,21 +226,21 @@
       <div class="hero-glow-bg"></div>
       <div class="hero-container-inner">
         <div class="hero-left">
-          <div class="eyebrow-pill" data-aos="fade-up">
-            <i class="fas fa-graduation-cap"></i>
-            <span>MSC CA Fresher Program</span>
+          <div class="hero-promo-banner hero-batch-top" data-aos="fade-up">
+            <span class="hero-promo-text">
+              <i class="fas fa-bolt" style="color: #F59E0B;"></i>
+              Exclusive Pre Result Batch for Nov’26 CAs
+            </span>
+          </div>
+
+          <div class="eyebrow-pill" data-aos="fade-up" data-aos-delay="50">
+            <span class="eyebrow-dot"></span>
+            <span>MSC CA Fresher Program • Registrations Open</span>
           </div>
 
           <h1 class="hero-heading" data-aos="fade-up" data-aos-delay="100">
             Launch Your <span class="highlight-blue">Dream Career</span>
           </h1>
-
-          <div class="hero-promo-banner" data-aos="fade-up" data-aos-delay="150">
-            <span class="hero-promo-text">
-              <i class="fas fa-bolt" style="color: #F59E0B;"></i>
-              Exclusive Batch for Nov’26 Pre Result Candidates
-            </span>
-          </div>
 
           <p class="hero-description" data-aos="fade-up" data-aos-delay="200">
             Stop getting ignored by recruiters. Master your CV, Apply the Right Way and Learn to Crack Technical
@@ -250,10 +248,10 @@
           </p>
 
           <div class="hero-cta-group" data-aos="fade-up" data-aos-delay="250">
-            <button type="button" class="btn-emerald-primary js-notify-btn" id="heroNotifyBtn">
-              <span>Notify Me When Open</span>
+            <a href="https://payu.in/web/AC5E020347C353450621DDCC2C2EEA40" class="btn-emerald-primary js-register-btn" id="heroPrimaryCta">
+              <span>Register Now • ₹2799</span>
               <i class="fas fa-arrow-right"></i>
-            </button>
+            </a>
             <a href="#curriculum" class="btn-outline-secondary"
               onclick="document.getElementById('curriculum').scrollIntoView({behavior: 'smooth'})">
               View Curriculum
@@ -882,10 +880,10 @@
             </ul>
 
             <div class="certificate-cta-row">
-              <button type="button" class="btn-emerald-primary js-notify-btn" id="certNotifyBtn">
-                <span>Notify Me When Open</span>
+              <a href="https://payu.in/web/AC5E020347C353450621DDCC2C2EEA40" class="btn-emerald-primary js-register-btn" id="certRegisterBtn">
+                <span>Register Now • ₹2799</span>
                 <i class="fas fa-arrow-right"></i>
-              </button>
+              </a>
             </div>
           </div>
 
@@ -1038,11 +1036,11 @@
             Don't leave your career transition to chance. Join the 1000's of CAs who have already launched their careers with us. Book your spot today and unlock the ultimate placement playbook.
           </p>
           <div class="banner-cta-group">
-            <button id="notifyMeBtn" class="notify-banner-btn js-notify-btn" type="button">
-              <span>Notify Me When Open</span>
+            <a href="https://payu.in/web/AC5E020347C353450621DDCC2C2EEA40" id="registerButtonWorkshop" class="notify-banner-btn js-register-btn">
+              <span>Register Now • ₹2799</span>
               <i class="fas fa-arrow-right"></i>
-            </button>
-            <p id="notifyStatus" class="notify-status-msg"></p>
+            </a>
+            <p class="notify-status-msg banner-batch-note">Exclusive Pre Result Batch for Nov’26 CAs • Limited seats</p>
           </div>
         </div>
 
@@ -1133,26 +1131,27 @@
     </footer>
   </main>
 
-  <!-- ─── FIXED BOTTOM CTA BAR ─── -->
+  <!-- ─── FIXED BOTTOM CTA BAR (REGISTRATION LIVE) ─── -->
   <div class="fixed-cta" id="cta-footer">
     <div class="timer-container">
-      <span class="status-closed-text">REGISTRATION CLOSED</span>
+      <span class="status-live-text">
+        <span class="status-live-dot"></span>
+        <span>REGISTRATION LIVE</span>
+      </span>
     </div>
     <div class="price-container">
       <span class="original">₹5999</span>
-      <span class="discounted">₹2999</span>
+      <span class="discounted">₹2799</span>
     </div>
-    <button type="button" id="notifyMeFooterBtn" class="notify-me-footer-btn js-notify-btn">
-      <span class="notify-footer-icon">🔔</span>
-      <span class="notify-footer-text">Notify Me</span>
-    </button>
+    <a href="https://payu.in/web/AC5E020347C353450621DDCC2C2EEA40" id="registerFooterBtn" class="notify-me-footer-btn js-register-btn">
+      <span class="notify-footer-text">Register Now</span>
+    </a>
   </div>
 
   <!-- Scripts -->
   <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script src="script.js?v=20261016.6" type="module"></script>
   <script src="/scripts/program-chrome.js?v=20261016.1"></script>
-  <script src="/scripts/notify-waitlist.js?v=20261031.1"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
     // Supabase (CDN client, shared auth storage key so the app-injected session is picked up)
@@ -1200,198 +1199,14 @@
     document.querySelectorAll(".dynamic-batch-month-long").forEach((el) => (el.textContent = monthLong));
     document.querySelectorAll(".dynamic-batch-month-space").forEach((el) => (el.textContent = `${monthShort} '${yearShort}`));
 
-    // ─── Notify Me / waitlist (push) ─────────────────────────────────────
-    // Same topic + Firebase project as the web waitlist. In the Flutter app the FCM token comes from the native
-    // getFcmToken handler; browsers use Web Push.
-    const NOTIFY_FIREBASE_CONFIG = {
-      apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
-      authDomain: "msc-notif.firebaseapp.com",
-      projectId: "msc-notif",
-      storageBucket: "msc-notif.appspot.com",
-      messagingSenderId: "228639798414",
-      appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
-      measurementId: "G-X4M23TB936",
-    };
-    const NOTIFY_VAPID_KEY =
-      "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
-    const NOTIFY_TOPIC = "fresher-program-notify";
-    const MANAGE_TOPIC_URL =
-      "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
-    const SUBSCRIBED_KEY = "msc_waitlist_" + NOTIFY_TOPIC;
-    const TOKEN_KEY = "notif_fcm_token_caf";
-
+    // The Flutter app may call setFcmToken on any page; keep a harmless stub (the waitlist is off while
+    // registrations are open).
     window.flutter_app = window.flutter_app || { isReady: false, fcmToken: null };
-    window.setFcmToken = function (token) {
+    window.setFcmToken = window.setFcmToken || function (token) {
       if (!token) return;
-      window.flutter_app = window.flutter_app || {};
       window.flutter_app.isReady = true;
       window.flutter_app.fcmToken = token;
     };
-
-    function isFlutterApp() {
-      return Boolean(
-        window.flutter_app?.isReady ||
-          window.flutter_app?.fcmToken ||
-          window.flutter_inappwebview,
-      );
-    }
-
-    async function getFlutterFcmToken() {
-      let token = window.flutter_app?.fcmToken;
-      if (!token && window.flutter_inappwebview?.callHandler) {
-        token = await window.flutter_inappwebview.callHandler("getFcmToken");
-        if (token) window.setFcmToken(token);
-      }
-      return token;
-    }
-
-    function setNotifyStatus(msg, type) {
-      // Inline status line (when the page has one) + floating toast.
-      const inline = document.getElementById("notifyStatus");
-      if (inline) {
-        inline.textContent = msg;
-        inline.dataset.state = type;
-      }
-      let toast = document.getElementById("notifyStatusToast");
-      if (!toast) {
-        toast = document.createElement("div");
-        toast.id = "notifyStatusToast";
-        toast.setAttribute("role", "status");
-        toast.setAttribute("aria-live", "polite");
-        document.body.appendChild(toast);
-      }
-      toast.className = "notify-status notify-status--" + type + " show";
-      toast.textContent = msg;
-      clearTimeout(toast._t);
-      if (type !== "error") toast._t = setTimeout(() => toast.classList.remove("show"), 4000);
-      else toast._t = setTimeout(() => toast.classList.remove("show"), 6000);
-    }
-
-    async function saveToNotifiable(fcmToken) {
-      if (!sb) return;
-      await window.MSCWaitlist?.join(sb, "ca-fresher", session?.user?.email);
-    }
-
-    async function initNotifyMe() {
-      const allBtns = Array.from(document.querySelectorAll(".js-notify-btn"));
-      allBtns.forEach((b) => { b.dataset.label = b.innerHTML; });
-
-      function syncButtonStates(subscribed) {
-        allBtns.forEach((b) => {
-          b.classList.toggle("subscribed", subscribed);
-          b.setAttribute("aria-pressed", String(subscribed));
-          b.innerHTML = subscribed ? "<span>You're on the waitlist ✓</span>" : b.dataset.label;
-        });
-      }
-
-      const isSubscribed = localStorage.getItem(SUBSCRIBED_KEY) === "true";
-      syncButtonStates(isSubscribed);
-      window.MSCWaitlist?.isOn(sb, "ca-fresher")?.then((on) => {
-        if (!on) return;
-        localStorage.setItem(SUBSCRIBED_KEY, "true");
-        syncButtonStates(true);
-      });
-
-      async function handleNotifyClick() {
-        if (this.disabled) return;
-        allBtns.forEach((b) => b && (b.disabled = true));
-
-        const runningInFlutterApp = isFlutterApp();
-
-        // Already subscribed — unsubscribe
-        if (localStorage.getItem(SUBSCRIBED_KEY) === "true") {
-          let token = localStorage.getItem(TOKEN_KEY);
-          if (!token && runningInFlutterApp) {
-            try {
-              token = await getFlutterFcmToken();
-            } catch (_) {}
-          }
-          if (token) {
-            try {
-              await fetch(MANAGE_TOPIC_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, topic: NOTIFY_TOPIC, action: "unsubscribe" }),
-              });
-            } catch (_) {}
-          }
-          localStorage.removeItem(SUBSCRIBED_KEY);
-          localStorage.removeItem(TOKEN_KEY);
-          syncButtonStates(false);
-          setNotifyStatus("Removed from the waitlist.", "info");
-          allBtns.forEach((b) => b && (b.disabled = false));
-          return;
-        }
-
-        if (!runningInFlutterApp) {
-          // Web browsers use the existing Web Push permission flow.
-          if (typeof Notification === "undefined" || !("serviceWorker" in navigator)) {
-            setNotifyStatus("This browser does not support push notifications.", "error");
-            allBtns.forEach((b) => b && (b.disabled = false));
-            return;
-          }
-          setNotifyStatus("Requesting permission…", "info");
-          let permission;
-          try {
-            permission = await Notification.requestPermission();
-          } catch (e) {
-            permission = "denied";
-          }
-
-          if (permission !== "granted") {
-            setNotifyStatus("Please allow notifications in your browser settings.", "error");
-            allBtns.forEach((b) => b && (b.disabled = false));
-            return;
-          }
-        }
-
-        // Initialize Firebase & get FCM token
-        setNotifyStatus("Setting up…", "info");
-        try {
-          let fcmToken;
-          if (runningInFlutterApp) {
-            fcmToken = await getFlutterFcmToken();
-          } else {
-            if (!firebase.apps.length) firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
-            const messaging = firebase.messaging();
-            await navigator.serviceWorker.register("/firebase-messaging-sw.js");
-            fcmToken = await messaging.getToken({ vapidKey: NOTIFY_VAPID_KEY });
-          }
-          if (!fcmToken) throw new Error("No FCM token");
-
-          // Subscribe to FCM topic
-          setNotifyStatus("Subscribing…", "info");
-          const res = await fetch(MANAGE_TOPIC_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: fcmToken, topic: NOTIFY_TOPIC, action: "subscribe" }),
-          });
-          const data = await res.json();
-          if (!data.success) throw new Error(data.error || "Subscription failed");
-
-          // Save to Supabase notifiable table
-          try {
-            await saveToNotifiable(fcmToken);
-          } catch (_) {
-            /* ignore duplicate key */
-          }
-
-          localStorage.setItem(SUBSCRIBED_KEY, "true");
-          localStorage.setItem(TOKEN_KEY, fcmToken);
-          syncButtonStates(true);
-          setNotifyStatus("You're on the list! We'll notify you when seats open.", "success");
-        } catch (err) {
-          console.error("NotifyMe error:", err);
-          setNotifyStatus("Something went wrong. Please try again.", "error");
-        }
-
-        allBtns.forEach((b) => b && (b.disabled = false));
-      }
-
-      allBtns.forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); handleNotifyClick.call(b); }));
-    }
-
-    initNotifyMe();
     });
   </script>
 
@@ -1403,7 +1218,7 @@
     gtag('js', new Date());
     gtag('config', 'G-1450NCVE65');
   </script>
-  <script src="/scripts/program-enrolled.js?v=20261116-r3" defer></script>
+  <script src="/scripts/program-enrolled.js?v=20261124-fresher" defer></script>
 </body>
 
 </html>

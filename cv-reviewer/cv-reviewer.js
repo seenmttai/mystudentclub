@@ -672,6 +672,8 @@ function stopLiveStreamingConsole() {
 }
 // ───────────────────────────────────────────────────────────────────
 
+const LONG_WAIT_TEXT = 'Writing your detailed review. This takes 1-2 minutes, please keep this page open.';
+
 function startLoadingAnimation() {
     stopLoadingAnimation();
     resetLoadingChecklist();
@@ -694,10 +696,11 @@ function startLoadingAnimation() {
     updateLoadingChecklist(0);
 
     currentProgressInterval = setInterval(() => {
-        if (loadingProgressText) loadingProgressText.textContent = stages[stage % stages.length];
-        updateLoadingChecklist(stage);
+        // A detailed review takes 1-2 minutes: step through once, then hold instead of looping back to "Uploading".
+        if (loadingProgressText) loadingProgressText.textContent = stage < stages.length ? stages[stage] : LONG_WAIT_TEXT;
+        updateLoadingChecklist(Math.min(stage, stages.length - 1));
         stage++;
-    }, 3000);
+    }, 6000);
 }
 
 function stopLoadingAnimation() {
