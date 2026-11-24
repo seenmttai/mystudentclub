@@ -9,6 +9,8 @@ const { JSDOM } = require('jsdom');
 // portal uses and shows the application link right in the popup.
 const root = path.resolve(__dirname, '..');
 const source = fs.readFileSync(path.join(root, 'scripts', 'history.js'), 'utf8');
+// apply-links.js is inlined as-is (its exports become plain functions), so Apply Now runs the real opener.
+const applyLinksSource = fs.readFileSync(path.join(root, 'scripts', 'apply-links.js'), 'utf8').replace(/^export /gm, '');
 
 function loadTracker({ unlock }) {
   const dom = new JSDOM(`<!doctype html><body>
@@ -46,6 +48,7 @@ function loadTracker({ unlock }) {
     .replace("import { getDaysAgo } from './date-utils.js';", 'const { getDaysAgo } = window.__stubs;')
     .replace("import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';",
       'const { unlockJobDetails, getCachedUnlockedJob } = window.__stubs;')
+    .replace("import { openApplyLinks } from './apply-links.js';", () => applyLinksSource)
     .replace("document.addEventListener('DOMContentLoaded', initializePage);", '');
   assert.doesNotMatch(body, /^import /m, 'every import should be stubbed');
 

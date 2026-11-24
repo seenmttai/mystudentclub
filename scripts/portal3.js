@@ -1,6 +1,8 @@
 import { getDaysAgo, isJobExpired, getPostedLabel, JOB_EXPIRATION_DAYS } from './date-utils.js?v=20261118_1';
+import './job-seo.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
+import { openApplyLinks, openQueuedApplyLink } from './apply-links.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, renderLockScreen, showExclusiveAppliedPopup, fetchMyProgramRegistrations, applyExclusiveDemo, ensureExclusiveStyles } from './exclusive-vacancy.js';
 import { portalFor, extraSelectColumns, companyTypeFilter, applyJobFilters, describeJobFilters, withoutFilterValue, renderJobFilters, syncJobFilters, formatPayRange, formatDeadline, FIRM_TIERS } from './job-filters.js';
@@ -192,29 +194,9 @@ async function runPublicJobSelect(build) {
     return result;
 }
 
-function slugifyText(text) {
-    if (text === null || text === undefined || text === '') return '';
-    return String(text)
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-        .slice(0, 50);
-}
-
-function generateJobSlug(job) {
-    const company = slugifyText(job.Company || 'job');
-    const role = slugifyText(job.Role || job.Category || '');
-    const rawLocation = String(job.Location || '').split(',')[0].trim();
-    const location = slugifyText(rawLocation || 'india');
-    const id = String(job.id || '');
-
-    const parts = [company];
-    if (role && role !== company) parts.push(role);
-    if (location) parts.push(location);
-    if (id) parts.push(id);
-
-    return parts.filter(Boolean).join('-');
-}
+// Job page URLs ("/jobs/industrial/dbs-hiring-ca-industrial-trainee-finance-pune-10651")
+// come from scripts/job-seo.js, the same code that builds the static job pages.
+const jobSeo = globalThis.MSCJobSeo;
 let currentSession = null;
 const pendingRecruiterApplications = new Set();
 const completedRecruiterApplications = new Set();
@@ -639,8 +621,7 @@ function renderJobCard(job) {
         `;
     }
 
-    const jobSlug = generateJobSlug(job);
-    const jobCategorySlug = TABLE_SLUG_MAP[currentTable] || 'industrial';
+    const jobPagePath = jobSeo.jobPath(job, TABLE_SLUG_MAP[currentTable] || 'industrial');
 
     jobCard.classList.toggle('job-card-expired', isExpired);
     jobCard.innerHTML = `
@@ -680,7 +661,7 @@ function renderJobCard(job) {
         ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? "…" : ""}</p>` : ""}
         <div class="job-card-actions">
             ${applyButtonHtml}
-            <a href="/jobs/${jobCategorySlug}/${jobSlug}.html" class="view-details-card-btn secondary" onclick="event.preventDefault();">View Details ›</a>
+            <a href="${jobPagePath}" class="view-details-card-btn secondary" onclick="event.preventDefault();">View Details ›</a>
         </div>
         ${exclusiveNoteHtml}`;
 
@@ -785,10 +766,9 @@ function generateApplicationLinks(applicationId) {
 
 // Share job using Web Share API or fallback to copy link
 function shareJob(job, btnElement) {
-    const jobType = currentTable === 'Industrial Training Job Portal' ? 'industrial' :
-        currentTable === 'Fresher Jobs' ? 'fresher' :
-            currentTable === 'Semi Qualified Jobs' ? 'semi' : 'articleship';
-    const jobUrl = `${window.location.origin}/job.html?id=${job.id}&type=${jobType}`;
+    // Readable job page URL ("…/jobs/industrial/dbs-hiring-ca-industrial-trainee-finance-pune-10651");
+    // jobs posted in the last few hours, whose page isn't built yet, keep the job.html link.
+    const jobUrl = jobSeo.shareUrl(job, TABLE_SLUG_MAP[currentTable] || 'industrial');
 
     const shareText = `Check out this job at *${job.Company}* for *${job.Location}*
 URL - ${jobUrl}
@@ -1337,7 +1317,7 @@ function showModal(job) {
                 if (targetApplyLink.startsWith('mailto:')) {
                     window.location.href = targetApplyLink;
                 } else {
-                    window.open(targetApplyLink, '_blank');
+                    openApplyLinks(unlocked.applicationId, targetApplyLink, document.getElementById('modalExternalApplyBtn'));
                 }
             }
         } catch (error) {
@@ -1422,11 +1402,14 @@ function showModal(job) {
         if (modalExternalApplyBtn) {
             modalExternalApplyBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
+                const button = e.currentTarget;
+                // A 2nd/3rd link the browser held back: this click only opens it.
+                if (openQueuedApplyLink(button)) return;
                 if (recruiterPosted) {
-                    await recordApplication(job, e.currentTarget);
+                    await recordApplication(job, button);
                 } else {
-                    if (currentSession) await recordApplication(job, e.currentTarget);
-                    window.open(applyLink, '_blank');
+                    if (currentSession) await recordApplication(job, button);
+                    openApplyLinks(effectiveApplicationId, applyLink, button);
                 }
             });
         }
@@ -3124,7 +3107,7 @@ async function executeActualApply(job, buttonElement, isAiApply = false) {
     if (!isAiApply) {
         const applyLink = getApplicationLink(job['Application ID']);
         if (applyLink.startsWith('mailto:')) openMailtoLink(constructMailto(job, generateFallbackEmail(job, currentTable)));
-        else if (applyLink && applyLink !== '#') window.open(applyLink, '_blank');
+        else if (applyLink && applyLink !== '#') openApplyLinks(job['Application ID'], applyLink, document.getElementById('modalExternalApplyBtn'));
         return true;
     }
     const emailBody = await generateEmailBody(job, currentTable, supabaseClient, currentSession.user);
@@ -3224,7 +3207,11 @@ function openMailtoLink(mailtoUrl) {
 
 function getApplicationLink(id, companyName = 'the company') {
     if (!id) return '#';
-    const trimmedId = id.trim();
+    let trimmedId = id.trim();
+    // Several comma-separated links: the button's own link is the first one
+    // (openApplyLinks opens all of them on click).
+    const firstPart = trimmedId.split(/,\s*(?=https?:\/\/)/i)[0].trim();
+    if (trimmedId.includes(',') && /^https?:\/\//i.test(firstPart)) trimmedId = firstPart;
     if (trimmedId.startsWith('http')) {
         try {
             new URL(trimmedId);
@@ -4199,11 +4186,23 @@ function checkAndOpenSharedJob() {
 async function fetchSharedJob(jobId) {
     try {
         // A shared link to a hidden vacancy opens nothing.
-        const { data, error } = await runPublicJobSelect(cols => excludeHidden(supabaseClient
-            .from(currentTable)
-            .select(cols)
-            .eq('id', jobId))
-            .maybeSingle());
+        const { data, error } = await runPublicJobSelect(cols => {
+            let query = excludeHidden(supabaseClient
+                .from(currentTable)
+                .select(cols));
+            // Semi-qualified job URLs carry only the first 8 characters of the job's UUID.
+            if (currentTable === 'Semi Qualified Jobs' && /^[0-9a-f]{8}$/i.test(jobId)) {
+                const prefix = jobId.toLowerCase();
+                query = query
+                    .gte('id', `${prefix}-0000-0000-0000-000000000000`)
+                    .lte('id', `${prefix}-ffff-ffff-ffff-ffffffffffff`)
+                    .order('Created_At', { ascending: false })
+                    .limit(1);
+            } else {
+                query = query.eq('id', jobId);
+            }
+            return query.maybeSingle();
+        });
 
         if (!error && data) {
             setTimeout(() => showModal(data), 300);

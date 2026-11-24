@@ -1,8 +1,10 @@
 import { getDaysAgo, isJobExpired, getPostedLabel } from './date-utils.js?v=20261118_1';
+import './job-seo.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 import { ARTICLESHIP_TABLE, isExclusiveLocked, showExclusiveLockPopup } from './exclusive-vacancy.js';
 import { assessmentGate, stoppedByCriteria } from './apply-assessment.js';
+import { openApplyLinks, openQueuedApplyLink } from './apply-links.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -369,10 +371,8 @@ function expandLocationTerms(locations) {
 
 function shareJob(job, btnElement) {
     const table = job.source_table || state.portalType;
-    const jobType = table === 'Industrial Training Job Portal' ? 'industrial' :
-        table === 'Fresher Jobs' ? 'fresher' :
-            table === 'Semi Qualified Jobs' ? 'semi' : 'articleship';
-    const jobUrl = `${window.location.origin}/job.html?id=${job.id}&type=${jobType}`;
+    // Readable job page URL (job.html for jobs posted in the last few hours; see job-seo.js).
+    const jobUrl = globalThis.MSCJobSeo.shareUrl(job, globalThis.MSCJobSeo.categoryFromTable(table));
 
     const shareText = `Check out this job at *${job.Company}* for *${job.Location}*
 URL - ${jobUrl}
@@ -659,11 +659,14 @@ function showModal(job) {
         if (modalExternalApplyBtn) {
             modalExternalApplyBtn.addEventListener('click', async (e) => {
                 e.preventDefault(); // Prevent default navigation initially
+                const button = e.currentTarget;
+                // A 2nd/3rd link the browser held back: this click only opens it.
+                if (openQueuedApplyLink(button)) return;
                 if (recruiterPosted) {
-                    await recordApplication(job, e.currentTarget);
+                    await recordApplication(job, button);
                 } else {
-                    if (currentSession) await recordApplication(job, e.currentTarget);
-                    window.open(applyLink, '_blank');
+                    if (currentSession) await recordApplication(job, button);
+                    openApplyLinks(job['Application ID'], applyLink, button);
                 }
             });
         }
@@ -1581,7 +1584,7 @@ async function executeActualApply(job, buttonElement, isAiApply = false) {
     if (!isAiApply) {
         const applyLink = getApplicationLink(job['Application ID']);
         if (applyLink.startsWith('mailto:')) openMailtoLink(constructMailto(job, generateFallbackEmail(job, state.portalType)));
-        else if (applyLink && applyLink !== '#') window.open(applyLink, '_blank');
+        else if (applyLink && applyLink !== '#') openApplyLinks(job['Application ID'], applyLink, document.getElementById('modalExternalApplyBtn'));
         return true;
     }
     const emailBody = await generateEmailBody(job, state.portalType, supabaseClient, currentSession.user);
@@ -1682,7 +1685,11 @@ function openMailtoLink(mailtoUrl) {
 
 function getApplicationLink(id, companyName = 'the company') {
     if (!id) return '#';
-    const trimmedId = id.trim();
+    let trimmedId = id.trim();
+    // Several comma-separated links: the button's own link is the first one
+    // (openApplyLinks opens all of them on click).
+    const firstPart = trimmedId.split(/,\s*(?=https?:\/\/)/i)[0].trim();
+    if (trimmedId.includes(',') && /^https?:\/\//i.test(firstPart)) trimmedId = firstPart;
     if (trimmedId.startsWith('http')) {
         try {
             new URL(trimmedId);

@@ -60,7 +60,7 @@
     // Every button that asks to register, enrol or join a waitlist. Each becomes an "Open your course" link.
     const CTA_SELECTOR = [
         '.js-notify-btn', '#heroPrimaryCta', '#heroNotifyBtn', '#certNotifyBtn', '#notifyMeBtn', '#notifyMeFooterBtn',
-        '#registerFooterBtn', '#registerButtonWorkshop', '.header-enroll-btn', '.btn-navy-sample'
+        '#registerFooterBtn', '#registerButtonWorkshop', '.header-enroll-btn', '.btn-navy-sample', '.js-register-btn'
     ].join(',');
 
     // Small labels that say the program is closed or open for registration: the status pill at the top of the page

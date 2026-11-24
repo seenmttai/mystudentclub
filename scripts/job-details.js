@@ -3,6 +3,7 @@ import { getDaysAgo, isJobExpired, getPostedLabel } from './date-utils.js?v=2026
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, showExclusiveLockPopup, showExclusiveAppliedPopup, fetchMyProgramRegistrations, ensureExclusiveStyles } from './exclusive-vacancy.js';
 import { assessmentGate, stoppedByCriteria } from './apply-assessment.js';
+import { getApplyUrls, openApplyLinks, openQueuedApplyLink } from './apply-links.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -366,6 +367,15 @@ function renderJob(job, tableName) {
         container.querySelectorAll('#simpleApplyBtn').forEach(applyButton => applyButton.addEventListener('click', () => recordRecruiterApplication(job, applyButton, tableName)));
     }
 
+    // Several comma-separated apply links: each opens in its own tab.
+    if (!requiresEnrollment && !recruiterPosted && !applyInfo.isEmail && getApplyUrls(job['Application ID']).length > 1) {
+        container.querySelectorAll('.js-external-apply').forEach(btn => btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (openQueuedApplyLink(btn)) return;
+            openApplyLinks(job['Application ID'], applyInfo.link, btn);
+        }));
+    }
+
     if (!recruiterPosted && applyInfo.isEmail) {
         const aiApplyButtons = container.querySelectorAll('.btn-ai-apply');
         aiApplyButtons.forEach(btn => {
@@ -415,7 +425,10 @@ function renderJob(job, tableName) {
 
 function getApplicationLink(id) {
     if (!id) return { link: '#', isEmail: false };
-    const trimmedId = id.trim();
+    let trimmedId = id.trim();
+    // Several comma-separated links: the button's own link is the first one.
+    const firstPart = trimmedId.split(/,\s*(?=https?:\/\/)/i)[0].trim();
+    if (trimmedId.includes(',') && /^https?:\/\//i.test(firstPart)) trimmedId = firstPart;
 
     if (trimmedId.toLowerCase().startsWith('http')) {
         try {
@@ -474,7 +487,7 @@ function generateApplyButtons(applyInfo, job) {
         `;
     } else {
         return `
-            <a href="${applyInfo.link}" target="_blank" class="btn-large btn-primary-large">
+            <a href="${applyInfo.link}" target="_blank" class="btn-large btn-primary-large js-external-apply">
                 <i class="fas fa-external-link-alt"></i> Apply Now
             </a>
         `;

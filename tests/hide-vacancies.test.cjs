@@ -85,7 +85,8 @@ test('portal listing, trending and shared link all skip hidden vacancies, with t
   assert.match(source, /if \(isHiddenColumnError\(result\.error\)\) \{[\s\S]{0,120}?hiddenFilterOff = true;/);
   assert.match(source, /if \(isHiddenColumnError\(error\)\) \{[\s\S]{0,500}?hiddenFilterOff = true;/);
   assert.doesNotMatch(source, /!hiddenFilterOff && isHiddenColumnError/);
-  assert.equal((source.match(/runPublicJobSelect\(cols => excludeHidden\(supabaseClient/g) || []).length, 2, 'shared link and trending');
+  // Since PR #185 the shared link builds its query in a block (semi-qualified short ids), so either shape counts.
+  assert.equal((source.match(/runPublicJobSelect\(cols => (?:\{\s*let query = )?excludeHidden\(supabaseClient/g) || []).length, 2, 'shared link and trending');
 });
 
 test('jobs by email skips hidden vacancies and ignores a hidden shared link', () => {
@@ -113,10 +114,12 @@ test('admin can hide and unhide, and hidden cards are marked', () => {
 });
 
 test('static job pages: no page for hidden vacancies, and old pages of hidden ones are removed before the sitemap', async () => {
-  assert.match(read('jobs-builder/src/pages/jobs/[category]/[slug].astro'), /if \(!hiddenFilterOff\) query = query\.not\('hidden', 'is', true\);/);
+  // Since PR #185 every run rebuilds the last 15 days without hidden rows, so sync-job-pages.js deletes their pages;
+  // the hide step still runs after the sync as a safety net.
+  assert.match(read('jobs-builder/src/pages/jobs/[category]/[slug].astro'), /\.gt\('Created_At', since\)[\s\S]{0,200}?\.not\('hidden', 'is', true\);/);
   const workflow = read('.github/workflows/generate-jobs.yml');
   const hide = workflow.indexOf('npm run hide');
-  assert.ok(hide > workflow.indexOf('npm run expire') && hide < workflow.indexOf('npm run sitemap'));
+  assert.ok(hide > workflow.indexOf('npm run sync') && hide < workflow.indexOf('npm run sitemap'));
 
   const mod = await import(pathToFileURL(path.join(root, 'jobs-builder/scripts/remove-hidden-jobs.js')).href);
   assert.equal(mod.jobIdFromFileName('7524.html'), 7524);

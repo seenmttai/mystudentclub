@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page not found | My Student Club</title>
+    <meta name="robots" content="noindex">
+    <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+    <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <!--
+      Cloudflare Pages serves this file with status 404 for any URL that has no file.
+      Without it, Pages answers every unknown URL with the home page and status 200,
+      which Google reports as "soft 404" and which kept expired job URLs "alive".
+      Job URLs (old or new format) of jobs that expired, or that were posted in the last
+      few hours and have no page yet, send people to the portal with that job open.
+    -->
+    <script src="/scripts/job-seo.js"></script>
+    <script>
+        (function () {
+            var seo = window.MSCJobSeo;
+            var job = seo && seo.parseJobPath(window.location.pathname);
+            if (!job) return;
+            var portal = seo.CATEGORY_PORTAL[job.category] || '/';
+            window.location.replace(portal + '?id=' + encodeURIComponent(job.id) + '&type=' + encodeURIComponent(job.category));
+        })();
+    </script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --text: #1e293b;
+            --muted: #64748b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+        }
+        main {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px 24px;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+        }
+        img { height: 36px; margin-bottom: 20px; }
+        h1 { font-size: 1.4rem; margin-bottom: 8px; }
+        p { color: var(--muted); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5; }
+        ul { list-style: none; display: grid; gap: 10px; }
+        a.link {
+            display: block;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        a.link:hover { background: #eff6ff; border-color: var(--primary); }
+    </style>
+</head>
+<body>
+    <main>
+        <a href="/"><img src="/assets/logo.png" alt="My Student Club"></a>
+        <h1>This page isn't here any more</h1>
+        <p>The job may have closed, or the link may be wrong. Here are the latest openings:</p>
+        <ul>
+            <li><a class="link" href="/">CA Industrial Training jobs</a></li>
+            <li><a class="link" href="/ca-articleship-opportunities">CA Articleship vacancies</a></li>
+            <li><a class="link" href="/ca-fresher-jobs">CA Fresher jobs</a></li>
+            <li><a class="link" href="/semi-qualified-ca-jobs">Semi Qualified CA jobs</a></li>
+        </ul>
+    </main>
+</body>
+</html>
