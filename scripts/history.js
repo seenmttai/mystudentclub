@@ -1,5 +1,6 @@
 import { getDaysAgo } from './date-utils.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
+import { openApplyLinks } from './apply-links.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -735,7 +736,8 @@ function showJobModal(application) {
             // If the browser blocks the new tab, the links stay in the popup below with Open buttons.
             if (applyHref) {
                 if (applyHref.startsWith('mailto:')) window.location.href = applyHref;
-                else window.open(applyHref, '_blank', 'noopener');
+                // Several comma-separated links: each opens in its own tab.
+                else openApplyLinks(unlocked.applicationId, applyHref, null);
             }
 
             const newApp = { ...application, applied_at: new Date().toISOString() };

@@ -83,7 +83,10 @@ function renderMarkdown(text) {
 
 function getApplicationLink(id) {
     if (!id) return { link: '#', isEmail: false };
-    const trimmedId = String(id).trim();
+    let trimmedId = String(id).trim();
+    // Several comma-separated links: the button's own link is the first one.
+    const firstPart = trimmedId.split(',')[0].trim();
+    if (trimmedId.includes(',') && /^https?:\/\//i.test(firstPart)) trimmedId = firstPart;
 
     if (trimmedId.toLowerCase().startsWith('http')) {
         try {
@@ -184,6 +187,8 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
     const category = job.Category || 'General';
     const descriptionHtml = renderMarkdown(job.Description);
     const applyInfo = getApplicationLink(job['Application ID']);
+    const applyUrls = String(job['Application ID'] || '').split(',').map(part => part.trim())
+        .filter(part => /^https?:\/\/\S+$/i.test(part));
     const recruiterPosted = isRecruiterPostedJob(job);
 
     // Connect Link Logic
@@ -215,12 +220,40 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
             </div>
         `;
     } else {
+        // Several comma-separated links: the page script below opens each in its own tab.
+        const multiApplyAttr = applyUrls.length > 1
+            ? ` data-apply-links="${escapeHtml(JSON.stringify(applyUrls))}"`
+            : '';
         applyButtonsHtml = `
-            <a href="${applyInfo.link}" target="_blank" class="btn-large btn-primary-large">
+            <a href="${applyInfo.link}" target="_blank" class="btn-large btn-primary-large${applyUrls.length > 1 ? ' js-multi-apply' : ''}"${multiApplyAttr}>
                 <i class="fas fa-external-link-alt"></i> Apply Now
             </a>
         `;
     }
+    const multiApplyScript = (!recruiterPosted && !applyInfo.isEmail && applyUrls.length > 1) ? `
+    <script>
+        document.querySelectorAll('.js-multi-apply').forEach(function (btn) {
+            var links = JSON.parse(btn.getAttribute('data-apply-links') || '[]');
+            var original = btn.innerHTML;
+            var next = 0;
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                // Each link in its own tab. A browser that allows one tab per click gets the rest on the next clicks.
+                while (next < links.length) {
+                    var tab = window.open(links[next], '_blank');
+                    if (!tab) break;
+                    try { tab.opener = null; } catch (_) {}
+                    next += 1;
+                }
+                if (next < links.length) {
+                    btn.innerHTML = '<i class="fas fa-external-link-alt"></i> Open link ' + (next + 1) + ' of ' + links.length;
+                } else {
+                    btn.innerHTML = original;
+                    next = 0;
+                }
+            });
+        });
+    </script>` : '';
 
     // Back Link Logic
     const portalMap = {
@@ -995,7 +1028,7 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', 'G-1450NCVE65');
-    </script>
+    </script>${multiApplyScript}
 </body>
 </html>
 `;
