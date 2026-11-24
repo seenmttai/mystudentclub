@@ -16,9 +16,9 @@ const exists = (p) => fs.existsSync(path.join(root, p));
 // register flow is covered by notify-waitlist-helper.test.cjs. IT's hero CTA became a live Register link on 15 Nov (#235).
 const PROGRAMS = [
   { dir: 'ca-industrial-training-program', buttons: [], topic: 'industrial-program-notify' }, // notify buttons replaced by Register CTAs in #235; notify JS still present
-  { dir: 'msc-ca-fresher-program', buttons: ['heroNotifyBtn', 'certNotifyBtn', 'notifyMeBtn', 'notifyMeFooterBtn'], topic: 'fresher-program-notify' },
 ];
-const ALL_PAGES = [...PROGRAMS, { dir: 'articleship-program' }];
+// CA Fresher opened registrations on 24 Nov 2026 (₹2799 PayU link, no waitlist JS): tests/fresher-registration.test.cjs.
+const ALL_PAGES = [...PROGRAMS, { dir: 'msc-ca-fresher-program' }, { dir: 'articleship-program' }];
 
 test('each program page links only local CSS/JS that exist', () => {
   for (const p of ALL_PAGES) {

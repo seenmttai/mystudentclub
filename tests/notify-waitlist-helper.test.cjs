@@ -7,7 +7,8 @@ const test = require('node:test');
 
 const root = path.resolve(__dirname, '..');
 const helperSrc = fs.readFileSync(path.join(root, 'scripts', 'notify-waitlist.js'), 'utf8');
-const PAGES = [['msc-ca-fresher-program', 'ca-fresher'], ['articleship-program', 'articleship'], ['ca-industrial-training-program', 'industrial-training']];
+// CA Fresher: registrations open 24 Nov 2026 (₹2799, Nov'26 pre-result batch); see tests/fresher-registration.test.cjs.
+const PAGES = [['articleship-program', 'articleship'], ['ca-industrial-training-program', 'industrial-training']];
 
 function load(storage = {}) {
   const logged = [];
