@@ -5341,3 +5341,80 @@
 
 /* Articleship route: the page stays hidden until the access gate allows it (cv-script.js). */
 html.cv-gating body > :not(#ap-gate):not(#cv-mode-shell):not(script) { visibility: hidden; }
+
+        /* Optional profile photo (Personal Details) */
+        .cv-photo-optional {
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--text-light);
+            margin-left: 4px;
+        }
+
+        .cv-photo-picker {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .cv-photo-thumb {
+            flex: 0 0 auto;
+            width: 60px;
+            height: 76px;
+            padding: 0;
+            border: 1.5px dashed var(--border-dark);
+            border-radius: 8px;
+            background: var(--bg-panel) center 25% / cover no-repeat;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .cv-photo-thumb svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .cv-photo-thumb:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .cv-photo-thumb.has-photo {
+            border-style: solid;
+            border-color: var(--border-color);
+        }
+
+        .cv-photo-thumb.has-photo svg {
+            display: none;
+        }
+
+        .cv-photo-side {
+            min-width: 0;
+        }
+
+        .cv-photo-buttons {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .cv-photo-buttons .btn-mini {
+            font-size: 11px;
+            padding: 5px 10px;
+        }
+
+        .cv-photo-hint {
+            margin: 6px 0 0;
+            font-size: 11px;
+            line-height: 1.4;
+            color: var(--text-muted);
+        }
+
+        .cv-photo-hint.is-error {
+            color: #b91c1c;
+        }
+
