@@ -3265,6 +3265,7 @@ function applySectionOrder(sectionOrder) {
 // layouts, and the header makes room for it. With no photo the template renders exactly as before.
 
 const CV_PHOTO_PATTERN = /^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/]+=*$/i;
+const CV_PHOTO_HOST_PROPS = ['position', 'paddingLeft', 'paddingRight', 'minHeight', 'flexShrink'];
 const CV_PHOTO_SECTION_SELECTOR = '.sortable-section, [data-section-id], [data-universal-section], section';
 
 // Per-template placement. Anything not listed is placed automatically.
@@ -3317,10 +3318,10 @@ function isValidCvPhoto(value) {
 function clearCvPhoto() {
     document.querySelectorAll('[data-cv-photo]').forEach(el => el.remove());
     document.querySelectorAll('[data-cv-photo-host]').forEach(host => {
-        // Put back the header's own inline style exactly as the template had it.
-        const saved = host.__cvPhotoStyle;
-        if (saved === null || saved === undefined) host.removeAttribute('style');
-        else host.setAttribute('style', saved);
+        // Put back only what this layer changed: the template may have set other inline styles since (accent colours).
+        const saved = host.__cvPhotoStyle || {};
+        CV_PHOTO_HOST_PROPS.forEach(key => { host.style[key] = saved[key] || ''; });
+        if (saved.hadStyle === false && !host.getAttribute('style')) host.removeAttribute('style');
         delete host.__cvPhotoStyle;
         host.removeAttribute('data-cv-photo-host');
     });
@@ -3449,7 +3450,8 @@ function renderCvPhoto(data) {
     img.src = src;
     photo.appendChild(img);
 
-    host.__cvPhotoStyle = host.getAttribute('style');
+    host.__cvPhotoStyle = { hadStyle: host.hasAttribute('style') };
+    CV_PHOTO_HOST_PROPS.forEach(key => { host.__cvPhotoStyle[key] = host.style[key]; });
     host.setAttribute('data-cv-photo-host', '');
     page.classList.add('cv-has-photo');
     document.body.classList.add('cv-has-photo');
