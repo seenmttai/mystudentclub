@@ -1134,7 +1134,7 @@ const WZ = (() => {
                 <p class="wz-cv-label">Click to upload resume</p>
                 <p class="wz-cv-sub">PDF only — Max 5 MB</p>
             </div>
-            <p class="wz-cv-sub" style="margin-top:10px;">A resume is required: recruiters see it when you apply.</p>`}
+            <p class="wz-cv-sub" style="margin-top:10px;">A resume is required: recruiters see it when you apply. Keep your PDF ready, or come back to this page when you have it.</p>`}
             <div class="wz-consent-card">
                 <label class="wz-consent-label" for="wz-consent-chk">
                     <input type="checkbox" id="wz-consent-chk">
@@ -2654,6 +2654,7 @@ async function loadProfile() {
         // over the server row, so only what the student changes here is written.
         takeProfileSaveBaseline();
         setTimeout(() => refreshHeader(), 150);
+        refreshCvOnFileState();
         return profileObj;
     } finally {
         showLoading(false);

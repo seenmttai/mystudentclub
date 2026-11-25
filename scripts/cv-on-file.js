@@ -18,6 +18,9 @@ export function readCvOnFile(storage = globalThis.localStorage, uid = null) {
 }
 export const CV_STATUS_URL = 'https://hire.mystudentclub.com/api/student/cv-status';
 const FRESH_MS = { yes: 6 * 60 * 60 * 1000, no: 60 * 1000 };
+// An unknown answer (hire.msc slow or down) is remembered briefly, so a click never waits on the timeout twice.
+const UNKNOWN_MS = 30 * 1000;
+const unknownAt = new Map();
 
 export function markCvOnFile(uid, onFile, storage = globalThis.localStorage, now = Date.now()) {
     try {
@@ -32,17 +35,20 @@ export async function checkCvOnFile(session, { fetchImpl = globalThis.fetch, sto
     if (!uid || !token || typeof fetchImpl !== 'function') return null;
     const cached = readCvOnFile(storage, uid);
     if (!force && cached && now - (Number(cached.at) || 0) < FRESH_MS[cached.state]) return cached.state === 'yes';
+    if (!force && now - (unknownAt.get(uid) || -Infinity) < UNKNOWN_MS) return cached ? cached.state === 'yes' : null;
+    const unknown = () => { unknownAt.set(uid, now); return cached ? cached.state === 'yes' : null; };
     const controller = typeof AbortController === 'function' ? new AbortController() : null;
     const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
     try {
         const res = await fetchImpl(CV_STATUS_URL, { headers: { Authorization: `Bearer ${token}` }, signal: controller?.signal });
-        if (!res?.ok) return cached ? cached.state === 'yes' : null;
+        if (!res?.ok) return unknown();
         const data = await res.json();
-        if (!data || data.ok !== true || typeof data.hasCv !== 'boolean') return cached ? cached.state === 'yes' : null;
+        if (!data || data.ok !== true || typeof data.hasCv !== 'boolean') return unknown();
+        unknownAt.delete(uid);
         markCvOnFile(uid, data.hasCv, storage, now);
         return data.hasCv;
     } catch (_) {
-        return cached ? cached.state === 'yes' : null;
+        return unknown();
     } finally {
         if (timer) clearTimeout(timer);
     }

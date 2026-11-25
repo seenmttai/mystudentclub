@@ -11,7 +11,7 @@ const source = fs.readFileSync(path.join(root, 'scripts', 'cv-on-file.js'), 'utf
 function load() {
   const data = {};
   const storage = { getItem: k => (k in data ? data[k] : null), setItem: (k, v) => { data[k] = String(v); } };
-  const context = { JSON, Number, Boolean, Date, setTimeout, clearTimeout, AbortController, globalThis: {} };
+  const context = { JSON, Number, Boolean, Date, Map, Infinity, setTimeout, clearTimeout, AbortController, globalThis: {} };
   vm.runInNewContext(source.replace(/^export (const|function|async function) /gm, '$1 ')
     + '\nthis.m = { CV_ON_FILE_KEY, CV_STATUS_URL, readCvOnFile, markCvOnFile, checkCvOnFile };', context);
   return { m: context.m, data, storage };
@@ -49,6 +49,18 @@ test('unknown is never "missing": errors, bad answers and no session leave nothi
   assert.equal(data[m.CV_ON_FILE_KEY], undefined);
 });
 
+test('an unknown answer is not re-asked for 30 seconds, so one click never waits twice', async () => {
+  const { m, storage } = load();
+  let calls = 0;
+  const down = async () => { calls++; throw new Error('timeout'); };
+  assert.equal(await m.checkCvOnFile(session, { fetchImpl: down, storage, now: 1000 }), null);
+  assert.equal(await m.checkCvOnFile(session, { fetchImpl: down, storage, now: 20000 }), null);
+  assert.equal(calls, 1);
+  const yes = answer({ ok: true, hasCv: true });
+  assert.equal(await m.checkCvOnFile(session, { fetchImpl: yes, storage, now: 40000 }), true);
+  assert.equal(yes.calls.length, 1);
+});
+
 test('another account\'s stored answer is ignored', async () => {
   const { m, storage } = load();
   m.markCvOnFile('u2', false, storage, Date.now());
@@ -64,6 +76,7 @@ test('onboarding has no "Continue Without Resume", and job pages check the CV be
   assert.match(profile, /refreshCvOnFileState\(\);/);
   for (const page of ['portal3.js', 'portal-' + 'email.js']) {
     const js = fs.readFileSync(path.join(root, 'scripts', page), 'utf8');
-    assert.equal((js.match(/await confirmCvOnFile\(\);/g) || []).length, 3, page);
+    assert.equal((js.match(/await confirmCvOnFile\(\);/g) || []).length, 4, page);
+    assert.match(js, /async function confirmCvOnFile\(\) \{\n    try \{\n        const \{ data: \{ session \} \} = await supabaseClient\.auth\.getSession\(\);/, page);
   }
 });

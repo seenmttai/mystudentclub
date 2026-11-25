@@ -34,6 +34,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
         return;
     }
 
+    await confirmCvOnFile();
     if (!isProfileComplete()) {
         showResumeRedirectModal();
         return;
@@ -5115,7 +5116,10 @@ function initOnboardingSegmentForm() {
 // An MSC-posted job needs a CV that really reached storage (scripts/cv-on-file.js, Padam 25 Nov 2026). The answer is
 // cached, so this is instant after the first check; unknown (offline) never blocks.
 async function confirmCvOnFile() {
-    try { await checkCvOnFile(currentSession); } catch (_) { /* unknown is never "missing" */ }
+    try {
+        const { data: { session } } = await supabaseClient.auth.getSession();   // fresh token, not the page-load one
+        await checkCvOnFile(session || currentSession);
+    } catch (_) { /* unknown is never "missing" */ }
 }
 
 function calculateProfileCompletion() {
