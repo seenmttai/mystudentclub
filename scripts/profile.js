@@ -418,6 +418,7 @@ async function loadProfile() {
     // Loaded from this browser's copy: saves still merge over the server row.
     takeProfileSaveBaseline();
     setTimeout(() => refreshHeader(), 150);
+    refreshCvOnFileState();
   } finally {
     showLoading(false);
   }

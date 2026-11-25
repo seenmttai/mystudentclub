@@ -11,7 +11,7 @@ const source = fs.readFileSync(path.join(root, 'scripts', 'cv-on-file.js'), 'utf
 function load() {
   const data = {};
   const storage = { getItem: k => (k in data ? data[k] : null), setItem: (k, v) => { data[k] = String(v); } };
-  const context = { JSON, Number, Boolean, Date, setTimeout, clearTimeout, AbortController, globalThis: {} };
+  const context = { JSON, Number, Boolean, Date, Map, Infinity, setTimeout, clearTimeout, AbortController, globalThis: {} };
   vm.runInNewContext(source.replace(/^export (const|function|async function) /gm, '$1 ')
     + '\nthis.m = { CV_ON_FILE_KEY, CV_STATUS_URL, readCvOnFile, markCvOnFile, checkCvOnFile };', context);
   return { m: context.m, data, storage };
