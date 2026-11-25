@@ -1,3 +1,4 @@
+import { checkCvOnFile, markCvOnFile, readCvOnFile } from './cv-on-file.js?v=20261125_1';
 const supabaseUrl = "https://auth.mystudentclub.com";
 const supabaseKey =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
@@ -405,6 +406,7 @@ async function loadProfile() {
 
     takeProfileSaveBaseline();
     setTimeout(() => refreshHeader(), 150);
+    refreshCvOnFileState();
   } catch (e) {
     console.error(e);
     const localProfile = localStorage.getItem("userProfileData");
@@ -837,6 +839,39 @@ function parseGeminiJson(text) {
     );
   } catch (e) {
     return null;
+  }
+}
+
+// =================== CV REALLY ON FILE (scripts/cv-on-file.js) ===================
+// A profile can name a CV whose upload never reached storage; recruiters then get nothing. hire.mystudentclub.com
+// checks the stored file; when it is missing, "Add resume" stops counting and the student is asked to upload again.
+function cvKnownMissing() {
+  const v = readCvOnFile(localStorage, currentUser?.id || null);
+  return Boolean(v && v.state === "no");
+}
+
+async function refreshCvOnFileState(force = false) {
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const onFile = await checkCvOnFile(session, { force });
+    renderCvOnFileNotice(onFile === false);
+    refreshHeader();
+  } catch (_) { /* unknown is never "missing" */ }
+}
+
+function renderCvOnFileNotice(missing) {
+  const section = document.getElementById("sec-resume");
+  if (!section) return;
+  let note = document.getElementById("cvOnFileNotice");
+  if (!missing) { note?.remove(); return; }
+  if (!note) {
+    note = document.createElement("div");
+    note.id = "cvOnFileNotice";
+    note.setAttribute("role", "alert");
+    note.style.cssText = "margin:10px 0 12px;padding:12px 14px;border-radius:10px;background:#fff4e5;border:1px solid #f5a623;color:#7a4500;font-size:14px;line-height:1.45;";
+    note.innerHTML = "<strong>Upload your resume again.</strong> Your resume did not reach our servers, so recruiters cannot see it and you cannot apply to MSC jobs until it is uploaded. Remove the file below if one is shown, then upload your PDF and press Save.";
+    const sub = section.querySelector(".p2-card-sub");
+    (sub || section.firstElementChild)?.after(note);
   }
 }
 
@@ -1346,6 +1381,8 @@ async function handleSave(e) {
             if (syncData.uploaded) {
               syncSuccess = true;
               setCloudSyncFlag();
+              markCvOnFile(currentUser?.id, true);
+              renderCvOnFileNotice(false);
             } else {
               console.error(
                 "Cloud storage sync failed:",
@@ -1598,9 +1635,10 @@ function refreshHeader() {
       boost: 2,
     },
     {
-      label: "Add resume",
+      // A CV that never reached storage is no CV (scripts/cv-on-file.js, 25 Nov 2026): recruiters cannot see it.
+      label: cvKnownMissing() ? "Upload your resume again" : "Add resume",
       icon: "fa-file-alt",
-      filled: !!localStorage.getItem("userCVText"),
+      filled: !!localStorage.getItem("userCVText") && !cvKnownMissing(),
       boost: 10,
     },
     {
