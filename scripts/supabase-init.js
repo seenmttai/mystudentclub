@@ -31,7 +31,7 @@
               if (key === 'msc_lead_submitted' || key.startsWith('msc_career_v2:') || key === 'msc_career_auth_pending' || key === 'msc_career_auth_redirect' || key === 'msc_profile_tour') sessionStorage.removeItem(key);
             });
             ['userProfileData', 'msc_profile_cache_owner', 'userCVText', 'userCVFileName', 'userCVImages', 'userCVPdf',
-              'userCoverLetterText', 'userCoverLetterFileName', 'cv_cloud_synced', 'cv_images_synced',
+              'userCoverLetterText', 'userCoverLetterFileName', 'cv_cloud_synced', 'cv_images_synced', 'msc_cv_on_file',
               'userJobPreference', 'newUserSignup', 'newUserEmail',
               // The Work Simulation's own copies belong to the browser, not the account: the next student on this
               // phone must not inherit them (articleship-program/work-simulation INTEGRATION.md §2).

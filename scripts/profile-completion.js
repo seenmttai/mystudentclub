@@ -42,7 +42,30 @@ export function formatSchoolScore(profile = {}, prefix) {
     return `${raw}%`;
 }
 
+// Is the CV really on file? (scripts/cv-on-file.js asks hire.mystudentclub.com and keeps the answer here as
+// {uid, state: 'yes'|'no', at}.) A CV that never reached storage reaches no recruiter, so it does not count.
+const CV_ON_FILE_KEY = 'msc_cv_on_file';
+
+export function readCvOnFile(storage = globalThis.localStorage, uid = null) {
+    try {
+        const v = JSON.parse(storage?.getItem?.(CV_ON_FILE_KEY) || 'null');
+        if (!v || (v.state !== 'yes' && v.state !== 'no')) return null;
+        if (uid && v.uid !== uid) return null;
+        return v;
+    } catch (_) {
+        return null;
+    }
+}
+
+export function cvKnownMissing(storage = globalThis.localStorage) {
+    const owner = storage?.getItem?.('userProfileDataUserId') || storage?.getItem?.('msc_profile_cache_owner') || null;
+    const v = readCvOnFile(storage);
+    return Boolean(v && v.state === 'no' && (!owner || v.uid === owner));
+}
+
 export function hasResumeEvidence(profile = {}, storage = globalThis.localStorage) {
+    // A CV that never reached storage is no CV (scripts/cv-on-file.js): recruiters cannot see it.
+    if (cvKnownMissing(storage)) return false;
     const localText = storage?.getItem?.('userCVText') || '';
     const localPdf = storage?.getItem?.('userCVPdf') || '';
     const localName = storage?.getItem?.('userCVFileName') || '';
@@ -130,7 +153,7 @@ export function getProfileCompletionItems(profile = {}, storage = globalThis.loc
         { label: 'Add full name', icon: 'fa-user', filled: textValue(d.name, d.full_name), boost: 14, section: 'sec-personal', form: 'sec-personal-form' },
         { label: 'Add mobile number', icon: 'fa-phone-alt', filled: textValue(d.contact_number, d.mobile, d.phone, d.phone_number), boost: 10, section: 'sec-personal', form: 'sec-personal-form' },
         { label: 'Add location', icon: 'fa-map-marker-alt', filled: textValue(d.current_city, d.current_location, d.city, d.location), boost: 3, section: 'sec-personal', form: 'sec-personal-form' },
-        { label: 'Add resume', icon: 'fa-file-alt', filled: hasResumeEvidence(d, storage), boost: 14, section: 'sec-resume', form: '' },
+        { label: cvKnownMissing(storage) ? 'Upload your resume again' : 'Add resume', icon: 'fa-file-alt', filled: hasResumeEvidence(d, storage), boost: 14, section: 'sec-resume', form: '' },
         { label: 'Add profile summary', icon: 'fa-heading', filled: textValue(d.profile_summary, d.headline), boost: 10, section: 'sec-headline', form: 'sec-headline-form' },
         { label: 'Add CA education', icon: 'fa-graduation-cap', filled: hasEducation, boost: 4, ...educationTarget },
         { label: 'Add Class XII details', icon: 'fa-school', filled: isSchoolEducationComplete(d, 'class12'), boost: 4, section: 'sec-ca-education', form: 'sec-12-form' },

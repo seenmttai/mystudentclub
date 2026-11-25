@@ -2,6 +2,7 @@ import { getDaysAgo, isJobExpired, getPostedLabel } from './date-utils.js?v=2026
 import './job-seo.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
+import { checkCvOnFile } from './cv-on-file.js?v=20261125_1';
 import { ARTICLESHIP_TABLE, isExclusiveLocked, showExclusiveLockPopup } from './exclusive-vacancy.js';
 import { assessmentGate } from './apply-assessment.js';
 import { openApplyLinks, openQueuedApplyLink } from './apply-links.js';
@@ -18,6 +19,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
             window.location.href = '/login.html';
             return;
         }
+        await confirmCvOnFile();
         if (!isProfileComplete()) {
             showRecruiterProfileWarningPopup(job, calculateProfileCompletion());
             return;
@@ -431,6 +433,7 @@ async function recordApplication(job, btnElement) {
     }
 
     const recruiterPosted = isRecruiterPostedJob(job);
+    if (recruiterPosted) await confirmCvOnFile();
     if (recruiterPosted && !isProfileComplete()) {
         showRecruiterProfileWarningPopup(job, calculateProfileCompletion());
         return false;
@@ -1562,6 +1565,7 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
             return;
         }
 
+        await confirmCvOnFile();
         const percent = calculateProfileCompletion();
         if (percent < 100) {
             showRecruiterProfileWarningPopup(job, percent);
@@ -3029,6 +3033,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         initJobPreferenceModal();
     }, 500);
 });
+
+// An MSC-posted job needs a CV that really reached storage (scripts/cv-on-file.js, Padam 25 Nov 2026). The answer is
+// cached, so this is instant after the first check; unknown (offline) never blocks.
+async function confirmCvOnFile() {
+    try { await checkCvOnFile(currentSession); } catch (_) { /* unknown is never "missing" */ }
+}
 
 function calculateProfileCompletion() {
     if (!currentSession) return 0;
