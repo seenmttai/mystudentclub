@@ -400,6 +400,7 @@
                 renderArticleshipBranding(data);
                 requestAnimationFrame(function () {
                     requestAnimationFrame(function () {
+                        if (typeof renderCvPhoto === 'function') renderCvPhoto(data);
                         shrinkContentToFit();
                         scaleToFit();
                     });

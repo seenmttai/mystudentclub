@@ -2311,6 +2311,7 @@
             document.getElementById('inp-email').value = cvData.personal.email || '';
             document.getElementById('inp-linkedin').value = cvData.personal.linkedin || '';
             document.getElementById('inp-location').value = cvData.personal.location || '';
+            renderCvPhotoField();
             const h1El = document.getElementById('inp-highlight1');
             const h2El = document.getElementById('inp-highlight2');
             const h3El = document.getElementById('inp-highlight3');
@@ -2710,6 +2711,119 @@
 
             postToFrame();
             updateProgress();
+        }
+
+        // ---------- Optional profile photo ----------
+        // The photo is cropped to a passport shape (3:4) and saved inside the CV as a small JPEG, so it follows the
+        // draft, saved versions and the account sync like every other field. Templates place it themselves.
+        const CV_PHOTO_WIDTH = 270;
+        const CV_PHOTO_HEIGHT = 360;
+        const CV_PHOTO_MAX_FILE_BYTES = 15 * 1024 * 1024;
+        const CV_PHOTO_PATTERN = /^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/]+=*$/i;
+
+        function getCvPhoto() {
+            const photo = cvData && cvData.personal ? cvData.personal.photo : '';
+            return typeof photo === 'string' && CV_PHOTO_PATTERN.test(photo) ? photo : '';
+        }
+
+        function setCvPhotoHint(text, isError) {
+            const hint = document.getElementById('cv-photo-hint');
+            if (!hint) return;
+            hint.textContent = text;
+            hint.classList.toggle('is-error', !!isError);
+        }
+
+        function renderCvPhotoField() {
+            const photo = getCvPhoto();
+            const thumb = document.getElementById('cv-photo-thumb');
+            const upload = document.getElementById('cv-photo-upload');
+            const remove = document.getElementById('cv-photo-remove');
+            if (thumb) {
+                thumb.style.backgroundImage = photo ? `url("${photo}")` : '';
+                thumb.classList.toggle('has-photo', !!photo);
+                thumb.setAttribute('aria-label', photo ? 'Change photo' : 'Upload a photo');
+            }
+            if (upload) upload.textContent = photo ? 'Change photo' : 'Upload photo';
+            if (remove) remove.hidden = !photo;
+            setCvPhotoHint(photo
+                ? 'Shown on every template. Remove it any time.'
+                : 'Skip it if you like. Every template makes room for it on its own.');
+        }
+
+        function openCvPhotoPicker() {
+            const input = document.getElementById('inp-photo');
+            if (input) input.click();
+        }
+
+        function loadCvPhotoImage(file) {
+            return new Promise((resolve, reject) => {
+                const url = URL.createObjectURL(file);
+                const img = new Image();
+                img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('unreadable')); };
+                img.src = url;
+            });
+        }
+
+        // Centre-crop to 3:4, keeping a little more of the top of a tall photo, where the face usually is.
+        function cropCvPhoto(img) {
+            const ratio = CV_PHOTO_WIDTH / CV_PHOTO_HEIGHT;
+            const w = img.naturalWidth || img.width;
+            const h = img.naturalHeight || img.height;
+            let sw = w;
+            let sh = h;
+            if (w / h > ratio) sw = h * ratio; else sh = w / ratio;
+            const sx = (w - sw) / 2;
+            const sy = (h - sh) * 0.3;
+            const canvas = document.createElement('canvas');
+            canvas.width = CV_PHOTO_WIDTH;
+            canvas.height = CV_PHOTO_HEIGHT;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+            // Keep it small: the photo travels with every saved version of the CV.
+            let quality = 0.85;
+            let photo = canvas.toDataURL('image/jpeg', quality);
+            while (photo.length > 60000 && quality > 0.5) {
+                quality -= 0.1;
+                photo = canvas.toDataURL('image/jpeg', quality);
+            }
+            return photo;
+        }
+
+        async function handleCvPhotoFile(input) {
+            const file = input && input.files && input.files[0];
+            if (input) input.value = '';
+            if (!file) return;
+            if (file.type && !file.type.startsWith('image/')) {
+                setCvPhotoHint('Please choose a photo (JPG or PNG).', true);
+                return;
+            }
+            if (file.size > CV_PHOTO_MAX_FILE_BYTES) {
+                setCvPhotoHint('That photo is too large. Please choose one under 15 MB.', true);
+                return;
+            }
+            setCvPhotoHint('Adding your photo…');
+            try {
+                const img = await loadCvPhotoImage(file);
+                const photo = cropCvPhoto(img);
+                if (!CV_PHOTO_PATTERN.test(photo)) throw new Error('encode');
+                if (!cvData.personal) cvData.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
+                cvData.personal.photo = photo;
+                renderCvPhotoField();
+                postToFrame();
+            } catch (error) {
+                renderCvPhotoField();
+                setCvPhotoHint('This photo could not be opened. Please try a JPG or PNG.', true);
+            }
+        }
+
+        function removeCvPhoto() {
+            if (cvData && cvData.personal) delete cvData.personal.photo;
+            renderCvPhotoField();
+            postToFrame();
         }
 
         function updateEdu(index, field, value) {

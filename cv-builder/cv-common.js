@@ -459,6 +459,7 @@ function renderCV(data) {
         applySectionTitles(data.sectionTitles || {});
         applyTemplateAccent(data.themeAccent || '');
         applyTemplateFont(data.themeFont || '');
+        renderCvPhoto(data);
         if (typeof window.shrinkContentToFit === 'function') {
             window.shrinkContentToFit();
         }
@@ -3256,4 +3257,258 @@ function applySectionOrder(sectionOrder) {
 
         items.forEach(item => item.wrapper.parentElement.appendChild(item.wrapper));
     });
+}
+
+// ---------- Optional profile photo ----------
+// A student may add a photo in the editor (personal.photo, a small JPEG data URL). Every template gets it through
+// this one layer: the photo sits beside the name inside the template's own header, or above the name in sidebar
+// layouts, and the header makes room for it. With no photo the template renders exactly as before.
+
+const CV_PHOTO_PATTERN = /^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/]+=*$/i;
+const CV_PHOTO_SECTION_SELECTOR = '.sortable-section, [data-section-id], [data-universal-section], section';
+
+// Per-template placement. Anything not listed is placed automatically.
+//   mode:  'beside' (photo next to the header text) or 'stack' (photo above the name, for sidebars)
+//   side:  'left' | 'right'      shape: 'rect' (passport 3:4) | 'circle'
+//   host:  selector of the block the photo belongs to (default: the largest block around the name with no sections)
+const CV_PHOTO_LAYOUTS = {
+    'standard-ledger.html': { name: '#template32-name' },
+    'banner-executive-split.html': { shape: 'circle' },
+    'dotted-split.html': { shape: 'circle' },
+    'dual-columns.html': { shape: 'circle' },
+    'executive-header-split.html': { shape: 'circle' },
+    'horizon-split.html': { shape: 'circle' },
+    'modern-bold.html': { shape: 'circle' },
+    'modern-split.html': { shape: 'circle' },
+    'pill-header-split.html': { shape: 'circle' },
+    'profile-sidebar.html': { shape: 'circle' },
+    'side-panel.html': { shape: 'circle' },
+    'sidebar-panel-split.html': { shape: 'circle' },
+    'split-banner.html': { shape: 'circle' },
+    'timeline-flow-split.html': { shape: 'circle' },
+    'wave-grid.html': { shape: 'circle' },
+};
+
+function getCvTemplateFile() {
+    return (window.location.pathname.split('/').pop() || '').toLowerCase();
+}
+
+function ensureCvPhotoStyles() {
+    if (document.getElementById('cv-photo-style')) return;
+    const style = document.createElement('style');
+    style.id = 'cv-photo-style';
+    style.textContent = `
+        .cv-photo { position:absolute; top:50%; transform:translateY(-50%); overflow:hidden; box-sizing:border-box;
+            background:#e5e7eb; z-index:2; margin:0; padding:0; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+        .cv-photo img { display:block; width:100%; height:100%; object-fit:cover; object-position:50% 25%; border:0; }
+        .cv-photo--rect { border-radius:4px; }
+        .cv-photo--circle { border-radius:50%; }
+        .cv-photo--light { border:1px solid rgba(15,23,42,.18); }
+        .cv-photo--dark { border:3px solid rgba(255,255,255,.92); }
+        .cv-photo--stack { position:relative; top:auto; transform:none; }
+    `;
+    document.head.appendChild(style);
+}
+
+function isValidCvPhoto(value) {
+    return typeof value === 'string' && value.length < 400000 && CV_PHOTO_PATTERN.test(value);
+}
+
+function clearCvPhoto() {
+    document.querySelectorAll('[data-cv-photo]').forEach(el => el.remove());
+    document.querySelectorAll('[data-cv-photo-host]').forEach(host => {
+        // Put back the header's own inline style exactly as the template had it.
+        const saved = host.__cvPhotoStyle;
+        if (saved === null || saved === undefined) host.removeAttribute('style');
+        else host.setAttribute('style', saved);
+        delete host.__cvPhotoStyle;
+        host.removeAttribute('data-cv-photo-host');
+    });
+    // Undo any wrapper this layer added around loose header lines.
+    document.querySelectorAll('[data-cv-photo-wrap]').forEach(wrap => {
+        while (wrap.firstChild) wrap.parentNode.insertBefore(wrap.firstChild, wrap);
+        wrap.remove();
+    });
+    const page = getPageContainer();
+    if (page) page.classList.remove('cv-has-photo');
+    document.body.classList.remove('cv-has-photo');
+}
+
+function isCvElementVisible(el) {
+    return !!(el && el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden');
+}
+
+function findCvPhotoNameElement(selector) {
+    const names = Array.from(document.querySelectorAll(selector || '[data-field="name"]'));
+    return names.find(isCvElementVisible) || null;
+}
+
+function cvNodeHasSections(node) {
+    return node.nodeType === 1 && (node.matches(CV_PHOTO_SECTION_SELECTOR) || !!node.querySelector(CV_PHOTO_SECTION_SELECTOR));
+}
+
+function wrapCvPhotoNodes(nodes) {
+    const wrap = document.createElement('div');
+    wrap.setAttribute('data-cv-photo-wrap', '');
+    // flow-root keeps the lines' own margins inside the block, so its measured height is the height you see.
+    wrap.style.display = 'flow-root';
+    nodes[0].parentNode.insertBefore(wrap, nodes[0]);
+    nodes.forEach(node => wrap.appendChild(node));
+    return wrap;
+}
+
+// The header block the photo belongs to: the largest block around the name that holds no CV sections. When the name
+// stands alone (its tagline and contact lines are loose siblings) those lines are wrapped into one block first.
+function findCvPhotoHost(nameEl, page) {
+    let host = nameEl;
+    let el = nameEl.parentElement;
+    while (el && el !== page && page.contains(el) && !cvNodeHasSections(el)) {
+        host = el;
+        el = el.parentElement;
+    }
+    if (['TABLE', 'TBODY', 'THEAD', 'TR', 'TD', 'TH'].includes(host.tagName)) {
+        const table = host.tagName === 'TABLE' ? host : host.closest('table');
+        return table ? wrapCvPhotoNodes([table]) : host;
+    }
+    const holdsHeaderLines = host !== nameEl && host.querySelector('[data-field="tagline"], [data-field="contact"], [data-field="email"], [data-field="phone"]');
+    if (holdsHeaderLines) return host;
+    const nodes = [host];
+    let next = host.nextSibling;
+    while (next && !(next.nodeType === 1 && (cvNodeHasSections(next) || next.tagName === 'TABLE' || next.hasAttribute('data-section-append-host')))) {
+        if (next.nodeType === 1 && next.matches('[data-msc-program-brand], script, style')) break;
+        nodes.push(next);
+        next = next.nextSibling;
+    }
+    while (nodes.length > 1 && nodes[nodes.length - 1].nodeType !== 1) nodes.pop();
+    return wrapCvPhotoNodes(nodes);
+}
+
+function cvColourIsDark(colour) {
+    const m = String(colour || '').match(/rgba?\(([^)]+)\)/);
+    if (!m) return false;
+    const [r, g, b, a = 1] = m[1].split(',').map(v => parseFloat(v));
+    if (a < 0.5) return false;
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 < 0.5;
+}
+
+function cvEffectiveBackground(el) {
+    let node = el;
+    while (node && node !== document.documentElement) {
+        const bg = getComputedStyle(node).backgroundColor;
+        const m = String(bg).match(/rgba?\(([^)]+)\)/);
+        if (m && (m[1].split(',')[3] === undefined || parseFloat(m[1].split(',')[3]) >= 0.5)) return bg;
+        node = node.parentElement;
+    }
+    return 'rgb(255,255,255)';
+}
+
+// Templates shrink their text to fit one page through a CSS variable (--content-scale or --cs). Sizes given here follow
+// that variable, so the photo and the room kept for it shrink together with the header text.
+function cvPhotoScaledSize() {
+    const root = document.documentElement;
+    const name = ['--content-scale', '--cs'].find(v => root.style.getPropertyValue(v) || getComputedStyle(root).getPropertyValue(v));
+    if (!name) return px => `${Math.round(px)}px`;
+    const current = parseFloat(root.style.getPropertyValue(name) || getComputedStyle(root).getPropertyValue(name)) || 1;
+    return px => `calc(${(px / current).toFixed(2)}px * var(${name}, 1))`;
+}
+
+function renderCvPhoto(data) {
+    clearCvPhoto();
+    const src = data?.personal?.photo;
+    if (!isValidCvPhoto(src)) return;
+    const page = getPageContainer();
+    const layout = CV_PHOTO_LAYOUTS[getCvTemplateFile()] || {};
+    const nameEl = findCvPhotoNameElement(layout.name);
+    if (!page || !nameEl) return;
+    ensureCvPhotoStyles();
+
+    let host = layout.host ? page.querySelector(layout.host) : null;
+    if (!host) host = findCvPhotoHost(nameEl, page);
+    if (!host) return;
+
+    // Measure in layout pixels: the preview page is visually scaled with a CSS transform.
+    const pageRect = page.getBoundingClientRect();
+    const scale = page.offsetWidth ? (pageRect.width / page.offsetWidth) || 1 : 1;
+    const hostRect = host.getBoundingClientRect();
+    const nameRect = nameEl.getBoundingClientRect();
+    const hostStyle = getComputedStyle(host);
+    const hostWidth = hostRect.width / scale;
+    const pageWidth = pageRect.width / scale;
+    const nameAlign = getComputedStyle(nameEl.closest('h1,h2,div,p,td,header') || nameEl).textAlign;
+    const centred = nameAlign === 'center' || nameAlign === '-webkit-center';
+
+    const mode = layout.mode || (hostWidth < pageWidth * 0.5 ? 'stack' : 'beside');
+    const shape = layout.shape || 'rect';
+    const dark = cvColourIsDark(cvEffectiveBackground(host));
+
+    const photo = document.createElement('div');
+    photo.setAttribute('data-cv-photo', '');
+    photo.className = `cv-photo cv-photo--${shape} ${dark ? 'cv-photo--dark' : 'cv-photo--light'}`;
+    const img = document.createElement('img');
+    img.alt = '';
+    img.src = src;
+    photo.appendChild(img);
+
+    host.__cvPhotoStyle = host.getAttribute('style');
+    host.setAttribute('data-cv-photo-host', '');
+    page.classList.add('cv-has-photo');
+    document.body.classList.add('cv-has-photo');
+
+    if (mode === 'stack') {
+        const size = layout.size || (shape === 'circle' ? 120 : 112);
+        photo.classList.add('cv-photo--stack');
+        const sized = cvPhotoScaledSize();
+        photo.style.width = sized(shape === 'circle' ? size : Math.round(size * 0.78));
+        photo.style.height = sized(size);
+        const align = layout.align || (centred ? 'center' : 'left');
+        photo.style.margin = align === 'center' ? '0 auto 14px' : '0 0 14px 0';
+        host.parentElement.insertBefore(photo, host);
+        return;
+    }
+
+    const padTop = parseFloat(hostStyle.paddingTop) || 0;
+    const padBottom = parseFloat(hostStyle.paddingBottom) || 0;
+    const padLeft = parseFloat(hostStyle.paddingLeft) || 0;
+    const padRight = parseFloat(hostStyle.paddingRight) || 0;
+    // Use the header's own height (its text plus some of its padding) so the header grows as little as possible:
+    // many templates size their body to the page minus a fixed header height.
+    const contentHeight = hostRect.height / scale - padTop - padBottom;
+    const hostHeight = hostRect.height / scale;
+    const usable = Math.min(contentHeight + Math.min(padTop, 14) + Math.min(padBottom, 14), hostHeight - 12);
+    const height = layout.size || Math.round(Math.min(128, Math.max(shape === 'circle' ? 92 : 100, usable)));
+    const width = shape === 'circle' ? height : Math.round(height * 0.78);
+    const gap = layout.gap || 20;
+    const side = layout.side || 'left';
+
+    if (hostStyle.position === 'static') host.style.position = 'relative';
+    const sized = cvPhotoScaledSize();
+    photo.style.width = sized(width);
+    photo.style.height = sized(height);
+
+    // A header with its own background or frame needs the photo kept off its edge; a bare block lines up with the page.
+    const boxed = !/rgba\(0, 0, 0, 0\)|transparent/.test(hostStyle.backgroundColor) || parseFloat(hostStyle.borderLeftWidth) > 0;
+    const edge = (pad) => (pad >= 12 || !boxed ? pad : 24);
+    if (side === 'right') {
+        const inset = layout.inset !== undefined ? layout.inset : edge(padRight);
+        photo.style.right = `${inset}px`;
+        host.style.paddingRight = `calc(${padRight}px + ${sized(width + gap)})`;
+        if (centred) host.style.paddingLeft = `calc(${padLeft}px + ${sized(width + gap)})`;
+    } else {
+        const nameOffset = (nameRect.left - hostRect.left) / scale;
+        let inset = layout.inset;
+        if (inset === undefined) inset = centred ? edge(padLeft) : Math.max(nameOffset, edge(padLeft));
+        photo.style.left = `${inset}px`;
+        const extra = centred ? 0 : Math.max(0, inset - Math.max(nameOffset, padLeft));
+        host.style.paddingLeft = `calc(${padLeft + extra}px + ${sized(width + gap)})`;
+        if (centred) host.style.paddingRight = `calc(${padRight}px + ${sized(width + gap)})`;
+    }
+
+    host.appendChild(photo);
+    // Always reserve the photo's height: templates shrink their text to fit the page after this runs.
+    const needed = height + 12;
+    // An explicit min-height replaces a flex item's own "never smaller than my text" floor; keep that floor.
+    host.style.flexShrink = '0';
+    host.style.minHeight = hostStyle.boxSizing === 'border-box'
+        ? sized(needed)
+        : sized(Math.max(height, needed - padTop - padBottom));
 }
