@@ -3550,6 +3550,26 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// On a phone the preview is hidden while the student is on the Edit tab. A hidden page has no layout, so parts placed by
+// measuring (the photo, the one-page fit) are missing. Lay the preview out unseen, re-render it, and let it settle first.
+async function layOutHiddenPreviewForExport(frame) {
+    if (!frame || frame.getClientRects().length) return;
+    const pane = frame.closest('.preview');
+    if (!pane) return;
+    const saved = { display: pane.style.display, opacity: pane.style.opacity, pointerEvents: pane.style.pointerEvents };
+    pane.style.display = 'flex';
+    pane.style.opacity = '0';
+    pane.style.pointerEvents = 'none';
+    try {
+        postToFrame({ skipHistory: true, skipSave: true });
+        await new Promise(resolve => setTimeout(resolve, 400));
+    } finally {
+        pane.style.display = saved.display;
+        pane.style.opacity = saved.opacity;
+        pane.style.pointerEvents = saved.pointerEvents;
+    }
+}
+
 async function downloadCvFile(format = 'pdf') {
     // Hide the dropdown after selection
     const menu = document.getElementById('download-menu-popover');
@@ -3578,6 +3598,7 @@ async function downloadCvFile(format = 'pdf') {
         // We grab the entire <html>...</html> including <head> (styles/fonts)
         // and <body> (content). This way the Worker's Chromium renders it
         // with the exact same styling the user sees in the preview.
+        await layOutHiddenPreviewForExport(frame);
         const fullHTML = '<!DOCTYPE html>' + (window.MSCArticleshipStage?.exportHtml?.(doc) || doc.documentElement.outerHTML);
 
         // ── Step 2: POST the HTML to our Cloudflare Worker ───────────
@@ -4443,6 +4464,8 @@ async function deliverDownloadedBlob(blob, filename) {
                 title: normalizeImportedString(cvData.personal.name || '') || 'Untitled CV',
                 data: JSON.parse(JSON.stringify(cvData))
             };
+            // The photo is not versioned: leaving it out keeps all 10 saved versions inside the size limit.
+            if (snapshot.data.personal) delete snapshot.data.personal.photo;
             commitHistory(CV_SYNC.withVersion(historySlot ? historySlot.get() : {}, snapshot, HISTORY_BYTES));
             renderHistory();
         }
@@ -4499,8 +4522,11 @@ async function deliverDownloadedBlob(blob, filename) {
             const snap = history.find(h => h.id === id);
             if (!snap) return;
 
+            const currentPhoto = getCvPhoto();
             cvData = JSON.parse(JSON.stringify(snap.data));
             ensureCvDataShape();
+            // Saved versions carry no photo; restoring one keeps the photo the student has now.
+            if (currentPhoto && !cvData.personal.photo) cvData.personal.photo = currentPhoto;
             renderEditor();
             updateProgress();
             postToFrame();
