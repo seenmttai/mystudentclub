@@ -4773,3 +4773,31 @@ code, pre, .content-area code, .content-area pre {
 .rv-pdf .rv-md .rv-table table { min-width: 0; }
 .rv-pdf-foot { margin-top: 22px; padding-top: 8px; border-top: 1px solid #e2e8f0; font-size: 10px; color: #94a3b8; text-align: center; }
 .rv-md .rv-label-list > li > ul { list-style: disc; }
+/* A wide table scrolls inside its box; it must never widen the page column */
+.rv-md .rv-table { contain: inline-size; }
+.results-grid > * { min-width: 0; }
+
+/* Review markdown in dark mode (mobile/app theme toggle); the PDF and its preview stay light */
+[data-theme="dark"] .rv-md:not(.rv-pdf *) { color: #c9d3e6; }
+[data-theme="dark"] .rv-md strong:not(.rv-pdf *) { color: #edf2ff; }
+[data-theme="dark"] .rv-md em:not(.rv-pdf *) { color: #a9b6cc; }
+[data-theme="dark"] .rv-md .rv-label:not(.rv-pdf *) { color: #7ba8ff; }
+[data-theme="dark"] .rv-md li.rv-labelled:not(.rv-pdf *) { border-top-color: #252836; }
+[data-theme="dark"] .rv-good:not(.rv-pdf *) { background: rgba(34, 197, 94, 0.16); color: #86efac; }
+[data-theme="dark"] .rv-issue:not(.rv-pdf *), [data-theme="dark"] .rv-low:not(.rv-pdf *) { background: rgba(148, 163, 184, 0.16); color: #cbd5e1; }
+[data-theme="dark"] .rv-moderate:not(.rv-pdf *) { background: rgba(245, 158, 11, 0.16); color: #fcd34d; }
+[data-theme="dark"] .rv-high:not(.rv-pdf *) { background: rgba(249, 115, 22, 0.16); color: #fdba74; }
+[data-theme="dark"] .rv-critical:not(.rv-pdf *) { background: rgba(239, 68, 68, 0.18); color: #fca5a5; }
+[data-theme="dark"] .rv-md .rv-table:not(.rv-pdf *) { border-color: #252836; }
+[data-theme="dark"] .rv-md th:not(.rv-pdf *) { background: #1e2130; color: #edf2ff; border-bottom-color: #252836; }
+[data-theme="dark"] .rv-md td:not(.rv-pdf *) { color: #c9d3e6; border-bottom-color: #252836; }
+[data-theme="dark"] .rv-md blockquote:not(.rv-pdf *) { background: rgba(79, 138, 255, 0.12); border-left-color: #4f8aff; color: #c7d7ff; }
+[data-theme="dark"] .rv-md code:not(.rv-pdf *) { background: #1e2130; }
+[data-theme="dark"] .rv-point:not(.rv-pdf *) { border-bottom-color: #252836; }
+[data-theme="dark"] .rv-original:not(.rv-pdf *) { background: rgba(239, 68, 68, 0.1); }
+[data-theme="dark"] .rv-original .rv-kicker:not(.rv-pdf *) { color: #f87171; }
+[data-theme="dark"] .rv-original p:not(.rv-pdf *) { color: #fecaca; }
+[data-theme="dark"] .rv-critique .rv-kicker:not(.rv-pdf *) { color: #8896ae; }
+[data-theme="dark"] .rv-rewrite:not(.rv-pdf *) { background: rgba(16, 185, 129, 0.1); }
+[data-theme="dark"] .rv-rewrite .rv-kicker:not(.rv-pdf *) { color: #34d399; }
+[data-theme="dark"] .rv-rewrite p:not(.rv-pdf *) { color: #bbf7d0; }
