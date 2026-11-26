@@ -2303,6 +2303,34 @@ body {
   margin-bottom: 1.25rem;
 }
 
+.free-review-upsell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 0 0 1.25rem;
+  padding: 1rem 1.25rem;
+  border-radius: 14px;
+  border: 1px solid rgba(185, 119, 15, 0.35);
+  background: linear-gradient(135deg, rgba(245, 197, 66, 0.14), rgba(185, 119, 15, 0.08));
+}
+
+.free-review-upsell-text {
+  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.free-review-upsell-text strong {
+  color: var(--text-primary, #111827);
+  font-size: 1rem;
+}
+
 .lock-cta {
   display: inline-flex;
   align-items: center;
