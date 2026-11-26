@@ -30,17 +30,19 @@ function todayInIndia(now = new Date()) {
   return new Intl.DateTimeFormat('en-GB', {timeZone: 'Asia/Kolkata', day: 'numeric', month: 'long', year: 'numeric'}).format(now);
 }
 // --- Claude models, spend guard and review cache -------------------------------------
-// Paid students get Opus, free users Haiku. Prices are US$ per million tokens (input, output).
+// Paid students get Sonnet (high effort), free users Haiku. Prices are US$ per million tokens (input, output).
 const ANTHROPIC_VERSION = '2026-10-21';
 const CLAUDE = {
   opus:   {model: 'claude-opus-5-5',   effort: 'medium',   price: [4, 20],      fallbacks: true},
   sonnet: {model: 'claude-sonnet-5-5', effort: 'high',   price: [2, 10],      fallbacks: true},
   haiku:  {model: 'claude-haiku-5-5',  effort: 'high',   price: [0.10, 0.50], fallbacks: false}
 };
-// Padam, 26 Nov 2026: "Paid Students pls do at opus, free students haiku only", then "instead of 10 make it after
-// 3 reviews … move it Sonnet": a paid student's first 3 reviews of an India day use Opus, the rest Sonnet; free users
-// always Haiku. No monthly downgrade: spend is still counted in KV (cv-review-spend:v1:YYYY-MM) for watching.
-const OPUS_DAILY_PER_STUDENT = 3;
+// Padam, 26 Nov 2026: "CV Reviewer also we have to bring to 100$ a month, move it to sonnet hi". About 15 paid students
+// ran ~40 reviews a day on Opus (~$14/day). Now a paid student's first review of an India day uses Sonnet at high
+// effort and later ones that day Haiku (the full report all the same); free users always Haiku. Past the month's
+// budget (KV cv-review-spend:v1:YYYY-MM, every Claude call counted) everyone gets Haiku until the month turns.
+const MONTHLY_BUDGET_USD = 100;
+const BEST_DAILY_PER_STUDENT = 1;
 const CACHE_TTL_SECONDS = 30 * 86400;
 const REPORT_SECTIONS = ['RECRUITER_TIPS', 'MEASURABLE_RESULTS', 'PHRASES_SUGGESTIONS', 'HARD_SKILLS', 'SOFT_SKILLS', 'ACTION_VERBS',
   'GRAMMAR_CHECK', 'FORMATTING_READABILITY', 'EDUCATION_QUALIFICATION', 'ARTICLESHIP_EXPERIENCE', 'INTERVIEW_QUESTIONS',
@@ -64,7 +66,7 @@ function indiaDate(now = new Date()) {
   return new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit'}).format(now);
 }
 const spendKey = () => `cv-review-spend:v1:${indiaDate().slice(0, 7)}`;
-const opusKey = userId => `cv-review-opus:v1:${userId}:${indiaDate()}`;
+const bestKey = userId => `cv-review-best:v1:${userId}:${indiaDate()}`;
 async function kvNumber(env, key) {
   try { return Number(await env.RATE_LIMITS?.get(key)) || 0; } catch { return 0; }
 }
@@ -77,8 +79,10 @@ async function sha256Hex(text) {
 }
 async function choosePlan(access, env) {
   if (!access.premium) return CLAUDE.haiku;
-  if (await kvNumber(env, opusKey(access.userId)) >= OPUS_DAILY_PER_STUDENT) return CLAUDE.sonnet;
-  return CLAUDE.opus;
+  const budget = Number(env.CLAUDE_MONTHLY_BUDGET_USD) || MONTHLY_BUDGET_USD;
+  if (await kvNumber(env, spendKey()) / 1e6 >= budget) return CLAUDE.haiku;
+  if (await kvNumber(env, bestKey(access.userId)) >= BEST_DAILY_PER_STUDENT) return CLAUDE.haiku;
+  return CLAUDE.sonnet;
 }
 // Best-effort bookkeeping in the existing KV (eventually consistent: counts can run slightly low).
 async function recordReview(env, access, plan, result, cacheKey) {
@@ -88,8 +92,8 @@ async function recordReview(env, access, plan, result, cacheKey) {
     const key = spendKey();
     writes.push(kvNumber(env, key).then(spent => env.RATE_LIMITS.put(key, String(Math.round(spent + result.costUsd * 1e6)), {expirationTtl: 70 * 86400})));
   }
-  if (String(result.modelUsed || '').startsWith('claude-opus') && access.userId) {
-    const key = opusKey(access.userId);
+  if (/^claude-(sonnet|opus)/.test(String(result.modelUsed || '')) && access.userId) {
+    const key = bestKey(access.userId);
     writes.push(kvNumber(env, key).then(used => env.RATE_LIMITS.put(key, String(used + 1), {expirationTtl: 2 * 86400})));
   }
   if (result.cacheable && cacheKey) {
@@ -231,7 +235,7 @@ async function checkRateLimit(request, env) {
 export default {
   async fetch(request,env,ctx) {
     if (request.method === 'OPTIONS') return json(null,204);
-    if (request.method === 'GET' && new URL(request.url).pathname === '/health') return json({ok:true,version:ACCESS_VERSION,prompt:PROMPT_VERSION,models:{paid:CLAUDE.opus.model,free:CLAUDE.haiku.model},reportAccess:'server-verified'});
+    if (request.method === 'GET' && new URL(request.url).pathname === '/health') return json({ok:true,version:ACCESS_VERSION,prompt:PROMPT_VERSION,models:{paid:CLAUDE.sonnet.model,free:CLAUDE.haiku.model},reportAccess:'server-verified'});
     if (request.method !== 'POST') return json({ok:false,error:'Method not allowed'},405);
     try {
       let body;
@@ -397,7 +401,7 @@ Justification: [2-3 sentence summary explaining the calculated score based on al
   let geminiErrorMessage = null;
   let gemmaErrorMessage = null;
 
-  // --- ATTEMPT 1: CLAUDE (Opus for paid students, Haiku for free users) ---
+  // --- ATTEMPT 1: CLAUDE (Sonnet high for a paid student's first review of the day, else Haiku) ---
   // A report missing sections is retried once, because the page shows each section on its own.
   // Every paid Claude attempt counts toward the monthly guard, including ones we discard.
   let claudeCostUsd = 0;
