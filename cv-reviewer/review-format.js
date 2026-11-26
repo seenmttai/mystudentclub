@@ -124,7 +124,8 @@
         if (global.DOMPurify) {
             return global.DOMPurify.sanitize(html, { ADD_ATTR: ['target'], FORBID_TAGS: ['style', 'form', 'input'] });
         }
-        return html;
+        // No sanitizer loaded: never insert model HTML unescaped; show it as text instead.
+        return `<p>${escapeHtml(html.replace(/<[^>]*>/g, ' ').replace(/[ \t]+/g, ' ')).replace(/\n+/g, '<br>')}</p>`;
     }
 
     function decorate(html) {
@@ -150,8 +151,12 @@
             if (first && first.nodeName === 'STRONG' && /[:：]\s*$/.test(first.textContent)) {
                 first.classList.add('rv-label');
                 li.classList.add('rv-labelled');
-                li.parentElement.classList.add('rv-label-list');
             }
+        });
+        // Drop list markers only where every item is a labelled block; mixed lists keep their bullets.
+        root.querySelectorAll(':scope > ul, :scope > ol').forEach(list => {
+            const items = [...list.children].filter(el => el.nodeName === 'LI');
+            if (items.length && items.every(li => li.classList.contains('rv-labelled'))) list.classList.add('rv-label-list');
         });
 
         // Leaf items never split across PDF pages.
@@ -173,16 +178,20 @@
         return inline ? html : `<div class="rv-md">${decorate(html)}</div>`;
     }
 
-    function stripQuotes(s) {
-        let t = String(s || '').trim().replace(/^\*+|\*+$/g, '').trim();
-        const pairs = [['"', '"'], ['“', '”'], ["'", "'"]];
-        for (const [a, b] of pairs) {
-            if (t.length > 1 && t.startsWith(a) && t.endsWith(b) && t.indexOf(b, 1) === t.length - 1) return t.slice(1, -1).trim();
+    // Remove one pair of quotes wrapping the whole text. strict (for prose such as critiques):
+    // only when there is no other quote inside, so '"A" is weak, "B" too' stays as written.
+    function stripQuotes(s, strict) {
+        const t = String(s || '').trim().replace(/^\*+|\*+$/g, '').trim();
+        for (const [a, b] of [['"', '"'], ['\u201c', '\u201d']]) {
+            if (t.length < 2 || !t.startsWith(a) || !t.endsWith(b)) continue;
+            const inner = t.slice(1, -1);
+            if (strict && (inner.includes(a) || inner.includes(b))) return t;
+            return inner.trim();
         }
         return t;
     }
 
-    const FIELD_RE = /^[ \t]*(?:[*+-][ \t]+)?\**[ \t]*(Original(?:[ \t]+(?:phrase|bullet|text))?|Critique|Why|Rewrite[ \t]+Suggestion[ \t]*\d*|Rewrite[ \t]*\d*|Suggestion[ \t]*\d*|Rewritten)[ \t]*\**[ \t]*:[ \t]*\**[ \t]*/gim;
+    const FIELD_RE = /^[ \t]*(?:[*+-][ \t]+)?\**[ \t]*(Original(?:[ \t]+(?:phrase|bullet|text))?|Critique|Rewrite[ \t]+Suggestion[ \t]*\d*|Rewrite[ \t]*\d+|Suggestion[ \t]*\d+)[ \t]*\**[ \t]*:[ \t]*\**[ \t]*/gim;
 
     function parsePoint(block) {
         const fields = { original: '', critique: '', rewrites: [], extra: '' };
@@ -194,7 +203,7 @@
             const value = block.slice(m.index + m[0].length, end).trim();
             const name = m[1].toLowerCase();
             if (name.startsWith('original')) fields.original = stripQuotes(value);
-            else if (name === 'critique' || name === 'why') fields.critique = stripQuotes(value, true);
+            else if (name === 'critique') fields.critique = stripQuotes(value, true);
             else if (value) fields.rewrites.push(stripQuotes(value));
         });
         return fields;

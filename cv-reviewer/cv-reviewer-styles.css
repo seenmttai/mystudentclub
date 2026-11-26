@@ -4801,3 +4801,6 @@ code, pre, .content-area code, .content-area pre {
 [data-theme="dark"] .rv-rewrite:not(.rv-pdf *) { background: rgba(16, 185, 129, 0.1); }
 [data-theme="dark"] .rv-rewrite .rv-kicker:not(.rv-pdf *) { color: #34d399; }
 [data-theme="dark"] .rv-rewrite p:not(.rv-pdf *) { color: #bbf7d0; }
+/* The sidebar score justification keeps its own small text size */
+#scoreJustification .rv-md { font-size: inherit; line-height: inherit; color: inherit; }
+#scoreJustification .rv-md p { margin: 0 0 0.4rem !important; line-height: inherit !important; }
