@@ -1013,9 +1013,29 @@ function lockPanelHTML() {
     </div>`;
 }
 
+// Padam, 26 Nov 2026: free users get the quick review (basic AI); tell them where the much more impactful one is.
+function freeUpsellHTML() {
+    return `
+    <div class="free-review-upsell" id="freeReviewUpsell">
+      <div class="free-review-upsell-text">
+        <strong>This is a quick free review.</strong>
+        <span>For a much more impactful review, enroll in an MSC program: our most advanced AI reads your whole CV and gives you every rewrite, skill gap and recruiter tip.</span>
+      </div>
+      <button type="button" class="lock-cta open-buy-modal-btn">See MSC programs
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      </button>
+    </div>`;
+}
+
 function applyRoleLocks() {
     clearRoleLocks();
     if (isPremiumEnrolled) return;
+
+    if (resultsSection && !document.getElementById('freeReviewUpsell')) {
+        const header = resultsSection.querySelector('.results-header-wrapper');
+        if (header) header.insertAdjacentHTML('afterend', freeUpsellHTML());
+        else resultsSection.insertAdjacentHTML('afterbegin', freeUpsellHTML());
+    }
 
     LOCKED_SECTION_IDS.forEach(id => {
         const section = document.getElementById(id);
@@ -1044,6 +1064,7 @@ function applyRoleLocks() {
 }
 
 function clearRoleLocks() {
+    document.getElementById('freeReviewUpsell')?.remove();
     LOCKED_SECTION_IDS.forEach(id => {
         const section = document.getElementById(id);
         if (!section) return;
