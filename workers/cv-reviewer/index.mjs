@@ -37,10 +37,10 @@ const CLAUDE = {
   sonnet: {model: 'claude-sonnet-5-5', effort: 'high',   price: [2, 10],      fallbacks: true},
   haiku:  {model: 'claude-haiku-5-5',  effort: 'high',   price: [0.10, 0.50], fallbacks: false}
 };
-// Padam, 26 Nov 2026: "Paid Students pls do at opus, free students haiku only". No monthly downgrade any more: the
-// spend is still counted in KV (cv-review-spend:v1:YYYY-MM) so it can be watched. The only step down is an abuse guard:
-// a paid student's reviews past this many in one India day use Sonnet.
-const OPUS_DAILY_PER_STUDENT = 10;
+// Padam, 26 Nov 2026: "Paid Students pls do at opus, free students haiku only", then "instead of 10 make it after
+// 3 reviews … move it Sonnet": a paid student's first 3 reviews of an India day use Opus, the rest Sonnet; free users
+// always Haiku. No monthly downgrade: spend is still counted in KV (cv-review-spend:v1:YYYY-MM) for watching.
+const OPUS_DAILY_PER_STUDENT = 3;
 const CACHE_TTL_SECONDS = 30 * 86400;
 const REPORT_SECTIONS = ['RECRUITER_TIPS', 'MEASURABLE_RESULTS', 'PHRASES_SUGGESTIONS', 'HARD_SKILLS', 'SOFT_SKILLS', 'ACTION_VERBS',
   'GRAMMAR_CHECK', 'FORMATTING_READABILITY', 'EDUCATION_QUALIFICATION', 'ARTICLESHIP_EXPERIENCE', 'INTERVIEW_QUESTIONS',

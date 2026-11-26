@@ -80,7 +80,8 @@ test('paid students get Opus, free users Haiku, with a daily cap and a monthly s
  assert.equal(await choosePlan(free,kv({})),CLAUDE.haiku);
  assert.equal(await choosePlan(paid,kv({})),CLAUDE.opus);
  assert.equal(CLAUDE.opus.model,'claude-opus-5-5');assert.equal(CLAUDE.haiku.model,'claude-haiku-5-5');
- assert.equal(await choosePlan(paid,kv({[h.context.opusKey(userId)]:'10'})),CLAUDE.sonnet);
+ assert.equal(await choosePlan(paid,kv({[h.context.opusKey(userId)]:'2'})),CLAUDE.opus);
+ assert.equal(await choosePlan(paid,kv({[h.context.opusKey(userId)]:'3'})),CLAUDE.sonnet);
  assert.equal(await choosePlan(paid,kv({[h.context.spendKey()]:String(250e6)})),CLAUDE.opus);
  assert.equal(await choosePlan(paid,kv({[h.context.spendKey()]:String(900e6)})),CLAUDE.opus);
  assert.equal(await choosePlan(free,kv({[h.context.spendKey()]:String(900e6)})),CLAUDE.haiku);
