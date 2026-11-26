@@ -1285,110 +1285,14 @@ function parseAndDisplayRecruiterTips(text) {
 
 function parseAndDisplayMeasurableResults(text) {
     const content = extractSectionContent(text, '<<<MEASURABLE_RESULTS>>>', '<<<END_MEASURABLE_RESULTS>>>');
-    if (!content) {
-        measurableResultsContent.innerHTML = '<p class="text-text-secondary">No measurable results analysis available.</p>';
-        return;
-    }
-
-    const points = content.split(/<<END_POINT>>|---/);
-    let html = '';
-    points.forEach((point) => {
-        if (!point.trim()) return;
-
-        const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
-        const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/i);
-
-        html += `<div class="feedback-point border-b border-border pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">`;
-        if (originalMatch && originalMatch[1]) {
-            html += `
-            <div class="original-text-wrap mb-3">
-              <span class="wrap-label"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Original phrasing</span>
-              <p class="original-content">${escapeHtml(originalMatch[1].trim())}</p>
-            </div>`;
-        }
-        if (critiqueMatch && critiqueMatch[1]) {
-            html += `<p class="mb-3 text-sm text-text-secondary"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
-        }
-
-        const allSuggestions = [...point.matchAll(/Rewrite Suggestion \d+:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/gi)];
-
-        if (allSuggestions.length > 0) {
-            html += `<div class="mt-2 text-sm"><strong>Rewrite Suggestions:</strong>`;
-            html += `<div class="mt-2 space-y-2">`;
-            allSuggestions.forEach(match => {
-                const suggestionText = match[1].trim();
-                if (suggestionText) {
-                    const plainText = suggestionText.replace(/\*\*/g, '').replace(/`/g, '').replace(/\*/g, '');
-                    html += `
-                    <div class="suggestion-text-wrap group">
-                      <span class="wrap-label"><i class="fa-solid fa-circle-check mr-1.5"></i>AI Recommendation</span>
-                      <div class="suggestion-content text-sm">${simpleMarkdownToHtml(suggestionText)}</div>
-                      <button type="button" class="copy-suggestion-btn" data-text="${escapeHtml(plainText)}" title="Copy suggestion">
-                        <i class="fa-regular fa-copy"></i>
-                        <span class="copy-success-tooltip">Copied!</span>
-                      </button>
-                    </div>`;
-                }
-            });
-            html += `</div></div>`;
-        }
-        html += `</div>`;
-    });
-    measurableResultsContent.innerHTML = html || '<p class="text-text-secondary">Could not parse measurable results.</p>';
+    const html = content ? window.ReviewFormat.renderPoints(content) : '';
+    measurableResultsContent.innerHTML = html || '<p class="text-text-secondary">No measurable results analysis available.</p>';
 }
 
 function parseAndDisplayPhrasesSuggestions(text) {
     const content = extractSectionContent(text, '<<<PHRASES_SUGGESTIONS>>>', '<<<END_PHRASES_SUGGESTIONS>>>');
-    if (!content) {
-        phrasesSuggestionsContent.innerHTML = '<p class="text-text-secondary">No phrase suggestions available.</p>';
-        return;
-    }
-
-    const points = content.split(/<<END_POINT>>|---/);
-    let html = '';
-    points.forEach((point) => {
-        if (!point.trim()) return;
-
-        const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
-        const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/i);
-
-        html += `<div class="feedback-point border-b border-border pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">`;
-        if (originalMatch && originalMatch[1]) {
-            html += `
-            <div class="original-text-wrap mb-3">
-              <span class="wrap-label"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Original phrasing</span>
-              <p class="original-content">${escapeHtml(originalMatch[1].trim())}</p>
-            </div>`;
-        }
-        if (critiqueMatch && critiqueMatch[1]) {
-            html += `<p class="mb-3 text-sm text-text-secondary"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
-        }
-
-        const allSuggestions = [...point.matchAll(/Rewrite Suggestion \d+:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/gi)];
-
-        if (allSuggestions.length > 0) {
-            html += `<div class="mt-2 text-sm"><strong>Rewrite Suggestions:</strong>`;
-            html += `<div class="mt-2 space-y-2">`;
-            allSuggestions.forEach(match => {
-                const suggestionText = match[1].trim();
-                if (suggestionText) {
-                    const plainText = suggestionText.replace(/\*\*/g, '').replace(/`/g, '').replace(/\*/g, '');
-                    html += `
-                    <div class="suggestion-text-wrap group">
-                      <span class="wrap-label"><i class="fa-solid fa-circle-check mr-1.5"></i>AI Recommendation</span>
-                      <div class="suggestion-content text-sm">${simpleMarkdownToHtml(suggestionText)}</div>
-                      <button type="button" class="copy-suggestion-btn" data-text="${escapeHtml(plainText)}" title="Copy suggestion">
-                        <i class="fa-regular fa-copy"></i>
-                        <span class="copy-success-tooltip">Copied!</span>
-                      </button>
-                    </div>`;
-                }
-            });
-            html += `</div></div>`;
-        }
-        html += `</div>`;
-    });
-    phrasesSuggestionsContent.innerHTML = html || '<p class="text-text-secondary">Could not parse phrase suggestions.</p>';
+    const html = content ? window.ReviewFormat.renderPoints(content) : '';
+    phrasesSuggestionsContent.innerHTML = html || '<p class="text-text-secondary">No phrase suggestions available.</p>';
 }
 
 function parseAndDisplayHardSkills(text) {
@@ -1408,34 +1312,7 @@ function parseAndDisplayActionVerbs(text) {
 
 function parseAndDisplayGrammarCheck(text) {
     const content = extractSectionContent(text, '<<<GRAMMAR_CHECK>>>', '<<<END_GRAMMAR_CHECK>>>');
-    if (!content) {
-        grammarCheckContent.innerHTML = '<p class="text-text-secondary">No grammar check results available.</p>';
-        return;
-    }
-
-    let html = formatFeedbackText(content);
-
-    html = html.replace(/Original:\s*"([^"]+?)"\s*->\s*Corrected:\s*"([^"]+?)"(\s*<span class="highlight-issue.*?<\/span>)?/gi, (match, original, corrected, issueMarker) => {
-        const issueHtml = issueMarker || '';
-        const escapedCorrected = escapeHtml(corrected);
-        return `
-        <div class="grammar-correction mb-3">
-          <div class="flex flex-col gap-1">
-            <span class="original-text">${original}</span>
-            <div class="flex items-center gap-1.5 mt-0.5">
-              <i class="fa-solid fa-arrow-right text-success text-xs"></i>
-              <span class="corrected-text">${corrected}</span>
-              ${issueHtml}
-            </div>
-          </div>
-          <button type="button" class="copy-grammar-btn" data-text="${escapedCorrected}" title="Copy correction">
-            <i class="fa-regular fa-copy"></i>
-            <span class="copy-success-tooltip">Copied!</span>
-          </button>
-        </div>`;
-    });
-
-    grammarCheckContent.innerHTML = html;
+    grammarCheckContent.innerHTML = content ? formatFeedbackText(content) : '<p class="text-text-secondary">No grammar check results available.</p>';
 }
 
 function parseAndDisplayFormatting(text) {
@@ -1502,184 +1379,14 @@ function clearResultsContent() {
     });
 }
 
+// Markdown rendering lives in review-format.js (marked + DOMPurify), shared with the PDF report.
 function simpleMarkdownToHtml(md) {
-    if (!md) return '';
-    let html = md
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-
-    return html
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm break-all whitespace-normal overflow-wrap-anywhere" style="word-break: break-all; overflow-wrap: anywhere; white-space: normal;">$1</code>')
-        .replace(/^#{1,6}\s+(.*$)/gm, (match, content) => {
-            const level = match.indexOf(' ');
-            return `<h${level + 1} class="font-semibold mt-4 mb-2 text-lg">${content}</h${level + 1}>`;
-        })
-        .replace(/^\s*[\-\*]\s+(.*$)/gm, '<li>$1</li>')
-        .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
-        .replace(/<\/li>\s*<li>/g, '</li><li>')
-        .replace(/(<li>.*?<\/li>)/gs, (match, content) => {
-
-            if (match.includes('<ul>') || match.includes('<ol>')) return match;
-
-            const listType = /^\s*[\-\*]/.test(md) ? 'ul' : 'ol';
-            return `<${listType}>${content}</${listType}>`;
-        })
-        .replace(/(\r\n|\n|\r)/g, '<br>')
-        .replace(/<(ul|ol)>\s*<br>/gi, '<$1>')
-        .replace(/<br>\s*<\/(ul|ol)>/gi, '</$1>')
-        .replace(/<br>\s*<(ul|ol)/gi, '<$1')
-        .replace(/<\/(ul|ol)>\s*<br>/gi, '</$1>')
-        .replace(/<li>\s*<br>/gi, '<li>')
-        .replace(/<br>\s*<\/li>/gi, '</li>')
-        .replace(/<\/li>\s*<br>/gi, '</li>')
-        .replace(/<br>\s*<br>/g, '</p><p>')
-        .replace(/^<p>|<\/p>$/g, '')
-        .replace(/^(.+?)$/gm, (match) => {
-            if (match.trim().startsWith('<') || match.trim().startsWith('<') || /^\s*(<li>|<ul>|<ol>)/.test(match)) {
-                return match;
-            }
-            return `<p>${match}</p>`;
-        })
-        .replace(/<p>\s*<\/p>/g, '');
-}
-
-function cleanRawText(t) {
-    let out = (t || '');
-
-    // 1) Turn section markers into human-readable headings (to match UI sections)
-    const sectionMap = {
-        OVERALL_SCORE: 'Overall Score',
-        RECRUITER_TIPS: 'Recruiter Tips',
-        MEASURABLE_RESULTS: 'Measurable Results',
-        PHRASES_SUGGESTIONS: 'Phrases Suggestions',
-        HARD_SKILLS: 'Hard Skills Analysis',
-        SOFT_SKILLS: 'Soft Skills Analysis',
-        ACTION_VERBS: 'Action Verbs Usage',
-        GRAMMAR_CHECK: 'Grammar & Proofreading',
-        FORMATTING_READABILITY: 'Formatting & Readability',
-        EDUCATION_QUALIFICATION: 'Education & Qualification',
-        ARTICLESHIP_EXPERIENCE: 'Articleship Experience',
-        INTERVIEW_QUESTIONS: 'Predicted Interview Questions',
-        FINAL_RECOMMENDATIONS: 'Final Recommendations'
-    };
-
-    Object.entries(sectionMap).forEach(([marker, title]) => {
-        const startRe = new RegExp(`\\*?\\*?<<<${marker}>>>`, 'g');
-        const endRe = new RegExp(`\\*?\\*?<<<END_${marker}>>>`, 'g');
-        out = out.replace(startRe, `\n\n## ${title}\n\n`);
-        out = out.replace(endRe, '\n\n');
-    });
-
-    // Remove any leftover markers / point delimiters
-    out = out
-        .replace(/<<<.*?>>>/gs, '')
-        .replace(/<<POINT>>|<<END_POINT>>/g, '')
-        .trim();
-
-    // Remove stray ** (bold markers) that appear after section headings or standalone
-    out = out.replace(/^##\s+([^\n]+)\n\*\*\s*$/gm, '## $1\n');  // After section headings
-    out = out.replace(/^\*\*\s*$/gm, '');  // Standalone ** on their own line
-    out = out.replace(/\n\*\*\n/g, '\n');  // ** between newlines
-
-    // 2) Mirror the bullet splitting used for on-page formatting
-    // Separate inline label header from first bullet item if on same line
-    out = out.replace(/^(\s*(?:\*\s*)?\*\*([^*:]+):\*\*)[ \t]+(?=[A-Z]|\[)/gm, '$1\n- ');
-
-    // After sentence boundaries (optionally followed by GOOD/ISSUE status tag), start a new markdown bullet
-    out = out.replace(
-        /([.!?](?:\s*\[(?:GOOD|ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?)[^\]]*\])?)[ \t]+(?=[A-Z]|\[(?:GOOD|ISSUE)(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\]\s+[A-Z])/gi,
-        '$1\n- '
-    );
-
-    // Ensure inline numbered items become separate lines
-    out = out.replace(/(\d)\.\s+([A-Z])/g, '\n$1. $2');
-
-    // 3) Special handling for "Priority X (...):" items that often appear inline
-    // Turn each new Priority into its own bullet so the PDF matches visual grouping
-    out = out.replace(/\s+(Priority\s+\d+\s*\([^)]*\):)/g, '\n- $1');
-
-    return out;
+    return window.ReviewFormat.renderMarkdown(md);
 }
 
 function formatFeedbackText(text) {
-    if (!text) return '<p class="text-sm text-text-secondary italic">No details available.</p>';
-
-    // STEP 1: Pre-process raw text before HTML conversion
-    let processedText = text;
-
-    // The model often returns long paragraphs. Break them into bullet-friendly lines:
-    // 0a) Separate adjacent [GOOD] [ISSUE...] tags so [ISSUE...] starts on a new bullet line
-    processedText = processedText.replace(/(\[GOOD\])\s*(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])/gi, '$1\n\u2022 $2');
-
-    // 0b) If an [ISSUE...] tag is on a line by itself before a bullet item, attach it to the bullet text
-    processedText = processedText.replace(/(\u2022\s*)?(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\s*\n\s*(?:[\u2022\*\-]\s*)?/gi, '\n\u2022 $2 ');
-
-    // 1) Separate inline label header from first bullet item if on same line
-    processedText = processedText.replace(/^(\s*(?:\*\s*)?\*\*([^*:]+):\*\*)[ \t]+(?=[A-Z]|\[)/gm, '$1\n\u2022 ');
-
-    // 2) After sentence boundaries (optionally followed by GOOD status tag), start a new bullet
-    processedText = processedText.replace(
-        /([.!?](?:\s*\[GOOD\])?)[ \t]+(?=[A-Z]|\[(?:GOOD|ISSUE))/gi,
-        '$1\n\u2022 '
-    );
-    // 3) Convert inline numbered items (1. 2. 3. etc.) to bullet points
-    // First, handle patterns like "text. 1. more" or "text 1. more" - any " N. " pattern
-    processedText = processedText.replace(/\s+(\d+)\.\s+/g, '\n ');
-    // Also handle numbered items at the very start of text
-    processedText = processedText.replace(/^(\d+)\.\s+/gm, '');
-
-    // STEP 2: Convert to HTML
-    let html = simpleMarkdownToHtml(processedText);
-
-    // Replace [GOOD] with a check mark.
-    html = html.replace(/\[GOOD\]/gi, '<span class="highlight-good" title="Good point">&#10003;</span>');
-
-    // Replace [ISSUE] with a cross mark (without severity).
-    html = html.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/gi, '<span class="highlight-issue" title="Area for improvement">&#10007;</span>');
-
-    // Replace [ISSUE - SEVERITY: Level] with compact severity badges
-    html = html.replace(/\[ISSUE\s*-\s*SEVERITY:\s*(Critical|High|Moderate|Low)(?:[^\]]*)\]/gi, (match, severity) => {
-        const level = severity.toLowerCase();
-        return `<span class="highlight-issue" title="Issue">&#10007;</span><span class="severity-badge severity-${level}">${severity}</span>`;
-    });
-
-    // Format section labels: "*   *Label:*" pattern from prompt
-    html = html.replace(/<br>\s*\*\s+\*\*([^*:]+):\*\*/g, '</p><h4 class="feedback-label">$1:</h4><p>');
-    html = html.replace(/^\*\s+\*\*([^*:]+):\*\*/gm, '<h4 class="feedback-label">$1:</h4>');
-
-    // Also handle simpler bold labels: "**Label:**"
-    html = html.replace(/<br>\s*\*\*([^*:]+):\*\*/g, '</p><h4 class="feedback-label">$1:</h4><p>');
-
-    // Convert bullet markers (\u2022) to styled paragraphs; CSS adds the visual bullet via ::before.
-    html = html.replace(/<br>\s*\u2022\s*/g, '</p><p class="feedback-bullet">');
-    html = html.replace(/<p>\u2022\s*/g, '<p class="feedback-bullet">');
-    html = html.replace(/^\u2022\s*/gm, '');
-
-    // Convert numbered items to styled format (remove ::before bullet for numbered items)
-    html = html.replace(/<br>\s*(\d+)\.\s+/g, '</p><p class="feedback-numbered"><strong>$1.</strong> ');
-
-    // Also convert <br><br> to separate paragraphs for better spacing
-    html = html.replace(/<br>\s*<br>/g, '</p><p>');
-
-    // Convert hyphen list markers to feedback-bullet paragraphs (NOT ul/li to avoid double bullets)
-    html = html.replace(/<br>\s*-\s+/g, '</p><p class="feedback-bullet">');
-    html = html.replace(/<br>\s*\*\s+/g, '</p><p class="feedback-bullet">');
-
-    // Clean up empty paragraphs and list breaks
-    html = html.replace(/<(ul|ol)>\s*<br>/gi, '<$1>');
-    html = html.replace(/<br>\s*<\/(ul|ol)>/gi, '</$1>');
-    html = html.replace(/<li>\s*<br>/gi, '<li>');
-    html = html.replace(/<br>\s*<\/li>/gi, '</li>');
-    html = html.replace(/<p>\s*<\/p>/g, '');
-    html = html.replace(/<\/p>\s*<\/p>/g, '</p>');
-    html = html.replace(/<p>\s*<p/g, '<p');
-
-    return html;
+    const html = text ? window.ReviewFormat.renderMarkdown(text) : '';
+    return html || '<p class="text-sm text-text-secondary italic">No details available.</p>';
 }
 
 function animateScore(score) {
@@ -1872,75 +1579,47 @@ downloadReportBtn.addEventListener('click', () => {
         alert("PDF generator not available. Please reload the page.");
         return;
     }
-    const cleaned = cleanRawText(analysisResultText);
     const baseName = activeReviewFileName || (selectedFile ? selectedFile.name : 'CV');
     const safeFileName = baseName.replace(/\.pdf$/i, '').replace(/[^a-z0-9_.-]/gi, '_');
-    const headerHtml = `
-      <div style="text-align:center;padding:8px 0;font-family:'Poppins',sans-serif;color:#111827;font-weight:600;">
-        My Student Club &middot; CV Analysis Report
-      </div>`;
-    const footerHtml = `
-      <div style="text-align:center;padding:6px 0;font-size:10px;color:#6b7280;font-family:'Poppins',sans-serif;">
-        Generated ${new Date().toLocaleDateString()}
-      </div>`;
-    const pdfCss = `
-      @page { size: A4 portrait; margin: 14mm; }
-      * { box-sizing: border-box; }
-      body { font-family: 'Poppins', sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-      .mdpdf-content { padding: 2mm 0; }
-      h1, h2, h3, h4 { color: #111827; font-weight:700; break-after: avoid-page; page-break-after: avoid; }
-      p, li { color: #374151; line-height: 1.7; font-size: 12px; orphans: 3; widows: 3; }
-      ul, ol { margin: 0 0 10px 18px; padding: 0; }
-      p, li, ul, ol, table, thead, tbody, tr, td, blockquote, pre, code, h1, h2, h3, h4 {
-        break-inside: avoid-page;
-        page-break-inside: avoid;
-      }
-      .good-marker { color: #059669; font-weight: 700; }
-      .issue-marker { color: #dc2626; font-weight: 700; }
-      .sev-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; margin-left: 4px; }
-      .sev-critical { background: #fee2e2; color: #991b1b; }
-      .sev-high { background: #ffedd5; color: #9a3412; }
-      .sev-moderate { background: #fef3c7; color: #92400e; }
-      .sev-low { background: #f0fdf4; color: #065f46; }
-    `;
+    const scoreSection = extractSectionContent(analysisResultText, '<<<OVERALL_SCORE>>>', '<<<END_OVERALL_SCORE>>>') || '';
+    const justification = (scoreSection.match(/Justification:\s*([\s\S]*)/i) || [])[1] || '';
+    const reportHtml = window.ReviewFormat.buildReportHtml(analysisResultText, {
+        score: parseOverallScore(analysisResultText),
+        justification: justification.trim(),
+        fileName: baseName,
+        dateText: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+    });
     const pdfOptions = {
+        filename: `${safeFileName}_Analysis_Report.pdf`,
         format: 'a4',
         orientation: 'portrait',
-        margin: 14,
-        css: pdfCss,
-        header: headerHtml,
-        footer: footerHtml,
-        image: { type: 'jpeg', quality: 1.0 },
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            scrollY: 0,
-            scrollX: 0,
-            letterRendering: true,
-            windowWidth: 1200
-        },
-        pagebreak: {
-            mode: ['avoid-all', 'css', 'legacy'],
-            avoid: ['p', 'li', 'ul', 'ol', 'table', 'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'blockquote', 'pre', 'code']
-        }
+        margin: 12,
+        image: { type: 'jpeg', quality: 0.92 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['.rv-avoid', 'tr', 'p', 'h2', 'h3', 'blockquote'] }
     };
-    const markdown = `# CV Analysis Report\n\n${fixInlineCodeMarkdown(cleaned)}`;
 
-    pdfPreviewContainer.innerHTML = '';
-    MarkdownPDF.render(markdown, pdfPreviewContainer, pdfOptions);
-
+    pdfPreviewContainer.innerHTML = reportHtml;
     pdfPreviewModal.style.display = 'block';
 
     const onDownload = () => {
-        MarkdownPDF.download(markdown, {
-            filename: `${safeFileName}_Analysis_Report.pdf`,
-            ...pdfOptions
-        }).finally(() => {
-            pdfPreviewModal.style.display = 'none';
-            pdfPreviewDownloadBtn.removeEventListener('click', onDownload);
-        });
+        const reportEl = pdfPreviewContainer.querySelector('.rv-pdf');
+        const original = pdfPreviewDownloadBtn.innerHTML;
+        pdfPreviewDownloadBtn.disabled = true;
+        pdfPreviewDownloadBtn.textContent = 'Preparing PDF...';
+        MarkdownPDF.downloadFromElement(reportEl, pdfOptions)
+            .catch(err => {
+                console.error('PDF download failed:', err);
+                alert('Could not create the PDF. Please try again.');
+            })
+            .finally(() => {
+                pdfPreviewDownloadBtn.disabled = false;
+                pdfPreviewDownloadBtn.innerHTML = original;
+                pdfPreviewModal.style.display = 'none';
+            });
     };
-    pdfPreviewDownloadBtn.addEventListener('click', onDownload);
+    // onclick (not addEventListener) so reopening the preview never queues a second download.
+    pdfPreviewDownloadBtn.onclick = onDownload;
 });
 
 pdfPreviewCloseBtn.addEventListener('click', () => {
@@ -1963,28 +1642,6 @@ function resetToUploadStageOnError() {
     uploadSection.style.display = 'block';
     heroSection.style.display = 'block';
     uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function fixInlineCodeMarkdown(md) {
-    if (!md) return md;
-    let out = md.replace(/```[\s\S]*?```/g, '');          // remove fenced code blocks
-    out = out.replace(/`([^`\n]+)`/g, '$1');               // strip inline code markers
-    out = out.replace(/^\s*> ?(.*)$/gm, '$1');             // remove blockquote markers
-    out = out.replace(/^\s*[-*_]{3,}\s*$/gm, '');          // remove horizontal rules
-    out = out.replace(/^\|.*\|$/gm, m => m.replace(/\|/g, ' ').replace(/-+/g, ' ')); // flatten tables
-
-    // Format markers for PDF output with HTML styling
-    out = out.replace(/\[GOOD\]/g, '<span class="good-marker">&#10003;</span>');
-    out = out.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/g, '<span class="issue-marker">&#10007;</span>');
-    out = out.replace(/\[ISSUE\s*-\s*SEVERITY:\s*(Critical|High|Moderate|Low)(?:[^\]]*)\]/gi, (match, severity) => {
-        const level = severity.toLowerCase();
-        return `<span class="issue-marker">&#10007;</span><span class="sev-badge sev-${level}">${severity}</span>`;
-    });
-
-    // Split sentences for better readability in PDF
-    out = out.replace(/([.!?])\s{2,}([A-Z])/g, '$1\n\n$2');
-
-    return out;
 }
 
 async function loadLeaderboard() {
