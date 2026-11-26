@@ -1769,3 +1769,128 @@
 }
 @keyframes cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 @keyframes pulse-green { 0% { transform: scale(0.95); opacity: 0.7; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.7; } }
+
+/* ===== Review markdown (review-format.js) ===== */
+.rv-md { color: #334155; font-size: 0.95rem; line-height: 1.65; }
+.rv-md > :first-child { margin-top: 0 !important; }
+.rv-md p { margin: 0.35rem 0 0.6rem !important; line-height: 1.65 !important; }
+.rv-md strong { color: #0f172a; font-weight: 600; }
+.rv-md em { color: #475569; }
+.content-area .rv-md ul, .content-area .rv-md ol,
+.rv-pdf .rv-md ul, .rv-pdf .rv-md ol { margin: 0.3rem 0 0.6rem !important; padding-left: 1.35rem !important; }
+.rv-md ul { list-style: disc; }
+.rv-md ul ul { list-style: circle; }
+.rv-md ol { list-style: decimal; }
+.content-area .rv-md li, .rv-pdf .rv-md li { margin: 0.3rem 0 !important; line-height: 1.6 !important; padding-left: 0.15rem; }
+.rv-md li::marker { color: #94a3b8; }
+.rv-md ol > li::marker { color: #2563eb; font-weight: 600; }
+
+/* "**Label:**" bullets become small headed blocks */
+.content-area .rv-md ul.rv-label-list, .content-area .rv-md ol.rv-label-list,
+.rv-pdf .rv-md ul.rv-label-list, .rv-pdf .rv-md ol.rv-label-list { list-style: none; padding-left: 0 !important; }
+.content-area .rv-md li.rv-labelled, .rv-pdf .rv-md li.rv-labelled { padding: 0.75rem 0 0.35rem !important; margin: 0 !important; border-top: 1px solid #eef2f7; }
+.rv-md li.rv-labelled:first-child { border-top: 0; padding-top: 0.15rem !important; }
+.rv-md .rv-label { display: block; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #2563eb; margin-bottom: 0.3rem; }
+.rv-md li.rv-labelled > p:first-child > .rv-label { margin-bottom: 0.15rem; }
+
+/* [GOOD] / [ISSUE - SEVERITY: X] pills */
+.rv-tag { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.08rem 0.5rem; margin-right: 0.4rem; border-radius: 999px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.5; vertical-align: 0.08em; white-space: nowrap; }
+.rv-tag i { font-size: 0.62rem; }
+.rv-good { background: #dcfce7; color: #166534; }
+.rv-issue, .rv-low { background: #f1f5f9; color: #475569; }
+.rv-moderate { background: #fef3c7; color: #92400e; }
+.rv-high { background: #ffedd5; color: #9a3412; }
+.rv-critical { background: #fee2e2; color: #b91c1c; }
+
+/* Tables: scroll sideways on phones, never squash */
+.rv-md .rv-table { margin: 0.6rem 0 0.9rem; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #e2e8f0; border-radius: 10px; }
+.content-area .rv-md .rv-table table, .rv-pdf .rv-md .rv-table table { width: 100%; min-width: 560px; max-width: none !important; border-collapse: collapse; font-size: 0.85rem; }
+.content-area .rv-md .rv-table th, .content-area .rv-md .rv-table td,
+.rv-pdf .rv-md .rv-table th, .rv-pdf .rv-md .rv-table td { overflow-wrap: normal !important; word-break: normal !important; }
+.rv-md th { background: #f8fafc; color: #0f172a; font-weight: 600; text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+.rv-md td { padding: 0.5rem 0.7rem; border-bottom: 1px solid #f1f5f9; vertical-align: top; color: #334155; }
+.rv-md tr:last-child td { border-bottom: 0; }
+
+.rv-md blockquote { margin: 0.5rem 0 0.75rem; padding: 0.7rem 0.9rem; border-left: 3px solid #2563eb; background: #eff6ff; border-radius: 0 8px 8px 0; color: #1e3a8a; }
+.rv-md blockquote p { margin: 0 !important; }
+.rv-md hr { border: 0; border-top: 1px solid #e2e8f0; margin: 1rem 0; }
+.rv-md code { background: #f1f5f9; padding: 0 0.3rem; border-radius: 4px; font-size: 0.85em; }
+
+/* Original -> Why -> Rewrite cards */
+.rv-point { padding: 1rem 0 1.25rem; border-bottom: 1px solid #e2e8f0; }
+.rv-point:first-child { padding-top: 0; }
+.rv-point:last-child { border-bottom: 0; padding-bottom: 0; }
+.rv-kicker { display: block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.3rem; }
+.rv-point-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.rv-count { font-size: 0.7rem; color: #94a3b8; font-weight: 600; }
+.rv-original { background: #fef2f2; border-left: 3px solid #ef4444; border-radius: 0 10px 10px 0; padding: 0.75rem 0.95rem; }
+.rv-original .rv-kicker { color: #dc2626; }
+.rv-original p { margin: 0 !important; color: #7f1d1d; font-size: 0.92rem; line-height: 1.6 !important; }
+.rv-critique { padding: 0.75rem 0.15rem 0.35rem; }
+.rv-critique .rv-kicker { color: #64748b; }
+.rv-critique .rv-md { font-size: 0.92rem; }
+.rv-rewrite { position: relative; background: #f0fdf4; border-left: 3px solid #10b981; border-radius: 0 10px 10px 0; padding: 0.75rem 3rem 0.75rem 0.95rem; margin-top: 0.6rem; }
+.rv-rewrite .rv-kicker { color: #059669; }
+.rv-rewrite p { margin: 0 !important; color: #064e3b; font-size: 0.92rem; line-height: 1.6 !important; }
+.rv-rewrite .rv-copy { position: absolute; top: 0.6rem; right: 0.6rem; }
+
+@media (max-width: 640px) {
+  .rv-md { font-size: 0.92rem; }
+  .rv-original, .rv-rewrite { padding-left: 0.8rem; }
+  .rv-rewrite { padding-right: 2.6rem; }
+}
+
+/* ===== PDF report (also shown in the preview modal) ===== */
+.rv-pdf { font-family: 'Poppins', sans-serif; color: #0f172a; background: #fff; font-size: 13px; }
+.rv-pdf .rv-md { font-size: 12.5px; line-height: 1.6; }
+.rv-pdf-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 4px 0 14px; border-bottom: 2px solid #2563eb; }
+.rv-pdf-brand { font-size: 11px; font-weight: 600; color: #2563eb; letter-spacing: 0.06em; text-transform: uppercase; }
+.rv-pdf-top h1 { margin: 2px 0 2px; font-size: 22px; font-weight: 700; color: #0f172a; }
+.rv-pdf-meta { font-size: 11px; color: #64748b; }
+.rv-pdf-score { text-align: center; min-width: 110px; padding: 8px 14px; border-radius: 12px; background: #eff6ff; }
+.rv-pdf-score b { font-size: 30px; line-height: 1; color: #1d4ed8; }
+.rv-pdf-score span { font-size: 13px; color: #64748b; }
+.rv-pdf-score em { display: block; font-style: normal; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1d4ed8; margin-top: 2px; }
+.rv-pdf-summary { margin: 14px 0 4px; padding: 10px 14px; background: #f8fafc; border-radius: 10px; }
+.rv-pdf-section { margin-top: 18px; }
+/* padding + negative margin: keeps a heading together with ~120px of what follows across page breaks */
+.rv-pdf-head { padding-bottom: 120px; margin-bottom: -112px; }
+.rv-pdf-head h2 { margin: 0; padding-bottom: 6px; font-size: 16px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #e2e8f0; }
+.rv-pdf .rv-point { padding: 10px 0 12px; }
+.rv-pdf .rv-rewrite { padding-right: 14px; }
+.rv-pdf .rv-table { overflow: visible; }
+.rv-pdf .rv-md .rv-table table { min-width: 0; }
+.rv-pdf-foot { margin-top: 22px; padding-top: 8px; border-top: 1px solid #e2e8f0; font-size: 10px; color: #94a3b8; text-align: center; }
+.rv-md .rv-label-list > li > ul { list-style: disc; }
+/* A wide table scrolls inside its box; it must never widen the page column */
+.rv-md .rv-table { contain: inline-size; }
+.results-grid > * { min-width: 0; }
+
+/* Review markdown in dark mode (mobile/app theme toggle); the PDF and its preview stay light */
+[data-theme="dark"] .rv-md:not(.rv-pdf *) { color: #c9d3e6; }
+[data-theme="dark"] .rv-md strong:not(.rv-pdf *) { color: #edf2ff; }
+[data-theme="dark"] .rv-md em:not(.rv-pdf *) { color: #a9b6cc; }
+[data-theme="dark"] .rv-md .rv-label:not(.rv-pdf *) { color: #7ba8ff; }
+[data-theme="dark"] .rv-md li.rv-labelled:not(.rv-pdf *) { border-top-color: #252836; }
+[data-theme="dark"] .rv-good:not(.rv-pdf *) { background: rgba(34, 197, 94, 0.16); color: #86efac; }
+[data-theme="dark"] .rv-issue:not(.rv-pdf *), [data-theme="dark"] .rv-low:not(.rv-pdf *) { background: rgba(148, 163, 184, 0.16); color: #cbd5e1; }
+[data-theme="dark"] .rv-moderate:not(.rv-pdf *) { background: rgba(245, 158, 11, 0.16); color: #fcd34d; }
+[data-theme="dark"] .rv-high:not(.rv-pdf *) { background: rgba(249, 115, 22, 0.16); color: #fdba74; }
+[data-theme="dark"] .rv-critical:not(.rv-pdf *) { background: rgba(239, 68, 68, 0.18); color: #fca5a5; }
+[data-theme="dark"] .rv-md .rv-table:not(.rv-pdf *) { border-color: #252836; }
+[data-theme="dark"] .rv-md th:not(.rv-pdf *) { background: #1e2130; color: #edf2ff; border-bottom-color: #252836; }
+[data-theme="dark"] .rv-md td:not(.rv-pdf *) { color: #c9d3e6; border-bottom-color: #252836; }
+[data-theme="dark"] .rv-md blockquote:not(.rv-pdf *) { background: rgba(79, 138, 255, 0.12); border-left-color: #4f8aff; color: #c7d7ff; }
+[data-theme="dark"] .rv-md code:not(.rv-pdf *) { background: #1e2130; }
+[data-theme="dark"] .rv-point:not(.rv-pdf *) { border-bottom-color: #252836; }
+[data-theme="dark"] .rv-original:not(.rv-pdf *) { background: rgba(239, 68, 68, 0.1); }
+[data-theme="dark"] .rv-original .rv-kicker:not(.rv-pdf *) { color: #f87171; }
+[data-theme="dark"] .rv-original p:not(.rv-pdf *) { color: #fecaca; }
+[data-theme="dark"] .rv-critique .rv-kicker:not(.rv-pdf *) { color: #8896ae; }
+[data-theme="dark"] .rv-rewrite:not(.rv-pdf *) { background: rgba(16, 185, 129, 0.1); }
+[data-theme="dark"] .rv-rewrite .rv-kicker:not(.rv-pdf *) { color: #34d399; }
+[data-theme="dark"] .rv-rewrite p:not(.rv-pdf *) { color: #bbf7d0; }
+/* The sidebar score justification keeps its own small text size */
+#scoreJustification .rv-md { font-size: inherit; line-height: inherit; color: inherit; }
+#scoreJustification .rv-md p { margin: 0 0 0.4rem !important; line-height: inherit !important; }
