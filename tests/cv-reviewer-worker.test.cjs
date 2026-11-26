@@ -17,7 +17,7 @@ function harness(options={}) {
   if(url.endsWith('/auth/v1/user'))return new Response(JSON.stringify({id:userId,user_metadata:{premium:true}}),{status:options.authStatus||200});
   return new Response(JSON.stringify((options.courses||[]).map(course=>({course}))),{status:options.enrollmentStatus||200});
  },processCV:async(...args)=>{calls.models++;calls.plans=(calls.plans||[]).concat([args[5]]);return{ok:true,response:options.report??report,modelUsed:options.modelUsed||'unchanged',cacheable:!!options.cacheable,costUsd:options.costUsd||0,debug_errors:{doNotExpose:'SECRET REPORT'}};}});
- vm.runInContext(prefix+'\nthis.worker=worker;this.partialReport=partialReport;this.todayInIndia=todayInIndia;this.CLAUDE=CLAUDE;this.choosePlan=choosePlan;this.isCompleteReport=isCompleteReport;this.callClaude=callClaude;this.spendKey=spendKey;this.opusKey=opusKey;this.normalizeReport=normalizeReport;this.hasScore=hasScore;',context);
+ vm.runInContext(prefix+'\nthis.worker=worker;this.partialReport=partialReport;this.todayInIndia=todayInIndia;this.CLAUDE=CLAUDE;this.choosePlan=choosePlan;this.isCompleteReport=isCompleteReport;this.callClaude=callClaude;this.spendKey=spendKey;this.bestKey=bestKey;this.normalizeReport=normalizeReport;this.hasScore=hasScore;',context);
  function request(extras={},token,method='POST') {return new Request('https://reviewer.example/',{method,headers:{'Content-Type':'application/json','CF-Connecting-IP':'192.0.2.1',...(token?{Authorization:'Bearer '+token}:{})},...(method==='POST'?{body:JSON.stringify({images:['synthetic'],...extras})}:{})});}
  return {context,calls,env,request};
 }
@@ -73,28 +73,27 @@ test('prompt date is today in India, so real past dates are not called future da
  assert.ok(src.includes("TODAY'S DATE: ${today}"));assert.ok(!src.includes('en-dashes for dates'));
 });
 
-test('paid students get Opus, free users Haiku, with a daily cap and a monthly spend guard',async()=>{
+test('paid students: one Sonnet-high review a day, then Haiku; free users Haiku; $100 monthly guard',async()=>{
  const h=harness();const {CLAUDE,choosePlan}=h.context;
  const kv=(values)=>({RATE_LIMITS:{get:async key=>values[key]??null,put:async()=>{}}});
  const paid={premium:true,userId:userId},free={premium:false,userId:null};
  assert.equal(await choosePlan(free,kv({})),CLAUDE.haiku);
- assert.equal(await choosePlan(paid,kv({})),CLAUDE.opus);
- assert.equal(CLAUDE.opus.model,'claude-opus-5-5');assert.equal(CLAUDE.haiku.model,'claude-haiku-5-5');
- assert.equal(await choosePlan(paid,kv({[h.context.opusKey(userId)]:'2'})),CLAUDE.opus);
- assert.equal(await choosePlan(paid,kv({[h.context.opusKey(userId)]:'3'})),CLAUDE.sonnet);
- assert.equal(await choosePlan(paid,kv({[h.context.spendKey()]:String(250e6)})),CLAUDE.opus);
- assert.equal(await choosePlan(paid,kv({[h.context.spendKey()]:String(900e6)})),CLAUDE.opus);
+ assert.equal(await choosePlan(paid,kv({})),CLAUDE.sonnet);
+ assert.equal(CLAUDE.sonnet.model,'claude-sonnet-5-5');assert.equal(CLAUDE.sonnet.effort,'high');assert.equal(CLAUDE.haiku.model,'claude-haiku-5-5');
+ assert.equal(await choosePlan(paid,kv({[h.context.bestKey(userId)]:'1'})),CLAUDE.haiku);
+ assert.equal(await choosePlan(paid,kv({[h.context.spendKey()]:String(99e6)})),CLAUDE.sonnet);
+ assert.equal(await choosePlan(paid,kv({[h.context.spendKey()]:String(100e6)})),CLAUDE.haiku);
  assert.equal(await choosePlan(free,kv({[h.context.spendKey()]:String(900e6)})),CLAUDE.haiku);
- assert.equal(await choosePlan(paid,{RATE_LIMITS:{get:async()=>{throw new Error('kv down');}}}),CLAUDE.opus);
+ assert.equal(await choosePlan(paid,{RATE_LIMITS:{get:async()=>{throw new Error('kv down');}}}),CLAUDE.sonnet);
 });
 test('the same CV is served from cache: one model call, same review, spend recorded once',async()=>{
- const h=harness({courses:['industrial-training-mastery'],cacheable:true,costUsd:0.2,modelUsed:'claude-opus-5-5'});
+ const h=harness({courses:['industrial-training-mastery'],cacheable:true,costUsd:0.2,modelUsed:'claude-sonnet-5-5'});
  const first=await (await h.context.worker.fetch(h.request({},'verified'),h.env)).json();
  const second=await (await h.context.worker.fetch(h.request({},'verified'),h.env)).json();
  assert.equal(h.calls.models,1);assert.equal(first.response,second.response);assert.equal(first.cached,false);assert.equal(second.cached,true);
  const spend=h.calls.kv.filter(c=>c.key.startsWith('cv-review-spend'));assert.equal(spend.length,1);assert.equal(spend[0].value,'200000');
- assert.equal(h.calls.kv.filter(c=>c.key.startsWith('cv-review-opus')).length,1);
- assert.equal(h.calls.plans[0],h.context.CLAUDE.opus);
+ assert.equal(h.calls.kv.filter(c=>c.key.startsWith('cv-review-best')).length,1);
+ assert.equal(h.calls.plans[0],h.context.CLAUDE.sonnet);
  const free=harness({cacheable:true});await free.context.worker.fetch(free.request(),free.env);
  const again=await (await free.context.worker.fetch(free.request(),free.env)).json();
  assert.equal(free.calls.models,1);assert.equal(again.access.partial,true);assert.ok(!again.response.includes('HARD_SKILLS'));
