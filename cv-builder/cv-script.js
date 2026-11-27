@@ -2056,6 +2056,7 @@
             document.getElementById('inp-email').value = cvData.personal.email || '';
             document.getElementById('inp-linkedin').value = cvData.personal.linkedin || '';
             document.getElementById('inp-location').value = cvData.personal.location || '';
+            renderCvPhotoField();
             setSummaryEditorValue(cvData.summary || '');
             setSkillsEditorValue(cvData.skills || '');
 
@@ -2406,6 +2407,119 @@
 
             postToFrame();
             updateProgress();
+        }
+
+        // ---------- Optional profile photo ----------
+        // The photo is cropped to a passport shape (3:4) and saved inside the CV as a small JPEG, so it follows the
+        // draft, saved versions and the account sync like every other field. Templates place it themselves.
+        const CV_PHOTO_WIDTH = 270;
+        const CV_PHOTO_HEIGHT = 360;
+        const CV_PHOTO_MAX_FILE_BYTES = 15 * 1024 * 1024;
+        const CV_PHOTO_PATTERN = /^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/]+=*$/i;
+
+        function getCvPhoto() {
+            const photo = cvData && cvData.personal ? cvData.personal.photo : '';
+            return typeof photo === 'string' && CV_PHOTO_PATTERN.test(photo) ? photo : '';
+        }
+
+        function setCvPhotoHint(text, isError) {
+            const hint = document.getElementById('cv-photo-hint');
+            if (!hint) return;
+            hint.textContent = text;
+            hint.classList.toggle('is-error', !!isError);
+        }
+
+        function renderCvPhotoField() {
+            const photo = getCvPhoto();
+            const thumb = document.getElementById('cv-photo-thumb');
+            const upload = document.getElementById('cv-photo-upload');
+            const remove = document.getElementById('cv-photo-remove');
+            if (thumb) {
+                thumb.style.backgroundImage = photo ? `url("${photo}")` : '';
+                thumb.classList.toggle('has-photo', !!photo);
+                thumb.setAttribute('aria-label', photo ? 'Change photo' : 'Upload a photo');
+            }
+            if (upload) upload.textContent = photo ? 'Change photo' : 'Upload photo';
+            if (remove) remove.hidden = !photo;
+            setCvPhotoHint(photo
+                ? 'Shown on every template. Remove it any time.'
+                : 'Skip it if you like. Every template makes room for it on its own.');
+        }
+
+        function openCvPhotoPicker() {
+            const input = document.getElementById('inp-photo');
+            if (input) input.click();
+        }
+
+        function loadCvPhotoImage(file) {
+            return new Promise((resolve, reject) => {
+                const url = URL.createObjectURL(file);
+                const img = new Image();
+                img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('unreadable')); };
+                img.src = url;
+            });
+        }
+
+        // Centre-crop to 3:4, keeping a little more of the top of a tall photo, where the face usually is.
+        function cropCvPhoto(img) {
+            const ratio = CV_PHOTO_WIDTH / CV_PHOTO_HEIGHT;
+            const w = img.naturalWidth || img.width;
+            const h = img.naturalHeight || img.height;
+            let sw = w;
+            let sh = h;
+            if (w / h > ratio) sw = h * ratio; else sh = w / ratio;
+            const sx = (w - sw) / 2;
+            const sy = (h - sh) * 0.3;
+            const canvas = document.createElement('canvas');
+            canvas.width = CV_PHOTO_WIDTH;
+            canvas.height = CV_PHOTO_HEIGHT;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+            // Keep it small: the photo travels with every saved version of the CV.
+            let quality = 0.85;
+            let photo = canvas.toDataURL('image/jpeg', quality);
+            while (photo.length > 60000 && quality > 0.5) {
+                quality -= 0.1;
+                photo = canvas.toDataURL('image/jpeg', quality);
+            }
+            return photo;
+        }
+
+        async function handleCvPhotoFile(input) {
+            const file = input && input.files && input.files[0];
+            if (input) input.value = '';
+            if (!file) return;
+            if (file.type && !file.type.startsWith('image/')) {
+                setCvPhotoHint('Please choose a photo (JPG or PNG).', true);
+                return;
+            }
+            if (file.size > CV_PHOTO_MAX_FILE_BYTES) {
+                setCvPhotoHint('That photo is too large. Please choose one under 15 MB.', true);
+                return;
+            }
+            setCvPhotoHint('Adding your photo…');
+            try {
+                const img = await loadCvPhotoImage(file);
+                const photo = cropCvPhoto(img);
+                if (!CV_PHOTO_PATTERN.test(photo)) throw new Error('encode');
+                if (!cvData.personal) cvData.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
+                cvData.personal.photo = photo;
+                renderCvPhotoField();
+                postToFrame();
+            } catch (error) {
+                renderCvPhotoField();
+                setCvPhotoHint('This photo could not be opened. Please try a JPG or PNG.', true);
+            }
+        }
+
+        function removeCvPhoto() {
+            if (cvData && cvData.personal) delete cvData.personal.photo;
+            renderCvPhotoField();
+            postToFrame();
         }
 
         function updateEdu(index, field, value) {
@@ -3436,6 +3550,26 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// On a phone the preview is hidden while the student is on the Edit tab. A hidden page has no layout, so parts placed by
+// measuring (the photo, the one-page fit) are missing. Lay the preview out unseen, re-render it, and let it settle first.
+async function layOutHiddenPreviewForExport(frame) {
+    if (!frame || frame.getClientRects().length) return;
+    const pane = frame.closest('.preview');
+    if (!pane) return;
+    const saved = { display: pane.style.display, opacity: pane.style.opacity, pointerEvents: pane.style.pointerEvents };
+    pane.style.display = 'flex';
+    pane.style.opacity = '0';
+    pane.style.pointerEvents = 'none';
+    try {
+        postToFrame({ skipHistory: true, skipSave: true });
+        await new Promise(resolve => setTimeout(resolve, 400));
+    } finally {
+        pane.style.display = saved.display;
+        pane.style.opacity = saved.opacity;
+        pane.style.pointerEvents = saved.pointerEvents;
+    }
+}
+
 async function downloadCvFile(format = 'pdf') {
     // Hide the dropdown after selection
     const menu = document.getElementById('download-menu-popover');
@@ -3464,6 +3598,7 @@ async function downloadCvFile(format = 'pdf') {
         // We grab the entire <html>...</html> including <head> (styles/fonts)
         // and <body> (content). This way the Worker's Chromium renders it
         // with the exact same styling the user sees in the preview.
+        await layOutHiddenPreviewForExport(frame);
         const fullHTML = '<!DOCTYPE html>' + (window.MSCArticleshipStage?.exportHtml?.(doc) || doc.documentElement.outerHTML);
 
         // ── Step 2: POST the HTML to our Cloudflare Worker ───────────
@@ -4329,6 +4464,8 @@ async function deliverDownloadedBlob(blob, filename) {
                 title: normalizeImportedString(cvData.personal.name || '') || 'Untitled CV',
                 data: JSON.parse(JSON.stringify(cvData))
             };
+            // The photo is not versioned: leaving it out keeps all 10 saved versions inside the size limit.
+            if (snapshot.data.personal) delete snapshot.data.personal.photo;
             commitHistory(CV_SYNC.withVersion(historySlot ? historySlot.get() : {}, snapshot, HISTORY_BYTES));
             renderHistory();
         }
@@ -4385,8 +4522,11 @@ async function deliverDownloadedBlob(blob, filename) {
             const snap = history.find(h => h.id === id);
             if (!snap) return;
 
+            const currentPhoto = getCvPhoto();
             cvData = JSON.parse(JSON.stringify(snap.data));
             ensureCvDataShape();
+            // Saved versions carry no photo; restoring one keeps the photo the student has now.
+            if (currentPhoto && !cvData.personal.photo) cvData.personal.photo = currentPhoto;
             renderEditor();
             updateProgress();
             postToFrame();
