@@ -2,7 +2,7 @@
 import { getDaysAgo, isJobExpired, getPostedLabel } from './date-utils.js?v=20261118_1';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, showExclusiveLockPopup, showExclusiveAppliedPopup, fetchMyProgramRegistrations, ensureExclusiveStyles } from './exclusive-vacancy.js';
-import { assessmentGate } from './apply-assessment.js';
+import { assessmentGate, stoppedByCriteria } from './apply-assessment.js';
 import { getApplyUrls, openApplyLinks, openQueuedApplyLink } from './apply-links.js';
 
 function isSalaryDisclosed(val) {
@@ -69,7 +69,7 @@ async function recordRecruiterApplication(job, buttonElement, tableName) {
         pendingApplications.delete(applicationKey);
         buttonElement.disabled = false;
         buttonElement.innerHTML = originalText;
-        showToast('Your application is not sent yet. Complete the assessment to apply.', 'info');
+        if (!stoppedByCriteria()) showToast('Your application is not sent yet. Complete the assessment to apply.', 'info');
         return false;
     }
     try {

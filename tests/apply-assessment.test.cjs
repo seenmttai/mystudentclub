@@ -10,7 +10,7 @@ const { JSDOM } = require('jsdom');
 // call it before the job_applications insert.
 const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
-const gateSource = read('scripts/apply-assessment.js').replace(/^export\s+/m, '');
+const gateSource = read('scripts/apply-assessment.js').replace(/^export\s+/gm, '');
 
 function page({ url = 'https://www.mystudentclub.com/ca-fresher-jobs.html', storage = {}, onScript = null } = {}) {
   const dom = new JSDOM('<!doctype html><html><head></head><body></body></html>', { url, runScripts: 'outside-only' });
@@ -19,7 +19,7 @@ function page({ url = 'https://www.mystudentclub.com/ca-fresher-jobs.html', stor
   const added = [];
   const append = w.document.head.appendChild.bind(w.document.head);
   w.document.head.appendChild = node => { added.push(node); const out = append(node); if (node.tagName === 'SCRIPT') setTimeout(() => onScript?.(node, w), 0); return out; };
-  w.eval(`${gateSource}\nwindow.assessmentGate = assessmentGate;`);
+  w.eval(`${gateSource}\nwindow.assessmentGate = assessmentGate;\nwindow.stoppedByCriteria = stoppedByCriteria;`);
   return { w, added };
 }
 const client = token => ({ auth: { getSession: async () => ({ data: { session: token ? { access_token: token } : null } }) } });
@@ -76,7 +76,7 @@ test('apply assessment: a local hire preview only on localhost', async () => {
 test('apply assessment: every Easy Apply save point runs the gate before the application insert', () => {
   for (const [file, fn] of [['scripts/portal3.js', 'async function recordApplication('], ['scripts/job-details.js', 'async function recordRecruiterApplication('], ['scripts/portal-email.js', 'async function recordApplication(']]) {
     const source = read(file);
-    assert.match(source, /import \{ assessmentGate \} from '\.\/apply-assessment\.js';/, file);
+    assert.match(source, /import \{ assessmentGate, stoppedByCriteria \} from ['"]\.\/apply-assessment\.js['"];/, file);
     const start = source.indexOf(fn);
     assert.ok(start >= 0, `${file}: ${fn}`);
     const body = source.slice(start, source.indexOf('\n}\n', start));
@@ -84,5 +84,21 @@ test('apply assessment: every Easy Apply save point runs the gate before the app
     const insert = body.indexOf(".from('job_applications')");
     assert.ok(gate > 0 && insert > gate, `${file}: the gate runs before the insert`);
     assert.match(body.slice(gate, insert), /return false;/, `${file}: leaving the assessment returns without applying`);
+  }
+});
+
+test('apply assessment: after the criteria dialog (hire says "Sorry, you miss this one") no assessment toast is added', async () => {
+  const { w } = page({ onScript: (node, win) => { win.MscAssessment = { lastOutcome: null, gate: async () => { win.MscAssessment.lastOutcome = 'criteria'; return false; } }; node.onload(); } });
+  assert.equal(w.stoppedByCriteria(), false, 'no gate run yet');
+  assert.equal(await w.assessmentGate({ table: 'Fresher Jobs', job: JOB, supabaseClient: client('t') }), false);
+  assert.equal(w.stoppedByCriteria(), true);
+  w.MscAssessment.lastOutcome = 'assessment';
+  assert.equal(w.stoppedByCriteria(), false, 'left the assessment: the toast stays');
+  w.close();
+  for (const file of ['scripts/portal3.js', 'scripts/job-details.js', 'scripts/portal-email.js']) {
+    if (!fs.existsSync(path.join(root, file))) continue;
+    const source = read(file);
+    if (!source.includes('assessmentGate(')) continue;
+    assert.doesNotMatch(source.replace(/if \(!stoppedByCriteria\(\)\) showToast\(['"]Your application is not sent yet/g, ''), /showToast\(['"]Your application is not sent yet/, `${file}: every assessment toast checks the criteria first`);
   }
 });
