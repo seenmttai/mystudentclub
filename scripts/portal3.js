@@ -18,7 +18,7 @@ import {
   formatPayRange,
   formatDeadline,
 } from "./job-filters.js";
-import { assessmentGate } from "./apply-assessment.js";
+import { assessmentGate, stoppedByCriteria } from "./apply-assessment.js";
 
 // config
 const supabaseUrl = "https://auth.mystudentclub.com";
@@ -1856,7 +1856,7 @@ function shareJob(job, btnElement) {
 async function recordApplication(job, btnElement) {
   if (!currentSession) return true;
   if (!(await assessmentGate({ table: currentTable, job, supabaseClient, session: currentSession }))) {
-    showToast("Your application is not sent yet. Complete the assessment to apply.", "info");
+    if (!stoppedByCriteria()) showToast("Your application is not sent yet. Complete the assessment to apply.", "info");
     return false;
   }
   const origHtml = btnElement.innerHTML;

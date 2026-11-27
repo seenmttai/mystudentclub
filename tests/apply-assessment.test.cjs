@@ -10,7 +10,7 @@ const vm = require('node:vm');
 // no caller may open the mail or link when it says no. No DOM library on this branch: a small stand-in window.
 const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
-const gateSource = read('scripts/apply-assessment.js').replace(/^export\s+/m, '');
+const gateSource = read('scripts/apply-assessment.js').replace(/^export\s+/gm, '');
 
 function page({ hostname = 'mobile.mystudentclub.com', storage = {}, onScript = null } = {}) {
   const added = [];
@@ -25,7 +25,7 @@ function page({ hostname = 'mobile.mystudentclub.com', storage = {}, onScript = 
     head: { appendChild: node => { added.push(node); setTimeout(() => onScript?.(node, window), 0); return node; } },
   };
   const context = vm.createContext({ window, document, console: { warn() {} }, setTimeout, clearTimeout });
-  vm.runInContext(`${gateSource}\nwindow.assessmentGate = assessmentGate;`, context);
+  vm.runInContext(`${gateSource}\nwindow.assessmentGate = assessmentGate;\nwindow.stoppedByCriteria = stoppedByCriteria;`, context);
   return { w: window, added };
 }
 const client = token => ({ auth: { getSession: async () => ({ data: { session: token ? { access_token: token } : null } }) } });
@@ -69,7 +69,7 @@ test('apply assessment (mobile): a local hire preview only on localhost', async 
 test('apply assessment (mobile): recordApplication runs the gate before the insert, and every caller stops on false', () => {
   for (const file of ['scripts/portal3.js', 'scripts/portal-email.js']) {
     const source = read(file);
-    assert.match(source, /import \{ assessmentGate \} from ["']\.\/apply-assessment\.js["'];/, file);
+    assert.match(source, /import \{ assessmentGate, stoppedByCriteria \} from ["']\.\/apply-assessment\.js["'];/, file);
     const start = source.indexOf('async function recordApplication(');
     assert.ok(start >= 0, file);
     const body = source.slice(start, source.indexOf('\n}\n', start));
@@ -80,5 +80,18 @@ test('apply assessment (mobile): recordApplication runs the gate before the inse
     const calls = [...source.matchAll(/await recordApplication\(/g)].map(m => source.slice(Math.max(0, m.index - 60), m.index + 60));
     assert.ok(calls.length >= 2, `${file}: callers found`);
     for (const call of calls) assert.match(call, /(if \(await recordApplication|const (?:proceed|shouldProceed) = (?:autoRedirect \? )?await recordApplication)/, `${file}: ${call.trim()}`);
+  }
+});
+
+test('apply assessment (mobile): after the criteria dialog (hire says "Sorry, you miss this one") no assessment toast is added', async () => {
+  const { w } = page({ onScript: (node, win) => { win.MscAssessment = { lastOutcome: null, gate: async () => { win.MscAssessment.lastOutcome = 'criteria'; return false; } }; node.onload(); } });
+  assert.equal(w.stoppedByCriteria(), false, 'no gate run yet');
+  assert.equal(await w.assessmentGate({ table: 'Fresher Jobs', job: JOB, supabaseClient: client('t') }), false);
+  assert.equal(w.stoppedByCriteria(), true);
+  w.MscAssessment.lastOutcome = 'assessment';
+  assert.equal(w.stoppedByCriteria(), false, 'left the assessment: the toast stays');
+  for (const file of ['scripts/portal3.js', 'scripts/portal-email.js']) {
+    const source = read(file).replace(/if \(!stoppedByCriteria\(\)\) showToast\(['"]Your application is not sent yet/g, '');
+    assert.doesNotMatch(source, /showToast\(['"]Your application is not sent yet/, `${file}: every assessment toast checks the criteria first`);
   }
 });
