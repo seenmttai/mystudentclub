@@ -28,6 +28,21 @@ test('CA Fresher page: every Register button goes to the ₹2799 PayU page and n
   assert.doesNotMatch(text, /₹2999/);
 });
 
+// Padam, 27 Nov 2026: "stop fresher program registrations". Notify Me waitlist is back; nothing on the page takes payment.
+test('CA Fresher page while closed: no PayU link, Notify Me buttons, Registration Closed', { skip: registrationOpen }, () => {
+  const doc = new JSDOM(html).window.document;
+  assert.doesNotMatch(html, /payu\.in|js-register-btn|fresher-register\.js/);
+  for (const id of ['heroNotifyBtn', 'certNotifyBtn', 'notifyMeBtn', 'notifyMeFooterBtn']) {
+    const el = doc.getElementById(id);
+    assert.ok(el, `#${id} should exist`);
+    assert.equal(el.tagName, 'BUTTON', `#${id} is a Notify Me button`);
+    assert.ok(el.classList.contains('js-notify-btn'));
+  }
+  assert.match(html, /fresher-program-notify/);
+  assert.match(doc.querySelector('.fixed-cta .status-closed-text').textContent, /REGISTRATION CLOSED/);
+  assert.match(doc.querySelector('.hero-left .eyebrow-pill').textContent, /Registration Closed/);
+});
+
 test('CA Fresher page: the pre-result batch line is the first thing in the hero', () => {
   const doc = new JSDOM(html).window.document;
   const first = doc.querySelector('.hero-left').firstElementChild;
