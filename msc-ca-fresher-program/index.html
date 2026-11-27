@@ -29,7 +29,10 @@
   <!-- Scripts for Auth & Firebase -->
   <script src="/scripts/supabase.js"></script>
   <script src="/scripts/supabase-init.js"></script>
+  <script src="/scripts/notify-waitlist.js?v=20261031.1"></script>
   <script src="/scripts/error-reporter.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
 </head>
 
 <body data-program="fresher">
@@ -48,7 +51,7 @@
         <a href="#curriculum" class="header-nav-link">Curriculum</a>
         <a href="#certification" class="header-nav-link">Certificate</a>
         <a href="#mentor-section" class="header-nav-link">Mentor</a>
-        <a href="#waitlist-section" class="header-nav-link">Register</a>
+        <a href="#waitlist-section" class="header-nav-link">Waitlist</a>
       </nav>
 
       <div class="header-actions">
@@ -111,8 +114,8 @@
           </div>
 
           <div class="eyebrow-pill" data-aos="fade-up" data-aos-delay="50">
-            <span class="eyebrow-dot"></span>
-            <span>MSC CA Fresher Program • Registrations Open</span>
+            <i class="fas fa-graduation-cap"></i>
+            <span>MSC CA Fresher Program • Registration Closed</span>
           </div>
 
           <h1 class="hero-heading" data-aos="fade-up" data-aos-delay="100">
@@ -125,10 +128,10 @@
           </p>
 
           <div class="hero-cta-group" data-aos="fade-up" data-aos-delay="250">
-            <a href="https://payu.in/web/AC5E020347C353450621DDCC2C2EEA40" class="btn-emerald-primary js-register-btn" id="heroPrimaryCta">
-              <span>Register Now • ₹2799</span>
+            <button type="button" class="btn-emerald-primary js-notify-btn" id="heroNotifyBtn">
+              <span>Notify Me When Open</span>
               <i class="fas fa-arrow-right"></i>
-            </a>
+            </button>
             <a href="#curriculum" class="btn-outline-secondary"
               onclick="document.getElementById('curriculum').scrollIntoView({behavior: 'smooth'})">
               View Curriculum
@@ -757,10 +760,10 @@
             </ul>
 
             <div class="certificate-cta-row">
-              <a href="https://payu.in/web/AC5E020347C353450621DDCC2C2EEA40" class="btn-emerald-primary js-register-btn" id="certRegisterBtn">
-                <span>Register Now • ₹2799</span>
+              <button type="button" class="btn-emerald-primary js-notify-btn" id="certNotifyBtn">
+                <span>Notify Me When Open</span>
                 <i class="fas fa-arrow-right"></i>
-              </a>
+              </button>
             </div>
           </div>
 
@@ -913,11 +916,11 @@
             Don't leave your career transition to chance. Join the 1000's of CAs who have already launched their careers with us. Book your spot today and unlock the ultimate placement playbook.
           </p>
           <div class="banner-cta-group">
-            <a href="https://payu.in/web/AC5E020347C353450621DDCC2C2EEA40" id="registerButtonWorkshop" class="notify-banner-btn js-register-btn">
-              <span>Register Now • ₹2799</span>
+            <button id="notifyMeBtn" class="notify-banner-btn js-notify-btn" type="button">
+              <span>Notify Me When Open</span>
               <i class="fas fa-arrow-right"></i>
-            </a>
-            <p class="notify-status-msg banner-batch-note">Exclusive Pre Result Batch for Nov’26 CAs • Limited seats</p>
+            </button>
+            <p id="notifyStatus" class="notify-status-msg"></p>
           </div>
         </div>
 
@@ -1006,21 +1009,19 @@
     </footer>
   </main>
 
-  <!-- ─── FIXED BOTTOM CTA BAR (REGISTRATION LIVE) ─── -->
+  <!-- ─── FIXED BOTTOM CTA BAR ─── -->
   <div class="fixed-cta" id="cta-footer">
     <div class="timer-container">
-      <span class="status-live-text">
-        <span class="status-live-dot"></span>
-        <span>REGISTRATION LIVE</span>
-      </span>
+      <span class="status-closed-text">REGISTRATION CLOSED</span>
     </div>
     <div class="price-container">
       <span class="original">₹5999</span>
       <span class="discounted">₹2799</span>
     </div>
-    <a href="https://payu.in/web/AC5E020347C353450621DDCC2C2EEA40" id="registerFooterBtn" class="notify-me-footer-btn js-register-btn">
-      <span class="notify-footer-text">Register Now</span>
-    </a>
+    <button type="button" id="notifyMeFooterBtn" class="notify-me-footer-btn js-notify-btn">
+      <span class="notify-footer-icon">🔔</span>
+      <span class="notify-footer-text">Notify Me</span>
+    </button>
   </div>
 
   <!-- Scripts -->
@@ -1087,8 +1088,147 @@
           }
         }
       }
+
+      // ─── Firebase Waitlist Push Notification (In-Place Permission & State Update) ───
+      const NOTIFY_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
+        authDomain: "msc-notif.firebaseapp.com",
+        projectId: "msc-notif",
+        storageBucket: "msc-notif.appspot.com",
+        messagingSenderId: "228639798414",
+        appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
+        measurementId: "G-X4M23TB936"
+      };
+      const NOTIFY_VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
+      const NOTIFY_TOPIC = "fresher-program-notify";
+      const MANAGE_TOPIC_URL = "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
+
+      function showNotifyToast(message, type = 'success') {
+        let toast = document.getElementById('notifyStatusToast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'notifyStatusToast';
+          toast.className = 'notify-status';
+          document.body.appendChild(toast);
+        }
+        toast.className = `notify-status notify-status--${type} show`;
+        toast.textContent = message;
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+          toast.classList.remove('show');
+        }, 4000);
+      }
+
+      function updateAllNotifyButtonsState(text = 'Added to Waitlist ✓', isSuccess = true) {
+        const allBtns = document.querySelectorAll('.js-notify-btn, #notifyMeBtn, #notifyMeFooterBtn, #heroNotifyBtn, #certNotifyBtn');
+        allBtns.forEach(btn => {
+          btn.innerHTML = `<span>${text}</span>`;
+          if (isSuccess) {
+            btn.style.setProperty('background', '#10B981', 'important');
+            btn.style.setProperty('border-color', '#10B981', 'important');
+            btn.style.setProperty('color', '#FFFFFF', 'important');
+            btn.disabled = true;
+            btn.style.pointerEvents = 'none';
+          }
+        });
+      }
+
+      // Restore subscribed state if previously registered
+      try {
+        if (localStorage.getItem('msc_waitlist_' + NOTIFY_TOPIC) === 'true') {
+          updateAllNotifyButtonsState('Added to Waitlist ✓', true);
+          const statusEl = document.getElementById('notifyStatus');
+          if (statusEl) {
+            statusEl.textContent = "You're on the list! We'll notify you when seats open.";
+            statusEl.style.color = "#86EFAC";
+          }
+        }
+      } catch (e) {}
+
+      if (window.MSCWaitlist && window.getSupabaseClient) {
+        window.MSCWaitlist.isOn(window.getSupabaseClient(), 'ca-fresher').then(function (on) {
+          if (!on) return;
+          try { localStorage.setItem('msc_waitlist_' + NOTIFY_TOPIC, 'true'); } catch (e) {}
+          updateAllNotifyButtonsState('Added to Waitlist ✓', true);
+          const statusEl = document.getElementById('notifyStatus');
+          if (statusEl) {
+            statusEl.textContent = "You're on the list! We'll notify you when seats open.";
+            statusEl.style.color = "#86EFAC";
+          }
+        });
+      }
+
+      async function subscribeToWaitlist(triggerBtn) {
+        const statusEl = document.getElementById('notifyStatus');
+        if (statusEl) {
+          statusEl.textContent = "Setting up notification...";
+          statusEl.style.color = "#93C5FD";
+        }
+        if (triggerBtn) {
+          triggerBtn.innerHTML = '<span>Enabling...</span>';
+        }
+
+        try {
+          if (typeof Notification !== 'undefined') {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted' && typeof firebase !== 'undefined') {
+              if (!firebase.apps.length) firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
+              const messaging = firebase.messaging();
+              if ('serviceWorker' in navigator) {
+                await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+              }
+              const fcmToken = await messaging.getToken({ vapidKey: NOTIFY_VAPID_KEY });
+              if (fcmToken) {
+                await fetch(MANAGE_TOPIC_URL, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ token: fcmToken, topic: NOTIFY_TOPIC, action: 'subscribe' })
+                });
+              }
+            }
+          }
+
+          try {
+            await window.MSCWaitlist?.join(window.getSupabaseClient?.(), 'ca-fresher', window.__mscSession?.user?.email);
+          } catch (e) {}
+
+          try {
+            localStorage.setItem('msc_waitlist_' + NOTIFY_TOPIC, 'true');
+          } catch (e) {}
+
+          updateAllNotifyButtonsState('Added to Waitlist ✓', true);
+          if (statusEl) {
+            statusEl.textContent = "You're on the list! We'll notify you when seats open.";
+            statusEl.style.color = "#86EFAC";
+          }
+          showNotifyToast("🎉 You're on the priority waitlist! We'll notify you as soon as seats open.", "success");
+        } catch (err) {
+          console.error("Waitlist error:", err);
+          try {
+            localStorage.setItem('msc_waitlist_' + NOTIFY_TOPIC, 'true');
+          } catch (e) {}
+          updateAllNotifyButtonsState('Added to Waitlist ✓', true);
+          if (statusEl) {
+            statusEl.textContent = "You're on the list! We'll notify you soon.";
+            statusEl.style.color = "#86EFAC";
+          }
+          showNotifyToast("You're on the waitlist! We'll notify you when seats open.", "info");
+        }
+      }
+
+      // Attach event listeners to all notify triggers
+      const allTriggers = document.querySelectorAll('.js-notify-btn, #notifyMeBtn, #notifyMeFooterBtn, #heroNotifyBtn, #certNotifyBtn');
+      allTriggers.forEach(el => {
+        el.removeAttribute('onclick');
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          subscribeToWaitlist(el);
+        });
+      });
     });
   </script>
+  <div id="notifyStatusToast" class="notify-status"></div>
   <script src="/scripts/program-enrolled.js?v=20261124-fresher" defer></script>
 </body>
 
