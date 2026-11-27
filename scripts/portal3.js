@@ -6,7 +6,7 @@ import { openApplyLinks, openQueuedApplyLink } from './apply-links.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, renderLockScreen, showExclusiveAppliedPopup, fetchMyProgramRegistrations, applyExclusiveDemo, ensureExclusiveStyles } from './exclusive-vacancy.js';
 import { portalFor, extraSelectColumns, companyTypeFilter, applyJobFilters, describeJobFilters, withoutFilterValue, renderJobFilters, syncJobFilters, formatPayRange, formatDeadline, FIRM_TIERS } from './job-filters.js';
-import { assessmentGate } from './apply-assessment.js';
+import { assessmentGate, pendingAssessmentAfterApply } from './apply-assessment.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -840,7 +840,17 @@ async function recordApplication(job, btnElement) {
     }
     const applicationKey = `${currentTable}:${job.id}`;
     if (recruiterPosted && (pendingRecruiterApplications.has(applicationKey) || completedRecruiterApplications.has(applicationKey) || appliedJobIds.has(job.id))) {
-        showToast('Already applied to this vacancy.', 'info');
+        if (pendingRecruiterApplications.has(applicationKey)) return false;
+        // Already applied: if the recruiter's mandatory assessment is still pending (applied from an app build without
+        // the gate, or hire was unreachable), open it now instead of a dead "Already applied".
+        pendingRecruiterApplications.add(applicationKey);
+        try {
+            const late = await pendingAssessmentAfterApply({ table: currentTable, job, supabaseClient, session: currentSession });
+            const ok = late === 'submitted';
+            showToast(ok ? 'Assessment submitted. The recruiter now sees your score with your application.' : late === 'left' ? 'Your assessment is not submitted yet. Tap Easy Apply again to finish it.' : 'Already applied to this vacancy.', ok ? 'success' : 'info');
+        } finally {
+            pendingRecruiterApplications.delete(applicationKey);
+        }
         return false;
     }
 
