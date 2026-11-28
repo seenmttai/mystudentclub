@@ -35,6 +35,19 @@ function loadTaker(origin) {
   return loading;
 }
 
+function tokenGetter(supabaseClient, session) {
+  return async () => {
+    try {
+      const { data } = await supabaseClient.auth.getSession();
+      return data?.session?.access_token || session?.access_token || null;
+    } catch (_) { return session?.access_token || null; }
+  };
+}
+
+function gateOptions(origin, table, job, getToken) {
+  return { api: origin, table, jobId: job.id, company: job.Company || '', title: job.Category || job.Role || job['Primary Domain'] || '', getToken };
+}
+
 // { table, job, supabaseClient, session } -> Promise<boolean>. `table`: the vacancy's portal table ('Fresher Jobs', …);
 // `job.id`: the vacancy's own id (numeric or UUID, never the "table|uuid" application encoding).
 export async function assessmentGate({ table, job, supabaseClient, session }) {
@@ -42,16 +55,31 @@ export async function assessmentGate({ table, job, supabaseClient, session }) {
   const origin = hireOrigin();
   const taker = await loadTaker(origin);
   if (!taker || typeof taker.gate !== 'function') return true;
-  const getToken = async () => {
-    try {
-      const { data } = await supabaseClient.auth.getSession();
-      return data?.session?.access_token || session?.access_token || null;
-    } catch (_) { return session?.access_token || null; }
-  };
   try {
-    return await taker.gate({ api: origin, table, jobId: job.id, company: job.Company || '', title: job.Category || job.Role || job['Primary Domain'] || '', getToken });
+    return await taker.gate(gateOptions(origin, table, job, tokenGetter(supabaseClient, session)));
   } catch (error) {
     console.warn('Assessment check failed; applying without it.', error);
     return true;
+  }
+}
+
+// Easy Apply on a vacancy the student has ALREADY applied to. An application can exist without the assessment (an app
+// build without the gate, hire unreachable at the time, or an assessment added after they applied); the recruiter then
+// sees "Assessment not taken". Instead of a dead "Already applied", open the assessment so they can take it now: the
+// attempt joins their existing application on hire. Resolves 'submitted' (taken now), 'left' (opened, not submitted)
+// or 'none' (nothing to take: no assessment, already submitted, or hire unreachable).
+export async function pendingAssessmentAfterApply({ table, job, supabaseClient, session }) {
+  if (!table || !job || job.id === undefined || job.id === null || job.id === '') return 'none';
+  const origin = hireOrigin();
+  const taker = await loadTaker(origin);
+  if (!taker || typeof taker.gate !== 'function' || typeof taker.status !== 'function') return 'none';
+  const opts = gateOptions(origin, table, job, tokenGetter(supabaseClient, session));
+  try {
+    const info = await taker.status(opts);
+    if (!info || info.enabled === false || !info.required || info.status === 'submitted') return 'none';
+    return (await taker.gate(opts)) ? 'submitted' : 'left';
+  } catch (error) {
+    console.warn('Assessment check failed.', error);
+    return 'none';
   }
 }

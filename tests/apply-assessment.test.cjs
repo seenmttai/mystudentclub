@@ -10,7 +10,7 @@ const { JSDOM } = require('jsdom');
 // call it before the job_applications insert.
 const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
-const gateSource = read('scripts/apply-assessment.js').replace(/^export\s+/m, '');
+const gateSource = read('scripts/apply-assessment.js').replace(/^export\s+/gm, '');
 
 function page({ url = 'https://www.mystudentclub.com/ca-fresher-jobs.html', storage = {}, onScript = null } = {}) {
   const dom = new JSDOM('<!doctype html><html><head></head><body></body></html>', { url, runScripts: 'outside-only' });
@@ -19,7 +19,7 @@ function page({ url = 'https://www.mystudentclub.com/ca-fresher-jobs.html', stor
   const added = [];
   const append = w.document.head.appendChild.bind(w.document.head);
   w.document.head.appendChild = node => { added.push(node); const out = append(node); if (node.tagName === 'SCRIPT') setTimeout(() => onScript?.(node, w), 0); return out; };
-  w.eval(`${gateSource}\nwindow.assessmentGate = assessmentGate;`);
+  w.eval(`${gateSource}\nwindow.assessmentGate = assessmentGate;\nwindow.pendingAssessmentAfterApply = pendingAssessmentAfterApply;`);
   return { w, added };
 }
 const client = token => ({ auth: { getSession: async () => ({ data: { session: token ? { access_token: token } : null } }) } });
@@ -76,7 +76,7 @@ test('apply assessment: a local hire preview only on localhost', async () => {
 test('apply assessment: every Easy Apply save point runs the gate before the application insert', () => {
   for (const [file, fn] of [['scripts/portal3.js', 'async function recordApplication('], ['scripts/job-details.js', 'async function recordRecruiterApplication('], ['scripts/portal-email.js', 'async function recordApplication(']]) {
     const source = read(file);
-    assert.match(source, /import \{ assessmentGate \} from '\.\/apply-assessment\.js';/, file);
+    assert.match(source, /import \{ assessmentGate(, pendingAssessmentAfterApply)? \} from '\.\/apply-assessment\.js';/, file);
     const start = source.indexOf(fn);
     assert.ok(start >= 0, `${file}: ${fn}`);
     const body = source.slice(start, source.indexOf('\n}\n', start));
@@ -84,5 +84,37 @@ test('apply assessment: every Easy Apply save point runs the gate before the app
     const insert = body.indexOf(".from('job_applications')");
     assert.ok(gate > 0 && insert > gate, `${file}: the gate runs before the insert`);
     assert.match(body.slice(gate, insert), /return false;/, `${file}: leaving the assessment returns without applying`);
+  }
+});
+
+// Signify 10906 (26 Nov 2026): 9 of 43 applied from the store app, whose build had no assessment gate, so their
+// applications were saved with "Assessment not taken" and Easy Apply on www then only said "Already applied".
+test('apply assessment: an applicant without the assessment can take it from Easy Apply', async () => {
+  const taker = (info, result) => (node, win) => { win.MscAssessment = { status: async () => info, gate: async () => result }; node.onload(); };
+  const args = { table: 'Industrial Training Job Portal', job: { id: 10906, Company: 'Signify' }, supabaseClient: client('t') };
+  for (const [info, result, want] of [
+    [{ required: true, status: 'not_started' }, true, 'submitted'],
+    [{ required: true, status: 'in_progress' }, false, 'left'],
+    [{ required: true, status: 'submitted' }, true, 'none'],
+    [{ required: false }, true, 'none'],
+    [null, true, 'none'],
+  ]) {
+    const { w } = page({ onScript: taker(info, result) });
+    assert.equal(await w.pendingAssessmentAfterApply(args), want, JSON.stringify(info));
+    w.close();
+  }
+  const down = page({ onScript: node => node.onerror() });
+  assert.equal(await down.w.pendingAssessmentAfterApply(args), 'none');
+  down.w.close();
+});
+
+test('apply assessment: the listing pages offer a pending assessment instead of a dead "Already applied"', () => {
+  for (const file of ['scripts/portal3.js', 'scripts/portal-email.js']) {
+    const source = read(file);
+    const start = source.indexOf('async function recordApplication(');
+    const body = source.slice(start, source.indexOf('\n}\n', start));
+    const already = body.indexOf('appliedJobIds.has(job.id))) {');
+    assert.ok(already > 0, file);
+    assert.ok(body.indexOf('pendingAssessmentAfterApply(', already) > already && body.indexOf('pendingAssessmentAfterApply(') < body.indexOf('assessmentGate('), `${file}: already-applied path checks the assessment`);
   }
 });
