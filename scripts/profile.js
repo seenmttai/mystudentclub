@@ -1,4 +1,5 @@
-import { calculateProfileCompletion, getProfileCompletionItems, hasResumeEvidence, formatSchoolScore, isSchoolEducationComplete, normalizeSchoolScoreType, normalizeSchoolScoreValue } from './profile-completion.js?v=20261009_1';
+import { calculateProfileCompletion, getProfileCompletionItems, hasResumeEvidence, formatSchoolScore, isSchoolEducationComplete, normalizeSchoolScoreType, normalizeSchoolScoreValue } from './profile-completion.js?v=20261125_1';
+import { checkCvOnFile, markCvOnFile } from './cv-on-file.js?v=20261125_1';
 
 const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
@@ -1133,8 +1134,7 @@ const WZ = (() => {
                 <p class="wz-cv-label">Click to upload resume</p>
                 <p class="wz-cv-sub">PDF only — Max 5 MB</p>
             </div>
-            <div class="wz-cv-or">or</div>
-            <button type="button" class="wz-cv-skip" id="wz-cv-skip-upload">Continue Without Resume</button>`}
+            <p class="wz-cv-sub" style="margin-top:10px;">A resume is required: recruiters see it when you apply. Keep your PDF ready, or come back to this page when you have it.</p>`}
             <div class="wz-consent-card">
                 <label class="wz-consent-label" for="wz-consent-chk">
                     <input type="checkbox" id="wz-consent-chk">
@@ -2087,6 +2087,8 @@ const WZ = (() => {
                 if (d.uploaded) {
                     st.storerDone = true;
                     setCloudSyncFlag();
+                    markCvOnFile(userId, true);
+                    renderCvOnFileNotice(false);
                     const consentGiven = document.getElementById('cvSharingConsent')?.checked;
                     if (consentGiven) saveConsentRecord(true).catch(() => { });
                 }
@@ -2633,6 +2635,7 @@ async function loadProfile() {
 
         takeProfileSaveBaseline();
         setTimeout(() => refreshHeader(), 150);
+        refreshCvOnFileState();
         return profileObj;
 
     } catch (e) {
@@ -2651,6 +2654,7 @@ async function loadProfile() {
         // over the server row, so only what the student changes here is written.
         takeProfileSaveBaseline();
         setTimeout(() => refreshHeader(), 150);
+        refreshCvOnFileState();
         return profileObj;
     } finally {
         showLoading(false);
@@ -3275,6 +3279,34 @@ function parseGeminiJson(text) {
     }
 }
 
+// =================== CV REALLY ON FILE (scripts/cv-on-file.js) ===================
+// A profile can name a CV whose upload never reached storage; recruiters then get nothing. hire.mystudentclub.com
+// checks the stored file; when it is missing, "Add resume" stops counting and the student is asked to upload again.
+async function refreshCvOnFileState(force = false) {
+    try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const onFile = await checkCvOnFile(session, { force });
+        renderCvOnFileNotice(onFile === false);
+        refreshHeader();
+    } catch (_) { /* unknown is never "missing" */ }
+}
+
+function renderCvOnFileNotice(missing) {
+    const section = document.getElementById('sec-resume');
+    if (!section) return;
+    let note = document.getElementById('cvOnFileNotice');
+    if (!missing) { note?.remove(); return; }
+    if (!note) {
+        note = document.createElement('div');
+        note.id = 'cvOnFileNotice';
+        note.setAttribute('role', 'alert');
+        note.style.cssText = 'margin:10px 0 12px;padding:12px 14px;border-radius:10px;background:#fff4e5;border:1px solid #f5a623;color:#7a4500;font-size:14px;line-height:1.45;';
+        note.innerHTML = '<strong>Upload your resume again.</strong> Your resume did not reach our servers, so recruiters cannot see it and you cannot apply to MSC jobs until it is uploaded. Remove the file below if one is shown, then upload your PDF and press Save.';
+        const sub = section.querySelector('.p2-card-sub');
+        (sub || section.firstElementChild)?.after(note);
+    }
+}
+
 function isCloudSynced() {
     return localStorage.getItem('cv_cloud_synced') === 'true' ||
         document.cookie.split(';').some(c => c.trim().startsWith('cv_cloud_synced=true'));
@@ -3732,6 +3764,8 @@ async function handleSave(e) {
                         if (syncData.uploaded) {
                             syncSuccess = true;
                             setCloudSyncFlag();
+                            markCvOnFile(currentUser.id, true);
+                            renderCvOnFileNotice(false);
                         } else {
                             console.error('Cloud storage sync failed:', syncData.storage_error);
                             showToast('Resume saved, but cloud backup failed. It will retry on next save.', 'warning', 8000);

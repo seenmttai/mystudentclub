@@ -15,7 +15,7 @@ function loadCompletion(storage = {}) {
   const context = { Array, Boolean, JSON, Math, String, localStorage };
   context.globalThis = context;
   const executable = source.replaceAll('export function ', 'function ')
-    + '\nthis.completion = { getProfileCompletionItems, getMissingProfileItems, calculateProfileCompletion };';
+    + '\nthis.completion = { getProfileCompletionItems, getMissingProfileItems, calculateProfileCompletion, hasResumeEvidence };';
   vm.runInNewContext(executable, context);
   return { completion: context.completion, storage, localStorage };
 }
@@ -245,4 +245,24 @@ test('profile page opens the section named by the AI Apply popup link', () => {
   const profileSource = fs.readFileSync(path.join(root, 'scripts', 'profile.js'), 'utf8');
   assert.match(profileSource, /deepLink\.get\('section'\)/);
   assert.match(profileSource, /navigateToMissingDetail\(deepLinkSection, deepLink\.get\('form'\) \|\| ''\)/);
+});
+
+test('a CV that never reached storage does not count, and says to upload again (25 Nov 2026)', () => {
+  const missing = JSON.stringify({ uid: 'u1', state: 'no', at: 1 });
+  const local = loadCompletion({ userCVText: 'resume text', msc_profile_cache_owner: 'u1', msc_cv_on_file: missing });
+  const profile = { ...completeProfile(), cv_filename: 'Rishita_CV.pdf' };
+  assert.equal(local.completion.hasResumeEvidence(profile, local.localStorage), false);
+  assert.deepEqual(
+    Array.from(local.completion.getMissingProfileItems(profile, local.localStorage), item => item.label),
+    ['Upload your resume again']
+  );
+  assert.equal(local.completion.calculateProfileCompletion(profile, local.localStorage) < 100, true);
+
+  // On file, unknown, or another account's answer: the CV counts as before.
+  for (const stored of [JSON.stringify({ uid: 'u1', state: 'yes', at: 1 }), null, JSON.stringify({ uid: 'u2', state: 'no', at: 1 }), 'not json']) {
+    const storage = { userCVText: 'resume text', msc_profile_cache_owner: 'u1' };
+    if (stored !== null) storage.msc_cv_on_file = stored;
+    const env = loadCompletion(storage);
+    assert.equal(env.completion.hasResumeEvidence(profile, env.localStorage), true, String(stored));
+  }
 });
