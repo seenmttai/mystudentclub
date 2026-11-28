@@ -127,9 +127,12 @@ export function getProfileCompletionItems(profile = {}, storage = globalThis.loc
     );
 
     const items = [
-        { label: 'Add full name', icon: 'fa-user', filled: textValue(d.name, d.full_name), boost: 14, section: 'sec-personal', form: 'sec-personal-form' },
-        { label: 'Add mobile number', icon: 'fa-phone-alt', filled: textValue(d.contact_number, d.mobile, d.phone, d.phone_number), boost: 10, section: 'sec-personal', form: 'sec-personal-form' },
+        { label: 'Add full name', icon: 'fa-user', filled: textValue(d.name, d.full_name), boost: 12, section: 'sec-personal', form: 'sec-personal-form' },
+        { label: 'Add mobile number', icon: 'fa-phone-alt', filled: textValue(d.contact_number, d.mobile, d.phone, d.phone_number), boost: 9, section: 'sec-personal', form: 'sec-personal-form' },
         { label: 'Add location', icon: 'fa-map-marker-alt', filled: textValue(d.current_city, d.current_location, d.city, d.location), boost: 3, section: 'sec-personal', form: 'sec-personal-form' },
+        // Gender counts towards 100% (and so Easy Apply): recruiters filter on it and 83% of profiles had it blank
+        // (Padam, 22 Nov 2026). Its 3 points come from name and mobile, so the total stays 100.
+        { label: 'Add gender', icon: 'fa-venus-mars', filled: textValue(d.gender), boost: 3, section: 'sec-personal', form: 'sec-personal-form' },
         { label: 'Add resume', icon: 'fa-file-alt', filled: hasResumeEvidence(d, storage), boost: 14, section: 'sec-resume', form: '' },
         { label: 'Add profile summary', icon: 'fa-heading', filled: textValue(d.profile_summary, d.headline), boost: 10, section: 'sec-headline', form: 'sec-headline-form' },
         { label: 'Add CA education', icon: 'fa-graduation-cap', filled: hasEducation, boost: 4, ...educationTarget },
